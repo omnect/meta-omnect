@@ -19,12 +19,12 @@ EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
 inherit systemd
 do_install_append() {
     install -d ${D}${sysconfdir}/ics_dm
-    jq -n --arg dpsConnectionString ${DPS_CONNECTION_STRING} \
-          --arg edgeDevice ${IS_EDGE_DEVICE} \
-          --arg tag1 machine --arg tag1Value ${MACHINE} \
+    jq -n --arg dpsConnectionString "${DPS_CONNECTION_STRING}" \
+          --argjson edgeDevice "${IS_EDGE_DEVICE}" \
+          --arg tag1 machine --arg tag1Value "${MACHINE}" \
           --arg tag2 tagName --arg tag2Value tagValue \
         '{ "dps_connectionString":"\($dpsConnectionString)",
-           "edgeDevice":"\($edgeDevice)",
+           "edgeDevice": $edgeDevice,
            "tags" :
            { "\($tag1)" : "\($tag1Value)",
              "\($tag2)" : "\($tag2Value)"
