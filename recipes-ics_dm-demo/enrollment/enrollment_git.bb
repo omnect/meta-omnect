@@ -14,6 +14,7 @@ inherit cmake
 EXTRA_OECMAKE += "-DINSTALL:DIR=bin"
 EXTRA_OECMAKE += "-DBB_GITVERSION_INCLUDE_DIR=${BB_GIT_VERSION_INCLUDE_DIR}"
 EXTRA_OECMAKE += "-DAZUREIOT_INCLUDE_DIR=/usr/include/azureiot"
+EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
 
 inherit systemd
 do_install_append() {
