@@ -2,11 +2,12 @@
 LICENSE = "CLOSED"
 
 #TODO adapt to non dev branch
-SRC_URI = "git://dev.azure.com/conplementag/ICS_DeviceManagement/_git/bb-cplusplus-azure;protocol=https;branch=feature/6153_ubuntu_device_enrollment;user=${ICS_DM_GIT_CREDENTIALS}"
+#SRC_URI = "git://dev.azure.com/conplementag/ICS_DeviceManagement/_git/bb-cplusplus-azure;protocol=https;branch=feature/6153_ubuntu_device_enrollment;user=${ICS_DM_GIT_CREDENTIALS}"
+SRC_URI = "git://dev.azure.com/conplementag/ICS_DeviceManagement/_git/bb-cplusplus-azure;protocol=https;branch=marcel/feature/aduagent-tpm;user=${ICS_DM_GIT_CREDENTIALS}"
 SRCREV = "${AUTOREV}"
 
 DEPENDS = "azure-iot-sdk-c jq-native"
-RDEPENDS_${PN} = "jq"
+RDEPENDS_${PN} = "ca-certificates"
 
 S = "${WORKDIR}/git/service-enrollment"
 
@@ -18,7 +19,7 @@ EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
 inherit systemd
 do_install_append() {
     install -d ${D}${sysconfdir}/ics_dm
-    jq -n --arg dpsConnectionString "${DPS_CONNECTION_STRING}" \
+    jq -n --arg dpsConnectionString "${ENROLLMENT_DPS_CONNECTION_STRING}" \
           --argjson edgeDevice "${IS_EDGE_DEVICE}" \
           --arg tag1 machine --arg tag1Value "${MACHINE}" \
           --arg tag2 tagName --arg tag2Value tagValue \
