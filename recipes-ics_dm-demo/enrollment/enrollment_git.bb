@@ -1,10 +1,20 @@
-#TODO adapt?
 LICENSE = "CLOSED"
 
-#TODO adapt to non dev branch
-#SRC_URI = "git://dev.azure.com/conplementag/ICS_DeviceManagement/_git/bb-cplusplus-azure;protocol=https;branch=feature/6153_ubuntu_device_enrollment;user=${ICS_DM_GIT_CREDENTIALS}"
-SRC_URI = "git://dev.azure.com/conplementag/ICS_DeviceManagement/_git/bb-cplusplus-azure;protocol=https;branch=marcel/feature/aduagent-tpm;user=${ICS_DM_GIT_CREDENTIALS}"
-SRCREV = "${AUTOREV}"
+SRC_URI = "git://dev.azure.com/conplementag/ICS_DeviceManagement/_git/bb-cplusplus-azure;protocol=https;branch=MVP;user=${ICS_DM_GIT_CREDENTIALS}"
+
+python () {
+    src_uri = d.getVar('ENROLLMENT_SERVICE_SRC_URI')
+    if src_uri:
+      d.setVar('SRC_URI', src_uri)
+    else :
+      src_uri = d.getVar('SRC_URI')
+    if src_uri.startswith('file'):
+      d.setVar('S',  d.getVar('WORKDIR') + "/service-enrollment")
+    else :
+      d.setVar('SRCREV', d.getVar('AUTOREV'))
+      d.setVar('PV', '+git' + d.getVar('SRCPV'))
+      d.setVar('S', d.getVar('WORKDIR') + "/git/service-enrollment")
+}
 
 DEPENDS = "azure-iot-sdk-c jq-native"
 RDEPENDS_${PN} = "ca-certificates"
@@ -12,7 +22,6 @@ RDEPENDS_${PN} = "ca-certificates"
 S = "${WORKDIR}/git/service-enrollment"
 
 inherit cmake
-EXTRA_OECMAKE += "-DINSTALL:DIR=bin"
 EXTRA_OECMAKE += "-DBB_GITVERSION_INCLUDE_DIR=${BB_GIT_VERSION_INCLUDE_DIR}"
 EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
 
