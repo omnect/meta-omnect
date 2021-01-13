@@ -19,13 +19,18 @@ python () {
 DEPENDS = "azure-iot-sdk-c jq-native"
 RDEPENDS_${PN} = "ca-certificates"
 
-S = "${WORKDIR}/git/service-enrollment"
-
 inherit cmake
+
+# do_install_preprend() {
+#   install -d ${D}${systemd_system_unitdir}
+# }
+
 EXTRA_OECMAKE += "-DBB_GITVERSION_INCLUDE_DIR=${BB_GIT_VERSION_INCLUDE_DIR}"
 EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
+EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
 
 inherit systemd
+
 do_install_append() {
     install -d ${D}${sysconfdir}/ics_dm
     jq -n --arg dpsConnectionString "${ENROLLMENT_DPS_CONNECTION_STRING}" \
@@ -38,9 +43,7 @@ do_install_append() {
            { "\($tag1)" : "\($tag1Value)",
              "\($tag2)" : "\($tag2Value)"
         }}'  > ${D}${sysconfdir}/ics_dm/enrollment_static.conf
-    install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${S}/target/systemd/enrollment.service  ${D}${systemd_system_unitdir}
 }
-SYSTEMD_SERVICE_${PN} += "enrollment.service"
-FILES_${PN} += "${systemd_system_unitdir}/enrollment.service"
+SYSTEMD_SERVICE_${PN} += "enrollment.service edge-provisioning.service"
+FILES_${PN} += "${systemd_system_unitdir}"
 REQUIRED_DISTRO_FEATURES = "systemd"
