@@ -40,6 +40,6 @@ do_install_append() {
              "\($tag2)" : "\($tag2Value)"
         }}'  > ${D}${sysconfdir}/ics_dm/enrollment_static.conf
 }
-SYSTEMD_SERVICE_${PN} += "enrollment.service edge-provisioning.service"
+SYSTEMD_SERVICE_${PN} += "enrollment.service enrolled.path edge-provisioning.service"
 FILES_${PN} += "${systemd_system_unitdir}"
 REQUIRED_DISTRO_FEATURES = "systemd"
