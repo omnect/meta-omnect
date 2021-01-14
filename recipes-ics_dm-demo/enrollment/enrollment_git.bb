@@ -21,10 +21,6 @@ RDEPENDS_${PN} = "ca-certificates"
 
 inherit cmake
 
-# do_install_preprend() {
-#   install -d ${D}${systemd_system_unitdir}
-# }
-
 EXTRA_OECMAKE += "-DBB_GITVERSION_INCLUDE_DIR=${BB_GIT_VERSION_INCLUDE_DIR}"
 EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
 EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
