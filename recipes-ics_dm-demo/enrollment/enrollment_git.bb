@@ -50,6 +50,6 @@ do_install_append() {
     chmod +x ${D}${sysconfdir}/iotedge/edge_provisioning.sh
 
 }
-SYSTEMD_SERVICE_${PN} += "tpmrm0-group.service enrollment.service edge-provisioning.service"
+SYSTEMD_SERVICE_${PN} += "tpmrm0-group.service enrollment.service enrolled.path edge-provisioning.service"
 FILES_${PN} += "${systemd_system_unitdir}"
 REQUIRED_DISTRO_FEATURES = "systemd"
