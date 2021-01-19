@@ -39,7 +39,17 @@ do_install_append() {
            { "\($tag1)" : "\($tag1Value)",
              "\($tag2)" : "\($tag2Value)"
         }}'  > ${D}${sysconfdir}/ics_dm/enrollment_static.conf
+
+    jq -n --arg provisioningGlobalEndpoint "${DPS_ENDPOINT}" \
+          --arg provisioningScopeId "${DPS_SCOPE_ID}" \
+        '{ "provisioning_global_endpoint":"\($provisioningGlobalEndpoint)",
+           "provisioning_scope_id":"\($provisioningScopeId)" }'  > ${D}${sysconfdir}/ics_dm/provisioning_static.conf
+
+    install -d ${D}${sysconfdir}/iotedge
+    cp -r ${S}/target/scripts/edge_provisioning.sh ${D}${sysconfdir}/iotedge/
+    chmod +x ${D}${sysconfdir}/iotedge/edge_provisioning.sh
+
 }
-SYSTEMD_SERVICE_${PN} += "enrollment.service edge-provisioning.service"
+SYSTEMD_SERVICE_${PN} += "tpmrm0-group.service enrollment.service edge-provisioning.service"
 FILES_${PN} += "${systemd_system_unitdir}"
 REQUIRED_DISTRO_FEATURES = "systemd"
