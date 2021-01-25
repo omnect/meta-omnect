@@ -32,7 +32,7 @@ do_install_append() {
     jq -n --arg dpsConnectionString "${ENROLLMENT_DPS_CONNECTION_STRING}" \
           --argjson edgeDevice "${IS_EDGE_DEVICE}" \
           --arg tag1 machine --arg tag1Value "${MACHINE}" \
-          --arg tag2 tagName --arg tag2Value tagValue \
+          --arg tag2 ADUGroup --arg tag2Value "${ADU_GROUP}" \
         '{ "dps_connectionString":"\($dpsConnectionString)",
            "edgeDevice": $edgeDevice,
            "tags" :
