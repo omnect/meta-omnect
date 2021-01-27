@@ -28,8 +28,8 @@ EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
 inherit useradd
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = "tpm"
-USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g tpm enrollment"
+GROUPADD_PARAM_${PN} += ";tpm"
+USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -G tpm enrollment"
 
 inherit systemd
 
