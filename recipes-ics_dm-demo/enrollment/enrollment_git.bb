@@ -53,8 +53,11 @@ do_install_append() {
 
     install -d ${D}${sysconfdir}/iotedge
     install -m 755 ${S}/target/scripts/edge_provisioning.sh ${D}${sysconfdir}/iotedge/
+
+    chgrp enrollment ${D}${sysconfdir}/ics_dm
+    chmod g+rw ${D}${sysconfdir}/ics_dm
 }
-SYSTEMD_SERVICE_${PN}_append = " enrollment.service enrolled.path edge-provisioning.service"
+SYSTEMD_SERVICE_${PN}_append = " enrollment.service enrolled.path"
 SYSTEMD_SERVICE_${PN}_rpi_append = " rpi-tpmrm-rights.service"
 FILES_${PN} += "${systemd_system_unitdir}"
 REQUIRED_DISTRO_FEATURES = "systemd"
