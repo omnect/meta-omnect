@@ -29,7 +29,7 @@ inherit useradd
 
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM_${PN} = " -r enrollment; -r tpm"
-USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g enrollment -G tpm enrollment"
+USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g enrollment -G tpm,iotedge enrollment"
 
 inherit systemd
 
@@ -51,8 +51,7 @@ do_install_append() {
         '{ "provisioning_global_endpoint":"\($provisioningGlobalEndpoint)",
            "provisioning_scope_id":"\($provisioningScopeId)" }'  > ${D}${sysconfdir}/ics_dm/provisioning_static.conf
 
-    install -d ${D}${sysconfdir}/iotedge
-    install -m 755 ${S}/target/scripts/edge_provisioning.sh ${D}${sysconfdir}/iotedge/
+    install -m 755 ${S}/target/scripts/edge_provisioning.sh ${D}${sysconfdir}/ics_dm/
 
     chgrp enrollment ${D}${sysconfdir}/ics_dm
     chmod g+rw ${D}${sysconfdir}/ics_dm

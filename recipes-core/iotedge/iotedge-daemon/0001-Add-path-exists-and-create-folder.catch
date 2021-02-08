@@ -1,0 +1,13 @@
+--- iotedge.service	2021-02-05 13:00:16.445712256 +0000
++++ iotedge-mod.service	2021-02-05 13:05:07.557724613 +0000
+@@ -4,8 +4,10 @@
+ Requires=iotedge.socket iotedge.mgmt.socket
+ Wants=network-online.target docker.service
+ Documentation=man:iotedged(8)
++ConditionPathExists=/etc/ics_dm/enrolled
+ 
+ [Service]
++ExecStartPre=/bin/mkdir -p /var/lib/iotedge
+ ExecStart=/usr/bin/iotedged -c /etc/iotedge/config.yaml
+ KillMode=process
+ TimeoutStartSec=600
