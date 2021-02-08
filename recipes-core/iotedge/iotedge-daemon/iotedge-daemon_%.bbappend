@@ -1,6 +1,6 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI += "file://0001-Add-path-exists-and-create-folder.catch"
+SRC_URI += "file://0001-Add-path-exists"
 
 inherit useradd
 
@@ -13,5 +13,5 @@ do_install_append() {
     chmod g+rw ${D}${sysconfdir}/iotedge/config.yaml
 
     install -d ${D}/lib/systemd/system
-    patch ${D}/lib/systemd/system/iotedge.service ${WORKDIR}/0001-Add-path-exists-and-create-folder.catch
+    patch ${D}/lib/systemd/system/iotedge.service ${WORKDIR}/0001-Add-path-exists
 }
