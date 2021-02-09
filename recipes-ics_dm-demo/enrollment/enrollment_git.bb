@@ -19,7 +19,7 @@ python () {
 DEPENDS = "azure-iot-sdk-c jq-native iotedge-daemon"
 RDEPENDS_${PN} = "ca-certificates jq yq"
 
-inherit cmake
+inherit cmake features_check
 
 EXTRA_OECMAKE += "-DBB_GITVERSION_INCLUDE_DIR=${BB_GIT_VERSION_INCLUDE_DIR}"
 EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
