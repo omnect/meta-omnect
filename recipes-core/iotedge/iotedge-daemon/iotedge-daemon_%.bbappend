@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI += "file://0001-Add-path-exists"
+SRC_URI += "file://0001-Add-path-exists.patch;patchdir=${WORKDIR}/iotedge-1.0.9.4"
 
 inherit useradd
 
@@ -12,6 +12,7 @@ do_install_append() {
     install -d ${D}${sysconfdir}/iotedge
     chmod g+rw ${D}${sysconfdir}/iotedge/config.yaml
 
-    install -d ${D}/lib/systemd/system
-    patch ${D}/lib/systemd/system/iotedge.service ${WORKDIR}/0001-Add-path-exists
+    install -d ${D}/mnt/data/var/lib/iotedge
+    chown iotedge:iotedge ${D}/mnt/data/var/lib/iotedge
 }
+FILES_${PN}_append = " /mnt/"
