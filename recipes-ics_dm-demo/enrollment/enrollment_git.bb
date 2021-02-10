@@ -25,6 +25,12 @@ EXTRA_OECMAKE += "-DBB_GITVERSION_INCLUDE_DIR=${BB_GIT_VERSION_INCLUDE_DIR}"
 EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
 EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
 
+inherit useradd
+
+USERADD_PACKAGES = "${PN}"
+GROUPADD_PARAM_${PN} = " -r enrollment; -r tpm"
+USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g enrollment -G tpm,iotedge enrollment"
+
 inherit systemd
 
 do_install_append() {
@@ -39,7 +45,18 @@ do_install_append() {
            { "\($tag1)" : "\($tag1Value)",
              "\($tag2)" : "\($tag2Value)"
         }}'  > ${D}${sysconfdir}/ics_dm/enrollment_static.conf
+
+    jq -n --arg provisioningGlobalEndpoint "${DPS_ENDPOINT}" \
+          --arg provisioningScopeId "${DPS_SCOPE_ID}" \
+        '{ "provisioning_global_endpoint":"\($provisioningGlobalEndpoint)",
+           "provisioning_scope_id":"\($provisioningScopeId)" }'  > ${D}${sysconfdir}/ics_dm/provisioning_static.conf
+
+    install -m 755 ${S}/target/scripts/edge_provisioning.sh ${D}${sysconfdir}/ics_dm/
+
+    chgrp enrollment ${D}${sysconfdir}/ics_dm
+    chmod g+rw ${D}${sysconfdir}/ics_dm
 }
-SYSTEMD_SERVICE_${PN} += "enrollment.service enrolled.path edge-provisioning.service"
+SYSTEMD_SERVICE_${PN}_append = " enrollment.service enrolled.path"
+SYSTEMD_SERVICE_${PN}_rpi_append = " rpi-tpmrm-rights.service"
 FILES_${PN} += "${systemd_system_unitdir}"
 REQUIRED_DISTRO_FEATURES = "systemd"
