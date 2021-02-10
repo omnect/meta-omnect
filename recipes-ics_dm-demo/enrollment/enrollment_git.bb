@@ -17,7 +17,7 @@ python () {
 }
 
 DEPENDS = "azure-iot-sdk-c jq-native"
-RDEPENDS_${PN} = "ca-certificates"
+RDEPENDS_${PN} = "ca-certificates jq yq"
 
 inherit cmake
 
