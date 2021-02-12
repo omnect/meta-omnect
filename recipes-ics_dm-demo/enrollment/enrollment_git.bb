@@ -16,7 +16,7 @@ python () {
       d.setVar('S', d.getVar('WORKDIR') + "/git/service-enrollment")
 }
 
-DEPENDS = "azure-iot-sdk-c jq-native"
+DEPENDS = "azure-iot-sdk-c jq-native iotedge-daemon"
 RDEPENDS_${PN} = "ca-certificates jq yq"
 
 inherit cmake
