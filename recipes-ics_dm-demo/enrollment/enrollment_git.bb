@@ -51,7 +51,7 @@ do_install_append() {
         '{ "provisioning_global_endpoint":"\($provisioningGlobalEndpoint)",
            "provisioning_scope_id":"\($provisioningScopeId)" }'  > ${D}${sysconfdir}/ics_dm/provisioning_static.conf
 
-    install -m 755 ${S}/target/scripts/edge_provisioning.sh ${D}${sysconfdir}/ics_dm/
+    install -m 755 ${S}/target/scripts/edge_provisioning.sh ${D}${bindir}/
 
     chgrp enrollment ${D}${sysconfdir}/ics_dm
     chmod g+rw ${D}${sysconfdir}/ics_dm
