@@ -16,8 +16,9 @@ python () {
       d.setVar('S', d.getVar('WORKDIR') + "/git/service-enrollment")
 }
 
-DEPENDS = "azure-iot-sdk-c iotedge-daemon jq-native virtual/docker"
-RDEPENDS_${PN} = "ca-certificates jq yq"
+#we add iotedge-daemon to DEPENDS and RDEPENDS otherwise we have problems building from sstate cache
+DEPENDS = "azure-iot-sdk-c iotedge-daemon jq-native"
+RDEPENDS_${PN} = "ca-certificates iotedge-daemon jq yq"
 
 inherit cmake features_check
 
