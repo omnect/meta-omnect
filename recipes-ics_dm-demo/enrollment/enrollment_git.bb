@@ -16,9 +16,8 @@ python () {
       d.setVar('S', d.getVar('WORKDIR') + "/git/service-enrollment")
 }
 
-#we add iotedge-daemon to DEPENDS and RDEPENDS otherwise we have problems building from sstate cache
-DEPENDS = "azure-iot-sdk-c iotedge-daemon jq-native"
-RDEPENDS_${PN} = "ca-certificates iotedge-daemon jq yq"
+DEPENDS = "azure-iot-sdk-c jq-native"
+RDEPENDS_${PN} = "ca-certificates jq yq"
 
 inherit cmake features_check
 
@@ -29,7 +28,7 @@ EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
 inherit useradd
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = " -r enrollment; -r tpm"
+GROUPADD_PARAM_${PN} = " -r enrollment; -r tpm; -r docker; -r -g 15580 iotedge"
 USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g enrollment -G tpm,iotedge enrollment"
 
 inherit systemd
@@ -57,7 +56,6 @@ do_install_append() {
     chgrp enrollment ${D}${sysconfdir}/ics_dm
     chmod g+rw ${D}${sysconfdir}/ics_dm
 }
-SYSTEMD_SERVICE_${PN}_append = " enrollment.service enrolled.path"
-SYSTEMD_SERVICE_${PN}_rpi_append = " rpi-tpmrm-rights.service"
+SYSTEMD_SERVICE_${PN} = "enrollment.service enrolled.path"
 FILES_${PN} += "${systemd_system_unitdir}"
 REQUIRED_DISTRO_FEATURES = "systemd"

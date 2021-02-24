@@ -1,0 +1,17 @@
+diff --git a/edgelet/contrib/systemd/debian/iotedge.service b/edgelet/contrib/systemd/debian/iotedge.service
+index 6cbbbe767..4010c8023 100644
+--- a/edgelet/contrib/systemd/debian/iotedge.service
++++ b/edgelet/contrib/systemd/debian/iotedge.service
+@@ -1,9 +1,10 @@
+ [Unit]
+ Description=Azure IoT Edge daemon
+-After=network-online.target docker.service iotedge.socket iotedge.mgmt.socket
++After=network-online.target docker.service iotedge.socket iotedge.mgmt.socket time-sync.target dev-tpmrm0.device adu-agent.service mnt-data.mount
+ Requires=iotedge.socket iotedge.mgmt.socket
+-Wants=network-online.target docker.service
++Wants=network-online.target docker.service time-sync.target
+ Documentation=man:iotedged(8)
++ConditionPathExists=/etc/ics_dm/enrolled
+
+ [Service]
+ ExecStart=/usr/bin/iotedged -c /etc/iotedge/config.yaml

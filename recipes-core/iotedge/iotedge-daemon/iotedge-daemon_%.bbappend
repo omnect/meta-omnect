@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI += "file://0001-Add-rpi-tpmrm-rights-add-path-exits.patch;patchdir=${WORKDIR}/iotedge-1.0.9.4"
+SRC_URI += "file://ics-dm-systemd-service.patch;patchdir=${WORKDIR}/iotedge-1.0.9.4"
 
 GROUPADD_PARAM_${PN} += "; -r tpm"
 GROUPMEMS_PARAM_${PN} = "-a iotedge -g tpm"
