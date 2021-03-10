@@ -1,6 +1,6 @@
 LICENSE = "CLOSED"
 
-SRC_URI = "git://dev.azure.com/conplementag/ICS_DeviceManagement/_git/bb-cplusplus-azure;protocol=https;branch=MVP;user=${ICS_DM_GIT_CREDENTIALS}"
+SRC_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=dunfell"
 
 python () {
     src_uri = d.getVar('ENROLLMENT_SERVICE_SRC_URI')
@@ -9,11 +9,11 @@ python () {
     else :
       src_uri = d.getVar('SRC_URI')
     if src_uri.startswith('file'):
-      d.setVar('S',  d.getVar('WORKDIR') + "/service-enrollment")
+      d.setVar('S',  d.getVar('WORKDIR'))
     else :
       d.setVar('SRCREV', d.getVar('AUTOREV'))
       d.setVar('PV', '+git' + d.getVar('SRCPV'))
-      d.setVar('S', d.getVar('WORKDIR') + "/git/service-enrollment")
+      d.setVar('S', d.getVar('WORKDIR') + "/git")
 }
 
 DEPENDS = "azure-iot-sdk-c jq-native"
@@ -51,7 +51,7 @@ do_install_append() {
         '{ "provisioning_global_endpoint":"\($provisioningGlobalEndpoint)",
            "provisioning_scope_id":"\($provisioningScopeId)" }'  > ${D}${sysconfdir}/ics_dm/provisioning_static.conf
 
-    install -m 755 ${S}/target/scripts/edge_provisioning.sh ${D}${bindir}/
+    install -m 755 ${S}/scripts/edge_provisioning.sh ${D}${bindir}/
 
     chgrp enrollment ${D}${sysconfdir}/ics_dm
     chmod g+rw ${D}${sysconfdir}/ics_dm
