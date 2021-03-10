@@ -1,6 +1,6 @@
 LICENSE = "CLOSED"
 
-SRC_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=dunfell"
+SRC_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main"
 
 python () {
     src_uri = d.getVar('ENROLLMENT_SERVICE_SRC_URI')
