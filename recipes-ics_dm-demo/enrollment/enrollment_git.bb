@@ -1,20 +1,15 @@
 LICENSE = "CLOSED"
 
 SRC_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main"
+SRCREV = "${AUTOREV}"
 
 python () {
     src_uri = d.getVar('ENROLLMENT_SERVICE_SRC_URI')
     if src_uri:
       d.setVar('SRC_URI', src_uri)
-    else :
-      src_uri = d.getVar('SRC_URI')
-    if src_uri.startswith('file'):
-      d.setVar('S',  d.getVar('WORKDIR'))
-    else :
-      d.setVar('SRCREV', d.getVar('AUTOREV'))
-      d.setVar('PV', '+git' + d.getVar('SRCPV'))
-      d.setVar('S', d.getVar('WORKDIR') + "/git")
 }
+
+S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c jq-native"
 RDEPENDS_${PN} = "ca-certificates jq yq"
