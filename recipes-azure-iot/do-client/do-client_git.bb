@@ -31,3 +31,7 @@ do_install_append() {
 SYSTEMD_SERVICE_${PN} = "do-client.service"
 FILES_${PN} += "${systemd_system_unitdir}/do-client.service"
 REQUIRED_DISTRO_FEATURES = "systemd"
+
+USERADD_PACKAGES = "${PN}"
+GROUPADD_PARAM_${PN} = "-r do"
+USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g do do"
