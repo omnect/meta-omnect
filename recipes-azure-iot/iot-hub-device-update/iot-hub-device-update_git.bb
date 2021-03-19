@@ -32,9 +32,12 @@ do_install_append() {
   install -m 0644 ${S}/daemon/adu-agent.service ${D}${systemd_system_unitdir}
 
   install -d ${D}${sysconfdir}/adu
-  echo "connection-string=" >> ${D}${sysconfdir}/adu/adu-conf.txt
+  echo "connection_string=" >> ${D}${sysconfdir}/adu/adu-conf.txt
+  chown adu:adu ${D}${sysconfdir}/adu/adu-conf.txt
+  chmod g+w ${D}${sysconfdir}/adu/adu-conf.txt
 
   install -d ${D}/mnt/data/aduc-logs
+  chown adu:adu ${D}/mnt/data/aduc-logs
   if ! ${@bb.utils.to_boolean(d.getVar('VOLATILE_LOG_DIR'))}; then
     install -d ${D}/var/log
     lnr ${D}/mnt/data/aduc-logs ${D}/var/log/aduc
@@ -43,6 +46,7 @@ do_install_append() {
 
 do_install_append_rpi() {
     sed -i 's/^After=\(.*\)$/After=\1 mnt-etc.mount var-lib.mount/' ${D}${systemd_system_unitdir}/adu-agent.service
+    sed -i 's#^ExecStart=\(.*\)$#ExecStart=\1\nEnvironment=\"SSL_CERT_DIR=/etc/ssl/certs/\"#' ${D}${systemd_system_unitdir}/adu-agent.service
 }
 
 SYSTEMD_SERVICE_${PN} = "adu-agent.service"
@@ -55,4 +59,5 @@ FILES_${PN} += " \
 REQUIRED_DISTRO_FEATURES = "systemd"
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = "adu"
+GROUPADD_PARAM_${PN} = "-r adu"
+USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g adu adu"
