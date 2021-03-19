@@ -28,8 +28,8 @@ EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
 inherit useradd
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = " -r enrollment; -r tpm; -r docker; -r -g 15580 iotedge"
-USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g enrollment -G tpm,iotedge enrollment"
+GROUPADD_PARAM_${PN} = "-r enrollment; -r tpm; -r -g 15580 iotedge; -r adu"
+USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g enrollment -G tpm,iotedge,adu enrollment"
 
 inherit systemd
 
