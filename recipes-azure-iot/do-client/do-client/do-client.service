@@ -5,7 +5,8 @@ After=network-online.target
 [Service]
 Type=simple
 Restart=on-failure
-User=do
+
+#start as user root so the process itself can drop privileges to user do
 Group=do
 ExecStart=/usr/bin/deliveryoptimization-agent
 

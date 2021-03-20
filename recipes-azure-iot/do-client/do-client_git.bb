@@ -16,7 +16,7 @@ S = "${WORKDIR}/git"
 
 DEPENDS = "boost cpprest msft-gsl libproxy"
 
-inherit cmake features_check systemd
+inherit cmake features_check systemd useradd
 
 EXTRA_OECMAKE += "-DCMAKE_BUILD_TYPE=Release"
 EXTRA_OECMAKE += "-DDO_BUILD_TESTS=OFF"
@@ -33,5 +33,5 @@ FILES_${PN} += "${systemd_system_unitdir}/do-client.service"
 REQUIRED_DISTRO_FEATURES = "systemd"
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = "-r do"
-USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g do do"
+GROUPADD_PARAM_${PN} = "-r do;-r adu"
+USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -G adu -g do do"
