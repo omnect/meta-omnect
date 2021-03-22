@@ -29,7 +29,6 @@ PV = "git${SRCREV_yq}"
 GO_IMPORT = "github.com/mikefarah/yq"
 
 #compile yq statically to get rid of 35MB go-runtime
-#@todo revisit that - package config handling?
 CGO_ENABLED = "0"
 GO_LINKSHARED = ""
 GOBUILDFLAGS = "-ldflags="-linkmode external -extldflags '-static'""
