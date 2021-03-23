@@ -1,20 +1,15 @@
 LICENSE = "CLOSED"
 
-SRC_URI = "git://dev.azure.com/conplementag/ICS_DeviceManagement/_git/bb-cplusplus-azure;protocol=https;branch=MVP;user=${ICS_DM_GIT_CREDENTIALS}"
+SRC_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main"
+SRCREV = "${AUTOREV}"
 
 python () {
     src_uri = d.getVar('ENROLLMENT_SERVICE_SRC_URI')
     if src_uri:
       d.setVar('SRC_URI', src_uri)
-    else :
-      src_uri = d.getVar('SRC_URI')
-    if src_uri.startswith('file'):
-      d.setVar('S',  d.getVar('WORKDIR') + "/service-enrollment")
-    else :
-      d.setVar('SRCREV', d.getVar('AUTOREV'))
-      d.setVar('PV', '+git' + d.getVar('SRCPV'))
-      d.setVar('S', d.getVar('WORKDIR') + "/git/service-enrollment")
 }
+
+S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c jq-native"
 RDEPENDS_${PN} = "ca-certificates jq yq"
@@ -28,8 +23,8 @@ EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
 inherit useradd
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = " -r enrollment; -r tpm; -r docker; -r -g 15580 iotedge"
-USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g enrollment -G tpm,iotedge enrollment"
+GROUPADD_PARAM_${PN} = "-r enrollment; -r tpm; -r -g 15580 iotedge; -r adu"
+USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g enrollment -G tpm,iotedge,adu enrollment"
 
 inherit systemd
 
@@ -51,7 +46,7 @@ do_install_append() {
         '{ "provisioning_global_endpoint":"\($provisioningGlobalEndpoint)",
            "provisioning_scope_id":"\($provisioningScopeId)" }'  > ${D}${sysconfdir}/ics_dm/provisioning_static.conf
 
-    install -m 755 ${S}/target/scripts/edge_provisioning.sh ${D}${bindir}/
+    install -m 755 ${S}/scripts/edge_provisioning.sh ${D}${bindir}/
 
     chgrp enrollment ${D}${sysconfdir}/ics_dm
     chmod g+rw ${D}${sysconfdir}/ics_dm

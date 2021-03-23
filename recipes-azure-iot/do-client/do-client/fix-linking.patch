@@ -1,0 +1,22 @@
+diff --git a/client-lite/CMakeLists.txt b/client-lite/CMakeLists.txt
+index dc53741..b9b91ff 100644
+--- a/client-lite/CMakeLists.txt
++++ b/client-lite/CMakeLists.txt
+@@ -114,7 +114,9 @@ target_link_libraries(${DOSVC_BIN_NAME}
+     doversion
+     docs_common
+     cpprestsdk::cpprest
+-    ${Boost_LIBRARIES})
++    crypto
++    Boost::log
++    Boost::filesystem)
+ 
+ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+     include(GNUInstallDirs)
+@@ -161,4 +163,4 @@ endif() # Linux
+ 
+ if(DO_BUILD_TESTS)
+     add_subdirectory (test)
+-endif()
+\ No newline at end of file
++endif()

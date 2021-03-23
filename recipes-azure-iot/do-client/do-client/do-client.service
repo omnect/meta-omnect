@@ -1,0 +1,14 @@
+[Unit]
+Description=do-client-lite: Performs content delivery optimization tasks
+After=network-online.target
+
+[Service]
+Type=simple
+Restart=on-failure
+
+#start as user root so the process itself can drop privileges to user do
+Group=do
+ExecStart=/usr/bin/deliveryoptimization-agent
+
+[Install]
+WantedBy=multi-user.target
