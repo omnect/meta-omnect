@@ -11,5 +11,11 @@ do_install_append() {
 
     install -d ${D}/mnt/data/var/lib/iotedge
     chown iotedge:iotedge ${D}/mnt/data/var/lib/iotedge
+    install -d ${D}${libdir}/tmpfiles.d
+    echo "d /mnt/data/var/lib/iotedge 0755 iotedge iotedge -"  >> ${D}${libdir}/tmpfiles.d/iotedge.conf
+
 }
-FILES_${PN}_append = " /mnt/"
+FILES_${PN}_append = " \
+    ${libdir}/tmpfiles.d/iotedge.conf \
+    /mnt/data/var/lib/iotedge \
+    "

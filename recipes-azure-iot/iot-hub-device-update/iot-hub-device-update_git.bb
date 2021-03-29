@@ -43,6 +43,11 @@ do_install_append() {
 
   install -d -m 1775 ${D}/mnt/data/aduc-logs
   chown adu:adu ${D}/mnt/data/aduc-logs
+  # create tmpfiles.d entry to (re)create dir + permissions
+  install -d ${D}${libdir}/tmpfiles.d
+  echo "d /mnt/data/aduc-logs 1755 adu adu -"   >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
+  echo "d /mnt/data/var/lib/adu 0755 adu adu -" >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
+
   if ! ${@bb.utils.to_boolean(d.getVar('VOLATILE_LOG_DIR'))}; then
     install -d ${D}/var/log
     lnr ${D}/mnt/data/aduc-logs ${D}/var/log/aduc
@@ -62,6 +67,7 @@ do_install_append_rpi() {
 SYSTEMD_SERVICE_${PN} = "adu-agent.service"
 FILES_${PN} += " \
   ${libdir}/adu \
+  ${libdir}/tmpfiles.d/iot-hub-device-update.conf \
   ${systemd_system_unitdir}/adu-agent.service \
   /mnt/data/aduc-logs \
   /mnt/data/var/lib/adu \
