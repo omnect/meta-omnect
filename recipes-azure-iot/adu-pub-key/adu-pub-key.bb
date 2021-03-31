@@ -12,7 +12,7 @@ DEPENDS = "openssl-native"
 
 # Generate the public key file using openssl, private key, and password file.
 do_compile() {
-    openssl rsa -in ${ADUC_PRIVATE_KEY} -passin file:${ADUC_PRIVATE_KEY_PASSWORD} -out public.pem -outform PEM -pubout
+    openssl rsa -in ${SWUPDATE_PRIVATE_KEY} -passin file:${SWUPDATE_PASSWORD_FILE} -out public.pem -outform PEM -pubout
 }
 
 # Install the public key file to ADUC_KEY_DIR

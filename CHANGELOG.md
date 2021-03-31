@@ -5,8 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unrelease]
+## [unreleased]
 
 Initial Version
 
-- changelog template
+- if not set layer sets PREFERRED_PROVIDER_virtual/docker to "docker-moby"
+- yocto image 'ics-image' based on meta-elbb 'elbb-image'
+- enrollment_git.bb for auto enrollment demo (not intended for production)
+- iot-hub-device-update_git.bb and ics-dm-iot-hub-device-update_git.bb provide virtual/iot-hub-device-update
+- dependency recipes for iot-hub-device-update
