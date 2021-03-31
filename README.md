@@ -1,9 +1,9 @@
-# IoT Core Services: Device Management - meta-ics-dm yocto layer
+# ICS_DeviceManagement - meta-ics-dm yocto layer
 
-What is Iot Core Services: Device Management?: https://lp.conplement.de/ics-devicemanagement
+What is ICS_DeviceManagement?: https://lp.conplement.de/ics-devicemanagement
 
 ## Features
-This yocto meta layer provides yocto recipes for IoT Core Services: Device Management:
+This yocto meta layer provides yocto recipes for ICS_DeviceManagement:
 - `virtual/iot-hub-device-update` provided by [ics-dm iot-hub-device-update](https://github.com/ICS-DeviceManagement/iot-hub-device-update) or [iot-hub-device-update](https://github.com/azure/iot-hub-device-update)
 - `ics-image` a `swupdate` Image with A/B rootfs update support
 - additional version information in `/etc/os-release`: `ICS_DM_IOTEDGE_YOCTO_VERSION`, which is the os image version relevant to `virtual/iot-hub-device-update`
