@@ -5,7 +5,7 @@ What is Iot Core Services: Device Management?: https://lp.conplement.de/ics-devi
 ## Features
 This yocto meta layer provides yocto recipes for IoT Core Services: Device Management:
 - `virtual/iot-hub-device-update` provided by [ics-dm iot-hub-device-update](https://github.com/ICS-DeviceManagement/iot-hub-device-update) or [iot-hub-device-update](https://github.com/azure/iot-hub-device-update)
-    - `ics-dm iot-hub-device-update` provides device provisioning via `tpm`
+- `ics-image` a `swupdate` Image with A/B rootfs update support
 - additional version information in `/etc/os-release`: `ICS_DM_IOTEDGE_YOCTO_VERSION`, which is the os image version relevant to `virtual/iot-hub-device-update`
 - demo: auto device enrollment via `tpm` (not intended for production)
     - `tpm` provisioning configuration of `iotedge daemon`
@@ -22,6 +22,21 @@ An example integration can be found in [ics-dm-os](https://github.com/ICS-Device
 - [meta-iotedge](https://github.com/Azure/meta-iotedge.git)
 - [meta-swupdate](https://github.com/sbabic/meta-swupdate.git)
 - [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)
+
+## Configuration
+
+For using `ics-image` together with `virtual/iot-hub-device-update` you have to provide a rsa-key for signing/verifying the update image.
+Note: We currently only support `swupdate` RSA signing.
+Provide the environment Variables `SWUPDATE_PASSWORD_FILE` and `SWUPDATE_PRIVATE_KEY`.
+ - `SWUPDATE_PASSWORD_FILE` - full path to a file containing the keys password
+ - `SWUPDATE_PRIVATE_KEY` - full path of private key file
+```sh
+# How to generate SWUPDATE_PASSWORD_FILE and SWUPDATE_PRIVATE_KEY
+echo "your password" > priv.pass
+openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
+# SWUPDATE_PASSWORD_FILE = $(pwd)/priv.pass
+# SWUPDATE_PRIVATE_KEY = $(pwd)/priv.pem
+```
 
 # License
 
