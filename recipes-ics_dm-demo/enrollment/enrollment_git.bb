@@ -12,7 +12,7 @@ python () {
 S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c jq-native"
-RDEPENDS_${PN} = "ca-certificates jq yq"
+RDEPENDS_${PN} = "ca-certificates jq"
 
 inherit cmake features_check
 
@@ -23,8 +23,12 @@ EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
 inherit useradd
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = "-r enrollment; -r tpm; -r -g 15580 iotedge; -r adu"
-USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g enrollment -G tpm,iotedge,adu enrollment"
+GROUPADD_PARAM_${PN} = " \
+  -r aziot; \
+  -r enrollment; \
+  -r tpm \
+"
+USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g enrollment -G aziot,tpm enrollment"
 
 inherit systemd
 
@@ -46,11 +50,11 @@ do_install_append() {
         '{ "provisioning_global_endpoint":"\($provisioningGlobalEndpoint)",
            "provisioning_scope_id":"\($provisioningScopeId)" }'  > ${D}${sysconfdir}/ics_dm/provisioning_static.conf
 
-    install -m 755 ${S}/scripts/edge_provisioning.sh ${D}${bindir}/
+    install -m 755 ${S}/scripts/iot_identity_provisioning.sh ${D}${bindir}/
 
     chgrp enrollment ${D}${sysconfdir}/ics_dm
     chmod g+rw ${D}${sysconfdir}/ics_dm
 }
-SYSTEMD_SERVICE_${PN} = "enrollment.service enrolled.path"
+SYSTEMD_SERVICE_${PN} = "enrollment-config-apply.path enrollment.service enrolled.path"
 FILES_${PN} += "${systemd_system_unitdir}"
 REQUIRED_DISTRO_FEATURES = "systemd"

@@ -1,0 +1,148 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f9a8a78..151bdf1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -187,6 +187,12 @@ set (
+     "/etc/adu-version"
+     CACHE STRING "Path to the file that contains version info for the image or device.")
+ 
++set (
++    ADUC_STORAGE_PATH
++    "/"
++    CACHE STRING "Path to mounted storage wich will be considered to compute total storage"
++)
++
+ option (ADUC_WARNINGS_AS_ERRORS "Treat warnings as errors (-Werror)" ON)
+ option (ADUC_BUILD_UNIT_TESTS "Build unit tests and mock some functionality" OFF)
+ option (ADUC_BUILD_DOCUMENTATION "Build documentation files" OFF)
+diff --git a/src/platform_layers/linux_platform_layer/CMakeLists.txt b/src/platform_layers/linux_platform_layer/CMakeLists.txt
+index 3de4a26..d20cc03 100644
+--- a/src/platform_layers/linux_platform_layer/CMakeLists.txt
++++ b/src/platform_layers/linux_platform_layer/CMakeLists.txt
+@@ -50,7 +50,8 @@ target_compile_definitions (
+     PRIVATE ADUC_DEVICEINFO_MANUFACTURER="${ADUC_DEVICEINFO_MANUFACTURER}"
+             ADUC_CONF_FILE_PATH="${ADUC_CONF_FILE_PATH}"
+             ADUC_DEVICEINFO_MODEL="${ADUC_DEVICEINFO_MODEL}"
+-            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}")
++            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}"
++            ADUC_STORAGE_PATH="${ADUC_STORAGE_PATH}")
+ 
+ if (ADUC_BUILD_UNIT_TESTS)
+     add_subdirectory (tests)
+diff --git a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
+index 8fd22a0..83cf8e0 100644
+--- a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
++++ b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
+@@ -104,16 +104,43 @@ static char* DeviceInfo_GetOsName()
+         return nullptr;
+     }
+ 
+-    utsname uts{};
++    FILE* fp = fopen(ADUC_VERSION_FILE, "r");
+ 
+-    if (uname(&uts) < 0)
++    if (NULL != fp)
+     {
+-        Log_Error("uname failed, error: %d", errno);
+-        return nullptr;
++        const unsigned int bufferLen = 1024;
++        char buffer[bufferLen];
++        char* osName = NULL;
++        if (NULL != fgets(buffer, bufferLen, fp))
++        {
++            osName = strtok(buffer, " ");
++        }
++
++        if (NULL == osName)
++        {
++            Log_Error("couldn't read os name from %s", ADUC_VERSION_FILE);
++        }
++        else
++        {
++            Log_Info("read os name \"%s\" from %s", osName, ADUC_VERSION_FILE);
++        }
++
++        valueIsDirty = false;
++        return strdup(ADUC_StringUtils_Trim(osName));
+     }
++    else
++    {
++        utsname uts{};
+ 
+-    valueIsDirty = false;
+-    return strdup(ADUC_StringUtils_Trim(uts.sysname /*Operating system name*/));
++        if (uname(&uts) < 0)
++        {
++            Log_Error("uname failed, error: %d", errno);
++            return nullptr;
++        }
++
++        valueIsDirty = false;
++        return strdup(ADUC_StringUtils_Trim(uts.sysname /*Operating system name*/));
++    }
+ }
+ 
+ /**
+@@ -132,18 +159,45 @@ static char* DeviceInfo_GetSwVersion()
+         return nullptr;
+     }
+ 
+-    // Note: In the V2 interface, we will implement swVersion in a more "standard" way
+-    // by querying the OS for version rather than reading the custom version file.
+-    utsname uts{};
++    FILE* fp = fopen(ADUC_VERSION_FILE, "r");
+ 
+-    if (uname(&uts) < 0)
++    if (NULL != fp)
+     {
+-        Log_Error("uname failed, error: %d", errno);
+-        return nullptr;
++        const unsigned int bufferLen = 1024;
++        char buffer[bufferLen];
++        char* osVersion;
++        if (NULL != fgets(buffer, bufferLen, fp))
++        {
++            osVersion = strchr(buffer, ' ');
++        }
++
++        if (NULL == osVersion)
++        {
++            Log_Error("couldn't read os version from %s", ADUC_VERSION_FILE);
++        }
++        else
++        {
++            Log_Info("read os version \"%s\" from %s", osVersion, ADUC_VERSION_FILE);
++        }
++
++        valueIsDirty = false;
++        return strdup(ADUC_StringUtils_Trim(osVersion));
+     }
++    else
++    {
++        // Note: In the V2 interface, we will implement swVersion in a more "standard" way
++        // by querying the OS for version rather than reading the custom version file.
++        utsname uts{};
+ 
+-    valueIsDirty = false;
+-    return strdup(uts.release /*Operating system release*/);
++        if (uname(&uts) < 0)
++        {
++            Log_Error("uname failed, error: %d", errno);
++            return nullptr;
++        }
++
++        valueIsDirty = false;
++        return strdup(uts.release /*Operating system release*/);
++    }
+ }
+ 
+ /**
+@@ -279,7 +333,7 @@ static char* DeviceInfo_GetTotalStorage()
+     {
+     };
+ 
+-    if (statvfs("/", &buf) == -1)
++    if (statvfs(ADUC_STORAGE_PATH, &buf) == -1)
+     {
+         Log_Error("statvfs failed, error: %d", errno);
+         return nullptr;
