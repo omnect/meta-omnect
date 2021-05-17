@@ -16,6 +16,9 @@ B = "${S}"
 
 DEPENDS += "openssl rust-bindgen-native rust-cbindgen-native"
 
+PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'ics-dm-demo', 'ics-dm-demo', '', d)}"
+PACKAGECONFIG[ics-dm-demo] = ""
+
 CARGO_DISABLE_BITBAKE_VENDORING = "1"
 RUSTFLAGS += "-C panic=unwind"
 
@@ -106,27 +109,31 @@ do_install() {
     install -d -m 0755  ${D}${systemd_system_unitdir}
 	install -m 0644     ${S}/cert/aziot-certd/aziot-certd.service ${D}${systemd_system_unitdir}/aziot-certd.service
     sed -i 's/^After=\(.*\)$/After=\1 etc.mount var-lib.mount systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-certd.service
-    #TODO only when packageconfig:
-    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-certd.service
-	install -m 0644     ${S}/cert/aziot-certd/aziot-certd.socket ${D}${systemd_system_unitdir}/aziot-certd.socket
+    if ${@bb.utils.contains('PACKAGECONFIG', 'ics-dm-demo', 'true', 'false', d)}; then
+        sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-certd.service
+    fi
+    install -m 0644     ${S}/cert/aziot-certd/aziot-certd.socket ${D}${systemd_system_unitdir}/aziot-certd.socket
 
 	install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.service ${D}${systemd_system_unitdir}/aziot-identityd.service
     sed -i 's/^After=\(.*\)$/After=\1 etc.mount var-lib.mount systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-identityd.service
-    #TODO only when packageconfig:
-    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-identityd.service
-	install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.socket ${D}${systemd_system_unitdir}/aziot-identityd.socket
+    if ${@bb.utils.contains('PACKAGECONFIG', 'ics-dm-demo', 'true', 'false', d)}; then
+        sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-identityd.service
+    fi
+    install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.socket ${D}${systemd_system_unitdir}/aziot-identityd.socket
 
 	install -m 0644     ${S}/key/aziot-keyd/aziot-keyd.service ${D}${systemd_system_unitdir}/aziot-keyd.service
     sed -i 's/^After=\(.*\)$/After=\1 etc.mount var-lib.mount systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-keyd.service
-    #TODO only when packageconfig:
-    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-keyd.service
-	install -m 0644     ${S}/key/aziot-keyd/aziot-keyd.socket ${D}${systemd_system_unitdir}/aziot-keyd.socket
+    if ${@bb.utils.contains('PACKAGECONFIG', 'ics-dm-demo', 'true', 'false', d)}; then
+        sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-keyd.service
+    fi
+    install -m 0644     ${S}/key/aziot-keyd/aziot-keyd.socket ${D}${systemd_system_unitdir}/aziot-keyd.socket
 
 	install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.service ${D}${systemd_system_unitdir}/aziot-tpmd.service
     sed -i 's/^After=\(.*\)$/After=\1 etc.mount var-lib.mount systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-tpmd.service
-    #TODO only when packageconfig:
-    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-tpmd.service
-	install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.socket ${D}${systemd_system_unitdir}/aziot-tpmd.socket
+    if ${@bb.utils.contains('PACKAGECONFIG', 'ics-dm-demo', 'true', 'false', d)}; then
+        sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-tpmd.service
+    fi
+    install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.socket ${D}${systemd_system_unitdir}/aziot-tpmd.socket
 
     # libaziot-key-openssl-engine-shared
     install -d -m 0755  ${D}${libdir}/engines-1.1
