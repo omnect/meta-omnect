@@ -74,6 +74,7 @@ do_install_append() {
   install -d -m 0770 -g aziot ${D}${sysconfdir}/aziot
   install -d -m 0750 -g aziotks ${D}${sysconfdir}/aziot/keyd
   install -d -m 0700 -o aziotks -g aziotks ${D}${sysconfdir}/aziot/keyd/config.d
+  # allow adu client access to device_id secret created by manual provisioning
   echo "[[principal]]" >> ${D}${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml
   echo "uid = @@UID@@" >> ${D}${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml
   echo "keys = [\"device_id\"]" >> ${D}${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml
@@ -81,6 +82,7 @@ do_install_append() {
   chown aziotks:aziotks ${D}${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml
   install -d -m 0750 -g aziotid ${D}${sysconfdir}/aziot/identityd
   install -d -m 0700 -o aziotid -g aziotid ${D}${sysconfdir}/aziot/identityd/config.d
+  # allow adu client provisioning via module identity
   echo "[[principal]]" >> ${D}${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
   echo "uid = @@UID@@" >> ${D}${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
   echo "name = \"AducIotAgent\"" >> ${D}${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
