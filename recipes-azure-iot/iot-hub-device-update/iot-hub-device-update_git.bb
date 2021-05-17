@@ -4,7 +4,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=95a70c9e1af3b97d8bde6f7435d535a8"
 
 SRC_URI = " \
-  git://github.com/azure/iot-hub-device-update.git;protocol=https;branch=release/2021-q1;tag=0.7.0-rc1 \
+  git://github.com/azure/iot-hub-device-update.git;protocol=https;branch=release/2021-q2;tag=0.7.0 \
   file://fix-linking.patch \
   file://linux_platform_layer.patch \
   "
