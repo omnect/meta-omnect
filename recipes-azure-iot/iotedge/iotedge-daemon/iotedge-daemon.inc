@@ -28,17 +28,17 @@ do_install () {
     install -d -m 0770 -g aziot ${D}${sysconfdir}/aziot
     install -m 0640 ${S}/edgelet/contrib/config/linux/template.toml ${D}${sysconfdir}/aziot/config.toml.edge.template
     sed -i -e "s#@connect_workload_uri@#${IOTEDGE_CONNECT_WORKLOAD_URI}#" \
-		-e "s#@connect_management_uri@#${IOTEDGE_CONNECT_MANAGEMENT_URI}#" \
-		-e "s#@listen_workload_uri@#${IOTEDGE_LISTEN_WORKLOAD_URI}#" \
-		-e "s#@listen_management_uri@#${IOTEDGE_LISTEN_MANAGEMENT_URI}#" \
-		${D}${sysconfdir}/aziot/config.toml.edge.template
+        -e "s#@connect_management_uri@#${IOTEDGE_CONNECT_MANAGEMENT_URI}#" \
+        -e "s#@listen_workload_uri@#${IOTEDGE_LISTEN_WORKLOAD_URI}#" \
+        -e "s#@listen_management_uri@#${IOTEDGE_LISTEN_MANAGEMENT_URI}#" \
+        ${D}${sysconfdir}/aziot/config.toml.edge.template
 
     install -d -m 0700 -o iotedge -g iotedge ${D}${sysconfdir}/aziot/edged/config.d
     install -m 0640 ${S}/edgelet/contrib/config/linux/default.toml ${D}${sysconfdir}/aziot/edged/config.toml.default
     sed -i -e "s#@connect_workload_uri@#${IOTEDGE_CONNECT_WORKLOAD_URI}#" \
-		-e "s#@connect_management_uri@#${IOTEDGE_CONNECT_MANAGEMENT_URI}#" \
-		-e "s#@listen_workload_uri@#${IOTEDGE_LISTEN_WORKLOAD_URI}#" \
-		-e "s#@listen_management_uri@#${IOTEDGE_LISTEN_MANAGEMENT_URI}#" \
+        -e "s#@connect_management_uri@#${IOTEDGE_CONNECT_MANAGEMENT_URI}#" \
+        -e "s#@listen_workload_uri@#${IOTEDGE_LISTEN_WORKLOAD_URI}#" \
+        -e "s#@listen_management_uri@#${IOTEDGE_LISTEN_MANAGEMENT_URI}#" \
         ${D}${sysconfdir}/aziot/edged/config.toml.default
 
     # systemd services and sockets
