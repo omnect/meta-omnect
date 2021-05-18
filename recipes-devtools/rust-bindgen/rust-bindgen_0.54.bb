@@ -1,7 +1,7 @@
 inherit cargo
 
 
-LICENSE = "BSD-3-clause"
+LICENSE = "BSD-3-Clause"
 
 CARGO_DISABLE_BITBAKE_VENDORING = "1"
 

@@ -9,7 +9,7 @@ index f9a8a78..151bdf1 100644
 +set (
 +    ADUC_STORAGE_PATH
 +    "/"
-+    CACHE STRING "Path to mounted storage wich will be considered to compute total storage"
++    CACHE STRING "Path to mounted storage which will be considered to compute total storage"
 +)
 +
  option (ADUC_WARNINGS_AS_ERRORS "Treat warnings as errors (-Werror)" ON)
