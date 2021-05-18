@@ -11,7 +11,7 @@ This yocto meta layer provides yocto recipes for ICS_DeviceManagement:
 - `ics-image` a `swupdate` Image with A/B rootfs update support
 - additional version information in `/etc/os-release`: `ICS_DM_IOTEDGE_YOCTO_VERSION`, which is the os image version relevant to `iot-hub-device-update`
 - demo: auto device enrollment via `tpm` (not intended for production) with `tpm` provisioning configuration of `iot-identity-service`
-    - `iot-hub-device-update` and `iotedge` are provisioning via `iot-identity-service`
+    - `iot-hub-device-update` and `iotedge` get provisioned via `iot-identity-service`
 
 An example integration can be found in [ics-dm-os](https://github.com/ICS-DeviceManagement/ics-dm-os).
 
