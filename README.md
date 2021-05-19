@@ -4,12 +4,14 @@ What is ICS_DeviceManagement?: https://lp.conplement.de/ics-devicemanagement
 
 ## Features
 This yocto meta layer provides yocto recipes for ICS_DeviceManagement:
-- `virtual/iot-hub-device-update` provided by [ics-dm iot-hub-device-update](https://github.com/ICS-DeviceManagement/iot-hub-device-update) or [iot-hub-device-update](https://github.com/azure/iot-hub-device-update)
+- [iot-hub-device-update](https://github.com/Azure/iot-hub-device-update)
+- [iot-identity-service](https://github.com/Azure/iot-identity-service)
+- [iotedge](https://github.com/Azure/iotedge)
+
 - `ics-image` a `swupdate` Image with A/B rootfs update support
-- additional version information in `/etc/os-release`: `ICS_DM_IOTEDGE_YOCTO_VERSION`, which is the os image version relevant to `virtual/iot-hub-device-update`
-- demo: auto device enrollment via `tpm` (not intended for production)
-    - `tpm` provisioning configuration of `iotedge daemon`
-    - `tpm` providioning configuration of `ics-dm iot-hub-device-update`
+- additional version information in `/etc/os-release`: `ICS_DM_IOTEDGE_YOCTO_VERSION`, which is the os image version relevant to `iot-hub-device-update`
+- demo: auto device enrollment via `tpm` (not intended for production) with `tpm` provisioning configuration of `iot-identity-service`
+    - `iot-hub-device-update` and `iotedge` get provisioned via `iot-identity-service`
 
 An example integration can be found in [ics-dm-os](https://github.com/ICS-DeviceManagement/ics-dm-os).
 
@@ -19,13 +21,13 @@ An example integration can be found in [ics-dm-os](https://github.com/ICS-Device
 ## Dependencies
 `meta-ics-dm` depends on:
 - [meta-elbb](https://github.com/elbb/meta-elbb)
-- [meta-iotedge](https://github.com/Azure/meta-iotedge.git)
+- [meta-rust](https://github.com/meta-rust/meta-rust.git)
 - [meta-swupdate](https://github.com/sbabic/meta-swupdate.git)
 - [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)
 
 ## Configuration
 
-For using `ics-image` together with `virtual/iot-hub-device-update` you have to provide a rsa-key for signing/verifying the update image.
+For using `ics-image` together with `iot-hub-device-update` you have to provide a rsa-key for signing/verifying the update image.
 Note: We currently only support `swupdate` RSA signing.
 Provide the environment Variables `SWUPDATE_PASSWORD_FILE` and `SWUPDATE_PRIVATE_KEY`.
  - `SWUPDATE_PASSWORD_FILE` - full path to a file containing the keys password
