@@ -3,22 +3,24 @@ LICENSE = "CLOSED"
 SRC_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main"
 SRCREV = "${AUTOREV}"
 
-python () {
-    src_uri = d.getVar('ENROLLMENT_SERVICE_SRC_URI')
-    if src_uri:
-      d.setVar('SRC_URI', src_uri)
-}
-
 S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c jq-native"
-RDEPENDS_${PN} = "ca-certificates jq"
+RDEPENDS_${PN} = "ca-certificates"
 
-inherit cmake features_check
+inherit cmake features_check overwrite_src_uri
 
-EXTRA_OECMAKE += "-DBB_GITVERSION_INCLUDE_DIR=${BB_GIT_VERSION_INCLUDE_DIR}"
+PACKAGECONFIG ??="\
+  ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge', '', d)}\
+  ${@bb.utils.contains('DISTRO_FEATURES', 'tpm', 'tpm', '', d)}\
+"
+PACKAGECONFIG[iotedge] = "-DIOTEDGE:BOOL=ON,-DIOTEDGE:BOOL=OFF"
+PACKAGECONFIG[tpm] = "-DTPM:BOOL=ON,-DTPM:BOOL=OFF"
+
 EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
 EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
+EXTRA_OECMAKE += "-DDEVICE:BOOL=ON"
+EXTRA_OECMAKE += "-DTPM_SIMULATOR:BOOL=OFF"
 
 inherit useradd
 
@@ -35,7 +37,7 @@ inherit systemd
 do_install_append() {
     install -d ${D}${sysconfdir}/ics_dm
     jq -n --arg dpsConnectionString "${ENROLLMENT_DPS_CONNECTION_STRING}" \
-          --argjson edgeDevice "${IS_EDGE_DEVICE}" \
+          --argjson edgeDevice "${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'true', 'false', d)}" \
           --arg tag1 machine --arg tag1Value "${MACHINE}" \
           --arg tag2 ADUGroup --arg tag2Value "${ADU_GROUP}" \
         '{ "dps_connectionString":"\($dpsConnectionString)",
