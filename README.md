@@ -43,7 +43,7 @@ openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
 ### DISTRO_FEATURES
 
 `meta-ics-dm` is configurable via the following `DISTRO_FEATURES`:<br>
-- `ics-dm-os`
+- `ics-dm-demo`
     - adds an automatic device enrollment demo via `tpm`
     - synchronizes startup of `iot-identity-service` with the enrollment demo
 - `iotedge`
