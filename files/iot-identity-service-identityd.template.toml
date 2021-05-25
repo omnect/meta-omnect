@@ -1,0 +1,4 @@
+  [[principal]]
+  uid = @@UID@@
+  name = "@@NAME@@"
+  idtype = ["module"]

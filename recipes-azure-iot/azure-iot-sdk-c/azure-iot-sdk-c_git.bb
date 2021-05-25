@@ -1,5 +1,3 @@
-# Build and install the azure-iot-sdk-c
-
 DESCRIPTION = "Microsoft Azure IoT SDKs and libraries for C"
 AUTHOR = "Microsoft Corporation"
 HOMEPAGE = "https://github.com/Azure/azure-iot-sdk-c"
@@ -15,8 +13,13 @@ DEPENDS = "util-linux curl openssl"
 
 inherit cmake
 
-#provision client
-EXTRA_OECMAKE += "-Duse_prov_client:BOOL=ON -Dhsm_type_sastoken:BOOL=ON -Dhsm_type_x509:BOOL=ON -Dskip_samples:BOOL=ON"
+EXTRA_OECMAKE += "-Dskip_samples:BOOL=ON"
+
+# fix compilation of iot-hub-device-update, iot-module-template which depend on azure-iot-sdk-c
+do_configure_prepend() {
+   sed -i 's/${OPENSSL_LIBRARIES}/crypto ssl/g' ${S}/c-utility/CMakeLists.txt
+   sed -i 's/${CURL_LIBRARIES}/curl/g' ${S}/c-utility/CMakeLists.txt
+}
 
 sysroot_stage_all_append () {
     sysroot_stage_dir ${D}${exec_prefix}/cmake ${SYSROOT_DESTDIR}${exec_prefix}/cmake

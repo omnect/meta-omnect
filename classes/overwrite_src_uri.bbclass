@@ -1,6 +1,5 @@
 python () {
-    src_uri = d.getVar(str.upper(d.getVar('PN')) + '_SRC_URI')
-    src_uri.replace('-', '_')
-    if src_uri:
-      d.setVar('SRC_URI', src_uri)
+    repo_uri = d.getVar(str.upper(d.getVar('PN')).replace('-','_') + '_SRC_URI')
+    if repo_uri:
+      d.setVar('REPO_URI', repo_uri)
 }

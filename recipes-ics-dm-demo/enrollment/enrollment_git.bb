@@ -1,12 +1,15 @@
+# TODO at license files to enrollment repo so yocto can reference them in LIC_FILES_CHKSUM
 LICENSE = "CLOSED"
 
-SRC_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main"
+# TODO change to https uri when public
+REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main"
+SRC_URI = "${REPO_URI}"
 SRCREV = "${AUTOREV}"
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "azure-iot-sdk-c jq-native"
-RDEPENDS_${PN} = "ca-certificates"
+DEPENDS = "azure-iot-sdk-c-prov jq-native"
+RDEPENDS_${PN} = "ca-certificates jq"
 
 inherit cmake features_check overwrite_src_uri
 
