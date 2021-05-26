@@ -1,5 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-inherit cargo systemd useradd
+inherit aziot cargo systemd
 
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
@@ -16,8 +16,12 @@ B = "${S}"
 
 DEPENDS += "openssl rust-bindgen-native rust-cbindgen-native"
 
-PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'ics-dm-demo', 'ics-dm-demo', '', d)}"
+PACKAGECONFIG ??= "\
+    ${@bb.utils.contains('DISTRO_FEATURES', 'ics-dm-demo', 'ics-dm-demo', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'tpm', 'tpm', '', d)} \
+"
 PACKAGECONFIG[ics-dm-demo] = ""
+PACKAGECONFIG[tpm] = ""
 
 CARGO_DISABLE_BITBAKE_VENDORING = "1"
 RUSTFLAGS += "-C panic=unwind"
@@ -57,28 +61,20 @@ do_install() {
     lnr  ${D}${libexecdir}/aziot-identity-service/aziotd ${D}${libexecdir}/aziot-identity-service/aziot-certd
     lnr  ${D}${libexecdir}/aziot-identity-service/aziotd ${D}${libexecdir}/aziot-identity-service/aziot-identityd
     lnr  ${D}${libexecdir}/aziot-identity-service/aziotd ${D}${libexecdir}/aziot-identity-service/aziot-keyd
-    lnr  ${D}${libexecdir}/aziot-identity-service/aziotd ${D}${libexecdir}/aziot-identity-service/aziot-tpmd
 
     # libaziot-keys
     install -d -m 0755  ${D}${libdir}
     install -m 0644 -D  ${B}/target/${TARGET_SYS}/release/libaziot_keys.so ${D}${libdir}
 
     # default configs and config directories
-    install -d -m 0770 -g aziot ${D}${sysconfdir}/aziot
-    install -d -m 0750 -g aziotcs ${D}${sysconfdir}/aziot/certd
-    install -d -m 0700 -o aziotcs -g aziotcs ${D}${sysconfdir}/aziot/certd/config.d
     echo "z ${sysconfdir}/aziot/certd/config.d 0700 aziotcs aziotcs -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "z ${sysconfdir}/aziot/certd/config.d/* 0600 aziotcs aziotcs -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0640     ${S}/cert/aziot-certd/config/unix/default.toml ${D}${sysconfdir}/aziot/certd/config.toml.default
 
-    install -d -m 0750 -g aziotid ${D}${sysconfdir}/aziot/identityd
-    install -d -m 0700 -o aziotid -g aziotid ${D}${sysconfdir}/aziot/identityd/config.d
     echo "z ${sysconfdir}/aziot/identityd/config.d 0700 aziotid aziotid -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "z ${sysconfdir}/aziot/identityd/config.d/* 0600 aziotid aziotid -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0640     ${S}/identity/aziot-identityd/config/unix/default.toml ${D}${sysconfdir}/aziot/identityd/config.toml.default
 
-    install -d -m 0750 -g aziotks ${D}${sysconfdir}/aziot/keyd
-    install -d -m 0700 -o aziotks -g aziotks ${D}${sysconfdir}/aziot/keyd/config.d
     echo "z ${sysconfdir}/aziot/keyd/config.d 0700 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "z ${sysconfdir}/aziot/keyd/config.d/* 0600 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0644     ${S}/key/aziot-keyd/config/unix/default.toml ${D}${sysconfdir}/aziot/keyd/config.toml.default
@@ -86,12 +82,6 @@ do_install() {
     echo "d /mnt/data/var/secrets/aziot/keyd 0700 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -d ${D}/var
     lnr  ${D}/mnt/data/var/secrets ${D}/var/secrets
-
-    install -d -m 0750 -g aziottpm ${D}${sysconfdir}/aziot/tpmd
-    install -d -m 0700 -o aziottpm -g aziottpm ${D}${sysconfdir}/aziot/tpmd/config.d
-    echo "z ${sysconfdir}/aziot/tpmd/config.d 0700 aziottpm aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    echo "z ${sysconfdir}/aziot/tpmd/config.d/* 0600 aziottpm aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    install -m 0640     ${S}/tpm/aziot-tpmd/config/unix/default.toml ${D}${sysconfdir}/aziot/tpmd/config.toml.default
 
     install -m 0640     ${S}/aziotctl/config/unix/template.toml ${D}${sysconfdir}/aziot/config.toml.template
 
@@ -102,8 +92,6 @@ do_install() {
     echo "d ${localstatedir}/lib/aziot/identityd 0700 aziotid aziotid -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -d -m 0700  ${D}${localstatedir}/lib/aziot/keyd
     echo "d ${localstatedir}/lib/aziot/keyd 0700 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    install -d -m 0700  ${D}${localstatedir}/lib/aziot/tpmd
-    echo "d ${localstatedir}/lib/aziot/tpmd 0700 aziottpm aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
 
     # systemd services and sockets
     install -d -m 0755  ${D}${systemd_system_unitdir}
@@ -128,12 +116,30 @@ do_install() {
     fi
     install -m 0644     ${S}/key/aziot-keyd/aziot-keyd.socket ${D}${systemd_system_unitdir}/aziot-keyd.socket
 
-    install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.service ${D}${systemd_system_unitdir}/aziot-tpmd.service
-    sed -i 's/^After=\(.*\)$/After=\1 etc.mount var-lib.mount systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-tpmd.service
-    if ${@bb.utils.contains('PACKAGECONFIG', 'ics-dm-demo', 'true', 'false', d)}; then
-        sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-tpmd.service
+
+    if ${@bb.utils.contains('PACKAGECONFIG', 'tpm', 'true', 'false', d)}; then
+        # binary
+        lnr  ${D}${libexecdir}/aziot-identity-service/aziotd ${D}${libexecdir}/aziot-identity-service/aziot-tpmd
+
+        # default configs and config directory
+        install -d -m 0750 -g aziottpm ${D}${sysconfdir}/aziot/tpmd
+        install -d -m 0700 -o aziottpm -g aziottpm ${D}${sysconfdir}/aziot/tpmd/config.d
+        echo "z ${sysconfdir}/aziot/tpmd/config.d 0700 aziottpm aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
+        echo "z ${sysconfdir}/aziot/tpmd/config.d/* 0600 aziottpm aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
+        install -m 0640     ${S}/tpm/aziot-tpmd/config/unix/default.toml ${D}${sysconfdir}/aziot/tpmd/config.toml.default
+
+        # home directory
+        install -d -m 0700  ${D}${localstatedir}/lib/aziot/tpmd
+        echo "d ${localstatedir}/lib/aziot/tpmd 0700 aziottpm aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
+
+        # systemd service and socket
+        install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.service ${D}${systemd_system_unitdir}/aziot-tpmd.service
+        sed -i 's/^After=\(.*\)$/After=\1 etc.mount var-lib.mount systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-tpmd.service
+        if ${@bb.utils.contains('PACKAGECONFIG', 'ics-dm-demo', 'true', 'false', d)}; then
+            sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-tpmd.service
+        fi
+        install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.socket ${D}${systemd_system_unitdir}/aziot-tpmd.socket
     fi
-    install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.socket ${D}${systemd_system_unitdir}/aziot-tpmd.socket
 
     # libaziot-key-openssl-engine-shared
     install -d -m 0755  ${D}${libdir}/engines-1.1
@@ -166,20 +172,4 @@ SYSTEMD_SERVICE_${PN} = " \
     aziot-keyd.socket \
     aziot-tpmd.service \
     aziot-tpmd.socket \
-"
-
-USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = " \
-    -r aziot; \
-    -r aziotcs; \
-    -r aziotid; \
-    -r aziotks; \
-    -r aziottpm; \
-    -r tpm \
-"
-USERADD_PARAM_${PN} = " \
-    -r -g aziotcs -G aziot,aziotks -s /bin/false -d ${localstatedir}/lib/aziot/certd aziotcs; \
-    -r -g aziotid -G aziot,aziotcs,aziotks,aziottpm -s /bin/false -d ${localstatedir}/lib/aziot/identityd aziotid; \
-    -r -g aziotks -G aziot -s /bin/false -d ${localstatedir}/lib/aziot/keyd aziotks; \
-    -r -g aziottpm -G aziot,tpm -s /bin/false -d ${localstatedir}/lib/aziot/tpmd aziottpm \
 "

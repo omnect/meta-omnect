@@ -11,7 +11,7 @@ export IOTEDGE_CONNECT_WORKLOAD_URI = "unix:///var/run/iotedge/workload.sock"
 export IOTEDGE_LISTEN_MANAGEMENT_URI = "fd://aziot-edged.mgmt.socket"
 export IOTEDGE_LISTEN_WORKLOAD_URI = "fd://aziot-edged.workload.socket"
 
-inherit systemd useradd
+inherit aziot systemd
 
 do_install () {
     # binaries
@@ -25,7 +25,6 @@ do_install () {
     echo "d /run/iotedge 0755 iotedge iotedge -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
 
     # config files
-    install -d -m 0770 -g aziot ${D}${sysconfdir}/aziot
     install -m 0640 ${S}/edgelet/contrib/config/linux/template.toml ${D}${sysconfdir}/aziot/config.toml.edge.template
     sed -i -e "s#@connect_workload_uri@#${IOTEDGE_CONNECT_WORKLOAD_URI}#" \
         -e "s#@connect_management_uri@#${IOTEDGE_CONNECT_MANAGEMENT_URI}#" \
@@ -53,14 +52,9 @@ do_install () {
     install -m 0644 ${S}/edgelet/contrib/systemd/debian/aziot-edged.mgmt.socket  ${D}${systemd_system_unitdir}/aziot-edged.mgmt.socket
 }
 
-USERADD_PACKAGES = "${PN}"
-USERADD_PARAM_${PN} = "-r -u 15580 -g iotedge -G aziot,aziotcs,aziotid,aziotks,docker,systemd-journal -s /bin/false -d ${localstatedir}/lib/iotedge iotedge"
+USERADD_PARAM_${PN} += "-r -u 15580 -g iotedge -G aziot,aziotcs,aziotid,aziotks,docker,systemd-journal -s /bin/false -d ${localstatedir}/lib/iotedge iotedge;"
 
-GROUPADD_PARAM_${PN} = " \
-    -r aziot; \
-    -r aziotcs; \
-    -r aziotid; \
-    -r aziotks; \
+GROUPADD_PARAM_${PN} += " \
     -r docker; \
     -r -g 15580 iotedge; \
     -r systemd-journal; \

@@ -40,6 +40,18 @@ openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
 # SWUPDATE_PRIVATE_KEY = $(pwd)/priv.pem
 ```
 
+### DISTRO_FEATURES
+
+`meta-ics-dm` is configurable via the following `DISTRO_FEATURES`:<br>
+- `ics-dm-demo`
+    - adds an automatic device enrollment demo via `tpm`
+    - synchronizes startup of `iot-identity-service` with the enrollment demo
+- `iotedge`
+    - adds the `iotedge` service with its dependencies
+    - adds `virtualization` to `DISTRO_FEATURES` (from meta-virtualization) needed by `iotedges` runtime dependency `moby`
+- `tpm`
+    - `iot-identity-service` installs `aziot-tpmd` and corresponding config files
+
 # License
 
 Licensed under either of
