@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- added iot-module-template
 - configurable DISTRO_FEATURES: ics-dm-demo, iotedge, tpm
 - added AIS (https://github.com/Azure/iot-identity-service) for provisioning iot-hub-device-update and iotedge
 - removed ics-dm-iot-hub-device-update_git.bb
