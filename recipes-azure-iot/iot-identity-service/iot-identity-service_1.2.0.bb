@@ -32,16 +32,14 @@ do_compile() {
     export RUST_TARGET_PATH="${RUST_TARGET_PATH}"
 
     # pkg specific exports
-    export ARCH=${TUNE_ARCH}
     export RELEASE="1"
     export LLVM_CONFIG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/bin/llvm-config"
     export PATH="${CARGO_HOME}/bin:${PATH}"
     export OPENSSL_DIR="${STAGING_EXECPREFIXDIR}"
     export FORCE_NO_UNITTEST="ON"
 
-    sed -i 's/^ARCH =$/ARCH = ${TUNE_ARCH}/'    ${S}/Makefile
     sed -i 's/^RELEASE = 0$/RELEASE = 1/'       ${S}/Makefile
-    sed -i 's/-unknown-linux-gnu/-poky-linux/g' ${S}/Makefile
+    sed -i -e 's/CARGO_TARGET = \(.*\)/CARGO_TARGET = ${TARGET_SYS}/g' ${S}/Makefile
 
     make
 }
@@ -170,6 +168,5 @@ SYSTEMD_SERVICE_${PN} = " \
     aziot-identityd.socket \
     aziot-keyd.service \
     aziot-keyd.socket \
-    aziot-tpmd.service \
-    aziot-tpmd.socket \
+    ${@bb.utils.contains('PACKAGECONFIG', 'tpm', 'aziot-tpmd.service aziot-tpmd.socket', '', d)} \
 "
