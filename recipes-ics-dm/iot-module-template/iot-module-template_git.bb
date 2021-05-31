@@ -1,12 +1,9 @@
-# TODO licensing is complicated. Furthermore the repo currently has no
-# license files for LIC_FILES_CHKSUM.
-# Without ais/eis the license would be
-# LICENSE = "MIT | Apache-2.0"
-# With eis/ais we have to mention that these eis/ais sources are MIT only.
-# Or we package eis/ais in an independent library with MIT license.
-#LICENSE = "MIT & MIT | Apache-2.0"
-#LIC_FILES_CHKSUM =
-LICENSE = "CLOSED"
+LICENSE = "MIT | Apache-2.0"
+
+LIC_FILES_CHKSUM="\
+  file://LICENSE-MIT;md5=afb814368d9110052a22e0da67f027d3 \
+  file://LICENSE-APACHE;md5=650e893673eb59696f3d4ee64f6d2357 \
+"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/../../files:"
 
@@ -21,12 +18,11 @@ SRCREV = "${AUTOREV}"
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "azure-iot-sdk-c"
+DEPENDS = "azure-iot-sdk-c libeis-utils"
 RDEPENDS_${PN} = "ca-certificates iot-identity-service"
 
 inherit aziot cmake overwrite_src_uri systemd
 
-EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
 EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
 
 do_install_append() {

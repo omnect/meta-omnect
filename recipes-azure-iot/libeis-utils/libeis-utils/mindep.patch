@@ -1,0 +1,930 @@
+diff --git a/src/adu_types/inc/aduc/adu_types.h b/src/adu_types/inc/aduc/adu_types.h
+index 5b1437c..8847241 100644
+--- a/src/adu_types/inc/aduc/adu_types.h
++++ b/src/adu_types/inc/aduc/adu_types.h
+@@ -8,23 +8,23 @@
+ #define ADUC_ADU_TYPES_H
+ 
+ #include <aduc/c_utils.h>
+-#include <aduc/logging.h>
++// #include <aduc/logging.h>
+ #include <stdbool.h>
+ 
+ EXTERN_C_BEGIN
+ /**
+  * @brief ADU Client launch arguments.
+  */
+-typedef struct tagADUC_LaunchArguments
+-{
+-    int argc; /**< Size of argv */
+-    char** argv; /**< Command-line arguments */
+-    ADUC_LOG_SEVERITY logLevel; /**< Log level */
+-    char* connectionString; /**< Device connection string from command-line. */
+-    bool iotHubTracingEnabled; /**< Whether to enable logging from IoT Hub SDK */
+-    bool showVersion; /**< Show an agent version */
+-    bool healthCheckOnly; /**< Only check agent health. Doesn't process any data or messages from services. */
+-} ADUC_LaunchArguments;
++// typedef struct tagADUC_LaunchArguments
++// {
++//     int argc; /**< Size of argv */
++//     char** argv; /**< Command-line arguments */
++//     ADUC_LOG_SEVERITY logLevel; /**< Log level */
++//     char* connectionString; /**< Device connection string from command-line. */
++//     bool iotHubTracingEnabled; /**< Whether to enable logging from IoT Hub SDK */
++//     bool showVersion; /**< Show an agent version */
++//     bool healthCheckOnly; /**< Only check agent health. Doesn't process any data or messages from services. */
++// } ADUC_LaunchArguments;
+ 
+ typedef enum tagADUC_ConnType
+ {
+@@ -81,4 +81,4 @@ ADUC_ConnType GetConnTypeFromConnectionString(const char* connectionString);
+ 
+ EXTERN_C_END
+ 
+-#endif // ADUC_ADU_TYPES_H
+\ No newline at end of file
++#endif // ADUC_ADU_TYPES_H
+diff --git a/src/adu_types/src/adu_types.c b/src/adu_types/src/adu_types.c
+index be2dcd5..d97d470 100644
+--- a/src/adu_types/src/adu_types.c
++++ b/src/adu_types/src/adu_types.c
+@@ -5,29 +5,29 @@
+  */
+ 
+ #include <aduc/adu_types.h>
+-#include <aduc/logging.h>
++// #include <aduc/logging.h>
+ #include <stdlib.h>
+ #include <string.h>
+ 
+-/**
+- * @brief Returns the string associated with @p connType
+- * @param connType ADUC_ConnType to be stringified
+- * @returns if the ADUC_ConnType exists then the string version of the value is returned, "" otherwise
+- */
+-const char* ADUC_ConnType_ToString(const ADUC_ConnType connType)
+-{
+-    switch (connType)
+-    {
+-    case ADUC_ConnType_NotSet:
+-        return "ADUC_ConnType_NotSet";
+-    case ADUC_ConnType_Device:
+-        return "ADUC_ConnType_Device";
+-    case ADUC_ConnType_Module:
+-        return "ADUC_ConnType_Module";
+-    }
++// /**
++//  * @brief Returns the string associated with @p connType
++//  * @param connType ADUC_ConnType to be stringified
++//  * @returns if the ADUC_ConnType exists then the string version of the value is returned, "" otherwise
++//  */
++// const char* ADUC_ConnType_ToString(const ADUC_ConnType connType)
++// {
++//     switch (connType)
++//     {
++//     case ADUC_ConnType_NotSet:
++//         return "ADUC_ConnType_NotSet";
++//     case ADUC_ConnType_Device:
++//         return "ADUC_ConnType_Device";
++//     case ADUC_ConnType_Module:
++//         return "ADUC_ConnType_Module";
++//     }
+ 
+-    return "<Unknown>";
+-}
++//     return "<Unknown>";
++// }
+ /**
+  * @brief DeAllocates the ADUC_ConnectionInfo object
+  * @param info the ADUC_ConnectionInfo object to be de-allocated
+@@ -50,42 +50,42 @@ void ADUC_ConnectionInfo_DeAlloc(ADUC_ConnectionInfo* info)
+     info->connType = ADUC_ConnType_NotSet;
+ }
+ 
+-/**
+- * @brief Scans the connection string and returns the connection type related to the string
+- * @details The connection string must use the valid, correct format for the DeviceId and/or the ModuleId
+- * e.g.
+- * "DeviceId=some-device-id;ModuleId=some-module-id;"
+- * If the connection string contains the DeviceId it is an ADUC_ConnType_Device
+- * If the connection string contains the DeviceId AND the ModuleId it is an ADUC_ConnType_Module
+- * @param connectionString the connection string to scan
+- * @returns the connection type for @p connectionString
+- */
+-ADUC_ConnType GetConnTypeFromConnectionString(const char* connectionString)
+-{
+-    ADUC_ConnType result = ADUC_ConnType_NotSet;
++// /**
++//  * @brief Scans the connection string and returns the connection type related to the string
++//  * @details The connection string must use the valid, correct format for the DeviceId and/or the ModuleId
++//  * e.g.
++//  * "DeviceId=some-device-id;ModuleId=some-module-id;"
++//  * If the connection string contains the DeviceId it is an ADUC_ConnType_Device
++//  * If the connection string contains the DeviceId AND the ModuleId it is an ADUC_ConnType_Module
++//  * @param connectionString the connection string to scan
++//  * @returns the connection type for @p connectionString
++//  */
++// ADUC_ConnType GetConnTypeFromConnectionString(const char* connectionString)
++// {
++//     ADUC_ConnType result = ADUC_ConnType_NotSet;
+ 
+-    if (connectionString == NULL)
+-    {
+-        Log_Debug("Connection string passed to GetConnTypeFromConnectionString is NULL");
+-        return ADUC_ConnType_NotSet;
+-    }
++//     if (connectionString == NULL)
++//     {
++//         Log_Debug("Connection string passed to GetConnTypeFromConnectionString is NULL");
++//         return ADUC_ConnType_NotSet;
++//     }
+ 
+-    if (strstr(connectionString, "DeviceId=") != NULL)
+-    {
+-        if (strstr(connectionString, "ModuleId=") != NULL)
+-        {
+-            result = ADUC_ConnType_Module;
+-        }
+-        else
+-        {
+-            result = ADUC_ConnType_Device;
+-        }
+-    }
+-    else
+-    {
+-        Log_Debug(
+-            "Connection string passed to GetConnTypeFromConnectionString does not contain a DeviceId or ModuleId value");
+-    }
++//     if (strstr(connectionString, "DeviceId=") != NULL)
++//     {
++//         if (strstr(connectionString, "ModuleId=") != NULL)
++//         {
++//             result = ADUC_ConnType_Module;
++//         }
++//         else
++//         {
++//             result = ADUC_ConnType_Device;
++//         }
++//     }
++//     else
++//     {
++//         Log_Debug(
++//             "Connection string passed to GetConnTypeFromConnectionString does not contain a DeviceId or ModuleId value");
++//     }
+ 
+-    return result;
+-}
+\ No newline at end of file
++//     return result;
++// }
+diff --git a/src/utils/c_utils/src/string_c_utils.c b/src/utils/c_utils/src/string_c_utils.c
+index 22db5bd..31f82d3 100644
+--- a/src/utils/c_utils/src/string_c_utils.c
++++ b/src/utils/c_utils/src/string_c_utils.c
+@@ -22,321 +22,321 @@
+  */
+ #define ADUC_STRING_FORMAT_MAX_LENGTH 512
+ 
+-/**
+- * @brief Read a value from a delimited file and return the value found.
+- * The file is in form "key=value", and keys are case sensitive.
+- * Value returned has whitespace trimmed from both ends.
+- *
+- * @param fileName Filename of delimited file
+- * @param key Key to find
+- * @param value Value found for @p Key
+- * @param valueLen Size of buffer for @p value
+- * @return true if value found, false otherwise.
+- */
+-_Bool ReadDelimitedValueFromFile(const char* fileName, const char* key, char* value, unsigned int valueLen)
+-{
+-    _Bool foundKey = false;
+-    const unsigned int bufferLen = 1024;
+-    char buffer[bufferLen];
+-
+-    if (valueLen < 2)
+-    {
+-        // Need space for at least a character and a null terminator.
+-        return false;
+-    }
+-
+-    FILE* fp = fopen(fileName, "r");
+-    if (fp == NULL)
+-    {
+-        return false;
+-    }
+-
+-    while (!foundKey && fgets(buffer, bufferLen, fp) != NULL)
+-    {
+-        char* delimiter = strchr(buffer, '=');
+-        if (delimiter == NULL)
+-        {
+-            // Ignore lines without delimiters.
+-            continue;
+-        }
+-
+-        // Change the delimiter character to a NULL for ease of parsing.
+-        *delimiter = '\0';
+-
+-        ADUC_StringUtils_Trim(buffer);
+-        foundKey = (strcmp(buffer, key) == 0);
+-        if (!foundKey)
+-        {
+-            continue;
+-        }
+-
+-        char* foundValue = delimiter + 1;
+-        ADUC_StringUtils_Trim(foundValue);
+-        strncpy(value, foundValue, valueLen);
+-        if (value[valueLen - 1] != '\0')
+-        {
+-            // strncpy pads the buffer with NULL up to valueLen, so if
+-            // that position doesn't have a NULL, the buffer provided was too small.
+-            foundKey = false;
+-            break;
+-        }
+-    }
+-
+-    fclose(fp);
+-
+-    return foundKey;
+-}
+-
+-/**
+- * @brief Function that sets @p strBuffers to the contents of the file at @p filePath if the contents are smaller in size than the buffer
+- * @param filePath path to the file who's contents will be read
+- * @param strBuffer buffer which will be loaded with the contents of @p filePath
+- * @param strBuffSize the size of the buffer
+- * @returns false on failure, true on success
+- */
+-_Bool LoadBufferWithFileContents(const char* filePath, char* strBuffer, const size_t strBuffSize)
+-{
+-    if (filePath == NULL || strBuffer == NULL || strBuffSize == 0)
+-    {
+-        return false;
+-    }
+-
+-    _Bool success = false;
+-
+-    // NOLINTNEXTLINE(android-cloexec-open): We are not guaranteed to have access to O_CLOEXEC on all of our builds so no need to include
+-    int fd = open(filePath, O_EXCL | O_RDONLY);
+-
+-    if (fd == -1)
+-    {
+-        goto done;
+-    }
+-
+-    struct stat bS;
+-
+-    if (stat(filePath, &bS) != 0)
+-    {
+-        goto done;
+-    }
+-
+-    long fileSize = bS.st_size;
+-
+-    if (fileSize == 0 || fileSize > strBuffSize)
+-    {
+-        goto done;
+-    }
+-
+-    size_t numRead = read(fd, strBuffer, fileSize);
+-
+-    if (numRead != fileSize)
+-    {
+-        goto done;
+-    }
+-
+-    strBuffer[numRead] = '\0';
+-
+-    success = true;
+-done:
+-
+-    close(fd);
+-
+-    if (!success)
+-    {
+-        strBuffer[0] = '\0';
+-    }
+-
+-    return success;
+-}
+-/**
+- * @brief Trim leading and trailing white-spaces. This function modifies the input buffer.
+- *
+- * @param str Input string to trim.
+- * @return Input pointer.
+- */
+-char* ADUC_StringUtils_Trim(char* str)
+-{
+-    char* begin = str;
+-    char* current = str;
+-
+-    if (!str || str[0] == '\0')
+-    {
+-        return str;
+-    }
+-
+-    // Find first non white-spaces.
+-    while (isspace((unsigned char)*current))
+-    {
+-        current++;
+-    }
+-
+-    char* end = current;
+-
+-    // Find the end of the string
+-    while (*end != '\0')
+-    {
+-        end++;
+-    }
+-
+-    // back up to the last non-null character
+-    end--;
+-
+-    // Find the last non-space character
+-    while (isspace((unsigned char)*end))
+-    {
+-        end--;
+-    }
+-
+-    // Shift non-white-space character(s), if needed.
+-    while (current != end + 1)
+-    {
+-        *str++ = *current++;
+-    }
+-
+-    *str = '\0';
+-
+-    return begin;
+-}
+-
+-/**
+- * @brief Converts string to unsigned long
+- * Returns false if an input string cannot be converted to unsigned long
+- * @param[in] string that needs to be converted
+- * @param[out] converted unsigned long
+- */
+-_Bool atoul(const char* str, unsigned long* converted)
+-{
+-    if (str == NULL || *str == '\0')
+-    {
+-        return false;
+-    }
+-
+-    unsigned long res = 0;
+-    while (*str != '\0')
+-    {
+-        if (*str < '0' || *str > '9')
+-        {
+-            // Not a digit.
+-            return false;
+-        }
+-
+-        const unsigned long previous = res;
+-        res = (res * 10) + (*str - '0');
+-
+-        if (res < previous)
+-        {
+-            // overflow.
+-            return false;
+-        }
+-
+-        ++str;
+-    }
+-
+-    *converted = res;
+-    return true;
+-}
+-
+-/**
+- * @brief Converts string to unsigned integer.
+- * @details Valid range 0 - 4294967295.
+- * Returns false if string contains invalid char or out of range
+- * @param[in] string that needs to be converted
+- * @param[out] converted integer
+- */
+-_Bool atoui(const char* str, unsigned int* ui)
+-{
+-    if (str == NULL || *str == '\0')
+-    {
+-        return false;
+-    }
+-
+-    unsigned int res = 0;
+-    while (*str != '\0')
+-    {
+-        if (*str < '0' || *str > '9')
+-        {
+-            // Not a digit.
+-            return false;
+-        }
+-
+-        const unsigned int previous = res;
+-        res = (res * 10) + (*str - '0');
+-
+-        if (res < previous)
+-        {
+-            // overflow.
+-            return false;
+-        }
+-
+-        ++str;
+-    }
+-
+-    *ui = res;
+-    return true;
+-}
+-
+-/**
+- * @brief Split updateType string by ':' to return updateTypeName and updateTypeVersion
+- * @param[in] updateType - expected "Provider/Name:Version"
+- * @param[out] updateTypeName - Caller must call free()
+- * @param[out] updateTypeVersion
+- */
+-_Bool ADUC_ParseUpdateType(const char* updateType, char** updateTypeName, unsigned int* updateTypeVersion)
+-{
+-    _Bool succeeded = false;
+-    char* name = NULL;
+-    *updateTypeName = NULL;
+-    *updateTypeVersion = 0;
+-
+-    if (updateType == NULL)
+-    {
+-        goto done;
+-    }
+-
+-    const char* delimiter = strchr(updateType, ':');
+-
+-    //delimiter doesn't exist
+-    if (delimiter == NULL)
+-    {
+-        goto done;
+-    }
+-
+-    const size_t nameLength = delimiter - updateType;
+-
+-    //name is empty
+-    if (nameLength == 0)
+-    {
+-        goto done;
+-    }
+-
+-    name = malloc(nameLength + 1);
+-    if (name == NULL)
+-    {
+-        goto done;
+-    }
+-
+-    memcpy(name, updateType, nameLength);
+-    name[nameLength] = '\0';
+-
+-    // convert version string to unsigned int
+-    if (!atoui(delimiter + 1, updateTypeVersion))
+-    {
+-        // conversion failed
+-        goto done;
+-    }
+-
+-    succeeded = true;
+-
+-done:
+-    if (succeeded)
+-    {
+-        *updateTypeName = name;
+-    }
+-    else
+-    {
+-        free(name);
+-    }
+-
+-    return succeeded;
+-}
++// /**
++//  * @brief Read a value from a delimited file and return the value found.
++//  * The file is in form "key=value", and keys are case sensitive.
++//  * Value returned has whitespace trimmed from both ends.
++//  *
++//  * @param fileName Filename of delimited file
++//  * @param key Key to find
++//  * @param value Value found for @p Key
++//  * @param valueLen Size of buffer for @p value
++//  * @return true if value found, false otherwise.
++//  */
++// _Bool ReadDelimitedValueFromFile(const char* fileName, const char* key, char* value, unsigned int valueLen)
++// {
++//     _Bool foundKey = false;
++//     const unsigned int bufferLen = 1024;
++//     char buffer[bufferLen];
++
++//     if (valueLen < 2)
++//     {
++//         // Need space for at least a character and a null terminator.
++//         return false;
++//     }
++
++//     FILE* fp = fopen(fileName, "r");
++//     if (fp == NULL)
++//     {
++//         return false;
++//     }
++
++//     while (!foundKey && fgets(buffer, bufferLen, fp) != NULL)
++//     {
++//         char* delimiter = strchr(buffer, '=');
++//         if (delimiter == NULL)
++//         {
++//             // Ignore lines without delimiters.
++//             continue;
++//         }
++
++//         // Change the delimiter character to a NULL for ease of parsing.
++//         *delimiter = '\0';
++
++//         ADUC_StringUtils_Trim(buffer);
++//         foundKey = (strcmp(buffer, key) == 0);
++//         if (!foundKey)
++//         {
++//             continue;
++//         }
++
++//         char* foundValue = delimiter + 1;
++//         ADUC_StringUtils_Trim(foundValue);
++//         strncpy(value, foundValue, valueLen);
++//         if (value[valueLen - 1] != '\0')
++//         {
++//             // strncpy pads the buffer with NULL up to valueLen, so if
++//             // that position doesn't have a NULL, the buffer provided was too small.
++//             foundKey = false;
++//             break;
++//         }
++//     }
++
++//     fclose(fp);
++
++//     return foundKey;
++// }
++
++// /**
++//  * @brief Function that sets @p strBuffers to the contents of the file at @p filePath if the contents are smaller in size than the buffer
++//  * @param filePath path to the file who's contents will be read
++//  * @param strBuffer buffer which will be loaded with the contents of @p filePath
++//  * @param strBuffSize the size of the buffer
++//  * @returns false on failure, true on success
++//  */
++// _Bool LoadBufferWithFileContents(const char* filePath, char* strBuffer, const size_t strBuffSize)
++// {
++//     if (filePath == NULL || strBuffer == NULL || strBuffSize == 0)
++//     {
++//         return false;
++//     }
++
++//     _Bool success = false;
++
++//     // NOLINTNEXTLINE(android-cloexec-open): We are not guaranteed to have access to O_CLOEXEC on all of our builds so no need to include
++//     int fd = open(filePath, O_EXCL | O_RDONLY);
++
++//     if (fd == -1)
++//     {
++//         goto done;
++//     }
++
++//     struct stat bS;
++
++//     if (stat(filePath, &bS) != 0)
++//     {
++//         goto done;
++//     }
++
++//     long fileSize = bS.st_size;
++
++//     if (fileSize == 0 || fileSize > strBuffSize)
++//     {
++//         goto done;
++//     }
++
++//     size_t numRead = read(fd, strBuffer, fileSize);
++
++//     if (numRead != fileSize)
++//     {
++//         goto done;
++//     }
++
++//     strBuffer[numRead] = '\0';
++
++//     success = true;
++// done:
++
++//     close(fd);
++
++//     if (!success)
++//     {
++//         strBuffer[0] = '\0';
++//     }
++
++//     return success;
++// }
++// /**
++//  * @brief Trim leading and trailing white-spaces. This function modifies the input buffer.
++//  *
++//  * @param str Input string to trim.
++//  * @return Input pointer.
++//  */
++// char* ADUC_StringUtils_Trim(char* str)
++// {
++//     char* begin = str;
++//     char* current = str;
++
++//     if (!str || str[0] == '\0')
++//     {
++//         return str;
++//     }
++
++//     // Find first non white-spaces.
++//     while (isspace((unsigned char)*current))
++//     {
++//         current++;
++//     }
++
++//     char* end = current;
++
++//     // Find the end of the string
++//     while (*end != '\0')
++//     {
++//         end++;
++//     }
++
++//     // back up to the last non-null character
++//     end--;
++
++//     // Find the last non-space character
++//     while (isspace((unsigned char)*end))
++//     {
++//         end--;
++//     }
++
++//     // Shift non-white-space character(s), if needed.
++//     while (current != end + 1)
++//     {
++//         *str++ = *current++;
++//     }
++
++//     *str = '\0';
++
++//     return begin;
++// }
++
++// /**
++//  * @brief Converts string to unsigned long
++//  * Returns false if an input string cannot be converted to unsigned long
++//  * @param[in] string that needs to be converted
++//  * @param[out] converted unsigned long
++//  */
++// _Bool atoul(const char* str, unsigned long* converted)
++// {
++//     if (str == NULL || *str == '\0')
++//     {
++//         return false;
++//     }
++
++//     unsigned long res = 0;
++//     while (*str != '\0')
++//     {
++//         if (*str < '0' || *str > '9')
++//         {
++//             // Not a digit.
++//             return false;
++//         }
++
++//         const unsigned long previous = res;
++//         res = (res * 10) + (*str - '0');
++
++//         if (res < previous)
++//         {
++//             // overflow.
++//             return false;
++//         }
++
++//         ++str;
++//     }
++
++//     *converted = res;
++//     return true;
++// }
++
++// /**
++//  * @brief Converts string to unsigned integer.
++//  * @details Valid range 0 - 4294967295.
++//  * Returns false if string contains invalid char or out of range
++//  * @param[in] string that needs to be converted
++//  * @param[out] converted integer
++//  */
++// _Bool atoui(const char* str, unsigned int* ui)
++// {
++//     if (str == NULL || *str == '\0')
++//     {
++//         return false;
++//     }
++
++//     unsigned int res = 0;
++//     while (*str != '\0')
++//     {
++//         if (*str < '0' || *str > '9')
++//         {
++//             // Not a digit.
++//             return false;
++//         }
++
++//         const unsigned int previous = res;
++//         res = (res * 10) + (*str - '0');
++
++//         if (res < previous)
++//         {
++//             // overflow.
++//             return false;
++//         }
++
++//         ++str;
++//     }
++
++//     *ui = res;
++//     return true;
++// }
++
++// /**
++//  * @brief Split updateType string by ':' to return updateTypeName and updateTypeVersion
++//  * @param[in] updateType - expected "Provider/Name:Version"
++//  * @param[out] updateTypeName - Caller must call free()
++//  * @param[out] updateTypeVersion
++//  */
++// _Bool ADUC_ParseUpdateType(const char* updateType, char** updateTypeName, unsigned int* updateTypeVersion)
++// {
++//     _Bool succeeded = false;
++//     char* name = NULL;
++//     *updateTypeName = NULL;
++//     *updateTypeVersion = 0;
++
++//     if (updateType == NULL)
++//     {
++//         goto done;
++//     }
++
++//     const char* delimiter = strchr(updateType, ':');
++
++//     //delimiter doesn't exist
++//     if (delimiter == NULL)
++//     {
++//         goto done;
++//     }
++
++//     const size_t nameLength = delimiter - updateType;
++
++//     //name is empty
++//     if (nameLength == 0)
++//     {
++//         goto done;
++//     }
++
++//     name = malloc(nameLength + 1);
++//     if (name == NULL)
++//     {
++//         goto done;
++//     }
++
++//     memcpy(name, updateType, nameLength);
++//     name[nameLength] = '\0';
++
++//     // convert version string to unsigned int
++//     if (!atoui(delimiter + 1, updateTypeVersion))
++//     {
++//         // conversion failed
++//         goto done;
++//     }
++
++//     succeeded = true;
++
++// done:
++//     if (succeeded)
++//     {
++//         *updateTypeName = name;
++//     }
++//     else
++//     {
++//         free(name);
++//     }
++
++//     return succeeded;
++// }
+ 
+ /**
+  * @brief Returns string created by formatting a variable number of string arguments with @p fmt
+@@ -374,4 +374,4 @@ char* ADUC_StringFormat(const char* fmt, ...)
+     }
+ 
+     return outputStr;
+-}
+\ No newline at end of file
++}
+diff --git a/src/utils/eis_utils/CMakeLists.txt b/src/utils/eis_utils/CMakeLists.txt
+index 7e16fd0..483f09a 100644
+--- a/src/utils/eis_utils/CMakeLists.txt
++++ b/src/utils/eis_utils/CMakeLists.txt
+@@ -2,7 +2,8 @@ cmake_minimum_required (VERSION 3.5)
+ 
+ project (eis_utils)
+ 
+-add_library (${PROJECT_NAME} STATIC src/eis_utils.c src/eis_coms.c src/eis_err.c)
++add_library (${PROJECT_NAME} SHARED src/eis_utils.c src/eis_coms.c src/eis_err.c ../c_utils/src/string_c_utils.c ../../adu_types/src/adu_types.c)
++
+ add_library (aduc::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+ target_include_directories (${PROJECT_NAME} PUBLIC inc)
+ 
+@@ -11,10 +12,6 @@ find_package (Parson REQUIRED)
+ 
+ target_link_libraries (
+     ${PROJECT_NAME}
+-    PUBLIC  aduc::adu_core_interface
+-    PRIVATE aduc::adu_types
+-            aduc::c_utils
+-            aduc::logging
+             Parson::parson
+             aziotsharedutil
+             uhttp)
+diff --git a/src/utils/eis_utils/inc/eis_coms.h b/src/utils/eis_utils/inc/eis_coms.h
+index 52540f4..49c6b6a 100644
+--- a/src/utils/eis_utils/inc/eis_coms.h
++++ b/src/utils/eis_utils/inc/eis_coms.h
+@@ -22,7 +22,7 @@ EXTERN_C_BEGIN
+  */
+ // clang-format off
+ // NOLINTNEXTLINE: clang-tidy doesn't like UMock macro expansions
+-MOCKABLE_FUNCTION(, EISErr, RequestIdentitiesFromEIS, 
++MOCKABLE_FUNCTION(, EISErr, RequestIdentitiesFromEIS,
+     unsigned int, timeoutMS,
+     char**, responseBuffer)
+ // clang-format on
+@@ -57,11 +57,11 @@ MOCKABLE_FUNCTION(,EISErr,RequestSignatureFromEIS,
+ // clang-format off
+ // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast): clang-tidy doesn't like UMock macro expansions
+ MOCKABLE_FUNCTION(,EISErr, RequestCertificateFromEIS,
+-    const char*, certId, 
+-    unsigned int, timeoutMS, 
++    const char*, certId,
++    unsigned int, timeoutMS,
+     char**, responseBuffer)
+ // clang-format on
+ 
+ EXTERN_C_END
+ 
+-#endif
+\ No newline at end of file
++#endif
+diff --git a/src/utils/eis_utils/inc/eis_err.h b/src/utils/eis_utils/inc/eis_err.h
+index 68931aa..b049251 100644
+--- a/src/utils/eis_utils/inc/eis_err.h
++++ b/src/utils/eis_utils/inc/eis_err.h
+@@ -41,7 +41,7 @@ typedef enum tagEISService
+ 
+ /**
+  * @brief Returns the string that matches the @p eisErr value
+- * @param eisErr error for which 
++ * @param eisErr error for which
+  * @returns the string name of the EISErr or "<Unknown>"
+  */
+ const char* EISErr_ErrToString(EISErr eisErr);
+@@ -54,7 +54,7 @@ const char* EISErr_ErrToString(EISErr eisErr);
+ const char* EISService_ServiceToString(EISService eisService);
+ 
+ /**
+- * @brief Return value for any EIS Utility 
++ * @brief Return value for any EIS Utility
+  */
+ typedef struct tagEISUtilityResult
+ {
+@@ -64,4 +64,4 @@ typedef struct tagEISUtilityResult
+ 
+ EXTERN_C_END
+ 
+-#endif
+\ No newline at end of file
++#endif
+diff --git a/src/utils/eis_utils/inc/eis_utils.h b/src/utils/eis_utils/inc/eis_utils.h
+index f0d198b..27eab84 100644
+--- a/src/utils/eis_utils/inc/eis_utils.h
++++ b/src/utils/eis_utils/inc/eis_utils.h
+@@ -23,7 +23,7 @@ EXTERN_C_BEGIN
+ 
+ /**
+  * @brief Creates a connection string using the provisioned data within EIS
+- * @details Calls into the EIS Identity and Keyservice to create a SharedAccessSignature which is then used 
++ * @details Calls into the EIS Identity and Keyservice to create a SharedAccessSignature which is then used
+  * to create the connection string, Caller is required to call ADUC_ConnectionInfo_DeAlloc() to deallocate the ADUC_ConnectionInfo struct
+  * @param[in] expirySecsSinceEpoch the expiration time in seconds since the epoch for the token in the connection string
+  * @param[in] timeoutMS the timeoutMS in milliseconds for each call to EIS
+@@ -35,4 +35,4 @@ EISUtilityResult RequestConnectionStringFromEISWithExpiry(
+ 
+ EXTERN_C_END
+ 
+-#endif
+\ No newline at end of file
++#endif
