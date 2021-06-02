@@ -67,3 +67,5 @@ FILES_${PN} += " \
 "
 
 SYSTEMD_SERVICE_${PN} = "aziot-edged.service aziot-edged.mgmt.socket aziot-edged.workload.socket"
+
+REQUIRED_DISTRO_FEATURES = "iotedge"

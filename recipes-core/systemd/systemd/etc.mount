@@ -1,0 +1,13 @@
+[Unit]
+Before=local-fs.target var-volatile-lib.service
+After=mnt-etc.mount
+RequiresMountsFor=/mnt/etc
+
+[Mount]
+Where=/etc
+What=overlay
+Type=overlay
+Options=defaults,lowerdir=/etc,upperdir=/mnt/etc/upper,workdir=/mnt/etc/work
+
+[Install]
+WantedBy=local-fs.target

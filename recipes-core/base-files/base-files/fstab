@@ -5,4 +5,4 @@ tmpfs                /run                 tmpfs      mode=0755,nodev,nosuid,stri
 tmpfs                /var/volatile        tmpfs      defaults              0  0
 
 #boot partion - has to be mounted rw for fw_setenv
-/dev/mmcblk0p1       /boot                vfat       defaults,rw,fmask=0002,gid=disk 0  0
+@@ROOT_DEV_P@@1       /boot                vfat       defaults,rw,fmask=0002,gid=disk 0  0

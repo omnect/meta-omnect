@@ -1,0 +1,7 @@
+fdt addr ${fdt_addr_r} && fdt get value bootargs /chosen bootargs
+if env exists bootpart;then echo Booting from @@ROOT_DEV_P@@${bootpart};else setenv bootpart 2;echo bootpart not set, default to ${bootpart};fi
+saveenv
+load mmc 0:${bootpart} ${fdt_addr_r} boot/@@KERNEL_DEVICETREE_FN@@
+load mmc 0:${bootpart} ${kernel_addr_r} boot/@@KERNEL_IMAGETYPE@@
+setenv bootargs ${bootargs} root=@@ROOT_DEV_P@@${bootpart} @@UBOOT_VIDEO@@
+@@KERNEL_BOOTCMD@@ ${kernel_addr_r} - ${fdt_addr_r}

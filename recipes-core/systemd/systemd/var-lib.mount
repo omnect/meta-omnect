@@ -1,0 +1,13 @@
+[Unit]
+Before=local-fs.target var-volatile-lib.service
+After=mnt-data.mount
+RequiresMountsFor=/mnt/data
+
+[Mount]
+Where=/var/lib
+What=/mnt/data/var/lib
+Type=none
+Options=bind
+
+[Install]
+WantedBy=local-fs.target

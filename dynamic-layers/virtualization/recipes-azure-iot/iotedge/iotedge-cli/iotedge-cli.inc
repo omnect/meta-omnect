@@ -16,3 +16,5 @@ do_install () {
     install -d  "${D}${bindir}"
     install -m 755 "${WORKDIR}/build/target/${CARGO_TARGET_SUBDIR}/iotedge" ${D}${bindir}/iotedge
 }
+
+REQUIRED_DISTRO_FEATURES = "iotedge"

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- initial distro config for ics-dm-os
+- moved recipes depending on meta-virtualization into dynamic layer
+- fix in iot-hub-device-update to use it on devices where root A is not on /dev/mmcblk0
+- patches/fixes to rename u-boot partition references in adu/swupdate from "rpipart" to "bootpart"
+- u-boot config with support for A/B updates for odroid-c2
+- u-boot patch and env on mmc config for odroid-c2
+- odroid kernel fragment for overlayfs (mandatory for our readonly rootfs)
+- odroid kernel fragment for recommended systemd settings
+- initial support for odroid-c2 device
+- added dynamic-layers for bsps adaptions
+- really disable syslog in busybox -> systemd now gets syslog messages
+- removed dependency to meta-elbb
 - added iot-module-template
 - configurable DISTRO_FEATURES: ics-dm-demo, iotedge, tpm
 - added AIS (https://github.com/Azure/iot-identity-service) for provisioning iot-hub-device-update and iotedge
