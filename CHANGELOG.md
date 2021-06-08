@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.1.8.x](distro) Q2 2021
 
+- version schema uses pokys version + build number suffix
 - initial distro config for ics-dm-os
 - moved recipes depending on meta-virtualization into dynamic layer
 - fix in iot-hub-device-update to use it on devices where root A is not on /dev/mmcblk0
