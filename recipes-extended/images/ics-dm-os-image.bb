@@ -13,6 +13,8 @@ IMAGE_BASENAME = "ics-dm-os"
 
 IMAGE_FEATURES += " read-only-rootfs"
 
+IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
+
 IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'ics-dm-demo', ' enrollment', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' iotedge-daemon iotedge-cli kernel-modules', '', d)} \

@@ -16,6 +16,8 @@ inherit swupdate
 # images to build before building swupdate image
 IMAGE_DEPENDS = "ics-dm-os-image virtual/kernel"
 
+IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
+
 # images and files that will be included in the .swu image
 SWUPDATE_IMAGES = "ics-dm-os"
 
