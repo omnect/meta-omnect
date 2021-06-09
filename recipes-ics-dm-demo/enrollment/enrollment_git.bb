@@ -1,5 +1,9 @@
-# TODO at license files to enrollment repo so yocto can reference them in LIC_FILES_CHKSUM
-LICENSE = "CLOSED"
+LICENSE = "MIT | Apache-2.0"
+
+LIC_FILES_CHKSUM="\
+  file://LICENSE-MIT;md5=afb814368d9110052a22e0da67f027d3 \
+  file://LICENSE-APACHE;md5=650e893673eb59696f3d4ee64f6d2357 \
+"
 
 # TODO change to https uri when public
 REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main"
