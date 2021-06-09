@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.1.8.x](distro) Q2 2021
-
-- version schema uses pokys version + build number suffix
+## [> 3.1.8.404]  Q2 2021
+- updated iotedge to 1.2.1
+- updated iot-identity-service to rev 427fe7624954118577bc083b83fa216430c2a085 from release/1.2 branch- version schema uses pokys version + build number suffix
 - initial distro config for ics-dm-os
 - moved recipes depending on meta-virtualization into dynamic layer
 - fix in iot-hub-device-update to use it on devices where root A is not on /dev/mmcblk0
