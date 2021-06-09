@@ -5,6 +5,8 @@ SRC_URI += "file://iotedge-cli_1.2.0.patch"
 DEPENDS += "openssl"
 RDEPENDS_${PN} += "iot-identity-service"
 
+inherit features_check
+
 export OPENSSL_DIR = "${STAGING_EXECPREFIXDIR}"
 export IOTEDGE_CONNECT_MANAGEMENT_URI = "unix:///var/run/iotedge/mgmt.sock"
 export IOTEDGE_CONNECT_WORKLOAD_URI = "unix:///var/run/iotedge/workload.sock"
