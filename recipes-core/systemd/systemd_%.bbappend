@@ -27,7 +27,8 @@ do_install_append() {
     install -d ${D}/mnt/etc/work
     install -d ${D}/mnt/data/home/work
     install -d ${D}/mnt/data/home/upper
-    install -d ${D}/mnt/data/var/lib/
+    install -d ${D}/mnt/data/var/lib
+    install -d ${D}/mnt/data/local
 
     #persistent journal
     if ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-journal', 'true', 'false', d)}; then
@@ -85,10 +86,14 @@ do_install_append() {
     lnr ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service ${D}${sysconfdir}/systemd/system/sysinit.target.wants/systemd-time-wait-sync.service
     #systemd-time-wait-sync hangs if it is started before /var/lib is mounted
     sed -i -E 's/^Wants=(.*)/Wants=\1\nAfter=var-lib.mount\nRequires=var-lib.mount/' ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service
+
+    install -d ${D}${exec_prefix}
+    lnr ${D}/mnt/data/local ${D}${exec_prefix}/local
 }
 
 FILES_${PN} += "\
     /mnt/data \
     /mnt/etc \
+    ${exec_prefix}/local \
     ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-journal', '/mnt/data/journal ${systemd_system_unitdir}/var-log-journal.mount', '', d)} \
 "
