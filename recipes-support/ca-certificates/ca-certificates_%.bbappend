@@ -10,3 +10,7 @@ do_install_append_class-target () {
 }
 
 FILES_${PN} += "${libdir}/ssl-1.1/certs"
+
+# update-ca-certificates is not working when we include the following patch
+# which poky applies
+SRC_URI_remove = "file://update-ca-certificates-support-Toybox.patch"
