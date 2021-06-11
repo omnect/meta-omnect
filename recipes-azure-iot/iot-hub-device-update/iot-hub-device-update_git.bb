@@ -9,6 +9,8 @@ SRC_URI = " \
   file://iot-identity-service-identityd.template.toml \
   file://linux_platform_layer.patch \
   file://rpipart_to_bootpart.patch \
+  file://eis-utils-cert-chain-buffer.patch \
+  file://enable_x509_leaf.patch \
 "
 
 S = "${WORKDIR}/git"
@@ -108,4 +110,4 @@ FILES_${PN} += " \
   "
 
 GROUPADD_PARAM_${PN} += "-r adu;"
-USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G disk,aziotid,aziotks -g adu adu;"
+USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G disk,aziotcs,aziotid,aziotks -g adu adu;"
