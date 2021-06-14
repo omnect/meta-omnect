@@ -10,7 +10,7 @@ SRC_URI = " \
   file://linux_platform_layer.patch \
   file://rpipart_to_bootpart.patch \
   file://eis-utils-cert-chain-buffer.patch \
-  file://enable_x509_leaf.patch \
+  file://eis-utils-set-GetwayHostName.patch  \
 "
 
 S = "${WORKDIR}/git"

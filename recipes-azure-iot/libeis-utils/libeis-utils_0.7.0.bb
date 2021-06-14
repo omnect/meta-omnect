@@ -6,7 +6,7 @@ SRC_URI = " \
   git://github.com/azure/iot-hub-device-update.git;protocol=https;branch=release/2021-q2;tag=0.7.0 \
   file://mindep.patch;patchdir=${WORKDIR}/git \
   file://eis-utils-cert-chain-buffer.patch;patchdir=${WORKDIR}/git \
-  file://enable_x509_leaf.patch;patchdir=${WORKDIR}/git \
+  file://eis-utils-set-GetwayHostName.patch;patchdir=${WORKDIR}/git \
 "
 
 S = "${WORKDIR}/git/src/utils/eis_utils"
