@@ -1,0 +1,11 @@
+[Unit]
+Before=local-fs.target etc.mount
+
+[Mount]
+Where=/mnt/etc
+What=/dev/disk/by-label/etc
+Type=ext4
+Options=defaults,sync
+
+[Install]
+WantedBy=local-fs.target

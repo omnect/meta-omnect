@@ -8,6 +8,7 @@ SRC_URI = " \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
   file://linux_platform_layer.patch \
+  file://rpipart_to_bootpart.patch \
 "
 
 S = "${WORKDIR}/git"
@@ -80,6 +81,9 @@ do_install_append() {
 
   # systemd
   sed -i 's/^After=\(.*\)$/After=\1 etc.mount var-lib.mount systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/adu-agent.service
+
+  # fix hard device path in adu-swupdate.sh (odroid-c2 needs this when booting from sdcard)
+  sed -i 's#/dev/mmcblk0p#${ROOT_DEV_P}#' ${D}${libdir}/adu/adu-swupdate.sh
 }
 
 do_install_append_rpi() {

@@ -1,0 +1,2 @@
+KERNEL=="tpm[0-9]*", TAG+="systemd", MODE="0660", OWNER="tpm"
+KERNEL=="tpmrm[0-9]*", TAG+="systemd", MODE="0660", OWNER="tpm", GROUP="tpm"

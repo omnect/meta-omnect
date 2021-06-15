@@ -10,7 +10,7 @@ SRC_URI = " \
     git://github.com/microsoft/do-client.git;protocol=https;branch=main;tag=v0.6.0 \
     file://fix-linking.patch \
     file://do-client.service \
-    "
+"
 
 S = "${WORKDIR}/git"
 
@@ -30,7 +30,6 @@ do_install_append() {
 
 SYSTEMD_SERVICE_${PN} = "do-client.service"
 FILES_${PN} += "${systemd_system_unitdir}/do-client.service"
-REQUIRED_DISTRO_FEATURES = "systemd"
 
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM_${PN} = "-r do;-r adu"

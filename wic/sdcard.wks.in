@@ -1,0 +1,5 @@
+part  --source bootimg-partition --ondisk mmcblk0 --fstype=vfat --label boot --active --align 4096 --fixed-size 40M
+part / --source rootfs --ondisk mmcblk0 --fstype=ext4 --label rootA --align 4096 --fixed-size ${IMAGE_ROOTFS_MAXSIZE}K --exclude-path mnt/data/ mnt/etc/
+part  --ondisk mmcblk0 --fstype=ext4 --label rootB --align 4096 --fixed-size ${IMAGE_ROOTFS_MAXSIZE}K
+part  --source rootfs --change-directory mnt/etc --ondisk mmcblk0 --fstype=ext4 --label etc --align 4096 --fixed-size 40M
+part  --source rootfs --change-directory mnt/data --ondisk mmcblk0 --fstype=ext4 --label data --align 4096 --fixed-size 512M

@@ -1,0 +1,10 @@
+[Unit]
+Before=local-fs.target var-lib.mount home.mount
+
+[Mount]
+Where=/mnt/data
+What=/dev/disk/by-label/data
+Options=defaults,sync
+
+[Install]
+WantedBy=local-fs.target
