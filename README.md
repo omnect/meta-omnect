@@ -29,7 +29,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - adds the `iotedge` service with its dependencies
     - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedges` runtime dependency `moby`
 - `tpm`
-    - adds tpm kernel overlay, driver, modprobe and enables tpm handling in `iot-identity-service`.
+    - adds tpm kernel overlay, driver and auto modprobe.
     **Currently you have to enable it explicitly for `ics-dm-demo`, since enrollment depends hard on tpm.**)
 
 ## Compatibility
