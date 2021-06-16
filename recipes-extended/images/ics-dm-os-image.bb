@@ -24,3 +24,13 @@ IMAGE_INSTALL = "\
     packagegroup-core-ssh-dropbear \
     u-boot-fw-utils \
 "
+
+
+# we don't want add ${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin to
+# IMAGE_BOOT_FILES to get it into rootfs so we do it via post.
+ROOTFS_POSTPROCESS_COMMAND_append = " add_initramfs;"
+add_initramfs() {
+    initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin)
+    install -m 0644 ${initramfs} $D/boot/
+    ln -sf $(basename ${initramfs}) $D/boot/${KERNEL_IMAGETYPE}-initramfs.bin
+}
