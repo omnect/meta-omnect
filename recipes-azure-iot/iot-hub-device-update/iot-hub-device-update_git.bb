@@ -51,7 +51,7 @@ do_install_append() {
   install -m 0644 ${S}/daemon/adu-agent.service ${D}${systemd_system_unitdir}
 
   install -d ${D}${sysconfdir}/adu
-  echo "connection_string=" >> ${D}${sysconfdir}/adu/adu-conf.txt
+  touch ${D}${sysconfdir}/adu/adu-conf.txt
   chown adu:adu ${D}${sysconfdir}/adu/adu-conf.txt
   chmod g+w ${D}${sysconfdir}/adu/adu-conf.txt
 
