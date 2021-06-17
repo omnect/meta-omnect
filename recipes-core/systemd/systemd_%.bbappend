@@ -7,10 +7,16 @@ SRC_URI += "\
     file://mnt-etc.mount \
     file://var-lib.mount \
     file://var-log-journal.mount \
+    file://first-boot.service \
+    file://ics_dm_first_boot.sh \
 "
+
+RDEPENDS_${PN} += "bash"
 
 do_install_append() {
     install -d ${D}${systemd_system_unitdir}
+
+    # mount handling
     install -d ${D}${sysconfdir}/systemd/system/local-fs.target.wants
     install -m 0644 ${WORKDIR}/etc.mount ${D}${systemd_system_unitdir}/
     lnr ${D}${systemd_system_unitdir}/etc.mount ${D}${sysconfdir}/systemd/system/local-fs.target.wants/etc.mount
@@ -29,6 +35,12 @@ do_install_append() {
     install -d ${D}/mnt/data/home/upper
     install -d ${D}/mnt/data/var/lib
     install -d ${D}/mnt/data/local
+
+    # first boot handling
+    install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
+    install -m 0644 ${WORKDIR}/first-boot.service ${D}${systemd_system_unitdir}/
+    lnr ${D}${systemd_system_unitdir}/first-boot.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/first-boot.service
+    install -m 0755 -D ${WORKDIR}/ics_dm_first_boot.sh ${D}${bindir}/
 
     #persistent journal
     if ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-journal', 'true', 'false', d)}; then
@@ -84,7 +96,7 @@ do_install_append() {
     # sync time on sysinit
     install -d ${D}${sysconfdir}/systemd/system/sysinit.target.wants
     lnr ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service ${D}${sysconfdir}/systemd/system/sysinit.target.wants/systemd-time-wait-sync.service
-    #systemd-time-wait-sync hangs if it is started before /var/lib is mounted
+    # systemd-time-wait-sync hangs if it is started before /var/lib is mounted
     sed -i -E 's/^Wants=(.*)/Wants=\1\nAfter=var-lib.mount\nRequires=var-lib.mount/' ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service
 
     install -d ${D}${exec_prefix}
@@ -94,6 +106,7 @@ do_install_append() {
 FILES_${PN} += "\
     /mnt/data \
     /mnt/etc \
+    /usr/bin/ics_dm_first_boot.sh \
     ${exec_prefix}/local \
     ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-journal', '/mnt/data/journal ${systemd_system_unitdir}/var-log-journal.mount', '', d)} \
 "
