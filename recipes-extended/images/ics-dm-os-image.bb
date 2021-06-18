@@ -9,6 +9,11 @@ LIC_FILES_CHKSUM = "\
 
 inherit core-image
 
+# we need the initramfs bundled kernel before rootfs postprocessing
+do_rootfs[depends] += "virtual/kernel:do_deploy"
+
+IMAGE_LINGUAS = "en-us"
+
 IMAGE_BASENAME = "ics-dm-os"
 
 IMAGE_FEATURES += " read-only-rootfs"
@@ -18,16 +23,21 @@ IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'ics-dm-demo', ' enrollment', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' iotedge-daemon iotedge-cli kernel-modules', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' expand-data', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     iot-hub-device-update \
     packagegroup-core-ssh-dropbear \
     u-boot-fw-utils \
 "
 
+# instead of kernel we want the initramfs bundled kernel
+IMAGE_INSTALL_remove = "kernel"
 
-# we don't want add ${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin to
-# IMAGE_BOOT_FILES to get it into rootfs so we do it via post.
+# We don't want add ${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin to
+# IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
+# If we add it to IMAGE_BOOT_FILES wic would move it to the boot
+# partition.
+# By this postprocess handling the bundled initramfs kernel gets installed
+# to rootA and is therefore updatable via swupdate.
 ROOTFS_POSTPROCESS_COMMAND_append = " add_initramfs;"
 add_initramfs() {
     initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin)

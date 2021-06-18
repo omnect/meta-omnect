@@ -16,19 +16,7 @@ RDEPENDS_${PN} += "bash"
 do_install_append() {
     install -d ${D}${systemd_system_unitdir}
 
-    # mount handling
-    install -d ${D}${sysconfdir}/systemd/system/local-fs.target.wants
-    install -m 0644 ${WORKDIR}/etc.mount ${D}${systemd_system_unitdir}/
-    lnr ${D}${systemd_system_unitdir}/etc.mount ${D}${sysconfdir}/systemd/system/local-fs.target.wants/etc.mount
-    install -m 0644 ${WORKDIR}/home.mount ${D}${systemd_system_unitdir}/
-    lnr ${D}${systemd_system_unitdir}/home.mount ${D}${sysconfdir}/systemd/system/local-fs.target.wants/home.mount
-    install -m 0644 ${WORKDIR}/mnt-data.mount ${D}${systemd_system_unitdir}/
-    lnr ${D}${systemd_system_unitdir}/mnt-data.mount ${D}${sysconfdir}/systemd/system/local-fs.target.wants/mnt-data.mount
-    install -m 0644 ${WORKDIR}/mnt-etc.mount ${D}${systemd_system_unitdir}/
-    lnr ${D}${systemd_system_unitdir}/mnt-etc.mount ${D}${sysconfdir}/systemd/system/local-fs.target.wants/mnt-etc.mount
-    install -m 0644 ${WORKDIR}/var-lib.mount ${D}${systemd_system_unitdir}/
-    lnr ${D}${systemd_system_unitdir}/var-lib.mount ${D}${sysconfdir}/systemd/system/local-fs.target.wants/var-lib.mount
-
+    # TODO create in initramfs? or move to base-files?
     install -d ${D}/mnt/etc/upper
     install -d ${D}/mnt/etc/work
     install -d ${D}/mnt/data/home/work
@@ -50,8 +38,6 @@ do_install_append() {
 
         install -m 1750 -d ${D}/mnt/data/journal
         chgrp systemd-journal ${D}/mnt/data/journal
-        install -m 0644 ${WORKDIR}/var-log-journal.mount ${D}${systemd_system_unitdir}/
-        lnr ${D}${systemd_system_unitdir}/var-log-journal.mount ${D}${sysconfdir}/systemd/system/local-fs.target.wants/var-log-journal.mount
 
         # (Re)create journal folder permissions in data partions, e.g. after a
         # factory reset via tmpfiles.d.

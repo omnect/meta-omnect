@@ -6,7 +6,22 @@ LIC_FILES_CHKSUM = "\
 "
 inherit core-image
 
+# reset IMAGE_FEATURES var for initramfs
+IMAGE_FEATURES = ""
+IMAGE_LINGUAS = ""
+
 IMAGE_FSTYPES = "${INITRAMFS_FSTYPES}"
 
-PACKAGE_INSTALL = "initramfs-framework-base initramfs-module-e2fs ${ROOTFS_BOOTSTRAP_INSTALL}"
+PACKAGE_INSTALL = "\
+    base-passwd \
+    ics-dm-os-initramfs-rootfs-mount \
+    initramfs-framework-base \
+    initramfs-module-udev \
+    udev \
+    ${ROOTFS_BOOTSTRAP_INSTALL} \
+    ${VIRTUAL-RUNTIME_base-utils} \
+"
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}-initramfs"
+
+# don't uses rootfs module initamfs-framwork-base
+BAD_RECOMMENDATIONS += "initramfs-module-rootfs"

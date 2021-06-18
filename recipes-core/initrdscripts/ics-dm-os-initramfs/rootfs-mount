@@ -1,0 +1,51 @@
+#!/bin/sh
+
+rootfs_enabled() {
+    return 0
+}
+
+rootfs_run() {
+    msg "ics-dm-os initramfs rootfs mount"
+
+    if [ -z "${ROOTFS_DIR}" ]; then
+        fatal "no ROOTFS_DIR"
+        return 1
+    fi
+
+    if [ ${bootparam_bootpart} -eq 2 ]; then
+        rootfs=/dev/disk/by-label/rootA
+    elif [ ${bootparam_bootpart} -eq 3 ]; then
+        rootfs=/dev/disk/by-label/rootB
+    else
+        fatal "no rootfs found on bootpart ${bootparam_bootpart}"
+    fi
+    debug bootparam_bootpart=${bootparam_bootpart}
+
+    # mount rootfs
+    if [ ${bootparam_bootpart} -eq 2 ]; then
+        rootfs=/dev/disk/by-label/rootA
+    elif [ ${bootparam_bootpart} -eq 3 ]; then
+        rootfs=/dev/disk/by-label/rootB
+    else
+        fatal "no rootfs found on bootpart ${bootparam_bootpart}"
+    fi
+    mount -o ro ${rootfs} ${ROOTFS_DIR}
+
+    # mount etc overlay
+    mount -o defaults,sync /dev/disk/by-label/etc ${ROOTFS_DIR}/mnt/etc
+    mount -t overlay -o defaults,lowerdir=${ROOTFS_DIR}/etc,upperdir=${ROOTFS_DIR}/mnt/etc/upper,workdir=${ROOTFS_DIR}/mnt/etc/work
+
+    # mount data
+    mount -o defaults,sync /dev/disk/by-label/data ${ROOTFS_DIR}/mnt/data
+
+    # mount home overlay
+    mount -t overlay -o defaults,lowerdir=${ROOTFS_DIR}/home,upperdir=${ROOTFS_DIR}/mnt/data/home/upper,workdir=${ROOTFS_DIR}/mnt/data/home/work
+
+    # bind mount /var/lib
+    mkdir -p ${ROOTFS_DIR}/mnt/data/var/lib
+    mount -o bind ${ROOTFS_DIR}/mnt/data/var/lib ${ROOTFS_DIR}/var/lib
+
+    # bind mount /var/log/journal
+    mkdir -p ${ROOTFS_DIR}/mnt/data/journal
+    mount -o bind ${ROOTFS_DIR}/mnt/data/journal ${ROOTFS_DIR}/var/log/journal
+}
