@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [todo] Q2 2021
 - added ics-dm-os-initramfs which mounts overlays/bind mounts before systemd
   starts
+- patch u-boot to allow boot images > 8MB
 - updata-ca-certificates is called on first boot, to possibly propagate
   injected certificates
 - first-boot.service starts script on first boot
