@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - updata-ca-certificates is called on first boot, to possibly propagate
   injected certificates
 - first-boot.service starts script on first boot
+- patched eis_utils to propagate GatewayHostName to connection string in
+  nested environments
 - permission handling for manual SaS authentication in iot-identity service
 - build/install iot-identity-service with tpm regardless of DISTRO_FEATURES;
   currently you can not separate aziot-tpmd from installing, aziotctl has hard
