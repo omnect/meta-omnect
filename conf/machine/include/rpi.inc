@@ -1,11 +1,10 @@
 # u-boot to be able to switch between A/B updates
 RPI_USE_U_BOOT = "1"
 
-WKS_FILE = "sdcard.wks.in"
+# enable serial interface
+ENABLE_UART = "1"
 
-# install kernel to rootfs and remove it from boot partition
-CORE_IMAGE_EXTRA_INSTALL += "kernel-image"
-IMAGE_BOOT_FILES_remove = "Image"
+WKS_FILE = "sdcard.wks.in"
 
 # for referencing the root device in fstab, uboot, and swupdate sw-description
 ROOT_DEV = "/dev/mmcblk0"
