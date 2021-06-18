@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [todo] Q2 2021
+- added ics-dm-os-initramfs which mounts overlays/bind mounts before systemd
+  starts
+- updata-ca-certificates is called on first boot, to possibly propagate
+  injected certificates
+- first-boot.service starts script on first boot
+- permission handling for manual SaS authentication in iot-identity service
 - build/install iot-identity-service with tpm regardless of DISTRO_FEATURES;
   currently you can not separate aziot-tpmd from installing, aziotctl has hard
   dependencies to it
