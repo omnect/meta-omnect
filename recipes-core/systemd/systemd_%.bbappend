@@ -1,6 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
+    file://80-wlan.network \
     file://first-boot.service \
     file://ics_dm_first_boot.sh \
 "
@@ -9,6 +10,9 @@ RDEPENDS_${PN} += "bash"
 
 do_install_append() {
     install -d ${D}${systemd_system_unitdir}
+
+    # enable dhcp for wlan devices
+    install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network/
 
     # first boot handling
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
@@ -61,4 +65,5 @@ do_install_append() {
 
 FILES_${PN} += "\
     /usr/bin/ics_dm_first_boot.sh \
+    ${systemd_unitdir}/network/80-wlan.network \
 "
