@@ -21,13 +21,16 @@ An example integration can be found in [ics-dm-os](https://github.com/ICS-Device
 It is built with the default `poky` `DISTRO_FEATURES`.
 
 `meta-ics-dm` adds the following `DISTRO_FEATURES`:
-- `persistent-journal`  (This enables a persistent journal which is stored in the data partition. )
 - `ics-dm-demo`
     - adds an automatic device enrollment demo via `tpm`
     - synchronizes startup of `iot-identity-service` with the enrollment demo
 - `iotedge`
     - adds the `iotedge` service with its dependencies
     - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedges` runtime dependency `moby`
+- `persistent-journal`
+    - enables a persistent journal which is stored in the data partition
+- `resize-data`
+    - expands the data partition to available space on first boot
 - `tpm`
     - adds tpm kernel overlay, driver and auto modprobe.
     **Currently you have to enable it explicitly for `ics-dm-demo`, since enrollment depends hard on tpm.**)

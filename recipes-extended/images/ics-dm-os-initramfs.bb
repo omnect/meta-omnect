@@ -12,16 +12,25 @@ IMAGE_LINGUAS = ""
 
 IMAGE_FSTYPES = "${INITRAMFS_FSTYPES}"
 
+RESIZE_DATA_PACKAGES = "\
+    e2fsprogs-e2fsck \
+    e2fsprogs-resize2fs \
+    libubootenv \
+    libubootenv-bin \
+    parted \
+"
+
 PACKAGE_INSTALL = "\
-    base-passwd \
     ics-dm-os-initramfs-rootfs-mount \
     initramfs-framework-base \
     initramfs-module-udev \
     udev \
+    ${RESIZE_DATA_PACKAGES} \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
 "
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}-initramfs"
 
-# don't uses rootfs module initamfs-framwork-base
+# don't use rootfs module initramfs-framework-base
 BAD_RECOMMENDATIONS += "initramfs-module-rootfs"

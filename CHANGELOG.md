@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [todo] Q2 2021
+- write boot.scr dynamically
+- expanding data is now handled by initramfs on first boot, if configured
+  via DISTRO_FEATURE 'resize-data'
+- removed expand-data systemd service
+- removed systemd mount handling and mount dependencies
 - added ics-dm-os-initramfs which mounts overlays/bind mounts before systemd
   starts
 - patch u-boot to allow boot images > 8MB

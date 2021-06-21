@@ -29,9 +29,6 @@ IMAGE_INSTALL = "\
     u-boot-fw-utils \
 "
 
-# instead of kernel we want the initramfs bundled kernel
-IMAGE_INSTALL_remove = "kernel"
-
 # We don't want add ${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
 # If we add it to IMAGE_BOOT_FILES wic would move it to the boot

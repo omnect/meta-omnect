@@ -1,5 +1,16 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 do_install_append() {
-    sed -i "s#@@ROOT_DEV_P@@#${ROOT_DEV_P}#" ${D}${sysconfdir}/fstab
+    # install mountpoints
+    install -d -D ${D}/mnt/data \
+    install -d -D ${D}/mnt/etc \
+    install -d -D ${D}/var/lib \
+    install -d -D ${D}${exec_prefix}/local
 }
+
+FILES_${PN} += "\
+    /mnt/data \
+    /mnt/etc \
+    /var/lib \
+    ${exec_prefix}/local \
+"

@@ -2,7 +2,6 @@
 Description=first boot
 ConditionFirstBoot=yes
 
-After=mnt-data.mount
 Before=aziot-identityd.service
 
 [Service]
