@@ -11,6 +11,7 @@ SRC_URI = " \
   file://rpipart_to_bootpart.patch \
   file://eis-utils-cert-chain-buffer.patch \
   file://eis-utils-set-GetwayHostName.patch  \
+  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'ics-dm-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
 "
 
 S = "${WORKDIR}/git"
