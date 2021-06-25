@@ -16,8 +16,6 @@ IMAGE_LINGUAS = "en-us"
 
 IMAGE_BASENAME = "ics-dm-os"
 
-IMAGE_FEATURES += " read-only-rootfs"
-
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 IMAGE_INSTALL = "\
@@ -40,4 +38,21 @@ add_initramfs() {
     initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin)
     install -m 0644 ${initramfs} $D/boot/
     ln -sf $(basename ${initramfs}) $D/boot/${KERNEL_IMAGETYPE}-initramfs.bin
+}
+
+
+# Poky checks at creation time of rootfs and even later when creating the
+# image that '/etc/machine-id' is available when using systemd. The idea
+# behind seems to be that they can bind mount a volatile machine-id on
+# systems with readonly rootfs.
+# Unfortunately this breaks systemds "ConditionFirstBoot" check, were a
+# precondition is, that '/etc/machine-id' does not exists.
+# (https://github.com/systemd/systemd/issues/8268)
+#
+# Since we have a writeable 'etc' overlay before systemd starts we don't
+# need a preexisting empty '/etc/machine-id' and thus delete it as late
+# as possible:
+IMAGE_PREPROCESS_COMMAND_append = " remove_machine_id; reproducible_final_image_task;"
+remove_machine_id() {
+    rm -f ${IMAGE_ROOTFS}${sysconfdir}/machine-id
 }

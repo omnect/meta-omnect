@@ -2,7 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://80-wlan.network \
-    file://first-boot.service \
+    file://ics-dm-first-boot.service \
     file://ics_dm_first_boot.sh \
 "
 
@@ -16,8 +16,8 @@ do_install_append() {
 
     # first boot handling
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    install -m 0644 ${WORKDIR}/first-boot.service ${D}${systemd_system_unitdir}/
-    lnr ${D}${systemd_system_unitdir}/first-boot.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/first-boot.service
+    install -m 0644 ${WORKDIR}/ics-dm-first-boot.service ${D}${systemd_system_unitdir}/
+    lnr ${D}${systemd_system_unitdir}/ics-dm-first-boot.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/ics-dm-first-boot.service
     install -m 0755 -D ${WORKDIR}/ics_dm_first_boot.sh ${D}${bindir}/
 
     #persistent journal
@@ -34,17 +34,6 @@ do_install_append() {
         echo "z /mnt/data/journal 2750 root systemd-journal - -"                    >> ${D}${libdir}/tmpfiles.d/persistent_journal.conf
         echo "z /mnt/data/journal/%m 2755 root systemd-journal - -"                 >> ${D}${libdir}/tmpfiles.d/persistent_journal.conf
         echo "z /mnt/data/journal/%m/system.journal 0640 root systemd-journal - -"  >> ${D}${libdir}/tmpfiles.d/persistent_journal.conf
-
-        # Enable persistent machine-id creation only if journal is persistent
-        # Note: We can not simply create an etc-machine\x2did.mount unit.
-        #       Systemd creates a tmpfs mtab entry for /etc/machine-id which
-        #       prevents that we can mount /etc/machine-id with
-        #       "Where=" in etc-machine\x2did.mount.
-        #       Thus we do it as "ExecStartPre=" step in
-        #       systemd-machine-id-commit.service.
-        sed -i -E '/^ConditionPathIsMountPoint=(.*)/d' ${D}${systemd_system_unitdir}/systemd-machine-id-commit.service
-        sed -i -E 's?^ConditionPathIsReadWrite=(.*)?ConditionPathExists=!/mnt/etc/upper/machine-id?' ${D}${systemd_system_unitdir}/systemd-machine-id-commit.service
-        sed -i -E 's?^ExecStart=(.*)?ExecStartPre=touch /mnt/etc/upper/machine-id\nExecStartPre=mount -o bind /mnt/etc/upper/machine-id /etc/machine-id\nExecStart=/bin/systemd-machine-id-setup?' ${D}${systemd_system_unitdir}/systemd-machine-id-commit.service
     fi
 
     # configure journald
