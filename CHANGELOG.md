@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [todo] Q2 2021
+## [> 3.1.8.468] Q2 2021
+- fix systemds "ConditionFirstBoot" check on first boot by removing
+  empty machine-id in rootfs
 - write boot.scr dynamically
 - expanding data is now handled by initramfs on first boot, if configured
   via DISTRO_FEATURE 'resize-data'
