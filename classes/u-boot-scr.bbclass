@@ -20,11 +20,11 @@ python create_boot_cmd () {
             f.write("if env exists bootpart;then echo Booting from bootpart=${bootpart};else setenv bootpart 2;echo bootpart not set, default to bootpart=${bootpart};fi\n")
 
             # possibly expand data partition on first boot
-            if bb.utils.contains('DISTRO_FEATURES', 'resize-data', 'true', 'false', d):
+            if bb.utils.contains('DISTRO_FEATURES', 'resize-data', True, False, d):
                 f.write("if test -z \"${resized_data}\"; then setenv resize_data \"resize_data=1\";fi\n")
 
             # possibly mount persitent journal to /var/log/journal
-            if bb.utils.contains('DISTRO_FEATURES', 'persistent-journal', 'true', 'false', d):
+            if bb.utils.contains('DISTRO_FEATURES', 'persistent-journal', True, False, d):
                 bootargs_append+=" persistent_journal=1"
 
             # load device tree
