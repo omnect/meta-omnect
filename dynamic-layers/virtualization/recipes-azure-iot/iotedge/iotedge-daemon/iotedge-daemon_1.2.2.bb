@@ -7,8 +7,8 @@ inherit cargo
 
 # how to get aziot-edged could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/aziot-edged/0.1.0"
-SRC_URI += "git://git@github.com/Azure/iotedge.git;protocol=https;nobranch=1"
-SRCREV = "f0e7486e3fd527515999b9449313e55b733516c9"
+SRC_URI += "git://git@github.com/Azure/iotedge.git;protocol=ssh;nobranch=1"
+SRCREV = "436fab9854830d3cdc0315d46d8a1e59fc6279f1"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = "edgelet/aziot-edged"
 
@@ -351,12 +351,13 @@ SRCREV_FORMAT .= "_pkcs11-sys"
 SRCREV_pkcs11-sys = "release/1.2"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/pkcs11-sys"
 
-LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
+# FIXME: update generateme with the real MD5 of the license file
+LIC_FILES_CHKSUM = " \
+    "
 
 SUMMARY = "aziot-edged"
 HOMEPAGE = "https://github.com/Azure/iotedge"
-
-LICENSE = "MIT"
+LICENSE = "CLOSED"
 
 # includes this file if it exists but does not fail
 # this is useful for anything you may want to override from
