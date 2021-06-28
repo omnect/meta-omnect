@@ -30,7 +30,7 @@ python create_boot_cmd () {
             # load device tree
             f.write("fdt addr ${%s}\n" % fdt_addr)
 
-            # possibly load devicetree from file
+            # possibly load device tree from file
             if fdt_load:
                 f.write("load mmc 0:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
 
