@@ -13,6 +13,7 @@ This yocto meta layer provides yocto recipes for ICS_DeviceManagement:
     - `iot-hub-device-update` and `iotedge` get provisioned via `iot-identity-service`
 - A/B update support for [raspberrypi](https://www.raspberrypi.org/) 3 and 4
 - A/B update support for [odroid-c2](https://www.hardkernel.com/shop/odroid-c2/)
+- first boot script `/usr/bin/ics_dm_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-ics-dm/recipes-core/systemd/systemd/ics_dm_first_boot.sh`
 
 An example integration can be found in [ics-dm-os](https://github.com/ICS-DeviceManagement/ics-dm-os).
 
@@ -33,12 +34,12 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - expands the data partition to available space on first boot
 - `tpm`
     - adds tpm kernel overlay, driver and auto modprobe.
-    **Currently you have to enable it explicitly for `ics-dm-demo`, since enrollment depends hard on tpm.**)
+    (**Currently you have to enable it explicitly for `ics-dm-demo`, since enrollment depends hard on tpm.**)
 
 ### `EXTRA_IMAGE_FEATURES`
 `meta-ics-dm` adds the following configurable `EXTRA_IMAGE_FEATURES`:
 - `ics-dm-debug`
-   - currently provisioning debug output in tools using eis_utils
+    - eis_utils: enables output of connection- and identity string
 
 ## Compatibility
 `meta-ics-dm` is compatible with the current yocto LTS release branch `dunfell`.
