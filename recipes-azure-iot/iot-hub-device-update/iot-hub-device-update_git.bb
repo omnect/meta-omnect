@@ -10,7 +10,7 @@ SRC_URI = " \
   file://linux_platform_layer.patch \
   file://rpipart_to_bootpart.patch \
   file://eis-utils-cert-chain-buffer.patch \
-  file://eis-utils-set-GetwayHostName.patch  \
+  file://eis-utils-set-GatewayHostName.patch  \
   ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'ics-dm-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
 "
 
