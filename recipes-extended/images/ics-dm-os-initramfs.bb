@@ -21,7 +21,7 @@ RESIZE_DATA_PACKAGES = "\
 "
 
 PACKAGE_INSTALL = "\
-    ics-dm-os-initramfs-rootfs-mount \
+    ics-dm-os-initramfs-scripts \
     initramfs-framework-base \
     initramfs-module-udev \
     udev \
