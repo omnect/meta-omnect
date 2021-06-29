@@ -1,0 +1,148 @@
+diff --git a/src/utils/eis_utils/src/eis_utils.c b/src/utils/eis_utils/src/eis_utils.c
+index f15f593..85cc8f2 100644
+--- a/src/utils/eis_utils/src/eis_utils.c
++++ b/src/utils/eis_utils/src/eis_utils.c
+@@ -22,7 +22,7 @@
+ 
+ /**
+  * Example Identity Response:
+- * 
++ *
+  * {
+  *   "type":"aziot",
+  *   "spec":{
+@@ -36,7 +36,7 @@
+  *       }
+  *   }
+  * }
+- * 
++ *
+  */
+ 
+ /**
+@@ -59,6 +59,12 @@
+  */
+ #define EIS_IDENTITY_RESP_MODULEID_FIELD "moduleId"
+ 
++/**
++ * @brief Fieldname for the gatewayHostName provisioned to the IdentityService
++ */
++#define EIS_IDENTITY_RESP_GATEWAYHHOSTNAME_FIELD "gatewayHost"
++
++
+ /**
+  * @brief Fieldname for the JSON Object which contains the authType and keyHandle
+  */
+@@ -104,7 +110,7 @@
+  * {
+  *  "pem":"string"
+  * }
+- * 
++ *
+  */
+ 
+ /**
+@@ -233,7 +239,8 @@ done:
+  * @param deviceId the device identity for the connection string
+  * @param moduleId an optional parameter specifying the module identity to use in the connection string
+  * @param connType the connection type being used, if EISConnType_ModuleId then moduleId must not be NULL
+- * @param sharedAccessSignature the sharedAccessSignature generated for this connection string 
++ * @param sharedAccessSignature the sharedAccessSignature generated for this connection string
++ * @param gatewayHostName an optional parameter specifying the gatewayHostName in a nested environment
+  * @param connectionStrPtr the pointer to the buffer which will be allocated for the connection string
+  * @returns a value of EISErr
+  */
+@@ -243,6 +250,7 @@ EISErr BuildSasTokenConnectionString(
+     const char* moduleId,
+     const ADUC_ConnType connType,
+     const char* sharedAccessSignature,
++    const char* gatewayHostName,
+     char** connectionStrPtr)
+ {
+     EISErr result = EISErr_Failed;
+@@ -277,9 +285,11 @@ EISErr BuildSasTokenConnectionString(
+             moduleId,
+             sharedAccessSignature);
+     }
+-    else
++
++    if (NULL != gatewayHostName)
+     {
+-        goto done;
++        connectionStr =
++            ADUC_StringFormat("%s;GatewayHostName=%s", connectionStr, gatewayHostName);
+     }
+ 
+     result = EISErr_Ok;
+@@ -304,6 +314,7 @@ done:
+  * @param deviceId the device identity for the connection string
+  * @param moduleId an optional parameter specifying the module identity to use in the connection string
+  * @param connType the connection type being used, if EISConnType_ModuleId then moduleId must not be NULL
++ * @param gatewayHostName an optional parameter specifying the gatewayHostName in a nested environment
+  * @param connectionStrPtr the pointer to the buffer which will be allocated for the connection string
+  * @returns a value of EISErr
+  */
+@@ -312,6 +323,7 @@ EISErr BuildSasCertConnectionString(
+     const char* deviceId,
+     const char* moduleId,
+     const ADUC_ConnType connType,
++    const char* gatewayHostName,
+     char** connectionStrPtr)
+ {
+     bool success = false;
+@@ -346,6 +358,12 @@ EISErr BuildSasCertConnectionString(
+         goto done;
+     }
+ 
++    if (NULL != gatewayHostName)
++    {
++        connectionStr =
++            ADUC_StringFormat("%s;GatewayHostName=%s", connectionStr, gatewayHostName);
++    }
++
+     result = EISErr_Ok;
+     success = true;
+ 
+@@ -368,7 +386,7 @@ done:
+ 
+ /**
+  * @brief Creates a connection string using the provisioned data within EIS
+- * @details Calls into the EIS Identity and Keyservice to create a SharedAccessSignature which is then used 
++ * @details Calls into the EIS Identity and Keyservice to create a SharedAccessSignature which is then used
+  * to create the connection string, Caller is required to call free() to deallocate the connection string
+  * @param[in] expirySecsSinceEpoch the expiration time in seconds since the epoch for the token in the connection string
+  * @param[in] timeoutMS the timeoutMS in milliseconds for each call to EIS
+@@ -474,6 +492,8 @@ EISUtilityResult RequestConnectionStringFromEISWithExpiry(
+         connType = ADUC_ConnType_Module;
+     }
+ 
++    const char* gatewayHostName = json_object_get_string(specJson, EIS_IDENTITY_RESP_GATEWAYHHOSTNAME_FIELD);
++
+     // Build request for the signature
+     if (connType == ADUC_ConnType_Device)
+     {
+@@ -533,7 +553,7 @@ EISUtilityResult RequestConnectionStringFromEISWithExpiry(
+         }
+ 
+         result.err =
+-            BuildSasTokenConnectionString(hubName, deviceId, moduleId, connType, sharedSignatureStr, &connectionStr);
++            BuildSasTokenConnectionString(hubName, deviceId, moduleId, connType, sharedSignatureStr, gatewayHostName, &connectionStr);
+ 
+         if (result.err != EISErr_Ok)
+         {
+@@ -594,7 +614,7 @@ EISUtilityResult RequestConnectionStringFromEISWithExpiry(
+             goto done;
+         }
+ 
+-        result.err = BuildSasCertConnectionString(hubName, deviceId, moduleId, connType, &connectionStr);
++        result.err = BuildSasCertConnectionString(hubName, deviceId, moduleId, connType, gatewayHostName, &connectionStr);
+ 
+         if (result.err != EISErr_Ok)
+         {
+@@ -641,4 +661,4 @@ done:
+     }
+ 
+     return result;
+-}
+\ No newline at end of file
++}

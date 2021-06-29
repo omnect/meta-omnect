@@ -1,0 +1,64 @@
+#!/bin/sh
+
+rootfs_enabled() {
+    return 0
+}
+
+rootfs_run() {
+    msg "ics-dm-os initramfs rootfs mount"
+
+    if [ -z "${ROOTFS_DIR}" ]; then
+        fatal "no ROOTFS_DIR"
+        return 1
+    fi
+
+    debug bootparam_bootpart=${bootparam_bootpart}
+
+    # currently we can not boot root via label and have to get the root dev
+    # ourselves.
+    # reason: on first boot you have the labels: rootA, rootB where rootB is an
+    # empty partition. on the boot after the first update, you have only
+    # label rootA, the label rootB disappeared, because adu-swupdate.sh doesnt
+    # set a e2fs label. After a second update you don't have a root partition
+    # with a label anymore.
+
+    # get mmcblk at runtime, so we can boot devices which can switch between
+    # emmc and sdcard with the same image.
+    mmcblk=$(readlink /dev/disk/by-label/boot)
+    mmcblk=${mmcblk##*/}
+    mmcblk=${mmcblk%p*};
+
+    # mount rootfs
+    rootfs=/dev/${mmcblk}p${bootparam_bootpart}
+    mount -o ro ${rootfs} ${ROOTFS_DIR}
+
+    # mount etc overlay
+    mount -o defaults,sync /dev/disk/by-label/etc ${ROOTFS_DIR}/mnt/etc
+    mkdir -p ${ROOTFS_DIR}/mnt/etc/upper
+    mkdir -p ${ROOTFS_DIR}/mnt/etc/work
+    mount -t overlay -o defaults,lowerdir=${ROOTFS_DIR}/etc,upperdir=${ROOTFS_DIR}/mnt/etc/upper,workdir=${ROOTFS_DIR}/mnt/etc/work overlay ${ROOTFS_DIR}/etc
+
+    # mount data
+    mount -o defaults,sync /dev/disk/by-label/data ${ROOTFS_DIR}/mnt/data
+    mkdir -p ${ROOTFS_DIR}/mnt/data/home/work
+    mkdir -p ${ROOTFS_DIR}/mnt/data/home/upper
+    mkdir -p ${ROOTFS_DIR}/mnt/data/var/lib
+    mkdir -p ${ROOTFS_DIR}/mnt/data/local
+
+    # mount home overlay
+    mount -t overlay -o defaults,lowerdir=${ROOTFS_DIR}/home,upperdir=${ROOTFS_DIR}/mnt/data/home/upper,workdir=${ROOTFS_DIR}/mnt/data/home/work overlay ${ROOTFS_DIR}/home
+
+    # bind mount /var/lib
+    mkdir -p ${ROOTFS_DIR}/mnt/data/var/lib
+    mount -o bind ${ROOTFS_DIR}/mnt/data/var/lib ${ROOTFS_DIR}/var/lib
+
+    # bind mount /usr/local
+    mkdir -p ${ROOTFS_DIR}/mnt/data/local
+    mount -o bind ${ROOTFS_DIR}/mnt/data/local ${ROOTFS_DIR}/usr/local
+
+    # bind mount /var/log/journal
+    if [ "${bootparam_persistent_journal}" = "1" ]; then
+        mkdir -p ${ROOTFS_DIR}/mnt/data/journal
+        mount -o bind ${ROOTFS_DIR}/mnt/data/journal ${ROOTFS_DIR}/var/log/journal
+    fi
+}

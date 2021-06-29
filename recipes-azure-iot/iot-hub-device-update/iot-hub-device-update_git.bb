@@ -9,6 +9,9 @@ SRC_URI = " \
   file://iot-identity-service-identityd.template.toml \
   file://linux_platform_layer.patch \
   file://rpipart_to_bootpart.patch \
+  file://eis-utils-cert-chain-buffer.patch \
+  file://eis-utils-set-GatewayHostName.patch  \
+  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'ics-dm-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
 "
 
 S = "${WORKDIR}/git"
@@ -49,7 +52,7 @@ do_install_append() {
   install -m 0644 ${S}/daemon/adu-agent.service ${D}${systemd_system_unitdir}
 
   install -d ${D}${sysconfdir}/adu
-  echo "connection_string=" >> ${D}${sysconfdir}/adu/adu-conf.txt
+  touch ${D}${sysconfdir}/adu/adu-conf.txt
   chown adu:adu ${D}${sysconfdir}/adu/adu-conf.txt
   chmod g+w ${D}${sysconfdir}/adu/adu-conf.txt
 
@@ -80,7 +83,7 @@ do_install_append() {
   install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
 
   # systemd
-  sed -i 's/^After=\(.*\)$/After=\1 etc.mount var-lib.mount systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/adu-agent.service
+  sed -i 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/adu-agent.service
 
   # fix hard device path in adu-swupdate.sh (odroid-c2 needs this when booting from sdcard)
   sed -i 's#/dev/mmcblk0p#${ROOT_DEV_P}#' ${D}${libdir}/adu/adu-swupdate.sh
@@ -108,4 +111,4 @@ FILES_${PN} += " \
   "
 
 GROUPADD_PARAM_${PN} += "-r adu;"
-USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G disk,aziotid,aziotks -g adu adu;"
+USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G disk,aziotcs,aziotid,aziotks -g adu adu;"

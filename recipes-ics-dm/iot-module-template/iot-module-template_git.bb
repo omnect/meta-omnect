@@ -41,4 +41,4 @@ pkg_postinst_${PN}() {
 SYSTEMD_SERVICE_${PN} = "iot-module-template.service"
 
 GROUPADD_PARAM_${PN} += "-r iotmodule;"
-USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G aziotid,aziotks -g iotmodule iotmodule;"
+USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks -g iotmodule iotmodule;"

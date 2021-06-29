@@ -1,0 +1,12 @@
+[Unit]
+Description=first boot
+ConditionFirstBoot=yes
+
+Before=aziot-identityd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/ics_dm_first_boot.sh
+
+[Install]
+WantedBy=multi-user.target

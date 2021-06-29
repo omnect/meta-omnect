@@ -13,6 +13,7 @@ This yocto meta layer provides yocto recipes for ICS_DeviceManagement:
     - `iot-hub-device-update` and `iotedge` get provisioned via `iot-identity-service`
 - A/B update support for [raspberrypi](https://www.raspberrypi.org/) 3 and 4
 - A/B update support for [odroid-c2](https://www.hardkernel.com/shop/odroid-c2/)
+- first boot script `/usr/bin/ics_dm_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-ics-dm/recipes-core/systemd/systemd/ics_dm_first_boot.sh`
 
 An example integration can be found in [ics-dm-os](https://github.com/ICS-DeviceManagement/ics-dm-os).
 
@@ -21,16 +22,24 @@ An example integration can be found in [ics-dm-os](https://github.com/ICS-Device
 It is built with the default `poky` `DISTRO_FEATURES`.
 
 `meta-ics-dm` adds the following `DISTRO_FEATURES`:
-- `persistent-journal`  (This enables a persistent journal which is stored in the data partition. )
 - `ics-dm-demo`
     - adds an automatic device enrollment demo via `tpm`
     - synchronizes startup of `iot-identity-service` with the enrollment demo
 - `iotedge`
     - adds the `iotedge` service with its dependencies
     - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedges` runtime dependency `moby`
+- `persistent-journal`
+    - enables a persistent journal which is stored in the data partition
+- `resize-data`
+    - expands the data partition to available space on first boot
 - `tpm`
-    - adds tpm kernel overlay, driver, modprobe and enables tpm handling in `iot-identity-service`.
-    **Currently you have to enable it explicitly for `ics-dm-demo`, since enrollment depends hard on tpm.**)
+    - adds tpm kernel overlay, driver and auto modprobe.
+    (**Currently you have to enable it explicitly for `ics-dm-demo`, since enrollment depends hard on tpm.**)
+
+### `EXTRA_IMAGE_FEATURES`
+`meta-ics-dm` adds the following configurable `EXTRA_IMAGE_FEATURES`:
+- `ics-dm-debug`
+    - eis_utils: enables output of connection- and identity string
 
 ## Compatibility
 `meta-ics-dm` is compatible with the current yocto LTS release branch `dunfell`.
