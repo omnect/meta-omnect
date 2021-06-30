@@ -83,8 +83,8 @@ do_install_append() {
   install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
 
   # systemd
-  sed -i 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/adu-agent.service
-
+  sed -i -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service aziot-identityd.service/' \
+         -e 's/^Wants=\(.*\)$/Wants=\1 aziot-identityd.service/' ${D}${systemd_system_unitdir}/adu-agent.service
   # fix hard device path in adu-swupdate.sh (odroid-c2 needs this when booting from sdcard)
   sed -i 's#/dev/mmcblk0p#${ROOT_DEV_P}#' ${D}${libdir}/adu/adu-swupdate.sh
 }
