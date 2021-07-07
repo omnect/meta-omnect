@@ -4,7 +4,7 @@ inherit aziot cargo systemd
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
-GITREV = "3f82e7b565bf4a46479707ddc72fd3f43c8cadf9"
+GITREV = "15f59c8bd33b1fd8581a74ae6e5ea145c8cb1b9b"
 
 SRC_URI = "gitsm://git@github.com/Azure/iot-identity-service.git;protocol=ssh;nobranch=1;branch=release/1.2;rev=${GITREV}"
 
