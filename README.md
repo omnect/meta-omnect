@@ -72,8 +72,9 @@ openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
 
 # Todo's
 - document: image needs postprocessing via `ics-dm-cli` to get
-  - mandatory: a valid enrollment + identity configuration
-  - optional: a iot-hub-device-update configuration
+  - mandatory: an `iot-identity-service` configuration (provisioning)
+  - mandatory if activated: an `ics-dm-demo` configuration (enrollment)
+  - optional: an `iot-hub-device-update` configuration
 
 # License
 
