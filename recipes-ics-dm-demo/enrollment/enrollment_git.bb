@@ -12,7 +12,7 @@ SRCREV = "${AUTOREV}"
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "azure-iot-sdk-c-prov jq-native"
+DEPENDS = "azure-iot-sdk-c-prov"
 RDEPENDS_${PN} = "ca-certificates jq"
 
 inherit cmake features_check overwrite_src_uri
@@ -43,26 +43,10 @@ inherit systemd
 
 do_install_append() {
     install -d ${D}${sysconfdir}/ics_dm
-    jq -n --arg dpsConnectionString "${ENROLLMENT_DPS_CONNECTION_STRING}" \
-          --argjson edgeDevice "${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'true', 'false', d)}" \
-          --arg tag1 machine --arg tag1Value "${MACHINE}" \
-          --arg tag2 ADUGroup --arg tag2Value "${ADU_GROUP}" \
-        '{ "dps_connectionString":"\($dpsConnectionString)",
-           "edgeDevice": $edgeDevice,
-           "tags" :
-           { "\($tag1)" : "\($tag1Value)",
-             "\($tag2)" : "\($tag2Value)"
-        }}'  > ${D}${sysconfdir}/ics_dm/enrollment_static.conf
-
-    jq -n --arg provisioningGlobalEndpoint "${DPS_ENDPOINT}" \
-          --arg provisioningScopeId "${DPS_SCOPE_ID}" \
-        '{ "provisioning_global_endpoint":"\($provisioningGlobalEndpoint)",
-           "provisioning_scope_id":"\($provisioningScopeId)" }'  > ${D}${sysconfdir}/ics_dm/provisioning_static.conf
-
-    install -m 755 ${S}/scripts/iot_identity_provisioning.sh ${D}${bindir}/
-
     chgrp enrollment ${D}${sysconfdir}/ics_dm
     chmod g+rw ${D}${sysconfdir}/ics_dm
+
+    install -m 755 ${S}/scripts/iot_identity_provisioning.sh ${D}${bindir}/
 }
 SYSTEMD_SERVICE_${PN} = "enrollment-config-apply.path enrollment.service enrolled.path"
 FILES_${PN} += "${systemd_system_unitdir}"

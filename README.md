@@ -70,6 +70,12 @@ openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
 # SWUPDATE_PRIVATE_KEY = $(pwd)/priv.pem
 ```
 
+# Todo's
+- document: image needs postprocessing via `ics-dm-cli` to get
+  - mandatory: an `iot-identity-service` configuration (provisioning)
+  - mandatory if activated: an `ics-dm-demo` configuration (enrollment)
+  - optional: an `iot-hub-device-update` configuration
+
 # License
 
 Licensed under either of
