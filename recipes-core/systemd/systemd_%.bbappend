@@ -4,6 +4,7 @@ SRC_URI += "\
     file://80-wlan.network \
     file://ics-dm-first-boot.service \
     file://ics_dm_first_boot.sh \
+    file://0001-util-return-the-correct-correct-wd-from-inotify-help.patch \
 "
 
 RDEPENDS_${PN} += "bash"
