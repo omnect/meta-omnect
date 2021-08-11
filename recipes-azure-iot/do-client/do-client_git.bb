@@ -7,7 +7,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ee51f94efd0db5b258b5b1b8107fea02"
 
 SRC_URI = " \
-    git://github.com/microsoft/do-client.git;protocol=https;branch=main;tag=v0.6.0 \
+    git://github.com/microsoft/do-client.git;protocol=https;branch=main;tag=v0.7.0 \
     file://fix-linking.patch \
     file://do-client.service \
 "
