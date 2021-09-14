@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.10.768 ] Q3 2021
+- add tmpfiles.d handling for /etc/aziot in
+  /usr/lib/tmpfiles.d/iot-identity-service.conf as fallback to fix permissions
+
 ## [> 3.1.10.761 ] Q3 2021
 - update azure-iot-sdk-c to LTS_07_2021_Ref01
 
