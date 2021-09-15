@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [> 3.1.10.768 ] Q3 2021
 - add tmpfiles.d handling for /etc/aziot in
   /usr/lib/tmpfiles.d/iot-identity-service.conf as fallback to fix permissions
+- iotedge: change dependencies to iot-identity-service from head of release/1.2 branch
+  to a hard commit (head of release/1.2 branch at time iotedge repo was tagged to 1.2.x)
 
 ## [> 3.1.10.761 ] Q3 2021
 - update azure-iot-sdk-c to LTS_07_2021_Ref01
