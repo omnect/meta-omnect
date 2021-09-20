@@ -25,7 +25,9 @@ IMAGE_INSTALL = "\
     iot-hub-device-update \
     packagegroup-core-ssh-dropbear \
     u-boot-fw-utils \
+    wifi-commissioning-gatt-service \
 "
+# todo: wifi-commissioning-gatt-service configurable via bluetooth,wifi and own? DISTRO_FEATURES
 
 # We don't want add ${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
