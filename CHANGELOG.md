@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [> TODO ] Q3 2021
 - add wifi-commissioning-gatt-service
 - add bluez 5.61 from poky honister (required by wifi-commissioning-gatt-service)
+- enable wpa_supplicant with default config for wlan0 per default if
+  DISTRO_FEATURE 'wifi' is set
 
 ## [> 3.1.10.768 ] Q3 2021
 - add tmpfiles.d handling for /etc/aziot in
