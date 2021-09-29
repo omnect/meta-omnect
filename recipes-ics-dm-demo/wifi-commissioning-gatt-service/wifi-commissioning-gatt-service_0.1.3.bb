@@ -6,12 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get wifi-commissioning-gatt-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.1.2"
+# SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.1.3"
 SRC_URI += "git://git@github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "5a84c8cc1d08e5483ea970a7355c1a83f714f223"
+SRCREV = "ae26e6b649045b9b9f1b22dbf394292c06cbcee8"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV_append = ".AUTOINC+5a84c8cc1d"
+PV_append = ".AUTOINC+ae26e6b649"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -36,7 +36,6 @@ SRC_URI += " \
     crate://crates.io/dbus-tokio/0.7.4 \
     crate://crates.io/dbus/0.9.3 \
     crate://crates.io/displaydoc/0.2.3 \
-    crate://crates.io/either/1.6.1 \
     crate://crates.io/enclose/1.1.8 \
     crate://crates.io/env_logger/0.8.4 \
     crate://crates.io/failure/0.1.8 \
@@ -58,7 +57,6 @@ SRC_URI += " \
     crate://crates.io/hex/0.4.3 \
     crate://crates.io/humantime/2.1.0 \
     crate://crates.io/iovec/0.1.4 \
-    crate://crates.io/itertools/0.8.2 \
     crate://crates.io/itoa/0.4.8 \
     crate://crates.io/lazy_static/1.4.0 \
     crate://crates.io/libc/0.2.102 \
@@ -106,7 +104,6 @@ SRC_URI += " \
     crate://crates.io/uuid/0.8.2 \
     crate://crates.io/void/1.0.2 \
     crate://crates.io/wasi/0.10.2+wasi-snapshot-preview1 \
-    crate://crates.io/wifiscanner/0.5.1 \
     crate://crates.io/winapi-i686-pc-windows-gnu/0.4.0 \
     crate://crates.io/winapi-util/0.1.5 \
     crate://crates.io/winapi-x86_64-pc-windows-gnu/0.4.0 \
