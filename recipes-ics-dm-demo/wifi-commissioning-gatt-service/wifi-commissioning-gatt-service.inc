@@ -1,6 +1,7 @@
 SRC_URI += "file://wifi-commissioning-gatt@.service"
 
 DEPENDS += "dbus"
+RDEPENDS_${PN} += "bluez5 (>=5.60) wpa-supplicant"
 
 do_install_append() {
     install -d ${D}${systemd_system_unitdir}
