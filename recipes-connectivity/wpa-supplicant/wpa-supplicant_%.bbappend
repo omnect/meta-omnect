@@ -10,3 +10,8 @@ do_install_append_rpi() {
         lnr ${D}${systemd_system_unitdir}/wpa_supplicant@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wpa_supplicant@wlan0.service
     fi
 }
+
+inherit useradd
+
+USERADD_PACKAGES = "${PN}"
+GROUPADD_PARAM_${PN} = "-r wpa_supplicant;"
