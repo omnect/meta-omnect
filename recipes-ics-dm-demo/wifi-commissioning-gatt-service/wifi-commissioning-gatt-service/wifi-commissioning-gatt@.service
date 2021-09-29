@@ -9,8 +9,9 @@ Type=simple
 Restart=on-failure
 RestartSec=5
 
-ExecStartPre=bash -c "/usr/sbin/rfkill unblock $(/usr/sbin/rfkill | /bin/grep wlan | /usr/bin/awk \'{print $1}\')"
-ExecStartPre=bash -c "/usr/sbin/rfkill unblock $(/usr/sbin/rfkill | /bin/grep bluetooth | /usr/bin/awk \'{print $1}\')"
+User=nobody
+Group=wpa_supplicant
+
 ExecStart=/usr/bin/wifi-commissioning-gatt-service
 
 [Install]
