@@ -38,8 +38,6 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 - `wifi-commissioning`
     - adds a service with enables wifi commissioning via bluetooth
     - this is only intended for demo purposes; this is not a production ready service
-    - attention: this service runs with root privileges
-    - attention: this service unblocks wlan and bluetooth via rfkill when starting
     - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
 
 ### `EXTRA_IMAGE_FEATURES`
