@@ -27,7 +27,6 @@ IMAGE_INSTALL = "\
     packagegroup-core-ssh-dropbear \
     u-boot-fw-utils \
 "
-# todo: wifi-commissioning-gatt-service configurable via bluetooth,wifi and own? DISTRO_FEATURES
 
 # We don't want add ${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
