@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (in kas/distro/ics-dm-os.yaml)
 - Readme: documented default partition layout
 - os-release.bbappend: adapt to meta-ics-dm layer handling in kas
+- distro.conf: increase IMAGE_OVERHEAD_FACTOR to 1.1 otherwise ext4 image
+  overhead will not fit into IMAGE_ROOTFS_SIZE and IMAGE_ROOTFS_EXTRA_SPACE
 
 ## [> 3.1.10.912 ] Q3 2021
 - add wifi-commissioning-gatt-service
