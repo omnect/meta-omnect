@@ -1,0 +1,18 @@
+[Unit]
+Description=wifi-commissioning-gatt: commissioning wifi via bt
+Requires=wpa_supplicant@%i.service bluetooth.service
+After=wpa_supplicant@%i.service bluetooth.service bluetooth.target
+
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5
+
+User=nobody
+Group=wpa_supplicant
+
+ExecStart=/usr/bin/wifi-commissioning-gatt-service
+
+[Install]
+WantedBy=multi-user.target

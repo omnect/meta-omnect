@@ -35,6 +35,10 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 - `tpm`
     - adds tpm kernel overlay, driver and auto modprobe.
     (**Currently you have to enable it explicitly for `ics-dm-demo`, since enrollment depends hard on tpm.**)
+- `wifi-commissioning`
+    - adds a service which enables wifi commissioning via bluetooth
+    - this is only intended for demo purposes; this is not a production ready service
+    - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
 
 ### `EXTRA_IMAGE_FEATURES`
 `meta-ics-dm` adds the following configurable `EXTRA_IMAGE_FEATURES`:

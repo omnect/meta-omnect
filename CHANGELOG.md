@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.10.912 ] Q3 2021
+- add wifi-commissioning-gatt-service
+- add bluez 5.61 from poky honister (required by wifi-commissioning-gatt-service)
+- enable wpa_supplicant with default config for wlan0 per default if
+  DISTRO_FEATURE 'wifi' is set
+- wpa_supplicant ctrl is restricted to group wpa_supplicant for
+  wpa_supplicant@wlan0
+
 ## [> 3.1.10.768 ] Q3 2021
 - add tmpfiles.d handling for /etc/aziot in
   /usr/lib/tmpfiles.d/iot-identity-service.conf as fallback to fix permissions
