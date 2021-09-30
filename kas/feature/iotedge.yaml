@@ -1,0 +1,16 @@
+# kas config file
+
+header:
+  version: 10
+  includes:
+    - iot.yaml
+
+repos:
+  meta-virtualization:
+    url: "https://git.yoctoproject.org/git/meta-virtualization"
+    refspec: cdf82b11d208e1b75f4602abacfabec89d91d791
+
+local_conf_header:
+  ics-dm-os-iotedge: |
+    # enable iotedge
+    DISTRO_FEATURES_append = " iotedge"

@@ -1,0 +1,25 @@
+# kas config file
+
+header:
+  version: 10
+  includes:
+    - poky.yaml
+
+distro: ics-dm-os
+
+repos:
+  meta-ics-dm:
+  meta-openembedded:
+    url: "https://github.com/openembedded/meta-openembedded.git"
+    refspec: 2e7e98cd0cb82db214b13224c71134b9335a719b
+    layers:
+      meta-filesystems:
+      meta-networking:
+      meta-oe:
+      meta-python:
+  meta-rust:
+    url: "https://github.com/meta-rust/meta-rust.git"
+    refspec: 02db606a9678bddf81169a3f2e7c6346e0876839
+  meta-swupdate:
+    url: "https://github.com/sbabic/meta-swupdate.git"
+    refspec: 0468cdf76d66db23a5fbfbb824623e0e1203b3af

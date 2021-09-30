@@ -1,0 +1,9 @@
+# kas config file
+
+header:
+  version: 10
+
+repos:
+  meta-raspberrypi:
+    url: "https://github.com/agherzan/meta-raspberrypi.git"
+    refspec: 77190af02d48adc2b28216775e6318e9eeda571c
