@@ -21,8 +21,9 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 
 `meta-ics-dm` adds the following `DISTRO_FEATURES`:
 - `ics-dm-demo`
-    - adds an automatic device enrollment demo via `tpm`
+    - adds an automatic device enrollment demo with provisioning via tpm
     - synchronizes startup of `iot-identity-service` with the enrollment demo
+    - depends on `DISTRO_FEATURES` including `tpm` which is not added automatically!
 - `iotedge`
     - adds the `iotedge` service with its dependencies
     - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedges` runtime dependency `moby`
