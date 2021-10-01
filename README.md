@@ -14,6 +14,7 @@ This yocto meta layer provides the poky based ICS_DeviceManagement distribution 
 - A/B update support for [raspberrypi](https://www.raspberrypi.org/) 3 and 4
 - A/B update support for [odroid-c2](https://www.hardkernel.com/shop/odroid-c2/)
 - first boot script `/usr/bin/ics_dm_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-ics-dm/recipes-core/systemd/systemd/ics_dm_first_boot.sh`
+- wifi commissioning via bluetooth
 
 ### `DISTRO_FEATURES`
 `ics-dm-os` depends on [poky](https://www.yoctoproject.org/software-item/poky/).
