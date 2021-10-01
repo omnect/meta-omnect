@@ -11,6 +11,6 @@ repos:
     refspec: cdf82b11d208e1b75f4602abacfabec89d91d791
 
 local_conf_header:
-  ics-dm-os-iotedge: |
+  meta-ics-dm_feature_iotedge: |
     # enable iotedge
     DISTRO_FEATURES_append = " iotedge"

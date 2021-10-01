@@ -4,5 +4,5 @@ header:
   version: 10
 
 local_conf_header:
-  wifi-commissioning: |
+  meta-ics-dm_feature_wifi-commissioning: |
     DISTRO_FEATURES_append = " wifi-commissioning"

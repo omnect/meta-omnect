@@ -4,5 +4,5 @@ header:
   version: 10
 
 local_conf_header:
-  ics-dm-os-demo: |
+  meta-ics-dm_feature_ics-dm-os-demo: |
     DISTRO_FEATURES_append = " ics-dm-demo"

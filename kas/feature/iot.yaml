@@ -4,5 +4,5 @@ header:
   version: 10
 
 local_conf_header:
-  ics-dm-os-iot: |
+  meta-ics-dm_feature_iot: |
     CORE_IMAGE_EXTRA_INSTALL += "iot-module-template"

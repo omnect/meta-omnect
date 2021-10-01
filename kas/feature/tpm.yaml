@@ -4,5 +4,5 @@ header:
   version: 10
 
 local_conf_header:
-  ics-dm-os-tpm: |
+  meta-ics-dm_feature_tpm: |
     DISTRO_FEATURES_append = " tpm"
