@@ -27,7 +27,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - depends on `DISTRO_FEATURES` including `tpm` which is not added automatically!
 - `iotedge`
     - adds the `iotedge` service with its dependencies
-    - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedges` runtime dependency `moby`
+    - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedge` runtime dependency `moby`
 - `persistent-journal`
     - enables a persistent journal which is stored in the data partition
 - `resize-data`
@@ -69,7 +69,7 @@ The size of `mmcblkXp6` depends on your sdcard/emmc size. Per default it has a s
 `meta-ics-dm` is compatible with the current yocto LTS release branch `dunfell`.
 
 ## Versioning
-We reflect the used poky version in our version schema. `ics-dm-os` is versioned via `POKY_VERSION.BUILD_NR`, `3.1.x.y` where `x` is poky dunnfells patch version and `y` is our build number.
+We reflect the used poky version in our version schema. `ics-dm-os` is versioned via `POKY_VERSION.BUILD_NR`, `3.1.x.y` where `x` is poky dunnfell's patch version and `y` is our build number.
 
 ## Dependencies
 `meta-ics-dm` depends on:
