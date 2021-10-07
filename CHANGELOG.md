@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.11.todo] Q4 2021
+- distro: disable systemd-sysusers (uids/gids created by systemd-sysusers
+  could potentially clash with uids/gids introduced by later update images)
+
 ## [>= 3.1.11.x ] Q4 2021
 - add kas files to build meta-ics-dm for different configurations
 - implicit update to dunfell 3.1.11 (in kas/distro/poky.yaml)
