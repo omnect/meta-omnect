@@ -11,7 +11,7 @@ repos:
   meta-ics-dm:
   meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: 2e7e98cd0cb82db214b13224c71134b9335a719b
+    refspec: 3cf22d15885cf0e3e16078705e9a20f3d21f12db
     layers:
       meta-filesystems:
       meta-networking:
@@ -19,7 +19,7 @@ repos:
       meta-python:
   meta-rust:
     url: "https://github.com/meta-rust/meta-rust.git"
-    refspec: 02db606a9678bddf81169a3f2e7c6346e0876839
+    refspec: d4384db8c3f0aa01732627f92fc3d446359bf743
   meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    refspec: 0468cdf76d66db23a5fbfbb824623e0e1203b3af
+    refspec: d9b54f5ec79d65d8366c0cfda1e9b24169f9f374

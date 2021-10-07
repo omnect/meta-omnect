@@ -364,5 +364,5 @@ LICENSE = "CLOSED"
 # includes this file if it exists but does not fail
 # this is useful for anything you may want to override from
 # what cargo-bitbake generates.
-include iotedge-cli${PV}.inc
+include iotedge-cli_${PV}.inc
 include iotedge-cli.inc
