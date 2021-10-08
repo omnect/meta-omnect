@@ -1,0 +1,15 @@
+# kas config file
+
+header:
+  version: 10
+
+distro: poky
+
+repos:
+  poky:
+    url: "https://git.yoctoproject.org/git/poky"
+    refspec: yocto-3.1.11
+    layers:
+      meta:
+      meta-poky:
+      meta-yocto-bsp:

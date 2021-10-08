@@ -3,7 +3,7 @@
 What is ICS_DeviceManagement?: https://lp.conplement.de/ics-devicemanagement
 
 ## Features
-This yocto meta layer provides yocto recipes for ICS_DeviceManagement:
+This yocto meta layer provides the poky based ICS_DeviceManagement distribution `ics-dm-os`. It includes recipes for:
 - [iot-hub-device-update](https://github.com/Azure/iot-hub-device-update)
 - [iot-identity-service](https://github.com/Azure/iot-identity-service)
 - [iotedge](https://github.com/Azure/iotedge)
@@ -14,8 +14,7 @@ This yocto meta layer provides yocto recipes for ICS_DeviceManagement:
 - A/B update support for [raspberrypi](https://www.raspberrypi.org/) 3 and 4
 - A/B update support for [odroid-c2](https://www.hardkernel.com/shop/odroid-c2/)
 - first boot script `/usr/bin/ics_dm_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-ics-dm/recipes-core/systemd/systemd/ics_dm_first_boot.sh`
-
-An example integration can be found in [ics-dm-os](https://github.com/ICS-DeviceManagement/ics-dm-os).
+- wifi commissioning via bluetooth
 
 ### `DISTRO_FEATURES`
 `ics-dm-os` depends on [poky](https://www.yoctoproject.org/software-item/poky/).
@@ -23,11 +22,12 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 
 `meta-ics-dm` adds the following `DISTRO_FEATURES`:
 - `ics-dm-demo`
-    - adds an automatic device enrollment demo via `tpm`
+    - adds an automatic device enrollment demo with provisioning via tpm
     - synchronizes startup of `iot-identity-service` with the enrollment demo
+    - depends on `DISTRO_FEATURES` including `tpm` which is not added automatically!
 - `iotedge`
     - adds the `iotedge` service with its dependencies
-    - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedges` runtime dependency `moby`
+    - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedge` runtime dependency `moby`
 - `persistent-journal`
     - enables a persistent journal which is stored in the data partition
 - `resize-data`
@@ -45,11 +45,31 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 - `ics-dm-debug`
     - eis_utils: enables output of connection- and identity string
 
+### Partion Layout
+`ics-dm-os` uses an `A/B` update partition layout with two readonly rootfs partitions.
+The partition layout is
+```sh
+Device         Boot   Start      End  Sectors  Size Id Type
+/dev/mmcblkXp1 *       8192    90111    81920   40M  c W95 FAT32 (LBA)
+/dev/mmcblkXp2        90112  1138687  1048576  512M 83 Linux
+/dev/mmcblkXp3      1138688  2187263  1048576  512M 83 Linux
+/dev/mmcblkXp4      2195454 31116287 28920834 13.8G  f W95 Ext'd (LBA)
+/dev/mmcblkXp5      2195456  2277375    81920   40M 83 Linux
+/dev/mmcblkXp6      2285568 31116287 28830720 13.8G 83 Linux
+```
+- `mmcblkXp1` is the `boot` partition with vfat filesystem
+- `mmcblkXp2` is the readonly `rootA` partition with ext4 filesystem
+- `mmcblkXp3` is the readonly `rootB` partition with ext4 filesystem
+- `mmcblkXp5` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
+- `mmcblkXp6` is the writable `data` partition with ext4 filesystem
+
+The size of `mmcblkXp6` depends on your sdcard/emmc size. Per default it has a size of 512M and is resized on the first boot to the max available size.
+
 ## Compatibility
 `meta-ics-dm` is compatible with the current yocto LTS release branch `dunfell`.
 
 ## Versioning
-We reflect the used poky version in our version schema. `ics-dm-os` is versioned via `POKY_VERSION.BUILD_NR`, `3.1.x.y` where `x` is poky dunnfells patch version and `y` is our build number.
+We reflect the used poky version in our version schema. `ics-dm-os` is versioned via `POKY_VERSION.BUILD_NR`, `3.1.x.y` where `x` is poky dunnfell's patch version and `y` is our build number.
 
 ## Dependencies
 `meta-ics-dm` depends on:
@@ -79,6 +99,9 @@ openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
   - mandatory: an `iot-identity-service` configuration (provisioning)
   - mandatory if activated: an `ics-dm-demo` configuration (enrollment)
   - optional: an `iot-hub-device-update` configuration
+- document: kas usage with example `kas/ics-dm-os-iot-rpi3.yaml` and
+  `kas/ics-dm-os-iotedge-rpi4.yaml` and how to add features
+- ??? document flashing/updating an example rpi4 device???
 
 # License
 
