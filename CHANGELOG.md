@@ -6,11 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [>= 3.1.11.x ] Q4 2021
-- added kas files to build meta-ics-dm for different configurations
+- add kas files to build meta-ics-dm for different configurations
 - implicit update to dunfell 3.1.11 (in kas/distro/poky.yaml)
 - implicit update to meta-openembedded dunfell HEAD 2e7e98cd0cb82db214b13224c71134b9335a719b
   (in kas/distro/ics-dm-os.yaml)
-- Readme: documented default partition layout
+- Readme: document default partition layout
 - os-release.bbappend: adapt to meta-ics-dm layer handling in kas
 - distro.conf: increase IMAGE_OVERHEAD_FACTOR to 1.1 otherwise ext4 image
   overhead will not fit into IMAGE_ROOTFS_SIZE and IMAGE_ROOTFS_EXTRA_SPACE

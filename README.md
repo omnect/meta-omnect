@@ -57,11 +57,11 @@ Device         Boot   Start      End  Sectors  Size Id Type
 /dev/mmcblkXp5      2195456  2277375    81920   40M 83 Linux
 /dev/mmcblkXp6      2285568 31116287 28830720 13.8G 83 Linux
 ```
-- `mmcblkXp1` is the `boot` partition
-- `mmcblkXp2` is the readonly `rootA` partition
-- `mmcblkXp3` is the readonly `rootB` partition
-- `mmcblkXp5` is the writable `etc` overlay partition
-- `mmcblkXp6` is the writable `data` partition
+- `mmcblkXp1` is the `boot` partition with vfat filesystem
+- `mmcblkXp2` is the readonly `rootA` partition with ext4 filesystem
+- `mmcblkXp3` is the readonly `rootB` partition with ext4 filesystem
+- `mmcblkXp5` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
+- `mmcblkXp6` is the writable `data` partition with ext4 filesystem
 
 The size of `mmcblkXp6` depends on your sdcard/emmc size. Per default it has a size of 512M and is resized on the first boot to the max available size.
 
