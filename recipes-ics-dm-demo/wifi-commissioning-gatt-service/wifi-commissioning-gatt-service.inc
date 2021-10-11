@@ -11,7 +11,7 @@ do_install_append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/wifi-commissioning-gatt@.service ${D}${systemd_system_unitdir}/
     install -d ${D}${bindir}
-     install -m 0755 ${WORKDIR}/ics_dm_get_deviceid.sh ${D}${bindir}/ics_dm_get_deviceid.sh
+    install -m 0755 ${WORKDIR}/ics_dm_get_deviceid.sh ${D}${bindir}/ics_dm_get_deviceid.sh
 }
 
 do_install_append_rpi() {
