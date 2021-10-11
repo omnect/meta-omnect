@@ -5,8 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
-## [> 3.1.11.todo] Q4 2021
+## [> 3.1.11.1050] Q4 2021
 - update meta-openembedded to latest dunfell head
 - update meta-rust to latest master head to include rust-1.54.0
 - update meta-swupdate to latest dunfell head
