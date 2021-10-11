@@ -67,7 +67,7 @@ do_install() {
     install -m 0644 -D  ${B}/target/${TARGET_SYS}/release/libaziot_keys.so ${D}${libdir}
 
     # default configs and config directories
-    echo "z ${sysconfdir}/aziot 0770 root aziot -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
+    echo "z ${sysconfdir}/aziot 0775 root aziot -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "z ${sysconfdir}/aziot/certd/config.d 0700 aziotcs aziotcs -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "z ${sysconfdir}/aziot/certd/config.d/* 0600 aziotcs aziotcs -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0640     ${S}/cert/aziot-certd/config/unix/default.toml ${D}${sysconfdir}/aziot/certd/config.toml.default
