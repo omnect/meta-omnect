@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iotedge-cli,iotedge-daemon:
   ignore all instances of #[warn], #[deny], and #[forbid] lint directives
   otherwise edgelet-docker will fail with rust 1.54 caused by #[deny(rust_2018_idioms)]
+- delete fstab: prevent rw remount of "/"
+- initramfs: mount /boot
+- wifi-commissioning-gatt-service: update to 0.1.4; integrate cli parameter handling
 
 ## [> 3.1.11.1039] Q4 2021
 - distro: disable systemd-sysusers (uids/gids created by systemd-sysusers
