@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ignore all instances of #[warn], #[deny], and #[forbid] lint directives
   otherwise edgelet-docker will fail with rust 1.54 caused by #[deny(rust_2018_idioms)]
 - delete fstab: prevent rw remount of "/"
-- initramfs: mount /boot
+- initramfs: mount /boot and tmpfs
 - wifi-commissioning-gatt-service: update to 0.1.4; integrate cli parameter handling
 - ics-dm-os image recipes: fix SUMMARY resp. DESCRIPTION
 

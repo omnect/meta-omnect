@@ -64,4 +64,8 @@ rootfs_run() {
         mkdir -p ${ROOTFS_DIR}/mnt/data/journal
         mount -o bind ${ROOTFS_DIR}/mnt/data/journal ${ROOTFS_DIR}/var/log/journal
     fi
+
+    # mount tmpfs
+    mount -t tmpfs -o mode=0755,nodev,nosuid,strictatime tmpfs  ${ROOTFS_DIR}/run
+    mount -t tmpfs -o defaults tmpfs  ${ROOTFS_DIR}/var/volatile
 }
