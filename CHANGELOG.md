@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - delete fstab: prevent rw remount of "/"
 - initramfs: mount /boot
 - wifi-commissioning-gatt-service: update to 0.1.4; integrate cli parameter handling
+- ics-dm-os image recipes: fix SUMMARY resp. DESCRIPTION
 
 ## [> 3.1.11.1039] Q4 2021
 - distro: disable systemd-sysusers (uids/gids created by systemd-sysusers

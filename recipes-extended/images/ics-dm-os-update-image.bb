@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/ics-dm-os:"
 
-DESCRIPTION = "ics-dm swupdate image"
+DESCRIPTION = "ics-dm-os swupdate image"
 
 LICENSE = "MIT | Apache-2.0"
 
