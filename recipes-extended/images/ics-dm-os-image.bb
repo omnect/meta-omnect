@@ -1,4 +1,4 @@
-SUMMARY = "ics-dm swupdate image"
+SUMMARY = "ics-dm-os image"
 
 LICENSE = "MIT | Apache-2.0"
 

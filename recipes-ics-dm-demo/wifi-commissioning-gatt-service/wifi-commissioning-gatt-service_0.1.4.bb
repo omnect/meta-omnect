@@ -6,12 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get wifi-commissioning-gatt-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.1.3"
+# SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.1.4"
 SRC_URI += "git://git@github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "ae26e6b649045b9b9f1b22dbf394292c06cbcee8"
+SRCREV = "4ba03116e4620328ecda6f85c32b2d4964de384f"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV_append = ".AUTOINC+ae26e6b649"
+PV_append = ".AUTOINC+4ba03116e4"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -19,22 +19,28 @@ SRC_URI += " \
     crate://crates.io/addr2line/0.16.0 \
     crate://crates.io/adler/1.0.2 \
     crate://crates.io/aho-corasick/0.7.18 \
+    crate://crates.io/async-trait/0.1.51 \
     crate://crates.io/atty/0.2.14 \
     crate://crates.io/autocfg/1.0.1 \
     crate://crates.io/backtrace/0.3.61 \
     crate://crates.io/bitflags/1.3.2 \
+    crate://crates.io/block-buffer/0.9.0 \
+    crate://crates.io/block-padding/0.2.1 \
     crate://crates.io/bluer/0.10.4 \
     crate://crates.io/byteorder/1.4.3 \
     crate://crates.io/bytes/0.4.12 \
     crate://crates.io/bytes/1.1.0 \
-    crate://crates.io/cc/1.0.70 \
+    crate://crates.io/cc/1.0.71 \
     crate://crates.io/cfg-if/0.1.10 \
     crate://crates.io/cfg-if/1.0.0 \
+    crate://crates.io/clap/3.0.0-beta.4 \
+    crate://crates.io/clap_derive/3.0.0-beta.4 \
     crate://crates.io/custom_debug/0.5.0 \
     crate://crates.io/custom_debug_derive/0.5.0 \
     crate://crates.io/dbus-crossroads/0.4.0 \
-    crate://crates.io/dbus-tokio/0.7.4 \
-    crate://crates.io/dbus/0.9.3 \
+    crate://crates.io/dbus-tokio/0.7.5 \
+    crate://crates.io/dbus/0.9.5 \
+    crate://crates.io/digest/0.9.0 \
     crate://crates.io/displaydoc/0.2.3 \
     crate://crates.io/enclose/1.1.8 \
     crate://crates.io/env_logger/0.8.4 \
@@ -50,17 +56,21 @@ SRC_URI += " \
     crate://crates.io/futures-util/0.3.17 \
     crate://crates.io/futures/0.3.17 \
     crate://crates.io/gcc/0.3.55 \
+    crate://crates.io/generic-array/0.14.4 \
     crate://crates.io/getrandom/0.2.3 \
     crate://crates.io/gimli/0.25.0 \
+    crate://crates.io/hashbrown/0.11.2 \
     crate://crates.io/heck/0.3.3 \
     crate://crates.io/hermit-abi/0.1.19 \
     crate://crates.io/hex/0.4.3 \
     crate://crates.io/humantime/2.1.0 \
+    crate://crates.io/indexmap/1.7.0 \
     crate://crates.io/iovec/0.1.4 \
     crate://crates.io/itoa/0.4.8 \
+    crate://crates.io/keccak/0.1.0 \
     crate://crates.io/lazy_static/1.4.0 \
-    crate://crates.io/libc/0.2.102 \
-    crate://crates.io/libdbus-sys/0.2.1 \
+    crate://crates.io/libc/0.2.103 \
+    crate://crates.io/libdbus-sys/0.2.2 \
     crate://crates.io/log/0.4.14 \
     crate://crates.io/memchr/2.4.1 \
     crate://crates.io/miniz_oxide/0.4.4 \
@@ -73,15 +83,19 @@ SRC_URI += " \
     crate://crates.io/num_cpus/1.13.0 \
     crate://crates.io/object/0.26.2 \
     crate://crates.io/once_cell/1.8.0 \
+    crate://crates.io/opaque-debug/0.3.0 \
+    crate://crates.io/os_str_bytes/3.1.0 \
     crate://crates.io/pin-project-internal/1.0.8 \
     crate://crates.io/pin-project-lite/0.2.7 \
     crate://crates.io/pin-project/1.0.8 \
     crate://crates.io/pin-utils/0.1.0 \
-    crate://crates.io/pkg-config/0.3.19 \
+    crate://crates.io/pkg-config/0.3.20 \
+    crate://crates.io/proc-macro-error-attr/1.0.4 \
+    crate://crates.io/proc-macro-error/1.0.4 \
     crate://crates.io/proc-macro-hack/0.5.19 \
     crate://crates.io/proc-macro-nested/0.1.7 \
     crate://crates.io/proc-macro2/1.0.29 \
-    crate://crates.io/quote/1.0.9 \
+    crate://crates.io/quote/1.0.10 \
     crate://crates.io/regex-syntax/0.6.25 \
     crate://crates.io/regex/1.5.4 \
     crate://crates.io/rustc-demangle/0.1.21 \
@@ -89,19 +103,26 @@ SRC_URI += " \
     crate://crates.io/serde/1.0.130 \
     crate://crates.io/serde_derive/1.0.130 \
     crate://crates.io/serde_json/1.0.68 \
+    crate://crates.io/sha3/0.9.1 \
     crate://crates.io/signal-hook-registry/1.4.0 \
     crate://crates.io/slab/0.4.4 \
+    crate://crates.io/strsim/0.10.0 \
     crate://crates.io/strum/0.21.0 \
     crate://crates.io/strum_macros/0.21.1 \
-    crate://crates.io/syn/1.0.76 \
+    crate://crates.io/syn/1.0.80 \
     crate://crates.io/synstructure/0.12.5 \
     crate://crates.io/termcolor/1.1.2 \
-    crate://crates.io/tokio-macros/1.3.0 \
+    crate://crates.io/textwrap/0.14.2 \
+    crate://crates.io/tokio-macros/1.4.1 \
     crate://crates.io/tokio-stream/0.1.7 \
-    crate://crates.io/tokio/1.11.0 \
+    crate://crates.io/tokio/1.12.0 \
+    crate://crates.io/typenum/1.14.0 \
     crate://crates.io/unicode-segmentation/1.8.0 \
+    crate://crates.io/unicode-width/0.1.9 \
     crate://crates.io/unicode-xid/0.2.2 \
     crate://crates.io/uuid/0.8.2 \
+    crate://crates.io/vec_map/0.8.2 \
+    crate://crates.io/version_check/0.9.3 \
     crate://crates.io/void/1.0.2 \
     crate://crates.io/wasi/0.10.2+wasi-snapshot-preview1 \
     crate://crates.io/winapi-i686-pc-windows-gnu/0.4.0 \

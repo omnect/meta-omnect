@@ -18,7 +18,7 @@ USERADD_PARAM_${PN} = " \
 "
 
 do_install_prepend() {
-    install -d -m 0770 -g aziot ${D}${sysconfdir}/aziot
+    install -d -m 0775 -g aziot ${D}${sysconfdir}/aziot
 
     install -d -m 0750 -g aziotcs ${D}${sysconfdir}/aziot/certd
     install -d -m 0700 -o aziotcs -g aziotcs ${D}${sysconfdir}/aziot/certd/config.d

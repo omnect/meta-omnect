@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.11.1050] Q4 2021
+- update meta-openembedded to latest dunfell head
+- update meta-rust to latest master head to include rust-1.54.0
+- update meta-swupdate to latest dunfell head
+- update meta-virtualization to latest dunfell head
+- update meta-raspberrypi to latest dunfell head
+- iotedge-cli,iotedge-daemon:
+  ignore all instances of #[warn], #[deny], and #[forbid] lint directives
+  otherwise edgelet-docker will fail with rust 1.54 caused by #[deny(rust_2018_idioms)]
+- delete fstab: prevent rw remount of "/"
+- initramfs: mount /boot and tmpfs
+- wifi-commissioning-gatt-service: update to 0.1.4; integrate cli parameter handling
+- ics-dm-os image recipes: fix SUMMARY resp. DESCRIPTION
+
 ## [> 3.1.11.1039] Q4 2021
 - distro: disable systemd-sysusers (uids/gids created by systemd-sysusers
   could potentially clash with uids/gids introduced by later update images)
