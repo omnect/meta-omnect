@@ -6,8 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [> 3.1.11.1073] Q4 2021
-- u-boot boot.scr: only use saveenv on first boot
-- u-boot raspberry-pi: patch to u-boot to get ftd_addr from firmware and not
+- u-boot boot.scr: only use saveenv on first boot to minimize flash wear out
+  and robustness against power loss at boot
+- u-boot raspberry-pi: patch u-boot to get ftd_addr from firmware and not
   from env; without this patch you can not boot with hdmi connected when
   first boot was without hdmi (or not boot without hdmi when hdmi was
   connected on first boot)
