@@ -13,11 +13,11 @@ python create_boot_cmd () {
         with open(boot_cmd_file, "w") as f:
             f.write("\n")
 
-            # create u-boot environment on first boot
-            f.write("saveenv\n")
+            # echo bootmedium and device
+            f.write("echo \"Boot script loaded from ${devtype} ${devnum}\"\n")
 
             # possibly create "bootpart" env var
-            f.write("if env exists bootpart;then echo Booting from bootpart=${bootpart};else setenv bootpart 2;echo bootpart not set, default to bootpart=${bootpart};fi\n")
+            f.write("if env exists bootpart;then echo Booting from bootpart=${bootpart};else setenv bootpart 2;saveenv;echo bootpart not set, default to bootpart=${bootpart};fi\n")
 
             # possibly expand data partition on first boot
             if bb.utils.contains('DISTRO_FEATURES', 'resize-data', True, False, d):
@@ -32,10 +32,10 @@ python create_boot_cmd () {
 
             # possibly load device tree from file
             if fdt_load:
-                f.write("load mmc 0:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
+                f.write("load ${devtype} ${devnum}:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
 
             # load kernel
-            f.write("load mmc 0:${bootpart} ${kernel_addr_r} boot/%s-initramfs.bin\n" % kernel_imagetype)
+            f.write("load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s-initramfs.bin\n" % kernel_imagetype)
 
             # assemble bootargs
             f.write("fdt get value bootargs /chosen bootargs\n")
