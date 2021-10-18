@@ -50,18 +50,20 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 The partition layout is
 ```sh
 Device         Boot   Start      End  Sectors  Size Id Type
-/dev/mmcblkXp1 *       8192    90111    81920   40M  c W95 FAT32 (LBA)
-/dev/mmcblkXp2        90112  1138687  1048576  512M 83 Linux
-/dev/mmcblkXp3      1138688  2187263  1048576  512M 83 Linux
-/dev/mmcblkXp4      2195454 31116287 28920834 13.8G  f W95 Ext'd (LBA)
-/dev/mmcblkXp5      2195456  2277375    81920   40M 83 Linux
-/dev/mmcblkXp6      2285568 31116287 28830720 13.8G 83 Linux
+/dev/mmcblk0p1 *       8192   270335   262144  128M  c W95 FAT32 (LBA)
+/dev/mmcblk0p2       270336  2367487  2097152    1G 83 Linux
+/dev/mmcblk0p3      2367488  4464639  2097152    1G 83 Linux
+/dev/mmcblk0p4      4472830 30182799 25709970 12.3G  f W95 Ext'd (LBA)
+/dev/mmcblk0p5      4472832  4734975   262144  128M 83 Linux
+/dev/mmcblk0p6      4743168  5005311   262144  128M 83 Linux
+/dev/mmcblk0p7      5013504 30182799 25169296   12G 83 Linux
 ```
 - `mmcblkXp1` is the `boot` partition with vfat filesystem
 - `mmcblkXp2` is the readonly `rootA` partition with ext4 filesystem
 - `mmcblkXp3` is the readonly `rootB` partition with ext4 filesystem
-- `mmcblkXp5` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
-- `mmcblkXp6` is the writable `data` partition with ext4 filesystem
+- `mmcblkXp5` is the writable `factory` partition with ext4 filesystem
+- `mmcblkXp6` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
+- `mmcblkXp7` is the writable `data` partition with ext4 filesystem
 
 The size of `mmcblkXp6` depends on your sdcard/emmc size. Per default it has a size of 512M and is resized on the first boot to the max available size.
 
