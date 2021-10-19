@@ -53,10 +53,10 @@ Device         Boot   Start      End  Sectors  Size Id Type
 /dev/mmcblkXp1 *       8192   270335   262144  128M  c W95 FAT32 (LBA)
 /dev/mmcblkXp2       270336  2367487  2097152    1G 83 Linux
 /dev/mmcblkXp3      2367488  4464639  2097152    1G 83 Linux
-/dev/mmcblkXp4      4472830 30182799 25709970 12.3G  f W95 Ext'd (LBA)
+/dev/mmcblkXp4      4472830 31116287 26643458 12.7G  f W95 Ext'd (LBA)
 /dev/mmcblkXp5      4472832  4734975   262144  128M 83 Linux
 /dev/mmcblkXp6      4743168  5005311   262144  128M 83 Linux
-/dev/mmcblkXp7      5013504 30182799 25169296   12G 83 Linux
+/dev/mmcblkXp7      5013504 31116287 26102784 12.5G 83 Linux
 ```
 - `mmcblkXp1` is the `boot` partition with vfat filesystem
 - `mmcblkXp2` is the readonly `rootA` partition with ext4 filesystem
