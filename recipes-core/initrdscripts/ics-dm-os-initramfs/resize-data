@@ -16,7 +16,6 @@ resize_data_run() {
         [[ $(parted ${root_disk} print all | grep extended | wc -l) -ne 1 ]] && echo "error: couldn't determine extended partion" && exit 1
         extended_part_nr=$(parted ${root_disk} print all | grep extended | awk '{print $1}')
 
-        # keep unused space, in order to spare flash usage
         parted ${root_disk} resizepart ${extended_part_nr} 100%
         parted ${root_disk} resizepart ${data_part_nr} 100%
 
