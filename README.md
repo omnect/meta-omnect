@@ -65,7 +65,7 @@ Device         Boot   Start      End  Sectors  Size Id Type
 - `mmcblkXp6` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
 - `mmcblkXp7` is the writable `data` partition with ext4 filesystem
 
-The size of `mmcblkXp6` depends on your sdcard/emmc size. Per default it has a size of 512M and is resized on the first boot to the max available size.
+The size of `mmcblkXp7` depends on your sdcard/emmc size. Per default it has a size of 512M and is resized on the first boot to the max available size.
 
 ## Compatibility
 `meta-ics-dm` is compatible with the current yocto LTS release branch `dunfell`.

@@ -1,6 +1,6 @@
-part --ondisk mmcblk0 --fstype=vfat --align 4096 --label boot    --fixed-size ${ICS_PART_SIZE_BOOT}K --source bootimg-partition --active
-part --ondisk mmcblk0 --fstype=ext4 --align 4096 --label rootA   --fixed-size ${ICS_PART_SIZE_ROOTFS}K --source rootfs --exclude-path mnt/data/
-part --ondisk mmcblk0 --fstype=ext4 --align 4096 --label rootB   --fixed-size ${ICS_PART_SIZE_ROOTFS}K
-part --ondisk mmcblk0 --fstype=ext4 --align 4096 --label factory --fixed-size ${ICS_PART_SIZE_FACTORY}K
-part --ondisk mmcblk0 --fstype=ext4 --align 4096 --label etc     --fixed-size ${ICS_PART_SIZE_ETC}K
-part --ondisk mmcblk0 --fstype=ext4 --align 4096 --label data    --fixed-size ${ICS_PART_SIZE_DATA}K --source rootfs --change-directory mnt/data
+part --ondisk mmcblk0 --fstype=vfat --align 4096 --label boot    --fixed-size ${ICS_DM_PART_SIZE_BOOT}K --source bootimg-partition --active
+part --ondisk mmcblk0 --fstype=ext4 --align 4096 --label rootA   --fixed-size ${ICS_DM_PART_SIZE_ROOTFS}K --source rootfs --exclude-path mnt/data/
+part --ondisk mmcblk0 --fstype=ext4 --align 4096 --label rootB   --fixed-size ${ICS_DM_PART_SIZE_ROOTFS}K
+part --ondisk mmcblk0 --fstype=ext4 --align 4096 --label factory --fixed-size ${ICS_DM_PART_SIZE_FACTORY}K
+part --ondisk mmcblk0 --fstype=ext4 --align 4096 --label etc     --fixed-size ${ICS_DM_PART_SIZE_ETC}K
+part --ondisk mmcblk0 --fstype=ext4 --align 4096 --label data    --fixed-size ${ICS_DM_PART_SIZE_DATA}K --source rootfs --change-directory mnt/data
