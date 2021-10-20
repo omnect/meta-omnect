@@ -8,6 +8,7 @@ LIC_FILES_CHKSUM = "\
 "
 
 inherit core-image
+inherit extrausers
 
 # we need the initramfs bundled kernel before rootfs postprocessing
 do_rootfs[depends] += "virtual/kernel:do_deploy"
@@ -57,3 +58,12 @@ IMAGE_PREPROCESS_COMMAND_append = " remove_machine_id; reproducible_final_image_
 remove_machine_id() {
     rm -f ${IMAGE_ROOTFS}${sysconfdir}/machine-id
 }
+
+# format /etc/shadow:
+#     $id$salt$hash,...
+#       -> id=6 : SHA-512
+#       escape $ with \$ !!!
+EXTRA_USERS_PARAMS = "\
+    usermod -p '\$6\$cii2MsBH92/jvCi\$rDrZTtyxm6dTtB1rJGNGAKj5KXEKoyXmIsQTDY2M6JVlm3hlt7nk7FwcWG03NcvhZwhiZYUaEdoUEY.QBqLH7.' root; \
+    useradd -p '\$6\$cii2MsBH92/jvCi\$rDrZTtyxm6dTtB1rJGNGAKj5KXEKoyXmIsQTDY2M6JVlm3hlt7nk7FwcWG03NcvhZwhiZYUaEdoUEY.QBqLH7.' ics-dm; \
+  "
