@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM="\
 "
 
 # TODO change to https uri when public
-REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main"
+REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=refactor_startup_sequence"
 SRC_URI = "${REPO_URI}"
 SRCREV = "${AUTOREV}"
 
@@ -46,8 +46,14 @@ do_install_append() {
     chgrp enrollment ${D}${sysconfdir}/ics_dm
     chmod g+rw ${D}${sysconfdir}/ics_dm
 
-    install -m 755 ${S}/scripts/iot_identity_provisioning.sh ${D}${bindir}/
+    install -m 755 ${S}/scripts/patch_config_toml.sh ${D}${bindir}/
 }
+
+do_install_append_rpi() {
+    install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
+    lnr ${D}${systemd_system_unitdir}/enrollment-patch-config-toml@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/enrollment-patch-config-toml@eth0.service
+}
+
 SYSTEMD_SERVICE_${PN} = "enrollment-config-apply.path enrollment.service enrolled.path"
 FILES_${PN} += "${systemd_system_unitdir}"
 REQUIRED_DISTRO_FEATURES = "systemd"
