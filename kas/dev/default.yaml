@@ -8,4 +8,4 @@ local_conf_header:
     # For more options have a look into "poky/meta-poky/conf/local.conf.sample" resp.
     # "openebedded-core/meta/conf/local.conf.sample".
 
-    EXTRA_IMAGE_FEATURES ?= "debug-tweaks"
+    EXTRA_IMAGE_FEATURES ?= "post-install-logging"
