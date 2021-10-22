@@ -17,6 +17,7 @@ RDEPENDS_${PN} = " \
   ca-certificates \
   jq \
   iot-identity-service \
+  ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge', '', d)} \
 "
 
 inherit cmake features_check overwrite_src_uri
