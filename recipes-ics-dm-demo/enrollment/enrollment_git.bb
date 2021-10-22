@@ -13,7 +13,7 @@ SRCREV = "${AUTOREV}"
 S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c-prov"
-RDEPENDS_${PN} = "ca-certificates jq"
+RDEPENDS_${PN} = "ca-certificates jq iot-identity-service"
 
 inherit cmake features_check overwrite_src_uri
 
