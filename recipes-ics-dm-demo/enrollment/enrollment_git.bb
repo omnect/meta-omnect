@@ -47,9 +47,7 @@ do_install_append() {
     chmod g+rw ${D}${sysconfdir}/ics_dm
 
     install -m 755 ${S}/scripts/patch_config_toml.sh ${D}${bindir}/
-}
 
-do_install_append_rpi() {
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
     lnr ${D}${systemd_system_unitdir}/enrollment-patch-config-toml@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/enrollment-patch-config-toml@eth0.service
 }
