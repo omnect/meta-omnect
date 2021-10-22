@@ -15,7 +15,7 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/ics-dm_profile.sh ${D}/etc/profile.d
 }
 
-SRC_URI = "\
+SRC_URI += "\
     file://ics-dm_profile.sh \
 "
 
