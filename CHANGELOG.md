@@ -6,7 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [> 3.1.11.1102] Q4 2021
-- update partition schema, PBI 12215
+- update partition schema
+- add development tools: valgrind, ltrace, strace, gdbserver, htop, lsof, curl, tcpdump, ethtool, lshw, sysstat, ldd, parted, smartmontools, mmc-utils, sudo, ps, dd
+- add ics-dm user
+- disable direct root login (concerns SSH, serial console and graphical console)
+- allow login using ics-dm user; subsequent sudo possible
 
 ## [> 3.1.11.1073] Q4 2021
 - u-boot boot.scr: only use saveenv on first boot to minimize flash wear out
