@@ -27,6 +27,7 @@ IMAGE_INSTALL = "\
     iot-hub-device-update \
     packagegroup-core-ssh-dropbear \
     u-boot-fw-utils \
+    ${ICS_DM_DEVEL_TOOLS} \
 "
 
 # We don't want add ${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin to
