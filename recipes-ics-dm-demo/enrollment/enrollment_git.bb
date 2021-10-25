@@ -13,7 +13,12 @@ SRCREV = "${AUTOREV}"
 S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c-prov"
-RDEPENDS_${PN} = "ca-certificates jq"
+RDEPENDS_${PN} = " \
+  ca-certificates \
+  jq \
+  iot-identity-service \
+  ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge-cli', '', d)} \
+"
 
 inherit cmake features_check overwrite_src_uri
 
@@ -46,8 +51,12 @@ do_install_append() {
     chgrp enrollment ${D}${sysconfdir}/ics_dm
     chmod g+rw ${D}${sysconfdir}/ics_dm
 
-    install -m 755 ${S}/scripts/iot_identity_provisioning.sh ${D}${bindir}/
+    install -m 755 ${S}/scripts/patch_config_toml.sh ${D}${bindir}/
+
+    install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
+    lnr ${D}${systemd_system_unitdir}/enrollment-patch-config-toml@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/enrollment-patch-config-toml@eth0.service
 }
+
 SYSTEMD_SERVICE_${PN} = "enrollment-config-apply.path enrollment.service enrolled.path"
 FILES_${PN} += "${systemd_system_unitdir}"
 REQUIRED_DISTRO_FEATURES = "systemd"
