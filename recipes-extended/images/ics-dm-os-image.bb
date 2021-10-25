@@ -27,6 +27,7 @@ IMAGE_INSTALL = "\
     iot-hub-device-update \
     packagegroup-core-ssh-dropbear \
     u-boot-fw-utils \
+    ics-dm-base-files \
     ${ICS_DM_DEVEL_TOOLS} \
 "
 
