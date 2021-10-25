@@ -11,6 +11,7 @@ inherit core-image
 
 # we need the initramfs bundled kernel before rootfs postprocessing
 do_rootfs[depends] += "virtual/kernel:do_deploy"
+do_rootfs[depends] += "ics-dm-os-initramfs:do_image_complete"
 
 IMAGE_LINGUAS = "en-us"
 
@@ -28,17 +29,20 @@ IMAGE_INSTALL = "\
     u-boot-fw-utils \
 "
 
-# We don't want add ${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin to
+# We don't want to add kernel and initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
-# If we add it to IMAGE_BOOT_FILES wic would move it to the boot
+# If we add it to IMAGE_BOOT_FILES, wic would move it to the boot
 # partition.
-# By this postprocess handling the bundled initramfs kernel gets installed
-# to rootA and is therefore updatable via swupdate.
-ROOTFS_POSTPROCESS_COMMAND_append = " add_initramfs;"
-add_initramfs() {
-    initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-initramfs-${MACHINE}.bin)
+# By this postprocess handling both get installed to rootA and are therefore
+# updatable via swupdate.
+ROOTFS_POSTPROCESS_COMMAND_append = " add_kernel_and_initramfs;"
+add_kernel_and_initramfs() {
+    kernel=$(readlink -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin)
+    initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${ICS_DM_INITRAMFS_IMAGE_NAME}.${ICS_DM_INITRAMFS_FSTYPE})
+    install -m 0644 ${kernel} $D/boot/
     install -m 0644 ${initramfs} $D/boot/
-    ln -sf $(basename ${initramfs}) $D/boot/${KERNEL_IMAGETYPE}-initramfs.bin
+    ln -sf $(basename ${kernel}) $D/boot/${KERNEL_IMAGETYPE}.bin
+    ln -sf $(basename ${initramfs}) $D/boot/initramfs.${ICS_DM_INITRAMFS_FSTYPE}
 }
 
 
