@@ -51,12 +51,12 @@ The partition layout is
 ```sh
 Device         Boot   Start      End  Sectors  Size Id Type
 /dev/mmcblkXp1 *       8192   270335   262144  128M  c W95 FAT32 (LBA)
-/dev/mmcblkXp2       270336  2367487  2097152    1G 83 Linux
-/dev/mmcblkXp3      2367488  4464639  2097152    1G 83 Linux
-/dev/mmcblkXp4      4472830 31116287 26643458 12.7G  f W95 Ext'd (LBA)
-/dev/mmcblkXp5      4472832  4734975   262144  128M 83 Linux
-/dev/mmcblkXp6      4743168  5005311   262144  128M 83 Linux
-/dev/mmcblkXp7      5013504 31116287 26102784 12.5G 83 Linux
+/dev/mmcblkXp2       270336  1791999  1521664  743M 83 Linux
+/dev/mmcblkXp3      1794048  3315711  1521664  743M 83 Linux
+/dev/mmcblkXp4      3317758 31116287 27798530 13.3G  f W95 Ext'd (LBA)
+/dev/mmcblkXp5      3317760  3579903   262144  128M 83 Linux
+/dev/mmcblkXp6      3588096  3850239   262144  128M 83 Linux
+/dev/mmcblkXp7      3858432 31116287 27257856   13G 83 Linux
 ```
 - `mmcblkXp1` is the `boot` partition with vfat filesystem
 - `mmcblkXp2` is the readonly `rootA` partition with ext4 filesystem
