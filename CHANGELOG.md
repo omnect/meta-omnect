@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - disable direct root login (concerns SSH, serial console and graphical console)
 - allow login using ics-dm user; subsequent sudo possible
 
+## [> 3.1.11.531910] Q4 2021
+- unbundle initramfs from kernel to speed up build times from sstate cache
+  (before the kernel and modules got build every time when building with
+  sstate cache)
+- add ics-dm-os-initramfs to sstate cache
+
+## [> 3.1.11.1102] Q4 2021
+- enrollment: install new enrollment-patch-config-toml@.service
+
 ## [> 3.1.11.1073] Q4 2021
 - u-boot boot.scr: only use saveenv on first boot to minimize flash wear out
   and robustness against power loss at boot

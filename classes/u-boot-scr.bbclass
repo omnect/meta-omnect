@@ -9,6 +9,7 @@ python create_boot_cmd () {
     fdt_addr=d.getVar("UBOOT_FDT_ADDR")
     fdt_load=d.getVar("UBOOT_FDT_LOAD")
     kernel_imagetype=d.getVar("KERNEL_IMAGETYPE")
+    ics_dm_initramfs_fs_type=d.getVar("ICS_DM_INITRAMFS_FSTYPE")
     try:
         with open(boot_cmd_file, "w") as f:
             f.write("\n")
@@ -35,14 +36,17 @@ python create_boot_cmd () {
                 f.write("load ${devtype} ${devnum}:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
 
             # load kernel
-            f.write("load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s-initramfs.bin\n" % kernel_imagetype)
+            f.write("load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)
+
+            # load initrd
+            f.write("load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % ics_dm_initramfs_fs_type)
 
             # assemble bootargs
             f.write("fdt get value bootargs /chosen bootargs\n")
             f.write("setenv bootargs \"${bootargs} bootpart=${bootpart} %s ${resize_data}\"\n" % bootargs_append)
 
             # boot
-            f.write("%s ${kernel_addr_r} - ${%s}\n" % (boot_cmd, fdt_addr))
+            f.write("%s ${kernel_addr_r} ${ramdisk_addr_r} ${%s}\n" % (boot_cmd, fdt_addr))
     except OSError:
         bb.fatal("Unable to open boot.cmd")
 }
