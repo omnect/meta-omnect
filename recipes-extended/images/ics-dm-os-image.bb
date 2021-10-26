@@ -61,11 +61,12 @@ remove_machine_id() {
     rm -f ${IMAGE_ROOTFS}${sysconfdir}/machine-id
 }
 
-# format /etc/shadow:
-#     $id$salt$hash,...
-#       -> id=6 : SHA-512
-#       escape $ with \$ !!!
+# add ics-dm user with password
 EXTRA_USERS_PARAMS = "\
-    usermod -p '\$6\$cii2MsBH92/jvCi\$rDrZTtyxm6dTtB1rJGNGAKj5KXEKoyXmIsQTDY2M6JVlm3hlt7nk7FwcWG03NcvhZwhiZYUaEdoUEY.QBqLH7.' root; \
-    useradd -p '\$6\$cii2MsBH92/jvCi\$rDrZTtyxm6dTtB1rJGNGAKj5KXEKoyXmIsQTDY2M6JVlm3hlt7nk7FwcWG03NcvhZwhiZYUaEdoUEY.QBqLH7.' ics-dm; \
-  "
+    useradd -p '${ICS_DM_USER_PWD_HASH}' ics-dm; \
+"
+
+# set root password, if debug-tweaks is not set
+EXTRA_USERS_PARAMS += "\
+    ${@bb.utils.contains("IMAGE_FEATURES", "debug-tweaks", "", "usermod -p '${ICS_DM_ROOT_PWD_HASH}' root; ", d)} \
+"
