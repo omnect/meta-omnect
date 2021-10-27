@@ -53,14 +53,6 @@ env:
         procps \
       "
 
-  # lower alternative default priority
-  ICS_DM_PRIO_DEFAULT_COREUTILS: "30"
-  ICS_DM_PRIO_DEFAULT_PROCPS: "40"
-
-  # explicitly control utilities used
-  ICS_DM_PRIO_TOOL_COREUTILS: "100"
-  ICS_DM_PRIO_TOOL_PROCPS: "100"
-
   # password hashes for root, ics-dm user
   #   format /etc/shadow (see MKPASSWD(1)):
   #       $id$salt$hash,...
