@@ -29,8 +29,38 @@ IMAGE_INSTALL = "\
     packagegroup-core-ssh-dropbear \
     u-boot-fw-utils \
     ics-dm-base-files \
-    ${ICS_DM_DEVEL_TOOLS} \
 "
+
+ICS_DM_DEVEL_TOOLS_DEFAULT = "\
+    valgrind \
+    ltrace \
+    strace \
+    gdbserver \
+    htop \
+    lsof \
+    curl \
+    tcpdump \
+    ethtool \
+    lshw \
+    sysstat \
+    ldd \
+    parted \
+    smartmontools \
+    mmc-utils \
+    sudo \
+    coreutils \
+    procps \
+"
+
+# check environment variable ICS_DM_DEVEL_TOOLS
+def check_for_devel_tools(d):
+    # use default list part of this recipe
+    if d.getVar('ICS_DM_DEVEL_TOOLS', True) in [None, ""] : return "${ICS_DM_DEVEL_TOOLS_DEFAULT}"
+
+    # use settings from environment
+    return "${ICS_DM_DEVEL_TOOLS}"
+
+IMAGE_INSTALL += "${@check_for_devel_tools(d)}"
 
 # We don't want to add kernel and initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.

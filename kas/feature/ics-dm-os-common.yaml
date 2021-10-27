@@ -32,26 +32,7 @@ env:
   SWUPDATE_PASSWORD_FILE: "SWUPDATE_PASSWORD_FILE_NOT_SET"
 
   # ICS-DM development tools
-  ICS_DM_DEVEL_TOOLS: "\
-        valgrind \
-        ltrace \
-        strace \
-        gdbserver \
-        htop \
-        lsof \
-        curl \
-        tcpdump \
-        ethtool \
-        lshw \
-        sysstat \
-        ldd \
-        parted \
-        smartmontools \
-        mmc-utils \
-        sudo \
-        coreutils \
-        procps \
-      "
+  ICS_DM_DEVEL_TOOLS: ""
 
   # password hashes for root, ics-dm user
   #   format /etc/shadow (see MKPASSWD(1)):
