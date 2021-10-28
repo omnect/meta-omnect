@@ -34,13 +34,6 @@ env:
   # ICS-DM development tools
   ICS_DM_DEVEL_TOOLS: ""
 
-  # password hashes for root, ics-dm user
-  #   format /etc/shadow (see MKPASSWD(1)):
-  #       $id$salt$hash,...
-  #         -> id=6 : SHA-512
-  #         escape $ with \$ !!!
-  ICS_DM_USER_PWD_HASH: '\$6\$cii2MsBH92/jvCi\$rDrZTtyxm6dTtB1rJGNGAKj5KXEKoyXmIsQTDY2M6JVlm3hlt7nk7FwcWG03NcvhZwhiZYUaEdoUEY.QBqLH7.'
-
 local_conf_header:
   meta-ics-dm_feature_ics-dm-os-common: |
     # For more options have a look into "poky/meta-poky/conf/local.conf.sample" resp.

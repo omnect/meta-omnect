@@ -95,7 +95,24 @@ remove_machine_id() {
     rm -f ${IMAGE_ROOTFS}${sysconfdir}/machine-id
 }
 
-# add ics-dm user with password
+# generate password hash form (plain) password stored in environment
+#   format /etc/shadow: $id$salt$hash,...
+#       -> id=6 : SHA-512
+def ics_dm_password_hash(d, var):
+    pwd_plain = d.getVar(var)
+    if pwd_plain in [None, ""] :
+        bb.fatal("environment variable %s not set" % (var))
+    cmd = "openssl passwd -6 %s" % (pwd_plain)
+    p = os.popen(cmd, "r")
+    pwd_hash = p.read()
+    if len(pwd_hash) == 0:
+        bb.fatal("openssl passwd failed")
+    pwd_hash = pwd_hash.strip()  # trailing '\n'
+    pwd_hash = pwd_hash.replace('$','\\$')  # escape delimiter sign '$'
+    p.close()
+    return pwd_hash
+
+# add ics-dm user with password, stored inside ICS_DM_USER_PASSWORD environment variable
 EXTRA_USERS_PARAMS = "\
-    useradd -p '${ICS_DM_USER_PWD_HASH}' ics-dm; \
+    useradd -p '${@ics_dm_password_hash(d, 'ICS_DM_USER_PASSWORD')}' ics-dm; \
 "
