@@ -50,13 +50,13 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 The partition layout is
 ```sh
 Device         Boot   Start      End  Sectors  Size Id Type
-/dev/mmcblkXp1 *       8192   270335   262144  128M  c W95 FAT32 (LBA)
-/dev/mmcblkXp2       270336  1791999  1521664  743M 83 Linux
-/dev/mmcblkXp3      1794048  3315711  1521664  743M 83 Linux
-/dev/mmcblkXp4      3317758 31116287 27798530 13.3G  f W95 Ext'd (LBA)
-/dev/mmcblkXp5      3317760  3579903   262144  128M 83 Linux
-/dev/mmcblkXp6      3588096  3850239   262144  128M 83 Linux
-/dev/mmcblkXp7      3858432 31116287 27257856   13G 83 Linux
+/dev/mmcblkXp1 *       8192    90111    81920   40M  c W95 FAT32 (LBA)
+/dev/mmcblkXp2        90112  1611775  1521664  743M 83 Linux
+/dev/mmcblkXp3      1613824  3135487  1521664  743M 83 Linux
+/dev/mmcblkXp4      3137534 31116287 27978754 13.3G  f W95 Ext'd (LBA)
+/dev/mmcblkXp5      3137536  3219455    81920   40M 83 Linux
+/dev/mmcblkXp6      3227648  3309567    81920   40M 83 Linux
+/dev/mmcblkXp7      3317760 31116287 27798528 13.3G 83 Linux
 ```
 - `mmcblkXp1` is the `boot` partition with vfat filesystem
 - `mmcblkXp2` is the readonly `rootA` partition with ext4 filesystem
