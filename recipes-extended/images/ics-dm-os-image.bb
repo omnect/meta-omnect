@@ -99,8 +99,3 @@ remove_machine_id() {
 EXTRA_USERS_PARAMS = "\
     useradd -p '${ICS_DM_USER_PWD_HASH}' ics-dm; \
 "
-
-# set root password, if debug-tweaks is not set
-EXTRA_USERS_PARAMS += "\
-    ${@bb.utils.contains("IMAGE_FEATURES", "debug-tweaks", "", "usermod -p '${ICS_DM_ROOT_PWD_HASH}' root; ", d)} \
-"

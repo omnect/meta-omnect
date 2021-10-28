@@ -39,7 +39,6 @@ env:
   #       $id$salt$hash,...
   #         -> id=6 : SHA-512
   #         escape $ with \$ !!!
-  ICS_DM_ROOT_PWD_HASH: '\$6\$cii2MsBH92/jvCi\$rDrZTtyxm6dTtB1rJGNGAKj5KXEKoyXmIsQTDY2M6JVlm3hlt7nk7FwcWG03NcvhZwhiZYUaEdoUEY.QBqLH7.'
   ICS_DM_USER_PWD_HASH: '\$6\$cii2MsBH92/jvCi\$rDrZTtyxm6dTtB1rJGNGAKj5KXEKoyXmIsQTDY2M6JVlm3hlt7nk7FwcWG03NcvhZwhiZYUaEdoUEY.QBqLH7.'
 
 local_conf_header:
