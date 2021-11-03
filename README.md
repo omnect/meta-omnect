@@ -56,14 +56,16 @@ Device         Boot   Start      End  Sectors  Size Id Type
 /dev/mmcblkXp4      3137534 31116287 27978754 13.3G  f W95 Ext'd (LBA)
 /dev/mmcblkXp5      3137536  3219455    81920   40M 83 Linux
 /dev/mmcblkXp6      3227648  3309567    81920   40M 83 Linux
-/dev/mmcblkXp7      3317760 31116287 27798528 13.3G 83 Linux
+/dev/mmcblkXp7      3317760  3399679    81920   40M 83 Linux
+/dev/mmcblkXp8      3407872 31116287 27708416 13.2G 83 Linux
 ```
 - `mmcblkXp1` is the `boot` partition with vfat filesystem
 - `mmcblkXp2` is the readonly `rootA` partition with ext4 filesystem
 - `mmcblkXp3` is the readonly `rootB` partition with ext4 filesystem
 - `mmcblkXp5` is the writable `factory` partition with ext4 filesystem
-- `mmcblkXp6` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
-- `mmcblkXp7` is the writable `data` partition with ext4 filesystem
+- `mmcblkXp6` is the writable `certificate` partition with ext4 filesystem
+- `mmcblkXp7` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
+- `mmcblkXp8` is the writable `data` partition with ext4 filesystem
 
 The size of `mmcblkXp7` depends on your sdcard/emmc size. Per default it has a size of 512M and is resized on the first boot to the max available size.
 
