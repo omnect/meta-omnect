@@ -92,9 +92,11 @@ add_kernel_and_initramfs() {
 # Since we have a writeable 'etc' overlay before systemd starts we don't
 # need a preexisting empty '/etc/machine-id' and thus delete it as late
 # as possible:
-IMAGE_PREPROCESS_COMMAND_append = " remove_machine_id; reproducible_final_image_task;"
-remove_machine_id() {
+# also we delete fstab, since mounting filesystems is handled in initramfs
+IMAGE_PREPROCESS_COMMAND_append = " remove_unwanted_files; reproducible_final_image_task;"
+remove_unwanted_files() {
     rm -f ${IMAGE_ROOTFS}${sysconfdir}/machine-id
+    rm -f ${IMAGE_ROOTFS}${sysconfdir}/fstab
 }
 
 # generate password hash form (plain) password stored in environment
