@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.11.537558] Q4 2021
+- update partition schema
+- add development tools: valgrind, ltrace, strace, gdbserver, htop, lsof, curl, tcpdump, ethtool, lshw, sysstat, ldd, parted, smartmontools, mmc-utils, sudo, ps, dd
+- add ics-dm user
+- disable direct root login (concerns SSH, serial console and graphical console)
+- allow login using ics-dm user; subsequent sudo possible
+
 ## [> 3.1.11.531910] Q4 2021
 - unbundle initramfs from kernel to speed up build times from sstate cache
   (before the kernel and modules got build every time when building with

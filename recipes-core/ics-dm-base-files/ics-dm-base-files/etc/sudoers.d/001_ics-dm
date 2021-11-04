@@ -1,0 +1,2 @@
+# allow user ics-dm to run sudo (with password)
+ics-dm ALL=(ALL:ALL) ALL

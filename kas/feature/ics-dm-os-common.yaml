@@ -31,6 +31,12 @@ env:
   SWUPDATE_PRIVATE_KEY: "SWUPDATE_PRIVATE_KEY_NOT_SET"
   SWUPDATE_PASSWORD_FILE: "SWUPDATE_PASSWORD_FILE_NOT_SET"
 
+  # ICS-DM development tools
+  ICS_DM_DEVEL_TOOLS: ""
+
+  # (plain) password of ics-dm user
+  ICS_DM_USER_PASSWORD: ""
+
 local_conf_header:
   meta-ics-dm_feature_ics-dm-os-common: |
     # For more options have a look into "poky/meta-poky/conf/local.conf.sample" resp.
