@@ -80,6 +80,10 @@ add_kernel_and_initramfs() {
     ln -sf $(basename ${initramfs}) $D/boot/initramfs.${ICS_DM_INITRAMFS_FSTYPE}
 }
 
+ROOTFS_POSTPROCESS_COMMAND_append = " ics_dm_create_ff_image;"
+ics_dm_create_ff_image() {
+    dd if=/dev/zero bs=512 count=1 | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/ics-dm_ff.img
+}
 
 # Poky checks at creation time of rootfs and even later when creating the
 # image that '/etc/machine-id' is available when using systemd. The idea
