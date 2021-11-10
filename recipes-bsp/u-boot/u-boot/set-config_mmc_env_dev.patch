@@ -1,0 +1,24 @@
+From 029115485d0d69f0d9349099951884677c18da78 Mon Sep 17 00:00:00 2001
+From: Kas User <kas@example.com>
+Date: Tue, 9 Nov 2021 12:40:06 +0000
+Subject: [PATCH] Set CONFIG_ENV_IS_IN_MMC
+
+---
+ include/configs/rpi.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/include/configs/rpi.h b/include/configs/rpi.h
+index 83e258a6b9..fdfb47811e 100644
+--- a/include/configs/rpi.h
++++ b/include/configs/rpi.h
+@@ -93,6 +93,10 @@
+ 	"stdout=serial,vidconsole\0" \
+ 	"stderr=serial,vidconsole\0"
+ 
++#ifdef CONFIG_ENV_IS_IN_MMC
++#define CONFIG_SYS_MMC_ENV_DEV 0
++#endif
++
+ #ifdef CONFIG_ARM64
+ #define FDT_HIGH "ffffffffffffffff"
+ #define INITRD_HIGH "ffffffffffffffff"
