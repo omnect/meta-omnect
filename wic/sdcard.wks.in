@@ -1,6 +1,6 @@
 part --ondisk mmcblk0 --fixed-size ${ICS_DM_PART_SIZE_BOOT}K      --fstype=vfat --align 4096 --label boot   --source bootimg-partition --active
-part --ondisk mmcblk0 --fixed-size ${ICS_DM_PART_SIZE_UBOOT_ENV}K --no-table --offset ${ICS_DM_PART_OFFSET_UBOOT_ENV1} --source rawcopy --sourceparams="file=ics-dm_ff.img"
-part --ondisk mmcblk0 --fixed-size ${ICS_DM_PART_SIZE_UBOOT_ENV}K --no-table --offset ${ICS_DM_PART_OFFSET_UBOOT_ENV2} --source rawcopy --sourceparams="file=ics-dm_ff.img"
+part --ondisk mmcblk0 --fixed-size ${ICS_DM_PART_SIZE_UBOOT_ENV}K --no-table --offset ${ICS_DM_PART_OFFSET_UBOOT_ENV1} --source rawcopy --sourceparams="file=ics-dm_uboot_env_ff.img"
+part --ondisk mmcblk0 --fixed-size ${ICS_DM_PART_SIZE_UBOOT_ENV}K --no-table --offset ${ICS_DM_PART_OFFSET_UBOOT_ENV2} --source rawcopy --sourceparams="file=ics-dm_uboot_env_ff.img"
 part --ondisk mmcblk0 --fixed-size ${ICS_DM_PART_SIZE_ROOTFS}K    --fstype=ext4 --align 4096 --label rootA  --source rootfs --exclude-path mnt/data/
 part --ondisk mmcblk0 --fixed-size ${ICS_DM_PART_SIZE_ROOTFS}K    --fstype=ext4 --align 4096 --label rootB
 part --ondisk mmcblk0 --fixed-size ${ICS_DM_PART_SIZE_FACTORY}K   --fstype=ext4 --align 4096 --label factory

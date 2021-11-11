@@ -70,7 +70,14 @@ Device         Boot   Start      End  Sectors  Size Id Type
 The size of `mmcblkXp8` depends on your sdcard/emmc size. Per default it has a size of 512M and is resized on the first boot to the max available size.
 
 There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks.
-For this purpose, the configuration variables ICS_DM_PART_OFFSET_UBOOT_ENV1, ICS_DM_PART_OFFSET_UBOOT_ENV2 and ICS_DM_PART_SIZE_UBOOT_ENV are used for.
+For this purpose, the following configuration variables are used:
+
+- `ICS_DM_PART_OFFSET_UBOOT_ENV1`
+    - offset of 1st u-boot environment bank (in KiB, decimal)
+- `ICS_DM_PART_OFFSET_UBOOT_ENV2`
+    - offset of 2nd u-boot environment bank (in KiB, decimal)
+- `ICS_DM_PART_SIZE_UBOOT_ENV`
+    - size of one u-boot environment bank (in KiB, decimal)
 
 ## Compatibility
 `meta-ics-dm` is compatible with the current yocto LTS release branch `dunfell`.
