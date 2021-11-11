@@ -80,9 +80,9 @@ add_kernel_and_initramfs() {
     ln -sf $(basename ${initramfs}) $D/boot/initramfs.${ICS_DM_INITRAMFS_FSTYPE}
 }
 
-ROOTFS_POSTPROCESS_COMMAND_append = " ics_dm_create_ff_image;"
-ics_dm_create_ff_image() {
-    dd if=/dev/zero bs=512 count=1 | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/ics-dm_ff.img
+ROOTFS_POSTPROCESS_COMMAND_append = " ics_dm_create_uboot_env_ff_img;"
+ics_dm_create_uboot_env_ff_img() {
+    dd if=/dev/zero bs=1024 count=${ICS_DM_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/ics-dm_uboot_env_ff.img
 }
 
 # Poky checks at creation time of rootfs and even later when creating the
