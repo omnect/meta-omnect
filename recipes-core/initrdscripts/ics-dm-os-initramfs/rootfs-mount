@@ -59,10 +59,10 @@ rootfs_run() {
     mkdir -p ${ROOTFS_DIR}/mnt/data/local
     mount -o bind ${ROOTFS_DIR}/mnt/data/local ${ROOTFS_DIR}/usr/local
 
-    # bind mount /var/log/journal
-    if [ "${bootparam_persistent_journal}" = "1" ]; then
-        mkdir -p ${ROOTFS_DIR}/mnt/data/journal
-        mount -o bind ${ROOTFS_DIR}/mnt/data/journal ${ROOTFS_DIR}/var/log/journal
+    # bind mount /var/log
+    if [ "${bootparam_persistent_var_log}" = "1" ]; then
+        mkdir -p ${ROOTFS_DIR}/mnt/data/log
+        mount -o bind ${ROOTFS_DIR}/mnt/data/log ${ROOTFS_DIR}/var/log
     fi
 
     # mount tmpfs
