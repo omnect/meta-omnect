@@ -51,13 +51,13 @@ The partition layout is
 ```sh
 Device         Boot   Start      End  Sectors  Size Id Type
 /dev/mmcblkXp1 *       8192    90111    81920   40M  c W95 FAT32 (LBA)
-/dev/mmcblkXp2        90112  1611775  1521664  743M 83 Linux
-/dev/mmcblkXp3      1613824  3135487  1521664  743M 83 Linux
-/dev/mmcblkXp4      3137534 31116287 27978754 13.3G  f W95 Ext'd (LBA)
-/dev/mmcblkXp5      3137536  3219455    81920   40M 83 Linux
-/dev/mmcblkXp6      3227648  3309567    81920   40M 83 Linux
-/dev/mmcblkXp7      3317760  3399679    81920   40M 83 Linux
-/dev/mmcblkXp8      3407872 31116287 27708416 13.2G 83 Linux
+/dev/mmcblkXp2       106496  1628159  1521664  743M 83 Linux
+/dev/mmcblkXp3      1630208  3151871  1521664  743M 83 Linux
+/dev/mmcblkXp4      3153918 31116287 27962370 13.3G  f W95 Ext'd (LBA)
+/dev/mmcblkXp5      3153920  3235839    81920   40M 83 Linux
+/dev/mmcblkXp6      3244032  3325951    81920   40M 83 Linux
+/dev/mmcblkXp7      3334144  3416063    81920   40M 83 Linux
+/dev/mmcblkXp8      3424256 31116287 27692032 13.2G 83 Linux
 ```
 - `mmcblkXp1` is the `boot` partition with vfat filesystem
 - `mmcblkXp2` is the readonly `rootA` partition with ext4 filesystem
@@ -68,6 +68,16 @@ Device         Boot   Start      End  Sectors  Size Id Type
 - `mmcblkXp8` is the writable `data` partition with ext4 filesystem
 
 The size of `mmcblkXp8` depends on your sdcard/emmc size. Per default it has a size of 512M and is resized on the first boot to the max available size.
+
+There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks.
+For this purpose, the following configuration variables are used:
+
+- `ICS_DM_PART_OFFSET_UBOOT_ENV1`
+    - offset of 1st u-boot environment bank (in KiB, decimal)
+- `ICS_DM_PART_OFFSET_UBOOT_ENV2`
+    - offset of 2nd u-boot environment bank (in KiB, decimal)
+- `ICS_DM_PART_SIZE_UBOOT_ENV`
+    - size of one u-boot environment bank (in KiB, decimal)
 
 ## Compatibility
 `meta-ics-dm` is compatible with the current yocto LTS release branch `dunfell`.
