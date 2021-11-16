@@ -14,7 +14,8 @@ SRC_URI = " \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
 "
-SRCREV = "${AUTOREV}"
+# version 0.2.0
+SRCREV = "bef57f58e3dd558d06c0f6b8b5ed6c021feb3896"
 
 S = "${WORKDIR}/git"
 
