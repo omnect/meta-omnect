@@ -32,6 +32,11 @@ rootfs_run() {
     rootfs=/dev/${mmcblk}p${bootparam_bootpart}
     mount -o ro ${rootfs} ${ROOTFS_DIR}
 
+    # load overlay kernelmodule
+    if [ -f ${ROOTFS_DIR}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko  ]; then
+        insmod ${ROOTFS_DIR}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko
+    fi
+
     # mount boot
     mount -t vfat -o defaults,rw,fmask=0002,gid=$(cat /etc/group | grep ^disk | awk -F: '{print $3}') /dev/disk/by-label/boot ${ROOTFS_DIR}/boot
 

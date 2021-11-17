@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iotedge: update to 1.2.6
 - iot-identity-service: update to 1.2.3 (rev 8fc413a9910588b2949eca8ad1ea28246c066f08
   is more like 1.2.4, but it is not officially tagged yet)
+- initramfs: test and load overlay kernel module if necessary
 
 ## [> 3.1.11.2837673] Q4 2021
  - provide persistent var-log feature
