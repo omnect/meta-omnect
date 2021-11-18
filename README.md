@@ -28,8 +28,8 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 - `iotedge`
     - adds the `iotedge` service with its dependencies
     - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedge` runtime dependency `moby`
-- `persistent-journal`
-    - enables a persistent journal which is stored in the data partition
+- `persistent-var-log`
+    - enables a persistent /var/log which is stored in the data partition
 - `resize-data`
     - expands the data partition to available space on first boot
 - `tpm`

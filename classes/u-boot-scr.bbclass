@@ -24,9 +24,9 @@ python create_boot_cmd () {
             if bb.utils.contains('DISTRO_FEATURES', 'resize-data', True, False, d):
                 f.write("if test -z \"${resized_data}\"; then setenv resize_data \"resize_data=1\";fi\n")
 
-            # possibly mount persitent journal to /var/log/journal
-            if bb.utils.contains('DISTRO_FEATURES', 'persistent-journal', True, False, d):
-                bootargs_append+=" persistent_journal=1"
+            # possibly mount persistent journal to /var/log/
+            if bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', True, False, d):
+                bootargs_append+=" persistent_var_log=1"
 
             # load device tree
             f.write("fdt addr ${%s}\n" % fdt_addr)

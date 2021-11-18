@@ -1,4 +1,4 @@
-# We want to have a nonvolatile log dir, if DISTRO_FEATURE "persistent-journal"
+# We want to have a nonvolatile log dir, if DISTRO_FEATURE "persistent-var-log"
 # is set, but we cannot access 'DISTRO_FEATURES' directly at conf file load
 # time.
 # We delay by using this special bbclass and the _append operator.

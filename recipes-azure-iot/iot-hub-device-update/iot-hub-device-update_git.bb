@@ -32,7 +32,7 @@ RDEPENDS_${PN} = " \
 
 inherit aziot cmake systemd
 
-EXTRA_OECMAKE += "-DADUC_LOG_FOLDER=/mnt/data/aduc-logs"
+EXTRA_OECMAKE += "-DADUC_LOG_FOLDER=/var/log/aduc-logs"
 EXTRA_OECMAKE += "-DADUC_CONTENT_HANDLERS=microsoft/swupdate"
 EXTRA_OECMAKE += "-DADUC_INSTALL_DAEMON=OFF"
 EXTRA_OECMAKE += "-DADUC_PLATFORM_LAYER=linux"
@@ -61,17 +61,10 @@ do_install_append() {
   #enable user adu to reboot with adu-shell
   chmod +s ${D}${libdir}/adu/adu-shell
 
-  install -d -m 1775 -o adu -g adu ${D}/mnt/data/aduc-logs
-
   # create tmpfiles.d entry to (re)create dir + permissions
   install -d ${D}${libdir}/tmpfiles.d
-  echo "d /mnt/data/aduc-logs 1755 adu adu -"   >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
+  echo "d /var/log/aduc-logs 1755 adu adu -"    >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
   echo "d /mnt/data/var/lib/adu 0755 adu adu -" >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
-
-  if ! ${@bb.utils.to_boolean(d.getVar('VOLATILE_LOG_DIR'))}; then
-    install -d ${D}/var/log
-    lnr ${D}/mnt/data/aduc-logs ${D}/var/log/aduc
-  fi
 
   install -d -o adu -g adu ${D}/mnt/data/var/lib/adu
 
@@ -105,9 +98,7 @@ FILES_${PN} += " \
   ${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml \
   ${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml \
   ${systemd_system_unitdir}/adu-agent.service \
-  /mnt/data/aduc-logs \
   /mnt/data/var/lib/adu \
-  ${@ '' if bb.utils.to_boolean(d.getVar('VOLATILE_LOG_DIR')) else '/var/log/aduc'} \
   "
 
 GROUPADD_PARAM_${PN} += "-r adu;"
