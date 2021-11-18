@@ -1,0 +1,120 @@
+#!/bin/sh
+
+#
+# optionally provide flashing whole disk image in INITRAMFS context
+#
+
+ICS_DM_FLASH_MODE_VAR="initramfs-flash-mode"
+ICS_DM_FLASH_MODE_ETH="eth0"
+ICS_DM_FLASH_MODE_BLK_DEV="mmcblk0"
+ICS_DM_FLASH_MODE_FIFO="/home/ics-dm/wic-image.fifo.xz"
+ICS_DM_FLASH_MODE_BMAP_FILE="/home/ics-dm/wic-image.bmap"
+
+# called by generic INITRAMFS
+flash_mode_enabled() {
+    local flash_mode=$(fw_printenv $ICS_DM_FLASH_MODE_VAR | cut -d'=' -f2)
+    if [ "$flash_mode" != "1" ]; then
+        return 1  # disable flash mode; normal boot; main entry point _NOT_ called
+    fi
+    return 0  # enable flash mode; main entry point called
+}
+
+run_fatal() {
+    msg "FATAL ERROR: $1"
+    reboot -f
+}
+
+run_cmd() {
+    msg  "$@"
+    eval "$@"
+    if [ $? -ne 0 ]; then run_fatal "command failed"; fi
+}
+
+setup_network() {
+    local if_name="$1"
+    local ip_addr=""
+
+    # get network interface up
+    while true; do
+        ifconfig $if_name up >/dev/null 2>&1
+        if [ $? -eq 0 ]; then break; fi
+        msg "Waiting for $if_name ..."
+        sleep 1
+    done
+
+    # start dhcp client; it is backgrounding in the case the IP address was assigned or timeout
+    mkdir -p /tmp
+    run_cmd dhclient -4 -v -w $if_name
+
+    # wait for IPv4 address
+    while true; do
+        msg "Waiting for IP address..."
+        ip_addr=$(ip addr show dev $ICS_DM_FLASH_MODE_ETH | grep "inet " | awk '{print $2}')
+        if [ ! -z "$ip_addr" ]; then break; fi
+        sleep 1
+    done
+    ICS_DM_FLASH_MODE_IP_ADDR="${ip_addr%/*}"
+
+    # setup PTY
+    run_cmd mkdir -p /dev/pts
+    run_cmd mount -t devpts devpts /dev/pts
+
+    # start SSH server; generate host key on the fly
+    mkdir -p /etc/dropbear
+    run_cmd dropbear -R
+}
+
+run_bmap_tool() {
+    local blk_dev="$1"
+    local umount_dev=""
+
+    # check preconditions
+    if [ ! -b /dev/${blk_dev} ]; then run_fatal "$blk_dev does not exist or not a block device"; fi
+
+    # stop auto mount
+    udevadm settle
+    udevadm control -e
+
+    # bmap file must be copied with scp
+    echo "please run  scp <your-bmap-file> ics-dm@${ICS_DM_FLASH_MODE_IP_ADDR}:$(basename ${ICS_DM_FLASH_MODE_BMAP_FILE})"
+    while true; do
+        if [ -f "$ICS_DM_FLASH_MODE_BMAP_FILE" ]; then break; fi
+        sleep 4
+    done
+
+    # umount, if necessary
+    mkdir -p /tmp
+    cp /proc/mounts /tmp/all_mounts  # make snapshot
+    while read x; do
+        umount_dev=$(echo $x | awk '{print $1}')
+        echo $umount_dev | grep -q $blk_dev
+        if [ $? -eq 0 ]; then
+            echo "umount $umount_dev"
+            umount $umount_dev 2>/dev/null
+        fi
+    done </tmp/all_mounts
+
+    # setup FIFO
+    run_cmd mkfifo $ICS_DM_FLASH_MODE_FIFO
+    run_cmd chown ics-dm.ics-dm $ICS_DM_FLASH_MODE_FIFO
+
+    echo "please run  scp <your-wic-image> ics-dm@${ICS_DM_FLASH_MODE_IP_ADDR}:$(basename ${ICS_DM_FLASH_MODE_FIFO})"
+    export PATH
+    run_cmd bmaptool copy --bmap $ICS_DM_FLASH_MODE_BMAP_FILE \
+                                 $ICS_DM_FLASH_MODE_FIFO /dev/$ICS_DM_FLASH_MODE_BLK_DEV
+}
+
+# main entry point
+flash_mode_run() {
+    msg "Entering ICS DM flashing mode..."
+
+    # disable flash mode for subsequent restarts
+    fw_setenv $ICS_DM_FLASH_MODE_VAR
+
+    setup_network $ICS_DM_FLASH_MODE_ETH
+    run_bmap_tool $ICS_DM_FLASH_MODE_BLK_DEV
+
+    msg "Rebooting system..."
+    reboot -f
+    while true; do sleep 3600; done
+}
