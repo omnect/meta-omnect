@@ -1,0 +1,8 @@
+# kas config file
+
+header:
+  version: 10
+
+local_conf_header:
+  meta-ics-dm_feature_persistent-var-log: |
+    DISTRO_FEATURES_append = " persistent-var-log"

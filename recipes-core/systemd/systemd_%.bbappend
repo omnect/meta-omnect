@@ -21,8 +21,8 @@ do_install_append() {
     lnr ${D}${systemd_system_unitdir}/ics-dm-first-boot.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/ics-dm-first-boot.service
     install -m 0755 -D ${WORKDIR}/ics_dm_first_boot.sh ${D}${bindir}/
 
-    #persistent journal
-    if ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-journal', 'true', 'false', d)}; then
+    # persistent /var/log
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', 'true', 'false', d)}; then
         sed -i 's/^#Storage=auto/Storage=persistent/' ${D}${sysconfdir}/systemd/journald.conf
 
         # (Re)create journal folder permissions in data partions, e.g. after a
@@ -30,11 +30,10 @@ do_install_append() {
         # (https://www.freedesktop.org/software/systemd/man/tmpfiles.d.html).
         #
         # We need that for scenarios where you update from an image without
-        # persistent journal to an image where persistent journal is enabled.
-        # Note: /mnt/data/journal is created in initramfs
-        echo "z /mnt/data/journal 2750 root systemd-journal - -"                    >> ${D}${libdir}/tmpfiles.d/persistent_journal.conf
-        echo "z /mnt/data/journal/%m 2755 root systemd-journal - -"                 >> ${D}${libdir}/tmpfiles.d/persistent_journal.conf
-        echo "z /mnt/data/journal/%m/system.journal 0640 root systemd-journal - -"  >> ${D}${libdir}/tmpfiles.d/persistent_journal.conf
+        # persistent /var/log to an image where persistent /var/log is enabled.
+        echo "z /var/log/journal 2750 root systemd-journal - -"                    >> ${D}${libdir}/tmpfiles.d/persistent_journal.conf
+        echo "z /var/log/journal/%m 2755 root systemd-journal - -"                 >> ${D}${libdir}/tmpfiles.d/persistent_journal.conf
+        echo "z /var/log/journal/%m/system.journal 0640 root systemd-journal - -"  >> ${D}${libdir}/tmpfiles.d/persistent_journal.conf
     fi
 
     # configure journald
