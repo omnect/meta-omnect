@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.11.3447186] Q4 2021
+- reenable overwriting src_uri of enrollment and iot-module-template
+
 ## [> 3.1.11.3165078] Q4 2021
 - iotedge: update to 1.2.6
 - iot-identity-service: update to 1.2.4

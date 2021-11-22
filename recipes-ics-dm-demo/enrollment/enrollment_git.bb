@@ -5,12 +5,12 @@ LIC_FILES_CHKSUM="\
   file://LICENSE-APACHE;md5=650e893673eb59696f3d4ee64f6d2357 \
 "
 
-# TODO change to https uri when public
-REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main"
-SRC_URI = "${REPO_URI}"
 
 # version 0.4.0
-SRCREV = "3e8db1d2e761ab5eda78c5e539a85b8a2aa89594"
+GITREV = "3e8db1d2e761ab5eda78c5e539a85b8a2aa89594"
+# TODO change to https uri when public
+REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;rev=${GITREV}"
+SRC_URI = "${REPO_URI}"
 
 S = "${WORKDIR}/git"
 
