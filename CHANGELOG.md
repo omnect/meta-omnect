@@ -5,7 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [> 3.1.11.3553831] Q4 2021
+## [> 3.1.11.3789986] Q4 2021
+- set permissions on adu-conf.txt, config.toml, enrollment_static.json and its basedirs via
+  systemd-tmpfiles.d
+- ics-dm_first-boot: append ics-dm-first-boot.sh from factory partition if existing
+- initramfs: mount cert and factory partition
+- iot-identity-service: only start if /etc/aziot/config.toml exists
+
+## [> 3.1.11.3553861] Q4 2021
 - provide initramfs-flash-mode feature
 
 ## [> 3.1.11.3447186] Q4 2021

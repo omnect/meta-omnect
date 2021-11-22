@@ -65,6 +65,8 @@ do_install_append() {
   install -d ${D}${libdir}/tmpfiles.d
   echo "d /var/log/aduc-logs 1755 adu adu -"    >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
   echo "d /mnt/data/var/lib/adu 0755 adu adu -" >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
+  echo "z /etc/adu 0775 adu adu -"              >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
+  echo "z /etc/adu/adu-conf.txt 0660 adu adu -" >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
 
   install -d -o adu -g adu ${D}/mnt/data/var/lib/adu
 

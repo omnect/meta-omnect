@@ -13,8 +13,11 @@ SRC_URI = "\
 FILES_${PN} = "\
     /etc/sudoers.d/001_ics-dm \
     /etc/profile.d/ics-dm_profile.sh \
+    /mnt/cert \
     /mnt/data \
     /mnt/etc \
+    /mnt/factory \
+    ${libdir}/tmpfiles.d/ics-dm-base-files.conf \
     /var/lib \
     ${exec_prefix}/local \
 "
@@ -26,8 +29,16 @@ do_install() {
     install -m 0644 ${WORKDIR}/etc/profile.d/ics-dm_profile.sh ${D}/etc/profile.d/
 
     # install mountpoints
+    install -d -D ${D}/mnt/cert \
     install -d -D ${D}/mnt/data \
     install -d -D ${D}/mnt/etc \
+    install -d -D ${D}/mnt/factory \
     install -d -D ${D}/var/lib \
     install -d -D ${D}${exec_prefix}/local
+
+    # create tmpfiles.d entry to (re)create permissions on injectables
+    install -d ${D}${libdir}/tmpfiles.d
+    echo "z /etc 0775 root root -"          >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
+    echo "z /etc/hosts 0664 root root -"    >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
+    echo "z /etc/hostname 0664 root root -" >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
 }

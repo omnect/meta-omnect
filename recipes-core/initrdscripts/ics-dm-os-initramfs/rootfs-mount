@@ -40,6 +40,9 @@ rootfs_run() {
     # mount boot
     mount -t vfat -o defaults,rw,fmask=0002,gid=$(cat /etc/group | grep ^disk | awk -F: '{print $3}') /dev/disk/by-label/boot ${ROOTFS_DIR}/boot
 
+    # mount cert
+    mount -o defaults,async /dev/disk/by-label/cert ${ROOTFS_DIR}/mnt/cert
+
     # mount etc overlay
     mount -o defaults,sync /dev/disk/by-label/etc ${ROOTFS_DIR}/mnt/etc
     mkdir -p ${ROOTFS_DIR}/mnt/etc/upper
@@ -52,6 +55,9 @@ rootfs_run() {
     mkdir -p ${ROOTFS_DIR}/mnt/data/home/upper
     mkdir -p ${ROOTFS_DIR}/mnt/data/var/lib
     mkdir -p ${ROOTFS_DIR}/mnt/data/local
+
+    # mount factory
+    mount -o defaults,ro,async /dev/disk/by-label/factory ${ROOTFS_DIR}/mnt/factory
 
     # mount home overlay
     mount -t overlay -o defaults,lowerdir=${ROOTFS_DIR}/home,upperdir=${ROOTFS_DIR}/mnt/data/home/upper,workdir=${ROOTFS_DIR}/mnt/data/home/work overlay ${ROOTFS_DIR}/home

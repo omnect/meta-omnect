@@ -53,6 +53,11 @@ do_install_append() {
     chgrp enrollment ${D}${sysconfdir}/ics_dm
     chmod g+rw ${D}${sysconfdir}/ics_dm
 
+    # create tmpfiles.d entry to (re)create permissions
+    install -d ${D}${libdir}/tmpfiles.d
+    echo "z /etc/ics_dm 0775 root enrollment -"                        >> ${D}${libdir}/tmpfiles.d/enrollment.conf
+    echo "z /etc/ics_dm/enrollment_static.json 0664 root enrollment -" >> ${D}${libdir}/tmpfiles.d/enrollment.conf
+
     install -m 755 ${S}/scripts/patch_config_toml.sh ${D}${bindir}/
 
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
@@ -60,5 +65,8 @@ do_install_append() {
 }
 
 SYSTEMD_SERVICE_${PN} = "enrollment-config-apply.path enrollment.service enrolled.path"
-FILES_${PN} += "${systemd_system_unitdir}"
+FILES_${PN} += "\
+  ${libdir}/tmpfiles.d/enrollment.conf \
+  ${systemd_system_unitdir} \
+"
 REQUIRED_DISTRO_FEATURES = "systemd"
