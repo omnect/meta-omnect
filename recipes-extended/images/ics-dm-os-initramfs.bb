@@ -54,4 +54,4 @@ python sstate_report_unihash() {
 }
 
 
-inherit ics_dm_user ${@bb.utils.contains('DISTRO_FEATURES', 'initramfs-flash-mode', 'ics_dm_user', '', d)}
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'initramfs-flash-mode', 'ics_dm_user', '', d)}

@@ -100,7 +100,12 @@ In the next step, the bmap file and the wic image file have to be transferred, b
 scp ics-dm-os-*.wic.bmap ics-dm@<target-ip>:wic-image.bmap
 scp ics-dm-os-*.wic.xz ics-dm@<target-ip>:wic-image.fifo.xz
 ```
-The password for the *ics-dm* user has to be used. The destination file names have to be *wic-image.bmap* and *wic-image.fifo.xz*.
+The password for the *ics-dm* user used by the rootfs has to be used.
+The *ics-dm* user used by the initramfs is independent from the *ics-dm* user used by the rootfs.
+At build time, the configuration (ICS_DM_USER_PASSWORD) is applied for both. The passwords are identical.
+Later during runtime, changing the password in the rootfs is not synchronized to the initramfs.
+
+The destination file names have to be *wic-image.bmap* and *wic-image.fifo.xz*.
 
 After finishing the flash procedure, the system reboots automatically.
 The u-boot environment variable *initramfs-flash-mode* will be deleted automatically.
