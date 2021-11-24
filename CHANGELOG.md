@@ -9,8 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - set permissions on adu-conf.txt, config.toml, enrollment_static.json and its basedirs via
   systemd-tmpfiles.d
 - ics-dm_first-boot: append ics-dm-first-boot.sh from factory partition if existing
-- initramfs: mount cert and factory partition
+- initramfs: mount cert and factory partition; if etc partition is empty try
+  to copy etc dir from factory partition
 - iot-identity-service: only start if /etc/aziot/config.toml exists
+- update-ca-certificates: use /mnt/cert/ca as input dir for local ca certificates
 
 ## [> 3.1.11.3553861] Q4 2021
 - provide initramfs-flash-mode feature

@@ -38,7 +38,9 @@ do_install() {
 
     # create tmpfiles.d entry to (re)create permissions on injectables
     install -d ${D}${libdir}/tmpfiles.d
-    echo "z /etc 0775 root root -"          >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
-    echo "z /etc/hosts 0664 root root -"    >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
-    echo "z /etc/hostname 0664 root root -" >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
+    echo "z /etc 0775 root root -"              >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
+    echo "z /etc/hosts 0664 root root -"        >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
+    echo "z /etc/hostname 0664 root root -"     >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
+    echo "z /mnt/cert/ca 0755 root root -"      >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
+    echo "z /mnt/cert/priv 0755 root root -"    >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
 }

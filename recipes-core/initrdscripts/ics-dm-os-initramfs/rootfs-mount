@@ -42,11 +42,25 @@ rootfs_run() {
 
     # mount cert
     mount -o defaults,async /dev/disk/by-label/cert ${ROOTFS_DIR}/mnt/cert
+    mkdir -p ${ROOTFS_DIR}/mnt/cert/ca
+    mkdir -p ${ROOTFS_DIR}/mnt/cert/priv
+
+    # mount etc partition
+    mount -o defaults,sync /dev/disk/by-label/etc ${ROOTFS_DIR}/mnt/etc
+
+    # mount factory
+    mount -o defaults,ro,async /dev/disk/by-label/factory ${ROOTFS_DIR}/mnt/factory
+
+    # if etc partition is empty we copy the etc dir from factory partition
+    if [ ! -d ${ROOTFS_DIR}/mnt/etc/upper ]; then
+        mkdir -p ${ROOTFS_DIR}/mnt/etc/upper
+        mkdir -p ${ROOTFS_DIR}/mnt/etc/work
+        if [ -d ${ROOTFS_DIR}/mnt/factory/etc ]; then
+            cp -rfp ${ROOTFS_DIR}/mnt/factory/etc/. ${ROOTFS_DIR}/mnt/etc/upper
+        fi
+    fi
 
     # mount etc overlay
-    mount -o defaults,sync /dev/disk/by-label/etc ${ROOTFS_DIR}/mnt/etc
-    mkdir -p ${ROOTFS_DIR}/mnt/etc/upper
-    mkdir -p ${ROOTFS_DIR}/mnt/etc/work
     mount -t overlay -o defaults,lowerdir=${ROOTFS_DIR}/etc,upperdir=${ROOTFS_DIR}/mnt/etc/upper,workdir=${ROOTFS_DIR}/mnt/etc/work overlay ${ROOTFS_DIR}/etc
 
     # mount data
@@ -55,9 +69,6 @@ rootfs_run() {
     mkdir -p ${ROOTFS_DIR}/mnt/data/home/upper
     mkdir -p ${ROOTFS_DIR}/mnt/data/var/lib
     mkdir -p ${ROOTFS_DIR}/mnt/data/local
-
-    # mount factory
-    mount -o defaults,ro,async /dev/disk/by-label/factory ${ROOTFS_DIR}/mnt/factory
 
     # mount home overlay
     mount -t overlay -o defaults,lowerdir=${ROOTFS_DIR}/home,upperdir=${ROOTFS_DIR}/mnt/data/home/upper,workdir=${ROOTFS_DIR}/mnt/data/home/work overlay ${ROOTFS_DIR}/home
