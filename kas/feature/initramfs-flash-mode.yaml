@@ -1,0 +1,8 @@
+# kas config file
+
+header:
+  version: 10
+
+local_conf_header:
+  meta-ics-dm_feature_initramfs-flash-mode: |
+    DISTRO_FEATURES_append = " initramfs-flash-mode"

@@ -33,6 +33,7 @@ PACKAGE_INSTALL = "\
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'initramfs-flash-mode', 'dhcp-client dropbear bmap-tools xz', '', d)} \
 "
 
 # don't use rootfs module initramfs-framework-base
@@ -51,3 +52,6 @@ python sstate_report_unihash() {
             os.environ['PSEUDO_DISABLED'] = '1'
         report_unihash(os.getcwd(), ss['task'], d)
 }
+
+
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'initramfs-flash-mode', 'ics_dm_user', '', d)}

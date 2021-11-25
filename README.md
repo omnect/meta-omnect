@@ -30,6 +30,9 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedge` runtime dependency `moby`
 - `persistent-var-log`
     - enables a persistent /var/log which is stored in the data partition
+- `initramfs-flash-mode`
+    - provides the possibility to flash complete disk images
+    - please see section *Initramfs Flash Mode*, below
 - `resize-data`
     - expands the data partition to available space on first boot
 - `tpm`
@@ -78,6 +81,35 @@ For this purpose, the following configuration variables are used:
     - offset of 2nd u-boot environment bank (in KiB, decimal)
 - `ICS_DM_PART_SIZE_UBOOT_ENV`
     - size of one u-boot environment bank (in KiB, decimal)
+
+### Initramfs Flash Mode
+This mode is used to flash the complete disk image to the target system.
+For this purpose, the initramfs context is used, because in this mode the block device is free for writing images.
+There is the distribution feature *initramfs-flash-mode*, which has to be selected during build time.
+
+In order to trigger the Initramfs Flash Mode, use the following commands on the target system:
+```sh
+fw_setenv initramfs-flash-mode 1
+reboot
+...
+Entering ICS DM flashing mode...
+...
+```
+In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
+```sh
+scp ics-dm-os-*.wic.bmap ics-dm@<target-ip>:wic-image.bmap
+scp ics-dm-os-*.wic.xz ics-dm@<target-ip>:wic-image.fifo.xz
+```
+The password for the *ics-dm* user used by the rootfs has to be used.
+The *ics-dm* user used by the initramfs is independent from the *ics-dm* user used by the rootfs.
+At build time, the configuration (ICS_DM_USER_PASSWORD) is applied for both. The passwords are identical.
+Later during runtime, changing the password in the rootfs is not synchronized to the initramfs.
+
+The destination file names have to be *wic-image.bmap* and *wic-image.fifo.xz*.
+
+After finishing the flash procedure, the system reboots automatically.
+The u-boot environment variable *initramfs-flash-mode* will be deleted automatically.
+In this way, the system enters the normal mode, booting the new image.
 
 ## Compatibility
 `meta-ics-dm` is compatible with the current yocto LTS release branch `dunfell`.
