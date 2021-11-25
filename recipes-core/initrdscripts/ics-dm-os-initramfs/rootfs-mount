@@ -40,10 +40,27 @@ rootfs_run() {
     # mount boot
     mount -t vfat -o defaults,rw,fmask=0002,gid=$(cat /etc/group | grep ^disk | awk -F: '{print $3}') /dev/disk/by-label/boot ${ROOTFS_DIR}/boot
 
-    # mount etc overlay
+    # mount cert
+    mount -o defaults,async /dev/disk/by-label/cert ${ROOTFS_DIR}/mnt/cert
+    mkdir -p ${ROOTFS_DIR}/mnt/cert/ca
+    mkdir -p ${ROOTFS_DIR}/mnt/cert/priv
+
+    # mount etc partition
     mount -o defaults,sync /dev/disk/by-label/etc ${ROOTFS_DIR}/mnt/etc
-    mkdir -p ${ROOTFS_DIR}/mnt/etc/upper
-    mkdir -p ${ROOTFS_DIR}/mnt/etc/work
+
+    # mount factory
+    mount -o defaults,ro,async /dev/disk/by-label/factory ${ROOTFS_DIR}/mnt/factory
+
+    # if etc partition is empty we copy the etc dir from factory partition
+    if [ ! -d ${ROOTFS_DIR}/mnt/etc/upper ]; then
+        mkdir -p ${ROOTFS_DIR}/mnt/etc/upper
+        mkdir -p ${ROOTFS_DIR}/mnt/etc/work
+        if [ -d ${ROOTFS_DIR}/mnt/factory/etc ]; then
+            cp -rfp ${ROOTFS_DIR}/mnt/factory/etc/. ${ROOTFS_DIR}/mnt/etc/upper
+        fi
+    fi
+
+    # mount etc overlay
     mount -t overlay -o defaults,lowerdir=${ROOTFS_DIR}/etc,upperdir=${ROOTFS_DIR}/mnt/etc/upper,workdir=${ROOTFS_DIR}/mnt/etc/work overlay ${ROOTFS_DIR}/etc
 
     # mount data

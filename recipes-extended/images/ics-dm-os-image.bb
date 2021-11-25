@@ -97,10 +97,13 @@ ics_dm_create_uboot_env_ff_img() {
 # need a preexisting empty '/etc/machine-id' and thus delete it as late
 # as possible:
 # also we delete fstab, since mounting filesystems is handled in initramfs
-IMAGE_PREPROCESS_COMMAND_append = " remove_unwanted_files; reproducible_final_image_task;"
+IMAGE_PREPROCESS_COMMAND_append = " remove_unwanted_files; adapt_cert_store; reproducible_final_image_task;"
 remove_unwanted_files() {
     rm -f ${IMAGE_ROOTFS}${sysconfdir}/machine-id
     rm -f ${IMAGE_ROOTFS}${sysconfdir}/fstab
+}
+adapt_cert_store() {
+    sed -i 's#^LOCALCERTSDIR=\(.*\)$#LOCALCERTSDIR=/mnt/cert/ca#' ${IMAGE_ROOTFS}${sbindir}/update-ca-certificates
 }
 
 inherit ics_dm_user
