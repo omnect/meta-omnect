@@ -3,6 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://rpi-always-set-fdt_addr-with-firmware-provided-FDT-address.patch \
     file://set-config_mmc_env_dev.patch \
+    file://disable-autoload-replaced-by-more-flexible-pxe-boot.patch \
 "
 
 # for rpi4, add support for ethernet bcmgenet (upstream patches)
