@@ -1,9 +1,0 @@
-# kas config file
-
-header:
-  version: 10
-
-repos:
-  meta-odroid:
-    url: "https://github.com/akuster/meta-odroid.git"
-    refspec: f1f759209daa88ba52858a25b5ca13770d22e269

@@ -6,9 +6,9 @@ header:
 distro: poky
 
 repos:
-  poky:
+  ext/poky:
     url: "https://git.yoctoproject.org/git/poky"
-    refspec: yocto-3.1.11
+    refspec: yocto-3.1.12
     layers:
       meta:
       meta-poky:

@@ -3,23 +3,23 @@
 header:
   version: 10
   includes:
-    - poky.yaml
+    - kas/distro/poky.yaml
 
 distro: ics-dm-os
 
 repos:
   meta-ics-dm:
-  meta-openembedded:
+  ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: 3cf22d15885cf0e3e16078705e9a20f3d21f12db
+    refspec: 7889158dcd187546fc5e99fd81d0779cad3e8d17
     layers:
       meta-filesystems:
       meta-networking:
       meta-oe:
       meta-python:
-  meta-rust:
+  ext/meta-rust:
     url: "https://github.com/meta-rust/meta-rust.git"
     refspec: d4384db8c3f0aa01732627f92fc3d446359bf743
-  meta-swupdate:
+  ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    refspec: d9b54f5ec79d65d8366c0cfda1e9b24169f9f374
+    refspec: dcf6616ff28fc8dbc781debf7e9ef44d028421fd
