@@ -88,6 +88,10 @@ run_bmap_tool() {
     udevadm settle
     udevadm control -e
 
+    # setup FIFO
+    run_cmd mkfifo ${ICS_DM_FLASH_MODE_FIFO}
+    run_cmd chown ics-dm:ics-dm ${ICS_DM_FLASH_MODE_FIFO}
+
     # bmap file must be copied with scp
     msg "please run  scp <your-bmap-file> ics-dm@${ICS_DM_FLASH_MODE_IP_ADDR}:$(basename ${ICS_DM_FLASH_MODE_BMAP_FILE})"
     while true; do
@@ -106,10 +110,6 @@ run_bmap_tool() {
             umount ${umount_dev} 2>/dev/null
         fi
     done </tmp/all_mounts
-
-    # setup FIFO
-    run_cmd mkfifo ${ICS_DM_FLASH_MODE_FIFO}
-    run_cmd chown ics-dm:ics-dm ${ICS_DM_FLASH_MODE_FIFO}
 
     msg "please run  scp <your-wic-image> ics-dm@${ICS_DM_FLASH_MODE_IP_ADDR}:$(basename ${ICS_DM_FLASH_MODE_FIFO})"
     export PATH
