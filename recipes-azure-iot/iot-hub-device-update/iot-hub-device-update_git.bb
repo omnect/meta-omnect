@@ -80,7 +80,7 @@ do_install_append() {
   # systemd
   sed -i -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service aziot-identityd.service/' \
          -e 's/^Wants=\(.*\)$/Wants=\1 aziot-identityd.service/' ${D}${systemd_system_unitdir}/adu-agent.service
-  # fix hard device path in adu-swupdate.sh (odroid-c2 needs this when booting from sdcard)
+  # fix hard device path in adu-swupdate.sh (for platforms where the boot device doesn't match mmcblk0)
   sed -i 's#/dev/mmcblk0p#${ROOT_DEV_P}#' ${D}${libdir}/adu/adu-swupdate.sh
 }
 

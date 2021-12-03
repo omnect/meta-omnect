@@ -6,13 +6,13 @@ header:
 distro: nodistro
 
 repos:
-  bitbake:
+  ext/bitbake:
     url: https://github.com/openembedded/bitbake
     refspec: yocto-3.1
     layers:
       .: 0
-  openembedded-core:
+  ext/openembedded-core:
     url: "https://github.com/openembedded/openembedded-core.git"
-    refspec: yocto-3.1.11
+    refspec: yocto-3.1.12
     layers:
       meta:
