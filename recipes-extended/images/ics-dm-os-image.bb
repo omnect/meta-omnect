@@ -12,7 +12,6 @@ inherit core-image
 # we need the initramfs bundled kernel before rootfs postprocessing
 do_rootfs[depends] += "virtual/kernel:do_deploy"
 do_rootfs[depends] += "ics-dm-os-initramfs:do_image_complete"
-do_rootfs[depends] += "ics-dm-os-initramfs-test-flash-mode:do_image_complete"
 
 # native openssl tool required
 do_rootfs[depends] += "openssl-native:do_populate_sysroot"

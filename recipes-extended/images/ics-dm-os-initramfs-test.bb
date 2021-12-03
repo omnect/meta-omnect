@@ -13,9 +13,11 @@ PACKAGE_INSTALL = "\
     initramfs-framework-base \
     initramfs-module-udev \
     udev \
+    libubootenv \
+    libubootenv-bin \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
-    ics-dm-os-initramfs-flash-mode \
+    ics-dm-flash-mode \
     dhcp-client dropbear bmap-tools xz \
 "
 
@@ -24,5 +26,5 @@ inherit ics_dm_user
 # enforce flash mode (see /init.d/87-flash_mode)
 ROOTFS_POSTPROCESS_COMMAND_append = " ics_dm_enforce_flash_mode;"
 ics_dm_enforce_flash_mode() {
-    echo 1 >${IMAGE_ROOTFS}/etc/enforce_flash_mode
+    touch ${IMAGE_ROOTFS}/etc/enforce_flash_mode
 }

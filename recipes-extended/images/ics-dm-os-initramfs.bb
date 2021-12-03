@@ -27,7 +27,7 @@ PACKAGE_INSTALL = "\
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'initramfs-flash-mode', 'ics-dm-os-initramfs-flash-mode dhcp-client dropbear bmap-tools xz', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'initramfs-flash-mode', 'ics-dm-flash-mode dhcp-client dropbear bmap-tools xz', '', d)} \
 "
 
 inherit ${@bb.utils.contains('DISTRO_FEATURES', 'initramfs-flash-mode', 'ics_dm_user', '', d)}

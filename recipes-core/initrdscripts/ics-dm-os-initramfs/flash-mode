@@ -5,7 +5,7 @@
 #
 
 ICS_DM_FLASH_MODE_VAR="initramfs-flash-mode"
-ICS_DM_FLASH_MODE_ENFORCE="/etc/enforce_flash_mode"
+ICS_DM_FLASH_MODE_FLAG_FILE="/etc/enforce_flash_mode"
 ICS_DM_FLASH_MODE_ETH="eth0"
 ICS_DM_FLASH_MODE_FIFO="/home/ics-dm/wic-image.fifo.xz"
 ICS_DM_FLASH_MODE_BMAP_FILE="/home/ics-dm/wic-image.bmap"
@@ -15,8 +15,8 @@ flash_mode_enabled() {
     local flash_mode=""
 
     # flash mode fixed part of the initramfs image
-    if [ -f ${ICS_DM_FLASH_MODE_ENFORCE} ]; then
-        msg "enable flash mode: by ${ICS_DM_FLASH_MODE_ENFORCE}"
+    if [ -f ${ICS_DM_FLASH_MODE_FLAG_FILE} ]; then
+        msg "enable flash mode: by ${ICS_DM_FLASH_MODE_FLAG_FILE}"
         return 0  # enable flash mode; main entry point called
     fi
 
@@ -122,9 +122,7 @@ flash_mode_run() {
     msg "Entering ICS DM flashing mode..."
 
     # disable flash mode for subsequent restarts
-    if [ ! -f ${ICS_DM_FLASH_MODE_ENFORCE} ]; then
-        fw_setenv ${ICS_DM_FLASH_MODE_VAR}
-    fi
+    fw_setenv ${ICS_DM_FLASH_MODE_VAR}
 
     setup_network ${ICS_DM_FLASH_MODE_ETH}
     run_bmap_tool

@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [>= 3.1.12.5047816] Q4 2021
+- Add test initramfs, used to flash test images
+- Add ethernet support in u-boot for rpi4 genet controller
+- Fix inappropriate fifo truncate in dropbear scp daemon
+
 ## [> 3.1.12.4743159] Q4 2021
 - wifi-commissioning-gatt-service: fix reading device_id from config.toml
 
