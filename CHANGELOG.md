@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - restructure kas repository layers to be able to simply cache them in cicd
 - remove odroid c2 support
 - kas: fix warning regarding adressing includes
+- iot-identity-service: change permissions on config.toml, so wifi-commissioning-gatt
+  can read device-id
 
 ## [> 3.1.11.3789986] Q4 2021
 - set permissions on adu-conf.txt, config.toml, enrollment_static.json and its basedirs via
