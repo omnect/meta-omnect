@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.12.4743159] Q4 2021
+- wifi-commissioning-gatt-service: fix reading device_id from config.toml
+
 ## [>= 3.1.12.x] Q4 2021
 - kas: poky update to dunfell 3.1.12
 - kas: meta-openembedded update to latest dunfell HEAD 7889158dcd187546fc5e99fd81d0779cad3e8d17
