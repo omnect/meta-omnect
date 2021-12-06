@@ -1,0 +1,23 @@
+From dd2a7d38434ffeefe0d170aed0d1d2be2d8ee2ed Mon Sep 17 00:00:00 2001
+From: Kas User <kas@example.com>
+Date: Fri, 26 Nov 2021 13:42:28 +0000
+Subject: [PATCH] disable autoload replaced by more flexible pxe boot
+
+---
+ include/configs/rpi.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/configs/rpi.h b/include/configs/rpi.h
+index fdfb47811e..8e01f17c4c 100644
+--- a/include/configs/rpi.h
++++ b/include/configs/rpi.h
+@@ -80,6 +80,9 @@
+ /* Environment */
+ #define CONFIG_SYS_LOAD_ADDR		0x1000000
+ 
++/* use pxe boot instead */
++#define CONFIG_SYS_AUTOLOAD		"no"
++
+ /* Shell */
+ 
+ /* ATAGs support for bootm/bootz */
