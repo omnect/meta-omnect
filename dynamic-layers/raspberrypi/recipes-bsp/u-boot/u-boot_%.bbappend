@@ -15,4 +15,6 @@ SRC_URI_append_raspberrypi4-64 = "\
     file://rpi4-Update-memory-map-to-accommodate-scb-devices.patch \
     file://rpi4-shorten-a-mapping-for-the-DRAM.patch \
     file://enable-genet-ethernet-fragment.cfg \
+    file://add-reset-info-cmd.patch \
+    file://enable-reset-info-cmd-fragment.cfg \
 "
