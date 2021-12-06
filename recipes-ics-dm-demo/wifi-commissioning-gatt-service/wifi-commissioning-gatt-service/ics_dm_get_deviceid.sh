@@ -1,6 +1,6 @@
 #!/bin/bash
 
-device_id=$(cat /etc/aziot/config.toml | grep ^registration_id | awk -F\" '{print $2}')
-[[ -z "${device_id}" ]] && device_id=$(cat /etc/aziot/config.toml | grep ^device_id | awk -F\" '{print $2}')
+device_id=$(toml get /etc/aziot/config.toml provisioning.attestation.registration_id)
+[[ "${device_id}" == "null" ]] && device_id=$(toml get /etc/aziot/config.toml provisioning.device_id)
 
 echo ${device_id}
