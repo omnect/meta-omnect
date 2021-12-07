@@ -3,6 +3,6 @@
 header:
   version: 10
   includes:
-    - rpi.yaml
+    - kas/machine/rpi/rpi.yaml
 
 machine: raspberrypi4-64

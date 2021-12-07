@@ -3,12 +3,12 @@
 header:
   version: 10
   includes:
-    - iot.yaml
+    - kas/feature/iot.yaml
 
 repos:
-  meta-virtualization:
+  ext/meta-virtualization:
     url: "https://git.yoctoproject.org/git/meta-virtualization"
-    refspec: 9e9868ef3d6e5da7f0ecd0680fcd69324593842b
+    refspec: 180241e0eee718fc52c7b6b25dbd1d845a8047c4
 
 local_conf_header:
   meta-ics-dm_feature_iotedge: |

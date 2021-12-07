@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [>= 3.1.12.5047816] Q4 2021
+- Add test initramfs, used to flash test images
+- Add ethernet support in u-boot for rpi4 genet controller
+- Fix inappropriate fifo truncate in dropbear scp daemon
+
+## [> 3.1.12.4743159] Q4 2021
+- wifi-commissioning-gatt-service: fix reading device_id from config.toml
+
+## [>= 3.1.12.x] Q4 2021
+- kas: poky update to dunfell 3.1.12
+- kas: meta-openembedded update to latest dunfell HEAD 7889158dcd187546fc5e99fd81d0779cad3e8d17
+- kas: meta-swupdate update to latest dunfell HEAD dcf6616ff28fc8dbc781debf7e9ef44d028421fd
+- kas: meta-virtualization update to latest dunfell HEAD 180241e0eee718fc52c7b6b25dbd1d845a8047c4
+- restructure kas repository layers to be able to simply cache them in cicd
+- remove odroid c2 support
+- kas: fix warning regarding adressing includes
+- iot-identity-service: change permissions on config.toml, so wifi-commissioning-gatt
+  can read device-id
+
 ## [> 3.1.11.3789986] Q4 2021
 - set permissions on adu-conf.txt, config.toml, enrollment_static.json and its basedirs via
   systemd-tmpfiles.d

@@ -5,7 +5,7 @@ SRC_URI += "\
 
 
 DEPENDS += "dbus"
-RDEPENDS_${PN} += "bash bluez5 (>=5.60) wpa-supplicant"
+RDEPENDS_${PN} += "bash bluez5 (>=5.60) toml-cli wpa-supplicant"
 
 do_install_append() {
     install -d ${D}${systemd_system_unitdir}
