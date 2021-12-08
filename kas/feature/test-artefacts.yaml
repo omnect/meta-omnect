@@ -1,0 +1,28 @@
+#
+#  Build artefacts used for test environment
+#    test boot.scr   - u-boot boot script running PXE boot in case of power-on reset
+#    test initramfs  - initramfs (always) running flash mode
+#
+
+header:
+  version: 10
+
+target: ["ics-dm-os-initramfs-test", "test-u-boot-scr"]
+
+env:
+  # distro vars
+  DISTRO_NAME_PREFIX: ""
+  DISTRO_NAME_SUFFIX: ""
+
+  # build number which is reflected in DISTRO_VERSION
+  ICS_DM_BUILD_NUMBER: "0"
+
+  # yocto build vars
+  DEPLOY_DIR: "${TOPDIR}/deploy"
+  DL_DIR: "${TOPDIR}/download"
+  SSTATE_DIR: "${TOPDIR}/sstate"
+  SSTATE_MIRRORS: ""
+  TMPDIR: "${TOPDIR}/tmp"
+
+  # (plain) password of ics-dm user
+  ICS_DM_USER_PASSWORD: ""
