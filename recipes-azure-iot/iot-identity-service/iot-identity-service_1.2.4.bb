@@ -107,7 +107,7 @@ do_install() {
     install -d -m 0755  ${D}${systemd_system_unitdir}
     install -m 0644     ${S}/cert/aziot-certd/aziot-certd.service ${D}${systemd_system_unitdir}/aziot-certd.service
     sed -i 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-certd.service
-    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml#' ${D}${systemd_system_unitdir}/aziot-certd.service
+    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' ${D}${systemd_system_unitdir}/aziot-certd.service
     if ${@bb.utils.contains('PACKAGECONFIG', 'ics-dm-demo', 'true', 'false', d)}; then
         sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-certd.service
     fi
@@ -115,7 +115,7 @@ do_install() {
 
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.service ${D}${systemd_system_unitdir}/aziot-identityd.service
     sed -i 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-identityd.service
-    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml#' ${D}${systemd_system_unitdir}/aziot-identityd.service
+    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' ${D}${systemd_system_unitdir}/aziot-identityd.service
     if ${@bb.utils.contains('PACKAGECONFIG', 'ics-dm-demo', 'true', 'false', d)}; then
         sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-identityd.service
     fi
@@ -123,7 +123,7 @@ do_install() {
 
     install -m 0644     ${S}/key/aziot-keyd/aziot-keyd.service ${D}${systemd_system_unitdir}/aziot-keyd.service
     sed -i 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-keyd.service
-    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml#' ${D}${systemd_system_unitdir}/aziot-keyd.service
+    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' ${D}${systemd_system_unitdir}/aziot-keyd.service
     if ${@bb.utils.contains('PACKAGECONFIG', 'ics-dm-demo', 'true', 'false', d)}; then
         sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-keyd.service
     fi
@@ -131,7 +131,7 @@ do_install() {
 
     install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.service ${D}${systemd_system_unitdir}/aziot-tpmd.service
     sed -i 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-tpmd.service
-    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml#' ${D}${systemd_system_unitdir}/aziot-tpmd.service
+    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' ${D}${systemd_system_unitdir}/aziot-tpmd.service
     if ${@bb.utils.contains('PACKAGECONFIG', 'ics-dm-demo', 'true', 'false', d)}; then
         sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-tpmd.service
     fi

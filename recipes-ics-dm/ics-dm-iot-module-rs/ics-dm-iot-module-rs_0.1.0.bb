@@ -8,10 +8,10 @@ inherit cargo
 # how to get ics-dm-iot-module-rs could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/ics-dm-iot-module-rs/0.1.0"
 SRC_URI += "git://git@github.com/ICS-DeviceManagement/ics-dm-iot-module-rs.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "1aed725455d133bb60df88cb31d1b337a300f631"
+SRCREV = "8a55f0f93fb5fdd24f4fe493342e6ca07f173de4"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV_append = ".AUTOINC+1aed725455"
+PV_append = ".AUTOINC+8a55f0f93f"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched

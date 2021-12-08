@@ -44,7 +44,7 @@ do_install () {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${S}/edgelet/contrib/systemd/debian/aziot-edged.service  ${D}${systemd_system_unitdir}/aziot-edged.service
     sed -i 's/^After=\(.*\)$/After=\1 etc.mount var-lib.mount systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-edged.service
-
+    sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' ${D}${systemd_system_unitdir}/aziot-edged.service
     if ${@bb.utils.contains('PACKAGECONFIG', 'ics-dm-demo', 'true', 'false', d)}; then
         sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-edged.service
     fi
