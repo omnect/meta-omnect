@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [>= 3.1.12.????] Q4 2021
+- iot-identity-service: only start if config.toml and 00-super.toml exists
+- iotedge: only start if config.toml and 00-super.toml exists
+- add ics-dm-iot-module-rs 0.1.0
+- update enrollment to 0.6.0
+- update iot-module-template to 0.2.1
+
 ## [>= 3.1.12.5165139] Q4 2021
 - Add rstinfo u-boot command used to check for power-on reset
 - Add build of test boot.scr
