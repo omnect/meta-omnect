@@ -6,8 +6,8 @@ LIC_FILES_CHKSUM="\
 "
 
 
-# version 0.4.0
-GITREV = "3e8db1d2e761ab5eda78c5e539a85b8a2aa89594"
+# version 0.6.0
+GITREV = "535c5e09051eab4eec078f8ef80f5bbfa44c43c9"
 # TODO change to https uri when public
 REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;rev=${GITREV}"
 SRC_URI = "${REPO_URI}"
@@ -64,7 +64,7 @@ do_install_append() {
     lnr ${D}${systemd_system_unitdir}/enrollment-patch-config-toml@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/enrollment-patch-config-toml@eth0.service
 }
 
-SYSTEMD_SERVICE_${PN} = "enrollment-config-apply.path enrollment.service enrolled.path"
+SYSTEMD_SERVICE_${PN} = "enrollment-config-apply.path enrollment.service"
 FILES_${PN} += "\
   ${libdir}/tmpfiles.d/enrollment.conf \
   ${systemd_system_unitdir} \

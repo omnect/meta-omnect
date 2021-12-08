@@ -7,8 +7,8 @@ LIC_FILES_CHKSUM="\
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/../../files:"
 
-# version 0.2.0
-GITREV = "bef57f58e3dd558d06c0f6b8b5ed6c021feb3896"
+# version 0.2.1
+GITREV = "885a0fa984174897ad5e6ad77ae2d54332b60712"
 # TODO change to https uri when public
 REPO_URI = "git://git@github.com/ICS-DeviceManagement/iot-module-template.git;protocol=ssh;branch=main;rev=${GITREV}"
 SRC_URI = " \
@@ -30,16 +30,16 @@ do_install_append() {
   # allow iot-module-template access to device_id secret created by manual provisioning
   install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/iot-module-template.toml
 
-  # allow adu client provisioning via module identity
+  # allow iot-module-template provisioning via module identity
   install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/iot-module-template.toml
 }
 
 pkg_postinst_${PN}() {
-  sed -i "s/@@UID@@/$(id -u iotmodule)/" $D${sysconfdir}/aziot/keyd/config.d/iot-module-template.toml
-  sed -i -e "s/@@UID@@/$(id -u iotmodule)/" -e "s/@@NAME@@/iot-module-template/" $D${sysconfdir}/aziot/identityd/config.d/iot-module-template.toml
+  sed -i "s/@@UID@@/$(id -u iotmodule-c)/" $D${sysconfdir}/aziot/keyd/config.d/iot-module-template.toml
+  sed -i -e "s/@@UID@@/$(id -u iotmodule-c)/" -e "s/@@NAME@@/iot-module-template/" $D${sysconfdir}/aziot/identityd/config.d/iot-module-template.toml
 }
 
 SYSTEMD_SERVICE_${PN} = "iot-module-template.service"
 
-GROUPADD_PARAM_${PN} += "-r iotmodule;"
-USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks -g iotmodule iotmodule;"
+GROUPADD_PARAM_${PN} += "-r iotmodule-c;"
+USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks -g iotmodule-c iotmodule-c;"
