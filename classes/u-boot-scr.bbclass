@@ -1,3 +1,6 @@
+DEPENDS = "u-boot-mkimage-native"
+COMPATIBLE = "rpi"
+
 python create_boot_cmd () {
     boot_cmd=d.getVar("KERNEL_BOOTCMD")
     boot_cmd_file=d.getVar("WORKDIR") + "/boot.cmd"
@@ -10,12 +13,17 @@ python create_boot_cmd () {
     fdt_load=d.getVar("UBOOT_FDT_LOAD")
     kernel_imagetype=d.getVar("KERNEL_IMAGETYPE")
     ics_dm_initramfs_fs_type=d.getVar("ICS_DM_INITRAMFS_FSTYPE")
+    ics_dm_boot_scr_test_cmds=d.getVar("ICS_DM_BOOT_SCR_TEST_CMDS")
     try:
         with open(boot_cmd_file, "w") as f:
             f.write("\n")
 
             # echo bootmedium and device
             f.write("echo \"Boot script loaded from ${devtype} ${devnum}\"\n")
+
+            # in the case of test boot script
+            if ics_dm_boot_scr_test_cmds:
+                f.write("%s\n" % (ics_dm_boot_scr_test_cmds)) 
 
             # possibly create "bootpart" env var
             f.write("if env exists bootpart;then echo Booting from bootpart=${bootpart};else setenv bootpart 2;saveenv;echo bootpart not set, default to bootpart=${bootpart};fi\n")
@@ -52,3 +60,15 @@ python create_boot_cmd () {
 }
 
 do_compile[prefuncs] += "create_boot_cmd"
+
+do_compile() {
+    mkimage -A ${UBOOT_ARCH} -T script -C none -n "${DISTRO_NAME} (${DISTRO_VERSION}) u-boot:\n" -d "${WORKDIR}/boot.cmd" ${ICS_DM_BOOT_SCR_NAME}
+}
+
+do_deploy() {
+    install -m 0644 -D ${ICS_DM_BOOT_SCR_NAME} ${DEPLOYDIR}
+}
+
+addtask do_deploy after do_compile before do_build
+
+INHIBIT_DEFAULT_DEPS = "1"
