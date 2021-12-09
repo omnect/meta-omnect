@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "\
 "
 inherit ics_dm_initramfs
 
-IMAGE_NAME = "${ICS_DM_INITRAMFS_IMAGE_NAME}-test-flash-image"
+IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}.initramfs"
 
 PACKAGE_INSTALL = "\
     base-passwd \
