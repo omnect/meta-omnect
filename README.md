@@ -12,7 +12,7 @@ This yocto meta layer provides the poky based ICS_DeviceManagement distribution 
 - demo: auto device enrollment via `tpm` (not intended for production) with `tpm` provisioning configuration of  `iot-identity-service`
     - `iot-hub-device-update` and `iotedge` get provisioned via `iot-identity-service`
 - A/B update support for [raspberrypi](https://www.raspberrypi.org/) 3 and 4
-- A/B update support for [odroid-c2](https://www.hardkernel.com/shop/odroid-c2/)
+- A/B update support for [phytec polis](https://www.phytec.eu/product-eu/single-board-computer/phyboard-polis/)
 - first boot script `/usr/bin/ics_dm_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-ics-dm/recipes-core/systemd/systemd/ics_dm_first_boot.sh`
 - wifi commissioning via bluetooth
 
@@ -125,8 +125,9 @@ We reflect the used poky version in our version schema. `ics-dm-os` is versioned
 - [meta-rust](https://github.com/meta-rust/meta-rust.git) (mandatory)
 - [meta-swupdate](https://github.com/sbabic/meta-swupdate.git) (mandatory)
 - [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization) (optional - via dynamic layer, iotedge depends on it)
-- [meta-odroid](https://github.com/akuster/meta-odroid.git") (optional - via dynamic layer, odroid-c2 support depends on it)
-- [meta-raspberrypi]("https://github.com/agherzan/meta-raspberrypi.git") (optional - via dynamic layer, raspberrypi support depends on it)
+- [meta-phytec](https://github.com/phytec/meta-phytec) (optional - via dynamic layer, phytec polis support depends on it)
+- [meta-freescale](https://github.com/Freescale/meta-freescale) (optional - via dynamic layer, phytec polis support depends on it)
+- [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git) (optional - via dynamic layer, raspberrypi support depends on it)
 
 ## Configuration
 

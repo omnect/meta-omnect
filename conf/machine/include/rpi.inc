@@ -8,14 +8,10 @@ RPI_USE_U_BOOT = "1"
 ENABLE_UART = "1"
 
 # wic: how to partition
-WKS_FILE = "sdcard.wks.in"
+WKS_FILE = "ics-dm-os.rpi.wks.in"
 
 # resize data partition
 DISTRO_FEATURES_DEFAULT_append = " resize-data"
-
-# for referencing the root device in fstab, uboot, and swupdate sw-description
-ROOT_DEV = "/dev/mmcblk0"
-ROOT_DEV_P = "/dev/mmcblk0p"
 
 # overwrite kernel cmdline from meta-raspberrypi
 CMDLINE ?= "dwc_otg.lpm_enable=0 ${SERIAL}"

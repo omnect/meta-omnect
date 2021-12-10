@@ -3,4 +3,6 @@
 # configuration.
 
 require conf/tpm-cfg.conf
-require conf/machine/${MACHINE}.tpm.conf
+
+# include machine specific config for tpm if necessary
+include conf/machine/${MACHINE}.tpm.conf
