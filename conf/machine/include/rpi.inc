@@ -10,9 +10,6 @@ ENABLE_UART = "1"
 # wic: how to partition
 WKS_FILE = "ics-dm-os.rpi.wks.in"
 
-# resize data partition
-DISTRO_FEATURES_DEFAULT_append = " resize-data"
-
 # overwrite kernel cmdline from meta-raspberrypi
 CMDLINE ?= "dwc_otg.lpm_enable=0 ${SERIAL}"
 
