@@ -1,0 +1,26 @@
+#!/bin/sh
+
+rootblk_dev_enabled() {
+    return 0
+}
+
+rootblk_dev_run() {
+    msg "ics-dm-os initramfs rootblk-dev"
+
+    if [ -z "${ROOTFS_DIR}" ]; then
+        fatal "no ROOTFS_DIR"
+        return 1
+    fi
+
+    mkdir -p /dev/ics_dm
+    cd /dev/ics_dm
+
+    rootblk=$(readlink /dev/disk/by-label/boot)
+    rootblk=${rootblk##*/}
+    rootblk=${rootblk%p*}
+
+    ln -sf /dev/${rootblk} rootblk
+    for i in /dev/${rootblk}p*; do
+        ln -sf ${i} rootblkp${i##*p}
+    done
+}
