@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:${THISDIR}/../../files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${THISDIR}/../../files:"
 
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=95a70c9e1af3b97d8bde6f7435d535a8"
@@ -23,7 +23,7 @@ DEPENDS = " \
   do-client-sdk \
 "
 
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
   adu-pub-key \
   bash \
   do-client \
@@ -48,7 +48,7 @@ EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${ADU_DEVICEPROPERTIES_MODEL}'"
 #ics-dm adaptions (linux_platform_layer.patch)
 EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
 
-do_install_append() {
+do_install:append() {
   install -d ${D}${systemd_system_unitdir}
   install -m 0644 ${S}/daemon/adu-agent.service ${D}${systemd_system_unitdir}
   install -m 0644 ${WORKDIR}/adu-agent.timer ${D}${systemd_system_unitdir}/
@@ -86,21 +86,17 @@ do_install_append() {
          \nStartLimitIntervalSec=120\
          /' ${D}${systemd_system_unitdir}/adu-agent.service
 
-  # fix hard device path in adu-swupdate.sh (for platforms where the boot device doesn't match mmcblk0)
-  sed -i 's#/dev/mmcblk0p#${ROOT_DEV_P}#' ${D}${libdir}/adu/adu-swupdate.sh
-}
-
-do_install_append_rpi() {
+  # run after time-sync.target
   sed -i 's/^After=\(.*\)$/After=\1 time-sync.target/' ${D}${systemd_system_unitdir}/adu-agent.service
 }
 
-pkg_postinst_${PN}() {
+pkg_postinst:${PN}() {
   sed -i "s/@@UID@@/$(id -u adu)/" $D${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml
   sed -i -e "s/@@UID@@/$(id -u adu)/" -e "s/@@NAME@@/AducIotAgent/" $D${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
 }
 
-SYSTEMD_SERVICE_${PN} = "adu-agent.service adu-agent.timer"
-FILES_${PN} += " \
+SYSTEMD_SERVICE:${PN} = "adu-agent.service adu-agent.timer"
+FILES:${PN} += " \
   ${libdir}/adu \
   ${libdir}/tmpfiles.d/iot-hub-device-update.conf \
   ${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml \
@@ -110,5 +106,5 @@ FILES_${PN} += " \
   /mnt/data/var/lib/adu \
   "
 
-GROUPADD_PARAM_${PN} += "-r adu;"
-USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G disk,aziotcs,aziotid,aziotks -g adu adu;"
+GROUPADD_PARAM:${PN} += "-r adu;"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G disk,aziotcs,aziotid,aziotks -g adu adu;"
