@@ -152,6 +152,7 @@ openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
 - document: kas usage with example `kas/ics-dm-os-iot-rpi3.yaml` and
   `kas/ics-dm-os-iotedge-rpi4.yaml` and how to add features
 - ??? document flashing/updating an example rpi4 device???
+- document layer priority orchestration in layer.conf
 
 # License
 
