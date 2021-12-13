@@ -23,6 +23,7 @@ do_compile_prepend() {
     export CARGO_NET_GIT_FETCH_WITH_CLI=true
 
     export LLVM_CONFIG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/bin/llvm-config"
+    export BINDGEN_EXTRA_CLANG_ARGS="${TUNE_CCARGS}"
 
     export LIB_PATH_AZURESDK=${STAGING_DIR_TARGET}/usr/
     export LIB_PATH_EISUTILS=${STAGING_DIR_TARGET}/usr/

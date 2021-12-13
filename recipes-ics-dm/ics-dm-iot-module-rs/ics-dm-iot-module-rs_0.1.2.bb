@@ -6,12 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get ics-dm-iot-module-rs could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/ics-dm-iot-module-rs/0.1.0"
+# SRC_URI += "crate://crates.io/ics-dm-iot-module-rs/0.1.2"
 SRC_URI += "git://git@github.com/ICS-DeviceManagement/ics-dm-iot-module-rs.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "8a55f0f93fb5fdd24f4fe493342e6ca07f173de4"
+SRCREV = "ea53e289ba33c5658017a231409a897fdbd7115c"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV_append = ".AUTOINC+8a55f0f93f"
+PV_append = ".AUTOINC+ea53e289ba"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
