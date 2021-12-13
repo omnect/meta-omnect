@@ -1,8 +1,8 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "file://wpa_supplicant-wlan0.conf"
 
-do_install_append_rpi() {
+do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'wifi', 'true', 'false', d)}; then
         install -d ${D}${sysconfdir}/wpa_supplicant
         install -m 0644 ${WORKDIR}/wpa_supplicant-wlan0.conf ${D}${sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
@@ -14,4 +14,4 @@ do_install_append_rpi() {
 inherit useradd
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = "-r wpa_supplicant;"
+GROUPADD_PARAM:${PN} = "-r wpa_supplicant;"
