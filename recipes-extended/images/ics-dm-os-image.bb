@@ -31,31 +31,32 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' iotedge-daemon iotedge-cli kernel-modules', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
+    coreutils \
+    ics-dm-base-files \
     iot-hub-device-update \
     packagegroup-core-ssh-dropbear \
+    procps \
+    sudo \
     u-boot-fw-utils \
-    ics-dm-base-files \
 "
 
 ICS_DM_DEVEL_TOOLS_DEFAULT = "\
-    valgrind \
-    ltrace \
-    strace \
+    curl \
+    ethtool \
     gdbserver \
     htop \
-    lsof \
-    curl \
-    tcpdump \
-    ethtool \
-    lshw \
-    sysstat \
     ldd \
-    parted \
-    smartmontools \
+    lshw \
+    lsof \
+    ltrace \
     mmc-utils \
-    sudo \
-    coreutils \
-    procps \
+    parted \
+    screen \
+    smartmontools \
+    strace \
+    sysstat \
+    tcpdump \
+    valgrind \
 "
 
 # check environment variable ICS_DM_DEVEL_TOOLS
