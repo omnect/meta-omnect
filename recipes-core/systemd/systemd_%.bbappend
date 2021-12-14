@@ -14,6 +14,7 @@ do_install_append() {
 
     # enable dhcp for wlan devices
     install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network/
+    sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=eth0 --interface=wlan0/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 
     # first boot handling
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants

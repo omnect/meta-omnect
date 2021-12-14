@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - distro conf: set 'resize-data' in DISTRO_FEATURES for all machines + only set
   ICS_DM_PART_OFFSET_UBOOT_ENV* if not already set by machine conf
 - added README.device.md
+- systemd: fix systemd-networkd-wait-online.service to wait only for at least
+  one device to be online either eth0 or wlan0
 
 ## [> 3.1.12.11094660] Q1 2022
 - changes for test environment
