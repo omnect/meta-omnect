@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added README.device.md
 - systemd: fix systemd-networkd-wait-online.service to wait only for at least
   one device to be online either eth0 or wlan0
+- iot-identity-service: fix permission problem; enable identity service to
+  create cert "device-id" (e.g. for x509 dps provisioning)
 
 ## [> 3.1.12.11094660] Q1 2022
 - changes for test environment

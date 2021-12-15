@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/../../files:"
+FILESEXTRAPATHS:prepend := "${LAYERDIR_ics_dm}/files:"
 
 SRC_URI += "\
   file://iot-identity-service-keyd.template.toml \
