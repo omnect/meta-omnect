@@ -1,0 +1,19 @@
+Submodule tpm/aziot-tpm-sys/azure-iot-hsm-c/deps/c-shared contains modified content
+diff --git a/tpm/aziot-tpm-sys/azure-iot-hsm-c/deps/c-shared/src/consolelogger.c b/tpm/aziot-tpm-sys/azure-iot-hsm-c/deps/c-shared/src/consolelogger.c
+old mode 100755
+new mode 100644
+Submodule tpm/aziot-tpm-sys/azure-iot-hsm-c/deps/utpm contains modified content
+Submodule deps/umock-c contains modified content
+diff --git a/tpm/aziot-tpm-sys/azure-iot-hsm-c/deps/utpm/deps/umock-c/CMakeLists.txt b/tpm/aziot-tpm-sys/azure-iot-hsm-c/deps/utpm/deps/umock-c/CMakeLists.txt
+index dead94d..0c584d6 100644
+--- a/tpm/aziot-tpm-sys/azure-iot-hsm-c/deps/utpm/deps/umock-c/CMakeLists.txt
++++ b/tpm/aziot-tpm-sys/azure-iot-hsm-c/deps/utpm/deps/umock-c/CMakeLists.txt
+@@ -151,7 +151,7 @@ CHECK_INCLUDE_FILES(stdint.h HAVE_STDINT_H)
+ CHECK_INCLUDE_FILES(stdbool.h HAVE_STDBOOL_H)
+ 
+ if ((NOT HAVE_STDINT_H) OR (NOT HAVE_STDBOOL_H))
+-    include_directories(${UMOCK_C_INC_FOLDER}/umock_c/aux_inc)
++	#    include_directories(${UMOCK_C_INC_FOLDER}/umock_c/aux_inc)
+ endif()
+ 
+ include("configs/umock_cFunctions.cmake")
