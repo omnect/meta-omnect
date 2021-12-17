@@ -2,6 +2,12 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += " \
     file://rfkill.cfg \
+"
+
+# we use append here so unix_domain_sockets.cfg beats docker.cfg from
+# meta-phytec. normally our BBFILE_PRIORITY should be sufficient, but
+# meta-phytec uses SRC_URI_append.
+SRC_URI:append = " \
     file://unix_domain_sockets.cfg \
 "
 
