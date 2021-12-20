@@ -32,7 +32,7 @@ flash_mode_enabled() {
 
 run_fatal() {
     msg "FATAL ERROR: $1"
-    reboot -f
+    while true; do sleep 3600; done
 }
 
 run_cmd() {
