@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.12.ToDo] Q4
+- add systemd start limit and restart handling for adu-agent, iot-module-template and ics-dm-iot-module-rs
+- update iot-module-template to 0.2.2
+- update ics-dm-iot-module-template-rs to 0.1.3
+
 ## [> 3.1.12.5331319] Q4 2021
 - fix compiling ics-dm-iot-module-rs for rpi3
 
