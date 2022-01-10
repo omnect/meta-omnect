@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [> 3.1.12.ToDo] Q4
 - add systemd start limit and restart handling for adu-agent, iot-module-template and ics-dm-iot-module-rs
+  using systemd timer
 - update iot-module-template to 0.2.2
 - update ics-dm-iot-module-template-rs to 0.1.3
 
