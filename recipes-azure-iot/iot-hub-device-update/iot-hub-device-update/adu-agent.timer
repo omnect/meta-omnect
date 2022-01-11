@@ -1,0 +1,8 @@
+[Unit]
+Description=Restart adu-agent
+
+[Timer]
+OnUnitInactiveSec=10min
+
+[Install]
+WantedBy=timers.target

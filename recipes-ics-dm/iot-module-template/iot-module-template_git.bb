@@ -7,8 +7,8 @@ LIC_FILES_CHKSUM="\
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/../../files:"
 
-# version 0.2.1
-GITREV = "885a0fa984174897ad5e6ad77ae2d54332b60712"
+# version 0.2.2
+GITREV = "d08ead8831ffdeec8687eb5235148cbb20f93924"
 # TODO change to https uri when public
 REPO_URI = "git://git@github.com/ICS-DeviceManagement/iot-module-template.git;protocol=ssh;branch=main;rev=${GITREV}"
 SRC_URI = " \
@@ -32,6 +32,9 @@ do_install_append() {
 
   # allow iot-module-template provisioning via module identity
   install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/iot-module-template.toml
+
+  install -d ${D}${systemd_system_unitdir}
+  install -m 0644 ${S}/systemd/iot-module-template.timer ${D}${systemd_system_unitdir}/
 }
 
 pkg_postinst_${PN}() {
@@ -39,7 +42,7 @@ pkg_postinst_${PN}() {
   sed -i -e "s/@@UID@@/$(id -u iotmodule-c)/" -e "s/@@NAME@@/iot-module-template/" $D${sysconfdir}/aziot/identityd/config.d/iot-module-template.toml
 }
 
-SYSTEMD_SERVICE_${PN} = "iot-module-template.service"
+SYSTEMD_SERVICE_${PN} = "iot-module-template.service iot-module-template.timer"
 
 GROUPADD_PARAM_${PN} += "-r iotmodule-c;"
 USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks -g iotmodule-c iotmodule-c;"

@@ -35,6 +35,7 @@ do_compile_prepend() {
 do_install_append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${S}/systemd/ics-dm-iot-module-rs.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${S}/systemd/ics-dm-iot-module-rs.timer ${D}${systemd_system_unitdir}
 
     # allow ics-dm-iot-module-rs access to device_id secret created by manual provisioning
     install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/ics-dm-iot-module-rs.toml
@@ -48,7 +49,7 @@ pkg_postinst_${PN}() {
     sed -i -e "s/@@UID@@/$(id -u iotmodule-rs)/" -e "s/@@NAME@@/ics-dm-iot-module-rs/" $D${sysconfdir}/aziot/identityd/config.d/ics-dm-iot-module-rs.toml
 }
 
-SYSTEMD_SERVICE_${PN} = "ics-dm-iot-module-rs.service"
+SYSTEMD_SERVICE_${PN} = "ics-dm-iot-module-rs.service ics-dm-iot-module-rs.timer"
 
 GROUPADD_PARAM_${PN} += "-r iotmodule-rs;"
 USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks -g iotmodule-rs iotmodule-rs;"

@@ -11,6 +11,7 @@ SRC_URI = " \
   file://rpipart_to_bootpart.patch \
   file://eis-utils-cert-chain-buffer.patch \
   file://eis-utils-set-GatewayHostName.patch  \
+  file://adu-agent.timer  \
   ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'ics-dm-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
 "
 
@@ -50,6 +51,7 @@ EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
 do_install_append() {
   install -d ${D}${systemd_system_unitdir}
   install -m 0644 ${S}/daemon/adu-agent.service ${D}${systemd_system_unitdir}
+  install -m 0644 ${WORKDIR}/adu-agent.timer ${D}${systemd_system_unitdir}/
 
   install -d ${D}${sysconfdir}/adu
   touch ${D}${sysconfdir}/adu/adu-conf.txt
@@ -79,7 +81,11 @@ do_install_append() {
 
   # systemd
   sed -i -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service aziot-identityd.service/' \
-         -e 's/^Wants=\(.*\)$/Wants=\1 aziot-identityd.service/' ${D}${systemd_system_unitdir}/adu-agent.service
+         -e 's/^Wants=\(.*\)$/Wants=\1 aziot-identityd.service\
+         \nStartLimitBurst=10\
+         \nStartLimitIntervalSec=120\
+         /' ${D}${systemd_system_unitdir}/adu-agent.service
+
   # fix hard device path in adu-swupdate.sh (for platforms where the boot device doesn't match mmcblk0)
   sed -i 's#/dev/mmcblk0p#${ROOT_DEV_P}#' ${D}${libdir}/adu/adu-swupdate.sh
 }
@@ -93,13 +99,14 @@ pkg_postinst_${PN}() {
   sed -i -e "s/@@UID@@/$(id -u adu)/" -e "s/@@NAME@@/AducIotAgent/" $D${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
 }
 
-SYSTEMD_SERVICE_${PN} = "adu-agent.service"
+SYSTEMD_SERVICE_${PN} = "adu-agent.service adu-agent.timer"
 FILES_${PN} += " \
   ${libdir}/adu \
   ${libdir}/tmpfiles.d/iot-hub-device-update.conf \
   ${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml \
   ${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml \
   ${systemd_system_unitdir}/adu-agent.service \
+  ${systemd_system_unitdir}/adu-agent.timer \
   /mnt/data/var/lib/adu \
   "
 
