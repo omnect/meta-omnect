@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - initramfs: generate /dev/ics_dm/rootblk device and partition links from boot
   device (this can be referenced independent of the boot device where a static
   configuration of the boot device is necessary)
-- sw-update: generic sw-description which unified /dev/ics_dm/rootblk device
+- swupdate: generic sw-description which unified /dev/ics_dm/rootblk device
 - ics_dm_fw_env_config.bbclass: generate fw_env.config with generic
   /dev/ics_dm/rootblk device
 - wic: refactored wic file(s) to include a common ics-dm-os.common.wks.inc
