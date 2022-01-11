@@ -30,15 +30,15 @@ flash_mode_enabled() {
     return 1  # disable flash mode; normal boot; main entry point _NOT_ called
 }
 
-run_fatal() {
+msg_fatal() {
     msg "FATAL ERROR: $1"
-    reboot -f
 }
 
 run_cmd() {
     msg  "$@"
     eval "$@"
-    if [ $? -ne 0 ]; then run_fatal "command failed"; fi
+    if [ $? -ne 0 ]; then msg_fatal "command failed"; return 1; fi
+    return 0
 }
 
 setup_network() {
@@ -55,7 +55,7 @@ setup_network() {
 
     # start dhcp client; it is backgrounding in the case the IP address was assigned or timeout
     mkdir -p /tmp
-    run_cmd dhclient -v -w ${if_name}
+    run_cmd dhclient -v -w ${if_name} || return 1
 
     # wait for IPv4 address
     while true; do
@@ -67,12 +67,12 @@ setup_network() {
     ICS_DM_FLASH_MODE_IP_ADDR="${ip_addr%/*}"
 
     # setup PTY
-    run_cmd mkdir -p /dev/pts
-    run_cmd mount -t devpts devpts /dev/pts
+    run_cmd mkdir -p /dev/pts || return 1
+    run_cmd mount -t devpts devpts /dev/pts || return 1
 
     # start SSH server; generate host key on the fly
     mkdir -p /etc/dropbear
-    run_cmd dropbear -R
+    run_cmd dropbear -R || return 1
 }
 
 run_bmap_tool() {
@@ -82,15 +82,15 @@ run_bmap_tool() {
     # detect block device
     blk_dev=$(readlink -f /dev/disk/by-label/boot)
     blk_dev=${blk_dev%p*}
-    if [ ! -b "${blk_dev}" ]; then run_fatal "${blk_dev} does not exist or not a block device"; fi
+    if [ ! -b "${blk_dev}" ]; then msg_fatal "${blk_dev} does not exist or not a block device"; return 1; fi
 
     # stop auto mount
     udevadm settle
     udevadm control -e
 
     # setup FIFO
-    run_cmd mkfifo ${ICS_DM_FLASH_MODE_FIFO}
-    run_cmd chown ics-dm:ics-dm ${ICS_DM_FLASH_MODE_FIFO}
+    run_cmd mkfifo ${ICS_DM_FLASH_MODE_FIFO} || return 1
+    run_cmd chown ics-dm:ics-dm ${ICS_DM_FLASH_MODE_FIFO} || return 1
 
     # bmap file must be copied with scp
     msg "please run  scp <your-bmap-file> ics-dm@${ICS_DM_FLASH_MODE_IP_ADDR}:$(basename ${ICS_DM_FLASH_MODE_BMAP_FILE})"
@@ -114,7 +114,9 @@ run_bmap_tool() {
     msg "please run  scp <your-wic-image> ics-dm@${ICS_DM_FLASH_MODE_IP_ADDR}:$(basename ${ICS_DM_FLASH_MODE_FIFO})"
     export PATH
     run_cmd bmaptool copy --bmap ${ICS_DM_FLASH_MODE_BMAP_FILE} \
-                                 ${ICS_DM_FLASH_MODE_FIFO} ${blk_dev}
+                                 ${ICS_DM_FLASH_MODE_FIFO} ${blk_dev} || return 1
+
+    return 0  # success
 }
 
 # main entry point
@@ -124,8 +126,9 @@ flash_mode_run() {
     # disable flash mode for subsequent restarts
     fw_setenv ${ICS_DM_FLASH_MODE_VAR}
 
-    setup_network ${ICS_DM_FLASH_MODE_ETH}
-    run_bmap_tool
+    # continue startup in case of errors
+    setup_network ${ICS_DM_FLASH_MODE_ETH} || return 0
+    run_bmap_tool || return 0
 
     msg "Rebooting system..."
     reboot -f

@@ -89,12 +89,15 @@ There is the distribution feature *initramfs-flash-mode*, which has to be select
 
 In order to trigger the Initramfs Flash Mode, use the following commands on the target system:
 ```sh
+sudo -s
 fw_setenv initramfs-flash-mode 1
 reboot
 ...
 Entering ICS DM flashing mode...
 ...
 ```
+Note, the *fw_setenv* command requires root permissions.
+
 In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
 ```sh
 scp ics-dm-os-*.wic.bmap ics-dm@<target-ip>:wic-image.bmap
