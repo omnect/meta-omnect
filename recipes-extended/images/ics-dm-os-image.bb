@@ -52,6 +52,7 @@ ICS_DM_DEVEL_TOOLS_DEFAULT = "\
     sudo \
     coreutils \
     procps \
+    systemd-analyze \
 "
 
 # check environment variable ICS_DM_DEVEL_TOOLS

@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.12.] Q1 2022
+- remove first boot hanlding from factory partition
+- add handling to perform a identity config depending on ics-dm-demo and device variant
+- add systemd-analyze to target development tools
+- systemd: fix systemd-networkd-wait-online.service to wait only for at least
+  one device to be online either eth0 or wlan0
+
 ## [> 3.1.12.11094660] Q1 2022
 - changes for test environment
 
