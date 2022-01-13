@@ -7,11 +7,6 @@ rootblk_dev_enabled() {
 rootblk_dev_run() {
     msg "ics-dm-os initramfs rootblk-dev"
 
-    if [ -z "${ROOTFS_DIR}" ]; then
-        fatal "no ROOTFS_DIR"
-        return 1
-    fi
-
     mkdir -p /dev/ics_dm
     cd /dev/ics_dm
 
