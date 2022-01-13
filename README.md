@@ -48,7 +48,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 - `ics-dm-debug`
     - eis_utils: enables output of connection- and identity string
 
-### Partion Layout
+### Partition Layout
 `ics-dm-os` uses an `A/B` update partition layout with two readonly rootfs partitions.
 The partition layout is
 ```sh
@@ -153,6 +153,7 @@ openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
   `kas/ics-dm-os-iotedge-rpi4.yaml` and how to add features
 - ??? document flashing/updating an example rpi4 device???
 - document layer priority orchestration in layer.conf
+- document https://github.com/ICS-DeviceManagement/meta-ics-dm/pull/45#discussion_r783841596
 
 # License
 
