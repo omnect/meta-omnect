@@ -8,7 +8,7 @@ header:
 repos:
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/git/meta-virtualization"
-    refspec: 180241e0eee718fc52c7b6b25dbd1d845a8047c4
+    refspec: c4f156fa93b37b2428e09ae22dbd7f5875606f4d
 
 local_conf_header:
   meta-ics-dm_feature_iotedge: |
