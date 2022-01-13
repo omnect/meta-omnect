@@ -61,7 +61,7 @@ do_install_append() {
     install -m 755 ${S}/scripts/patch_config_toml.sh ${D}${bindir}/
 
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    lnr ${D}${systemd_system_unitdir}/enrollment-patch-config-toml@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/enrollment-patch-config-toml@eth0.service
+    lnr ${D}${systemd_system_unitdir}/enrollment-patch-config-toml@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/enrollment-patch-config-toml@${ICS_DM_ETH0}.service
 }
 
 SYSTEMD_SERVICE_${PN} = "enrollment-config-apply.path enrollment.service"

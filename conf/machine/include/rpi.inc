@@ -15,3 +15,9 @@ CMDLINE ?= "dwc_otg.lpm_enable=0 ${SERIAL}"
 
 # u-boot config vars
 UBOOT_FDT_ADDR = "fdt_addr"
+
+# ethernet device name
+ICS_DM_ETH0 = "eth0"
+
+# wlan device name
+ICS_DM_WLAN0 = "wlan0"
