@@ -38,16 +38,16 @@ python create_boot_cmd () {
 
             # possibly load device tree from file
             if fdt_load:
-                f.write("ext4load ${devtype} ${devnum}:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
+                f.write("load ${devtype} ${devnum}:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
 
             # load device tree
             f.write("fdt addr ${%s}\n" % fdt_addr)
 
             # load kernel
-            f.write("ext4load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)
+            f.write("load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)
 
             # load initrd
-            f.write("ext4load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % ics_dm_initramfs_fs_type)
+            f.write("load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % ics_dm_initramfs_fs_type)
 
             # assemble bootargs
             f.write("fdt get value bootargs /chosen bootargs\n")
