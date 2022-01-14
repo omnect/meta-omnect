@@ -2,6 +2,11 @@
 Description=first boot
 ConditionFirstBoot=yes
 
+# CAUTION!!!
+# Do not add service order dependencies in this service file.
+# ics_dm_first_boot.sh implicitly start services and might be a deadlock of starting services could happend.
+# We are working to find a solution for this limitation.
+
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/ics_dm_first_boot.sh
