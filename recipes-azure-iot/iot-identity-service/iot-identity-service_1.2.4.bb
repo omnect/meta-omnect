@@ -1,15 +1,12 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_ics_dm}/files:"
 inherit aziot cargo systemd
 
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
 GITREV = "8fc413a9910588b2949eca8ad1ea28246c066f08"
-
 SRC_URI = "gitsm://git@github.com/Azure/iot-identity-service.git;protocol=ssh;nobranch=1;branch=release/1.2;rev=${GITREV}"
-
-
-PV_append = "+git${GITREV}"
+SRC_URI += "file://iot-identity-service-certd.template.toml"
 
 S = "${WORKDIR}/git"
 B = "${S}"
@@ -112,6 +109,8 @@ do_install() {
         sed -i 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/ics_dm/enrolled#' ${D}${systemd_system_unitdir}/aziot-certd.service
     fi
     install -m 0644     ${S}/cert/aziot-certd/aziot-certd.socket ${D}${systemd_system_unitdir}/aziot-certd.socket
+    # enable identity service to create cert "device-id" (e.g. for x509 dps provisioning)
+    install -m 0600 -o aziotcs -g aziotcs ${WORKDIR}/iot-identity-service-certd.template.toml ${D}${sysconfdir}/aziot/certd/config.d/aziotid.toml
 
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.service ${D}${systemd_system_unitdir}/aziot-identityd.service
     sed -i 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/aziot-identityd.service
@@ -144,22 +143,25 @@ do_install() {
     # devel
     install -d -m 0755  ${D}${includedir}/aziot-identity-service
     install -m 0644     ${S}/key/aziot-keys/aziot-keys.h ${D}${includedir}/aziot-identity-service/aziot-keys.h
+
+    # run after time-sync.target
+    sed -i 's/^After=\(.*\)$/After=\1 time-sync.target/' ${D}${systemd_system_unitdir}/aziot-identityd.service
 }
 
-do_install_append_rpi() {
-  sed -i 's/^After=\(.*\)$/After=\1 time-sync.target/' ${D}${systemd_system_unitdir}/aziot-identityd.service
+pkg_postinst:${PN}() {
+  sed -i "s/@@UID@@/$(id -u aziotid)/" $D${sysconfdir}/aziot/certd/config.d/aziotid.toml
 }
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${libdir}/engines-1.1/aziot_keys.so \
     ${libdir}/libaziot_keys.so \
     ${libdir}/tmpfiles.d/iot-identity-service.conf \
     /mnt/data/var/secrets/aziot/keyd \
 "
 
-FILES_${PN}-dev = "${includedir}/aziot-identity-service/aziot-keys.h"
+FILES:${PN}-dev = "${includedir}/aziot-identity-service/aziot-keys.h"
 
-SYSTEMD_SERVICE_${PN} = " \
+SYSTEMD_SERVICE:${PN} = " \
     aziot-certd.service \
     aziot-certd.socket \
     aziot-identityd.service \

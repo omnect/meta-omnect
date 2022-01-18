@@ -1,0 +1,15 @@
+# kas config file
+
+header:
+  version: 11
+
+repos:
+  ext/meta-phytec:
+    url: "https://github.com/phytec/meta-phytec"
+    refspec: 5caf54c03e8c2e80d078fd230f28e23463765ae5
+  ext/meta-freescale:
+    url: "https://github.com/Freescale/meta-freescale.git"
+    refspec: 6d2922bee372157454e422df518b6cf0bfcf6700
+
+env:
+  ACCEPT_FSL_EULA: "0"

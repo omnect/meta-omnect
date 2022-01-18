@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM="\
   file://LICENSE-APACHE;md5=650e893673eb59696f3d4ee64f6d2357 \
 "
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/../../files:"
+FILESEXTRAPATHS:prepend := "${LAYERDIR_ics_dm}/files:"
 
 # version 0.2.2
 GITREV = "d08ead8831ffdeec8687eb5235148cbb20f93924"
