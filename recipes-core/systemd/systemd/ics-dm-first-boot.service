@@ -2,7 +2,9 @@
 Description=first boot
 ConditionFirstBoot=yes
 
-Before=aziot-identityd.service
+# CAUTION!!!
+# Do not add service order dependencies in this service file.
+# ics_dm_first_boot.sh implicitly starts services and might cause a deadlock while starting services.
 
 [Service]
 Type=oneshot

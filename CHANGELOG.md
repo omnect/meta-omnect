@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.12.12479852] Q1 2022
+- remove /etc/ics_dm/enrolled dependency from all aziot service files
+- remove first boot handling from factory partition
+- add handling to perform a identity config depending on ics-dm-demo and device variant
+- add systemd-analyze to target development tools
+
 ## [> 3.1.12.12381645] Q1 2022
 - support phytec polis device (bt, wifi, partition scheme, adu)
 - iot-identity-service: fix deadlock for raspberrypi3 sstate mirror cache

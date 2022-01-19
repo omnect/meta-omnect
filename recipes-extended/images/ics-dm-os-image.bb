@@ -55,6 +55,7 @@ ICS_DM_DEVEL_TOOLS_DEFAULT = "\
     smartmontools \
     strace \
     sysstat \
+    systemd-analyze \
     tcpdump \
     valgrind \
 "
