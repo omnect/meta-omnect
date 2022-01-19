@@ -8,15 +8,18 @@ LIC_FILES_CHKSUM = "\
 "
 SRC_URI = "\
     file://resize-data \
+    file://rootblk-dev \
     file://rootfs-mount \
 "
 
 do_install() {
-    install -m 0755 -D ${WORKDIR}/resize-data ${D}/init.d/88-resize_data
+    install -m 0755 -D ${WORKDIR}/rootblk-dev  ${D}/init.d/10-rootblk_dev
+    install -m 0755 -D ${WORKDIR}/resize-data  ${D}/init.d/88-resize_data
     install -m 0755 -D ${WORKDIR}/rootfs-mount ${D}/init.d/89-rootfs
 }
 
 FILES_${PN} = "\
+    /init.d/10-rootblk_dev \
     /init.d/88-resize_data \
     /init.d/89-rootfs \
 "

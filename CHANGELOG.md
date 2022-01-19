@@ -10,8 +10,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - remove first boot handling from factory partition
 - add handling to perform a identity config depending on ics-dm-demo and device variant
 - add systemd-analyze to target development tools
+
+## [> 3.1.12.12381645] Q1 2022
+- support phytec polis device (bt, wifi, partition scheme, adu)
+- iot-identity-service: fix deadlock for raspberrypi3 sstate mirror cache
+  (if we include GITREV in PV the sstate filename gets to long on
+  cortexa7t2hf-neon-vfpv4-icsdm-linux-gnueabi systems)
+- initramfs: generate /dev/ics_dm/rootblk device and partition links from boot
+  device (this can be referenced independent of the boot device where a static
+  configuration of the boot device is necessary)
+- swupdate: generic sw-description which unified /dev/ics_dm/rootblk device
+- ics_dm_fw_env_config.bbclass: generate fw_env.config with generic
+  /dev/ics_dm/rootblk device
+- wic: refactored wic file(s) to include a common ics-dm-os.common.wks.inc
+- ics-dm-os-image: ICS_DM_DEVEL_TOOLS_DEFAULT: add 'screen' + moved none devel
+  tools to IMAGE_INSTALL
+- distro conf: set 'resize-data' in DISTRO_FEATURES for all machines + only set
+  ICS_DM_PART_OFFSET_UBOOT_ENV* if not already set by machine conf
+- added README.device.md
 - systemd: fix systemd-networkd-wait-online.service to wait only for at least
   one device to be online either eth0 or wlan0
+- iot-identity-service: fix permission problem; enable identity service to
+  create cert "device-id" (e.g. for x509 dps provisioning)
 
 ## [> 3.1.12.11094660] Q1 2022
 - changes for test environment

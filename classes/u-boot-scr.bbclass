@@ -23,7 +23,7 @@ python create_boot_cmd () {
 
             # in the case of test boot script
             if ics_dm_boot_scr_test_cmds:
-                f.write("%s\n" % (ics_dm_boot_scr_test_cmds)) 
+                f.write("%s\n" % (ics_dm_boot_scr_test_cmds))
 
             # possibly create "bootpart" env var
             f.write("if env exists bootpart;then echo Booting from bootpart=${bootpart};else setenv bootpart 2;saveenv;echo bootpart not set, default to bootpart=${bootpart};fi\n")
@@ -36,12 +36,12 @@ python create_boot_cmd () {
             if bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', True, False, d):
                 bootargs_append+=" persistent_var_log=1"
 
-            # load device tree
-            f.write("fdt addr ${%s}\n" % fdt_addr)
-
             # possibly load device tree from file
             if fdt_load:
                 f.write("load ${devtype} ${devnum}:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
+
+            # load device tree
+            f.write("fdt addr ${%s}\n" % fdt_addr)
 
             # load kernel
             f.write("load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)

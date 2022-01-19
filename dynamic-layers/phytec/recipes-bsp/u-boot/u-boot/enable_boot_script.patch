@@ -1,0 +1,89 @@
+diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
+index b024da6bf7..ac8f0cf9a3 100644
+--- a/include/configs/phycore_imx8mm.h
++++ b/include/configs/phycore_imx8mm.h
+@@ -11,8 +11,6 @@
+ #include <linux/stringify.h>
+ #include <asm/arch/imx-regs.h>
+ 
+-#include "phycore_rauc_env.h"
+-
+ #define CONFIG_SYS_BOOTM_LEN		SZ_64M
+ #define CONFIG_SPL_MAX_SIZE		(148 * SZ_1K)
+ #define CONFIG_SYS_MONITOR_LEN		SZ_512K
+@@ -38,49 +36,15 @@
+ #endif
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-	"image=Image\0" \
+-	"console=ttymxc2,115200\0" \
++	"boot_script=fatload mmc ${devnum}:1 ${script_addr_r} /boot.scr; source ${script_addr_r}\0" \
++	"bootargs=console=ttymxc2,115200\0" \
++	"bootpart=2\0" \
++	"devnum=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
++	"devtype=mmc\0" \
+ 	"fdt_addr=0x48000000\0" \
+-	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
+-	"ipaddr=192.168.3.11\0" \
+-	"serverip=192.168.3.10\0" \
+-	"netmask=255.225.255.0\0" \
+-	"ip_dyn=no\0" \
+-	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
+-	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
+-	"mmcroot=2\0" \
+-	"mmcautodetect=yes\0" \
+-	"mmcargs=setenv bootargs console=${console} " \
+-		"root=/dev/mmcblk${mmcdev}p${mmcroot} rootwait rw\0" \
+-	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
+-	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+-	"mmcboot=echo Booting from mmc ...; " \
+-		"run mmcargs; " \
+-		"if run loadfdt; then " \
+-			"booti ${loadaddr} - ${fdt_addr}; " \
+-		"else " \
+-			"echo WARN: Cannot load the DT; " \
+-		"fi;\0 " \
+-	"nfsroot=/nfs\0" \
+-	"netargs=setenv bootargs console=${console} root=/dev/nfs ip=${nfsip} " \
+-		"nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
+-	"netboot=echo Booting from net ...; " \
+-		"if test ${ip_dyn} = yes; then " \
+-			"setenv nfsip dhcp; " \
+-			"setenv get_cmd dhcp; " \
+-		"else " \
+-			"setenv nfsip ${ipaddr}:${serverip}::${netmask}::eth0:on; " \
+-			"setenv get_cmd tftp; " \
+-		"fi; " \
+-		"run netargs; " \
+-		"${get_cmd} ${loadaddr} ${image}; " \
+-		"if ${get_cmd} ${fdt_addr} ${fdt_file}; then " \
+-			"booti ${loadaddr} - ${fdt_addr}; " \
+-		"else " \
+-			"echo WARN: Cannot load the DT; " \
+-		"fi;\0" \
+-	"raucdev=2\0" \
+-	PHYCORE_RAUC_ENV_BOOTLOGIC
++	"ramdisk_addr_r=0x49000000\0" \
++	"scan_boot_script=if test -e mmc ${devnum}:1 /boot.scr; then echo Found U-Boot script; run boot_script; echo SCRIPT FAILED: continuing...; fi\0" \
++	"script_addr_r=0x40000000\0" \
+ 
+ #ifdef CONFIG_IMX_HAB
+ #define BOOTCOMMAND_APPEND "reset;"
+@@ -89,14 +53,9 @@
+ #endif
+ 
+ #define CONFIG_BOOTCOMMAND \
+-	"mmc dev ${mmcdev}; if mmc rescan; then " \
+-		"env exists doraucboot || setenv doraucboot 0 && saveenv;" \
+-		"if test ${doraucboot} = 1; then " \
+-			"run raucboot; " \
+-		"elif run loadimage; then " \
+-			"run mmcboot; " \
+-		"else run netboot; " \
+-		"fi; " \
++	"mmc dev ${devnum}; if mmc rescan; then " \
++		"env exist kernel_addr || setenv devnum ${mmcdev} && setenv kernel_addr_r ${loadaddr} && saveenv;" \
++		"run scan_boot_script;" \
+ 	"fi; " \
+ 	BOOTCOMMAND_APPEND
+ 
