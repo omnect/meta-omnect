@@ -51,7 +51,7 @@ python create_boot_cmd () {
 
             # assemble bootargs
             f.write("fdt get value bootargs /chosen bootargs\n")
-            f.write("setenv bootargs \"${bootargs} bootpart=${bootpart} %s ${resize_data}\"\n" % bootargs_append)
+            f.write("setenv bootargs \"${bootargs} ${bootargs_append} bootpart=${bootpart} %s ${resize_data}\"\n" % bootargs_append)
 
             # boot
             f.write("%s ${kernel_addr_r} ${ramdisk_addr_r} ${%s}\n" % (boot_cmd, fdt_addr))

@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.13.12869352] Q1 2022
+
+- u-boot: fixed POR detection for rpi4 board revision 0xC03111 when using test-boot.scr
+
 ## [>= 3.1.13.x] Q1 2022
 
 - kas: poky update to dunfell 3.1.13
