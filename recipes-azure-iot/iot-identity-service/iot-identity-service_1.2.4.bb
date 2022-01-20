@@ -4,9 +4,12 @@ inherit aziot cargo systemd
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
-GITREV = "8fc413a9910588b2949eca8ad1ea28246c066f08"
+GITREV = "20d1990858ceb976e8885e0da92f0f9d600b0eb5"
 SRC_URI = "gitsm://git@github.com/Azure/iot-identity-service.git;protocol=ssh;nobranch=1;branch=release/1.2;rev=${GITREV}"
-SRC_URI += "file://iot-identity-service-certd.template.toml"
+SRC_URI += " \
+    file://iot-identity-service-certd.template.toml \
+    file://tpm-compile-fix.patch \
+"
 
 S = "${WORKDIR}/git"
 B = "${S}"
@@ -38,7 +41,7 @@ do_compile() {
     sed -i 's/^RELEASE = 0$/RELEASE = 1/'       ${S}/Makefile
     sed -i -e 's/CARGO_TARGET = \(.*\)/CARGO_TARGET = ${TARGET_SYS}/g' ${S}/Makefile
 
-    make
+    make default
 }
 
 do_install() {
