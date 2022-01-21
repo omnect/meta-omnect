@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [>= 3.1.13.x] Q1 2022
+
+- kas: poky update to dunfell 3.1.13
+- kas: meta-openembedded update to latest dunfell HEAD ab9fca485e13f6f2f9761e1d2810f87c2e4f060a
+- kas: meta-swupdate update to latest dunfell HEAD d018267c3baf826dfc9b2b7307b4f6183353eed1
+- kas: meta-virtualization update to latest dunfell HEAD c4f156fa93b37b2428e09ae22dbd7f5875606f4d
+
 ## [> 3.1.12.12622913] Q1 2022
 
 - iot-identity-service: update to rev 20d1990858ceb976e8885e0da92f0f9d600b0eb5
