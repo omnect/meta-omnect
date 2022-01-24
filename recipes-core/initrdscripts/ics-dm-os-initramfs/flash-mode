@@ -30,17 +30,6 @@ flash_mode_enabled() {
     return 1  # disable flash mode; normal boot; main entry point _NOT_ called
 }
 
-msg_fatal() {
-    msg "FATAL ERROR: $1"
-}
-
-run_cmd() {
-    msg  "$@"
-    eval "$@"
-    if [ $? -ne 0 ]; then msg_fatal "command failed"; return 1; fi
-    return 0
-}
-
 setup_network() {
     local if_name="$1"
     local ip_addr=""

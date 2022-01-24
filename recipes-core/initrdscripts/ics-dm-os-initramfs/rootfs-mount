@@ -46,7 +46,14 @@ rootfs_run() {
     mkdir -p ${ROOTFS_DIR}/mnt/cert/priv
 
     # mount etc partition
-    mount -o defaults,sync /dev/disk/by-label/etc ${ROOTFS_DIR}/mnt/etc
+    etc_blk="$(readlink -f /dev/disk/by-label/etc)"
+    if [ "${bootparam_resize_data}" = "1" ]; then
+        check_etc_opt=1  # first boot: empty filesystem created by WIC, but enforce mkfs
+    else
+        check_etc_opt=0  # run fsck to handle unclean (not unmounted) state
+    fi
+    check_ext4_fs "etc" "${etc_blk}" ${check_etc_opt}
+    mount -o defaults,sync "${etc_blk}" "${ROOTFS_DIR}/mnt/etc"
 
     # mount factory
     mount -o defaults,ro,async /dev/disk/by-label/factory ${ROOTFS_DIR}/mnt/factory

@@ -1,0 +1,66 @@
+#
+# common helper functions
+#
+
+common_sh_enabled()
+{
+    return 1  # there is no entry point in this library
+}
+
+msg_fatal() {
+    msg "FATAL ERROR: $1"
+}
+
+run_cmd() {
+    msg  "$@"
+    eval "$@"
+    if [ $? -ne 0 ]; then msg_fatal "command failed"; return 1; fi
+    return 0
+}
+
+# check ext4 filesystem
+# re-format partition in the case of uncorrectable fsck errors or enforced flag
+check_ext4_fs()
+{
+    local   ext4_label=$1  # filesystem label
+    local block_device=$2  # block device name
+    local enforce_mkfs=$3  # enforce reformatting: 0|1
+    local fsck_res=0
+
+    msg "check_ext4_fs ${ext4_label} ${block_device}"
+
+    if [ -z "${block_device}" ] || [ ! -b "${block_device}" ]; then
+        msg "FATAL: \"${block_device}\" not a valid block device"
+        return 1
+    fi
+
+    if [ ${enforce_mkfs} -eq 0 ]; then
+        # regular boot; fsck handles unclean state (i.e.; not unmounted)
+        fsck.ext4 -y ${block_device}
+        fsck_res=$?
+    fi
+
+    if [ ${enforce_mkfs} -eq 1 ] || [ ${fsck_res} -gt 2 ]; then
+        # -- mkfs enforced OR uncorrectable fsck errors --
+        msg "reformatting ${block_device} [fsck_res=${fsck_res}, enforce_mkfs=${enforce_mkfs}] ..."
+        run_cmd mkfs.ext4 -F -q ${block_device} || return 1
+
+        # set ext4 label; disable enforced fsck
+        run_cmd tune2fs ${block_device} -c 0 -i 0 -L ${ext4_label} || return 1
+        run_cmd sync
+
+        # check filesystem again with forced mode
+        run_cmd fsck.ext4  ${block_device} -f -y || return 1
+
+        # get /dev/disk/by-label/<name> available
+        run_cmd udevadm trigger -w ${block_device}
+    else
+        if [ ${fsck_res} -eq 2 ]; then
+            # -- corrected by fsck, but reboot required --
+            msg "reboot indicated by fsck"
+            reboot -f
+        fi
+    fi
+
+    return 0
+}

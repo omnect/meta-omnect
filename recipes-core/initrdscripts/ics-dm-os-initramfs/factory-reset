@@ -1,0 +1,41 @@
+#!/bin/sh
+
+#
+# handle triggered factory reset
+#
+
+# name of u-boot environemt variable used to trigger factory reset
+ICS_DM_TRIGGER_FACTORY_RESET_VAR="trigger-factory-reset"
+
+# called by generic INITRAMFS
+factory_reset_enabled() {
+    local factory_reset=""
+
+    factory_reset=$(fw_printenv ${ICS_DM_TRIGGER_FACTORY_RESET_VAR} | cut -d'=' -f2)
+    if [ "${factory_reset}" == "1" ]; then
+        msg "Triggered Factory Reset!"
+        return 0  # enable main entry point
+    fi
+
+    return 1  # no factory reset triggered; normal boot; main entry point _NOT_ called
+}
+
+# main entry point
+factory_reset_run() {
+    local data_part=$(readlink -f /dev/disk/by-label/data)
+    local  etc_part=$(readlink -f /dev/disk/by-label/etc)
+
+    msg "Running Factory Reset..."
+
+    # enforce mkfs
+    check_ext4_fs "data" "${data_part}" 1
+    check_ext4_fs "etc"  "${etc_part}"  1
+
+    # remove factory reset trigger at this point; interrupted factory reset will be replayed
+    fw_setenv ${ICS_DM_TRIGGER_FACTORY_RESET_VAR}
+
+    # get into normal startup
+    msg "Rebooting system..."
+    reboot -f
+    # -- never reached --
+}
