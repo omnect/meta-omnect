@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.13.12869352] Q1 2022
+
+- u-boot: Fixed POR detection for rpi4 board revision 0xC03111 (Raspberry Pi 4 Model B Rev 1.1)
+  when using 'test-boot.scr'. This workaround disables the uhc mode of the sdcard.
+  So reading/writing times are expected to be slower then usual.
+
 ## [>= 3.1.13.x] Q1 2022
 
 - kas: poky update to dunfell 3.1.13

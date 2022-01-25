@@ -7,5 +7,11 @@ LIC_FILES_CHKSUM="\
 "
 
 ICS_DM_BOOT_SCR_NAME = "test-boot.scr"
-ICS_DM_BOOT_SCR_TEST_CMDS = 'rstinfo; if test "${rstinfo}" = "POR"; then echo "Power-on detected; going to run PXE boot..."; run bootcmd_pxe; fi'
+
+# 0xC031111 is rpi4 1.1 (https://elinux.org/RPi_HardwareHistory)
+ICS_DM_BOOT_SCR_TEST_CMDS:raspberrypi4-64  = 'setenv bootcmd_pxe "dhcp; run set_bootfile; if pxe get; then pxe boot; fi"; '
+ICS_DM_BOOT_SCR_TEST_CMDS:raspberrypi4-64 .= 'setenv set_bootfile "if test \"0xC03111\" = \"${board_revision}\"; then setenv bootfile /custom/; setenv bootargs_append sdhci.debug_quirks2=4; saveenv; fi"; '
+ICS_DM_BOOT_SCR_TEST_CMDS:raspberrypi4-64 .= 'rstinfo; if test "${rstinfo}" = "POR"; then echo "Power-on detected; going to run PXE boot..."; run bootcmd_pxe; fi'
+
+ICS_DM_BOOT_SCR_TEST_CMDS      = 'rstinfo; if test "${rstinfo}" = "POR"; then echo "Power-on detected; going to run PXE boot..."; run bootcmd_pxe; fi'
 inherit deploy nopackages u-boot-scr
