@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   start, which resulted in a degraded status of `systemctl is-system-running`.
 - initramfs: only install `RESIZE_DATA_PACKAGES` if DISTRO_FEATURE `resize-data`
   is set.
+- kas: Made `ICS_DM_PART_SIZE_*` parameters configurable via kas. (E.g. the same
+  cicd parameter can now be used in build and tests.)
 
 ## [> 3.1.13.12869352] Q1 2022
 
