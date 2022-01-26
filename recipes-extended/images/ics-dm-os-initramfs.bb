@@ -23,7 +23,6 @@ PACKAGE_INSTALL = "\
     initramfs-framework-base \
     initramfs-module-udev \
     udev \
-    ${RESIZE_DATA_PACKAGES} \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
