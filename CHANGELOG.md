@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [> 3.1.13.13333545] Q1 2022
 - swupdate: Don't start swupdate.service. We don't use it and it failed to
   start, which resulted in a degraded status of `systemctl is-system-running`.
-- initramfs: only install `RESIZE_DATA_PACKAGES` if DISTRO_FEATURE `resize-data`
+- initramfs: Only install `RESIZE_DATA_PACKAGES` if DISTRO_FEATURE `resize-data`
   is set.
 - kas: Made `ICS_DM_PART_SIZE_*` parameters configurable via kas. (E.g. the same
   cicd parameter can now be used in build and tests.)
