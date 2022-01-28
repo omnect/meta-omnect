@@ -1,11 +1,11 @@
 #!/bin/sh
 
-rootfs_enabled() {
+fs_mount_enabled() {
     return 0
 }
 
-rootfs_run() {
-    msg "ics-dm-os initramfs rootfs mount"
+fs_mount_run() {
+    msg "ics-dm-os initramfs fs mount"
 
     if [ -z "${ROOTFS_DIR}" ]; then
         fatal "no ROOTFS_DIR"
@@ -47,12 +47,7 @@ rootfs_run() {
 
     # mount etc partition
     etc_blk="$(readlink -f /dev/disk/by-label/etc)"
-    if [ "${bootparam_resize_data}" = "1" ]; then
-        check_etc_opt=1  # first boot: empty filesystem created by WIC, but enforce mkfs
-    else
-        check_etc_opt=0  # run fsck to handle unclean (not unmounted) state
-    fi
-    check_ext4_fs "etc" "${etc_blk}" ${check_etc_opt}
+    check_ext4_fs "etc" "${etc_blk}" 0
     mount -o defaults,sync "${etc_blk}" "${ROOTFS_DIR}/mnt/etc"
 
     # mount factory
@@ -70,8 +65,12 @@ rootfs_run() {
     # mount etc overlay
     mount -t overlay -o defaults,lowerdir=${ROOTFS_DIR}/etc,upperdir=${ROOTFS_DIR}/mnt/etc/upper,workdir=${ROOTFS_DIR}/mnt/etc/work overlay ${ROOTFS_DIR}/etc
 
+    # check data partition to handle unclean (not unmounted) state
+    local data_part=$(readlink -f /dev/disk/by-label/data)
+    check_ext4_fs "data" "${data_part}" 0
+
     # mount data
-    mount -o defaults,sync /dev/disk/by-label/data ${ROOTFS_DIR}/mnt/data
+    mount -o defaults,sync ${data_part} ${ROOTFS_DIR}/mnt/data
     mkdir -p ${ROOTFS_DIR}/mnt/data/home/work
     mkdir -p ${ROOTFS_DIR}/mnt/data/home/upper
     mkdir -p ${ROOTFS_DIR}/mnt/data/var/lib

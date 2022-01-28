@@ -10,8 +10,8 @@ inherit ics_dm_initramfs
 IMAGE_NAME = "${ICS_DM_INITRAMFS_IMAGE_NAME}"
 
 RESIZE_DATA_PACKAGES = "\
-    e2fsprogs \
     e2fsprogs-e2fsck \
+    e2fsprogs-mke2fs \
     e2fsprogs-resize2fs \
     e2fsprogs-tune2fs \
     libubootenv \

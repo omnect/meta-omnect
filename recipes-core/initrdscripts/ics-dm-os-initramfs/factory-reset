@@ -3,9 +3,12 @@
 #
 # handle triggered factory reset
 #
+#  NOTE: The current implementation does not provide a secure factory reset, because the data are _NOT_ wiped.
+#  TODO: Implement higher levels of privacy options (e.g.; ICS_DM_TRIGGER_FACTORY_RESET_VAR == 2).
+#
 
-# name of u-boot environemt variable used to trigger factory reset
-ICS_DM_TRIGGER_FACTORY_RESET_VAR="trigger-factory-reset"
+# name of u-boot environment variable used to trigger factory reset
+ICS_DM_TRIGGER_FACTORY_RESET_VAR="factory-reset"
 
 # called by generic INITRAMFS
 factory_reset_enabled() {

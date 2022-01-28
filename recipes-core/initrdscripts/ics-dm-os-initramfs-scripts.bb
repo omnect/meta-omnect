@@ -11,7 +11,7 @@ SRC_URI = "\
     file://common-sh \
     file://factory-reset \
     file://resize-data \
-    file://rootfs-mount \
+    file://fs-mount \
 "
 
 do_install() {
@@ -19,7 +19,7 @@ do_install() {
     install -m 0755 -D ${WORKDIR}/common-sh        ${D}/init.d/86-common_sh
     install -m 0755 -D ${WORKDIR}/factory-reset    ${D}/init.d/87-factory_reset
     install -m 0755 -D ${WORKDIR}/resize-data      ${D}/init.d/88-resize_data
-    install -m 0755 -D ${WORKDIR}/rootfs-mount     ${D}/init.d/89-rootfs
+    install -m 0755 -D ${WORKDIR}/fs-mount         ${D}/init.d/89-fs_mount
 }
 
 FILES_${PN} = "\
@@ -27,5 +27,5 @@ FILES_${PN} = "\
     /init.d/86-common_sh \
     /init.d/87-factory_reset \
     /init.d/88-resize_data \
-    /init.d/89-rootfs \
+    /init.d/89-fs_mount \
 "

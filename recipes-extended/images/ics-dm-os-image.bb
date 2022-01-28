@@ -32,7 +32,6 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
-    e2fsprogs e2fsprogs-tune2fs \
     ics-dm-base-files \
     iot-hub-device-update \
     packagegroup-core-ssh-dropbear \
@@ -59,6 +58,7 @@ ICS_DM_DEVEL_TOOLS_DEFAULT = "\
     systemd-analyze \
     tcpdump \
     valgrind \
+    e2fsprogs e2fsprogs-tune2fs \
 "
 
 # check environment variable ICS_DM_DEVEL_TOOLS
