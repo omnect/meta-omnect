@@ -58,6 +58,7 @@ ICS_DM_DEVEL_TOOLS_DEFAULT = "\
     systemd-analyze \
     tcpdump \
     valgrind \
+    e2fsprogs e2fsprogs-tune2fs \
 "
 
 # check environment variable ICS_DM_DEVEL_TOOLS

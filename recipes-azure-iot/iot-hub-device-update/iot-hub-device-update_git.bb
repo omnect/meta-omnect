@@ -66,11 +66,8 @@ do_install:append() {
   # create tmpfiles.d entry to (re)create dir + permissions
   install -d ${D}${libdir}/tmpfiles.d
   echo "d /var/log/aduc-logs 1755 adu adu -"    >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
-  echo "d /mnt/data/var/lib/adu 0755 adu adu -" >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
   echo "z /etc/adu 0775 adu adu -"              >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
   echo "z /etc/adu/adu-conf.txt 0660 adu adu -" >> ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
-
-  install -d -o adu -g adu ${D}/mnt/data/var/lib/adu
 
   # configure iot-hub-device-update as iot-identity-service client
   # allow adu client access to device_id secret created by manual provisioning
@@ -103,7 +100,6 @@ FILES:${PN} += " \
   ${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml \
   ${systemd_system_unitdir}/adu-agent.service \
   ${systemd_system_unitdir}/adu-agent.timer \
-  /mnt/data/var/lib/adu \
   "
 
 GROUPADD_PARAM:${PN} += "-r adu;"

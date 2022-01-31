@@ -154,6 +154,7 @@ openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
 - ??? document flashing/updating an example rpi4 device???
 - document layer priority orchestration in layer.conf
 - document https://github.com/ICS-DeviceManagement/meta-ics-dm/pull/45#discussion_r783841596
+- implement higher levels of privacy options for factory reset
 
 # License
 

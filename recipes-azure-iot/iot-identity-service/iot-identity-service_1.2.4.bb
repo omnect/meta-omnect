@@ -80,10 +80,7 @@ do_install() {
     echo "z ${sysconfdir}/aziot/keyd/config.d 0700 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "z ${sysconfdir}/aziot/keyd/config.d/* 0600 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0644     ${S}/key/aziot-keyd/config/unix/default.toml ${D}${sysconfdir}/aziot/keyd/config.toml.default
-    install -d -m 0700 -o aziotks -g aziotks ${D}/mnt/data/var/secrets/aziot/keyd
-    echo "d /mnt/data/var/secrets/aziot/keyd 0700 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -d ${D}/var
-    lnr  ${D}/mnt/data/var/secrets ${D}/var/secrets
 
     install -d -m 0750 -g aziottpm ${D}${sysconfdir}/aziot/tpmd
     install -d -m 0700 -o aziottpm -g aziottpm ${D}${sysconfdir}/aziot/tpmd/config.d
@@ -147,7 +144,6 @@ FILES:${PN} += " \
     ${libdir}/engines-1.1/aziot_keys.so \
     ${libdir}/libaziot_keys.so \
     ${libdir}/tmpfiles.d/iot-identity-service.conf \
-    /mnt/data/var/secrets/aziot/keyd \
 "
 
 FILES:${PN}-dev = "${includedir}/aziot-identity-service/aziot-keys.h"
