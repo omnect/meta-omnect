@@ -159,7 +159,7 @@ The `ics-dm-os-update-image` artefact is named `ics-dm-os-update-image-raspberry
 
 ### Layer prioritization orchestration
 If you want to add additional yocto layers to your build, you can adapt layer priorities in `conf/layer.conf`. This layer is the last in the `BBLAYERS` yocto variable when you build with our `kas` configuration files. If not, you have to possibly adapt layer prioritization values in the last layer included in `BBLAYERS`.
-E.g. we reset the layer prioritization of `meta-phytec` to `9`, to ensure it is less then the prioritization of `meta-ics-dm`.
+E.g. we reset the layer prioritization of `meta-phytec` to `9`, to ensure it is less than the prioritization of `meta-ics-dm`.
 
 ## Runtime configuration
 
