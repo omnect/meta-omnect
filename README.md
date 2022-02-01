@@ -217,7 +217,7 @@ sudo fw_setenv factory-reset 1
 ```
 This re-creates the corresponding filesystem of partitions `data` and `etc` on the next boot. If the `factory` partition contains a directory `etc`, then the content is copied to the `etc` partition.
 
-**Note:** The factory reset does not ensure data security. The old data is not wiped before recreating the respectively filesystem.
+**Note:** The factory reset does not ensure data security. The old data is not wiped before re-creating the respective filesystem.
 
 # Todo's
 - document: image needs post processing via `ics-dm-cli` to get
