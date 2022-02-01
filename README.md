@@ -26,7 +26,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 `meta-ics-dm` adds the following `DISTRO_FEATURES`:
 - [`enrollment`](https://github.com/ICS-DeviceManagement/enrollment.git)
     - adds an automatic device enrollment demo with provisioning via tpm
-        - it creates a tpm enrollement in your azure device provisioning service for your device
+        - it creates a tpm enrollment in your azure device provisioning service for your device
         - it creates the provisioning configuration for `iot-identity-service`
     - synchronizes startup of `iot-identity-service` with the enrollment demo
     - depends on `DISTRO_FEATURES` including `tpm` which is not added automatically!
@@ -43,7 +43,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - expands the data partition to available space on first boot
 - `tpm`
     - adds tpm kernel overlay, driver and auto modprobe.
-    (**Currently you have to enable it explicitly for `ics-dm-demo`, since enrollment depends hard on tpm.**)
+    (**Currently you have to enable it explicitly for `enrollment`, since it depends hard on tpm.**)
 
     @todo delete it and use poky's `tpm2` instead, since we depend on a tpm 2.0 module? `tpm2` installs more dependencies then we need though. it installs tools to read and alter tpm 2.0 modules.
 - `wifi-commissioning`
@@ -222,7 +222,7 @@ This recrates the corresponding filesystem of partitions `data` and `etc` on the
 # Todo's
 - document: image needs postprocessing via `ics-dm-cli` to get
   - mandatory: an `iot-identity-service` configuration (provisioning)
-  - mandatory if activated: an `ics-dm-demo` configuration (enrollment)
+  - mandatory if activated: an `enrollment` configuration
   - optional: an `iot-hub-device-update` configuration
 - document: kas usage with example `kas/ics-dm-os-iot-rpi3.yaml` and
   `kas/ics-dm-os-iotedge-rpi4.yaml` and how to add features
