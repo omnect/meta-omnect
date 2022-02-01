@@ -94,7 +94,7 @@ For this purpose, the following configuration variables are used:
 `meta-ics-dm` is compatible with the current yocto LTS release branch `dunfell`.
 
 ## Versioning
-We reflect the used poky version in our version schema. `ics-dm-os` is versioned via `POKY_VERSION.BUILD_NR`, `3.1.x.y` where `x` is poky dunnfell's patch version and `y` is our build number.
+We reflect the used poky version in our version schema. `ics-dm-os` is versioned via `POKY_VERSION.BUILD_NR`, `3.1.x.y` where `x` is poky dunnfell's patch version and `y` is the build number.
 
 ## Dependencies
 `meta-ics-dm` depends on:
