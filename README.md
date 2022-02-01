@@ -215,7 +215,7 @@ Set u-boot env var `factory-reset` to reset `data` and `etc` partition.
 ```sh
 sudo fw_setenv factory-reset 1
 ```
-This recrates the corresponding filesystem of partitions `data` and `etc` on the next boot. If the `factory` partition contains a directory `etc`, then the content is copied to the `etc` partition.
+This re-creates the corresponding filesystem of partitions `data` and `etc` on the next boot. If the `factory` partition contains a directory `etc`, then the content is copied to the `etc` partition.
 
 **Note:** The factory reset does not ensure data security. The old data is not wiped before recreating the respectively filesystem.
 
