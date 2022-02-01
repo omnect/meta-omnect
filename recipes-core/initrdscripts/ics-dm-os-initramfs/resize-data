@@ -8,7 +8,7 @@ resize_data_run() {
     # possibly resize data partition
     if [ "${bootparam_resize_data}" = "1" ]; then
         msg "ics-dm-os resize data partition"
-        data_part=$(readlink -f /dev/disk/by-label/data)
+        data_part=$(get_block_device data)
         [[ $(cat /proc/mounts | grep ${data_part} | wc -l) -ne 0 ]] && echo "error: \"${data_part}\" is mounted." && exit 1
 
         root_disk=${data_part%p*}
@@ -26,8 +26,9 @@ resize_data_run() {
 
         # set resized_data in u-boot env
         mkdir -p /boot
-        mount -o defaults,rw /dev/disk/by-label/boot /boot
-        fw_setenv resized_data 1
+        boot_part=$(get_block_device boot)
+        mount -o defaults,rw ${boot_part} /boot
+        set_bootloader_env_var resized_data 1
         umount /boot
     fi
 }

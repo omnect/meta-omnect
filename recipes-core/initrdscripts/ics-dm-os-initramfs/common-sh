@@ -30,7 +30,7 @@ check_ext4_fs()
     msg "check_ext4_fs ${ext4_label} ${block_device}"
 
     if [ -z "${block_device}" ] || [ ! -b "${block_device}" ]; then
-        msg "FATAL: \"${block_device}\" not a valid block device"
+        msg_fatal "\"${block_device}\" not a valid block device"
         return 1
     fi
 
@@ -63,4 +63,62 @@ check_ext4_fs()
     fi
 
     return 0
+}
+
+# get block device name from label
+#     using this functions guarantees consistent /proc/mounts
+get_block_device()
+{
+    local label="$1"  # label designating block device
+    local blk_dev=""
+
+    # currently filesystem labels are used; TODO: use partition labels based on GPT
+    blk_dev=$(readlink -f /dev/disk/by-label/${label})
+
+    if [ -z "${blk_dev}" ] || [ ! -b "${blk_dev}" ]; then
+        msg_fatal "\"${blk_dev}\" not a valid block device [label=${label}]"  # output: /dev/console
+        echo ""
+        return 1
+    fi
+
+    echo ${blk_dev}
+    return 0
+}
+
+# mount filesystem
+mount_fs()
+{
+    local  fs_type="$1"  # filesystem type
+    local  blk_dev="$2"  # block device name
+    local  mnt_dir="$3"  # mount point
+    local mnt_opts="$4"  # (optional) mount options
+    local def_opts=""
+
+    if [ -z "${blk_dev}" ] || [ ! -b "${blk_dev}" ]; then
+        msg_fatal "\"${blk_dev}\" not a valid block device"
+        return 1
+    fi
+
+    # setup mount options
+    #     the comma separated option list is ordered; i.e., higher preference at the right hand side
+    def_opts="-o defaults,noatime,nodiratime"
+    if [ -n "${mnt_opts}" ]; then def_opts="${def_opts},${mnt_opts}"; fi
+
+    run_cmd mount -t "${fs_type}" "${def_opts}" "${blk_dev} " "${mnt_dir}"
+    return $?
+}
+
+# get value of bootloader environment variable
+get_bootloader_env_var()
+{
+    local var_name="$1"
+    fw_printenv ${var_name} | cut -d'=' -f2
+}
+
+# set/delete bootloader environment variable
+set_bootloader_env_var()
+{
+    local  var_name="$1"
+    local var_value="$2"  # empty string to delete variable
+    fw_setenv ${var_name} ${var_value}
 }

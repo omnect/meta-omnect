@@ -24,13 +24,13 @@ fs_mount_run() {
 
     # get mmcblk at runtime, so we can boot devices which can switch between
     # emmc and sdcard with the same image.
-    mmcblk=$(readlink /dev/disk/by-label/boot)
-    mmcblk=${mmcblk##*/}
+    boot_blk=$(get_block_device boot)
+    mmcblk=${boot_blk##*/}
     mmcblk=${mmcblk%p*};
 
     # mount rootfs
     rootfs=/dev/${mmcblk}p${bootparam_bootpart}
-    mount -o ro ${rootfs} ${ROOTFS_DIR}
+    mount_fs "ext4" ${rootfs} ${ROOTFS_DIR} "ro,async"
 
     # load overlay kernelmodule
     if [ -f ${ROOTFS_DIR}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko  ]; then
@@ -38,20 +38,24 @@ fs_mount_run() {
     fi
 
     # mount boot
-    mount -t vfat -o defaults,rw,fmask=0002,gid=$(cat /etc/group | grep ^disk | awk -F: '{print $3}') /dev/disk/by-label/boot ${ROOTFS_DIR}/boot
+    mount_fs "vfat" "${boot_blk}" "${ROOTFS_DIR}/boot" \
+                 "ro,async,fmask=0002,gid=$(cat /etc/group | grep ^disk | awk -F: '{print $3}')"
 
     # mount cert
-    mount -o defaults,async /dev/disk/by-label/cert ${ROOTFS_DIR}/mnt/cert
+    cert_blk=$(get_block_device cert)
+    check_ext4_fs "cert" "${cert_blk}" 0
+    mount_fs "ext4" "${cert_blk}" "${ROOTFS_DIR}/mnt/cert" "rw,async"
     mkdir -p ${ROOTFS_DIR}/mnt/cert/ca
     mkdir -p ${ROOTFS_DIR}/mnt/cert/priv
 
     # mount etc partition
-    etc_blk="$(readlink -f /dev/disk/by-label/etc)"
+    etc_blk=$(get_block_device etc)
     check_ext4_fs "etc" "${etc_blk}" 0
-    mount -o defaults,sync "${etc_blk}" "${ROOTFS_DIR}/mnt/etc"
+    mount_fs "ext4" "${etc_blk}" "${ROOTFS_DIR}/mnt/etc" "rw,async"
 
     # mount factory
-    mount -o defaults,ro,async /dev/disk/by-label/factory ${ROOTFS_DIR}/mnt/factory
+    factory_blk=$(get_block_device factory)
+    mount_fs "ext4" "${factory_blk}" "${ROOTFS_DIR}/mnt/factory" "ro,async"
 
     # if etc partition is empty we copy the etc dir from factory partition
     if [ ! -d ${ROOTFS_DIR}/mnt/etc/upper ]; then
@@ -63,21 +67,28 @@ fs_mount_run() {
     fi
 
     # mount etc overlay
-    mount -t overlay -o defaults,lowerdir=${ROOTFS_DIR}/etc,upperdir=${ROOTFS_DIR}/mnt/etc/upper,workdir=${ROOTFS_DIR}/mnt/etc/work overlay ${ROOTFS_DIR}/etc
+    mount -t overlay \
+          -o defaults,noatime,nodiratime,lowerdir=${ROOTFS_DIR}/etc,upperdir=${ROOTFS_DIR}/mnt/etc/upper,workdir=${ROOTFS_DIR}/mnt/etc/work \
+          overlay ${ROOTFS_DIR}/etc
 
     # check data partition to handle unclean (not unmounted) state
-    local data_part=$(readlink -f /dev/disk/by-label/data)
-    check_ext4_fs "data" "${data_part}" 0
+    data_blk=$(get_block_device data)
+    check_ext4_fs "data" "${data_blk}" 0
 
-    # mount data
-    mount -o defaults,sync ${data_part} ${ROOTFS_DIR}/mnt/data
+    # mount data partition
+    #     mount flags can be optionally set via u-boot environment
+    data_opts=$(get_bootloader_env_var "data-mount-options")
+    if [ -z "${data_opts}" ]; then data_opts="rw,async"; fi
+    mount_fs "ext4" "${data_blk}" "${ROOTFS_DIR}/mnt/data" "${data_opts}"
     mkdir -p ${ROOTFS_DIR}/mnt/data/home/work
     mkdir -p ${ROOTFS_DIR}/mnt/data/home/upper
     mkdir -p ${ROOTFS_DIR}/mnt/data/var/lib
     mkdir -p ${ROOTFS_DIR}/mnt/data/local
 
     # mount home overlay
-    mount -t overlay -o defaults,lowerdir=${ROOTFS_DIR}/home,upperdir=${ROOTFS_DIR}/mnt/data/home/upper,workdir=${ROOTFS_DIR}/mnt/data/home/work overlay ${ROOTFS_DIR}/home
+    mount -t overlay \
+          -o defaults,noatime,nodiratime,${data_opts},lowerdir=${ROOTFS_DIR}/home,upperdir=${ROOTFS_DIR}/mnt/data/home/upper,workdir=${ROOTFS_DIR}/mnt/data/home/work \
+          overlay ${ROOTFS_DIR}/home
 
     # bind mount /var/lib
     mkdir -p ${ROOTFS_DIR}/mnt/data/var/lib
