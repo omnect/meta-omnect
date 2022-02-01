@@ -46,7 +46,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     (**Currently you have to enable it explicitly for `enrollment`, since it depends hard on tpm.**)
 
     @todo delete it and use poky's `tpm2` instead, since we depend on a tpm 2.0 module? `tpm2` installs more dependencies then we need though. it installs tools to read and alter tpm 2.0 modules.
-- `wifi-commissioning`
+- [`wifi-commissioning`](https://github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git)
     - adds a service which enables wifi commissioning via bluetooth
     - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
     - **note**: this is only intended for demo purposes; this is not a production ready service
