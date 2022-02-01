@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.13.14175483] Q1 2022
+- iot-hub-device-update: fixed start up (fixes changes from PR#52)
+- iot-identity-service: create link `/var/secrets` at buildtime and directory
+  `/mnt/data/var/secrets/` at runtime (fixes changes from PR#52)
+- os-release: added vars `ICS_DM_DEVEL_TOOLS` and `ICS_DM_DEVEL_TOOLS_DEFAULT`
+- ics-dm-first-boot: set `RemainAfterExit=true` to enable testing via
+  `systemctl is-active ics-dm-first-boot`
+TODO: - enrollment: update version to 0.6.1
+
 ## [> 3.1.13.13589229] Q1 2022
 - add factory reset, which can be triggered by setting the u-boot environment variable `factory-reset`
 

@@ -8,5 +8,7 @@ ICS_DM_OS_SHA = "${GitVersion_Sha}"
 ICS_DM_OS_BRANCH = "${GitVersion_BranchName}"
 
 OS_RELEASE_FIELDS += "DISTRO_FEATURES"
+OS_RELEASE_FIELDS += "ICS_DM_DEVEL_TOOLS"
+OS_RELEASE_FIELDS += "ICS_DM_DEVEL_TOOLS_DEFAULT"
 
 do_compile[nostamp] = "1"

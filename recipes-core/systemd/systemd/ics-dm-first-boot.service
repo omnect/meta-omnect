@@ -9,6 +9,7 @@ ConditionFirstBoot=yes
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/ics_dm_first_boot.sh
+RemainAfterExit=true
 
 [Install]
 WantedBy=multi-user.target
