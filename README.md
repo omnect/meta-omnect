@@ -163,7 +163,7 @@ E.g. we reset the layer prioritization of `meta-phytec` to `9`, to ensure it is 
 
 ## Runtime configuration
 
-The `ics-dm-os-image` needs postprocessing via [`ics-dm-cli`](https://github.com/ICS-DeviceManagement/ics-dm-cli.git) to set a mandatory `iot-identity-service` configuration. Furthermore you need to set an `enrollment` configuration if `DISTRO_FEATURES` contains `enrollment`. You can optionally set an `iot-hub-device-update` configuration.
+The `ics-dm-os-image` needs post processing via [`ics-dm-cli`](https://github.com/ICS-DeviceManagement/ics-dm-cli.git) to set a mandatory `iot-identity-service` configuration. Furthermore you need to set an `enrollment` configuration if `DISTRO_FEATURES` contains `enrollment`. You can optionally set an `iot-hub-device-update` configuration.
 
 ### Set `enrollment` configuration
 See [ics-dm-cli enrollment configuration](https://github.com/ICS-DeviceManagement/ics-dm-cli/blob/main/README.md#enrollment-configuration).
@@ -220,7 +220,7 @@ This recrates the corresponding filesystem of partitions `data` and `etc` on the
 **Note:** The factory reset does not ensure data security. The old data is not wiped before recreating the respectively filesystem.
 
 # Todo's
-- document: image needs postprocessing via `ics-dm-cli` to get
+- document: image needs post processing via `ics-dm-cli` to get
   - mandatory: an `iot-identity-service` configuration (provisioning)
   - mandatory if activated: an `enrollment` configuration
   - optional: an `iot-hub-device-update` configuration
