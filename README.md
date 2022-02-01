@@ -220,16 +220,7 @@ This re-creates the corresponding filesystem of partitions `data` and `etc` on t
 **Note:** The factory reset does not ensure data security. The old data is not wiped before re-creating the respective filesystem.
 
 # Todo's
-- document: image needs post processing via `ics-dm-cli` to get
-  - mandatory: an `iot-identity-service` configuration (provisioning)
-  - mandatory if activated: an `enrollment` configuration
-  - optional: an `iot-hub-device-update` configuration
-- document: kas usage with example `kas/ics-dm-os-iot-rpi3.yaml` and
-  `kas/ics-dm-os-iotedge-rpi4.yaml` and how to add features
-- ??? document flashing/updating an example rpi4 device???
-- document layer priority orchestration in layer.conf
-- document https://github.com/ICS-DeviceManagement/meta-ics-dm/pull/45#discussion_r783841596
-- implement higher levels of privacy options for factory reset
+- ??? document flashing/updating an example rpi4 device????
 
 # License
 
