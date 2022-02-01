@@ -24,7 +24,7 @@ This yocto meta layer provides the poky based ICS_DeviceManagement distribution 
 It is built with the default `poky` `DISTRO_FEATURES`.
 
 `meta-ics-dm` adds the following `DISTRO_FEATURES`:
-- `enrollment`
+- [`enrollment`](https://github.com/ICS-DeviceManagement/enrollment.git)
     - adds an automatic device enrollment demo with provisioning via tpm
         - it creates a tpm enrollement in your azure device provisioning service for your device
         - it creates the provisioning configuration for `iot-identity-service`
