@@ -6,8 +6,8 @@ LIC_FILES_CHKSUM="\
 "
 
 
-# version 0.6.0
-GITREV = "535c5e09051eab4eec078f8ef80f5bbfa44c43c9"
+# version 0.6.1
+GITREV = "53d819c418f71a8f4dc80cfc6a9746226edddbbe"
 # TODO change to https uri when public
 REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;rev=${GITREV}"
 SRC_URI = "${REPO_URI}"

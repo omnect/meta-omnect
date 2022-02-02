@@ -78,12 +78,13 @@ EXTRA_OECARGO_PATHS += "${WORKDIR}/ics-dm-azure-sys"
 LIC_FILES_CHKSUM = " \
     "
 
-SUMMARY = "ics-dm-iot-module-rs"
+SUMMARY = "iot-module-template-rs"
 HOMEPAGE = "git@github.com:ICS-DeviceManagement/ics-dm-iot-module-rs.git"
+#TODO:
 LICENSE = "CLOSED"
 
 # includes this file if it exists but does not fail
 # this is useful for anything you may want to override from
 # what cargo-bitbake generates.
-include ics-dm-iot-module-rs-${PV}.inc
-include ics-dm-iot-module-rs.inc
+include iot-module-template-rs_${PV}.inc
+include iot-module-template-rs.inc
