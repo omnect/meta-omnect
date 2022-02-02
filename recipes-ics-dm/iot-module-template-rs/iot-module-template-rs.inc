@@ -34,22 +34,22 @@ do_compile_prepend() {
 
 do_install_append() {
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${S}/systemd/ics-dm-iot-module-rs.service ${D}${systemd_system_unitdir}
-    install -m 0644 ${S}/systemd/ics-dm-iot-module-rs.timer ${D}${systemd_system_unitdir}
+    install -m 0644 ${S}/systemd/ics-dm-iot-module-rs.service ${D}${systemd_system_unitdir}/iot-module-template-rs.service
+    install -m 0644 ${S}/systemd/ics-dm-iot-module-rs.timer ${D}${systemd_system_unitdir}/iot-module-template-rs.timer
 
-    # allow ics-dm-iot-module-rs access to device_id secret created by manual provisioning
-    install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/ics-dm-iot-module-rs.toml
+    # allow iot-module-template-rs access to device_id secret created by manual provisioning
+    install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/iot-module-template-rs.toml
 
-    # allow ics-dm-iot-module-rs provisioning via module identity
-    install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/ics-dm-iot-module-rs.toml
+    # allow iot-module-template-rs provisioning via module identity
+    install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/iot-module-template-rs.toml
 }
 
 pkg_postinst_${PN}() {
-    sed -i "s/@@UID@@/$(id -u iotmodule-rs)/" $D${sysconfdir}/aziot/keyd/config.d/ics-dm-iot-module-rs.toml
-    sed -i -e "s/@@UID@@/$(id -u iotmodule-rs)/" -e "s/@@NAME@@/ics-dm-iot-module-rs/" $D${sysconfdir}/aziot/identityd/config.d/ics-dm-iot-module-rs.toml
+    sed -i "s/@@UID@@/$(id -u iotmodule-rs)/"                                           $D${sysconfdir}/aziot/keyd/config.d/iot-module-template-rs.toml
+    sed -i -e "s/@@UID@@/$(id -u iotmodule-rs)/" -e "s/@@NAME@@/ics-dm-iot-module-rs/"  $D${sysconfdir}/aziot/identityd/config.d/iot-module-template-rs.toml
 }
 
-SYSTEMD_SERVICE_${PN} = "ics-dm-iot-module-rs.service ics-dm-iot-module-rs.timer"
+SYSTEMD_SERVICE_${PN} = "iot-module-template-rs.service iot-module-template-rs.timer"
 
 GROUPADD_PARAM_${PN} += "-r iotmodule-rs;"
 USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks -g iotmodule-rs iotmodule-rs;"

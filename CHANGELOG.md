@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [> 3.1.13.14175483] Q1 2022
 - iot-hub-device-update: fixed start up (fixes changes from PR#52)
-- iot-identity-service: create link `/var/secrets` at buildtime and directory
+- iot-identity-service: creation of link `/var/secrets` at buildtime and directory
   `/mnt/data/var/secrets/` at runtime (fixes changes from PR#52)
 - os-release: added vars `ICS_DM_DEVEL_TOOLS` and `ICS_DM_DEVEL_TOOLS_DEFAULT`
 - ics-dm-first-boot: set `RemainAfterExit=true` to enable testing via
   `systemctl is-active ics-dm-first-boot`
-TODO: - enrollment: update version to 0.6.1
+- enrollment: version bump to 0.6.1
+- moved recipes-ics-dm-demo/* -> recipes-ics-dm
+- moved recipes-ics-dm/ics-dm-iot-module-rs/ recipes-ics-dm/iot-module-template-rs
 
 ## [> 3.1.13.13589229] Q1 2022
 - add factory reset, which can be triggered by setting the u-boot environment variable `factory-reset`
