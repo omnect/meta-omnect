@@ -18,6 +18,7 @@ PACKAGE_INSTALL = "\
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ics-dm-flash-mode \
+    ics-dm-os-initramfs-scripts \
     dhcp-client dropbear bmap-tools xz \
 "
 
