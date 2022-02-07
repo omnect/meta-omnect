@@ -25,10 +25,6 @@ resize_data_run() {
         sync
 
         # set resized_data in u-boot env
-        mkdir -p /boot
-        boot_part=$(get_block_device boot)
-        mount -o defaults,rw ${boot_part} /boot
         set_bootloader_env_var resized_data 1
-        umount /boot
     fi
 }

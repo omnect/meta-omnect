@@ -28,34 +28,33 @@ fs_mount_run() {
     mmcblk=${boot_blk##*/}
     mmcblk=${mmcblk%p*};
 
+    # the comma separated option list is ordered; i.e., higher preference at the right hand side
+    mnt_opts_default="defaults,noatime,nodiratime,async"
+
     # mount rootfs
     rootfs=/dev/${mmcblk}p${bootparam_bootpart}
-    mount_fs "ext4" ${rootfs} ${ROOTFS_DIR} "ro,async"
+    mount_partition "ext4" ${rootfs} ${ROOTFS_DIR} "${mnt_opts_default},ro"
 
     # load overlay kernelmodule
     if [ -f ${ROOTFS_DIR}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko  ]; then
         insmod ${ROOTFS_DIR}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko
     fi
 
-    # mount boot
-    mount_fs "vfat" "${boot_blk}" "${ROOTFS_DIR}/boot" \
-                 "ro,async,fmask=0002,gid=$(cat /etc/group | grep ^disk | awk -F: '{print $3}')"
-
     # mount cert
     cert_blk=$(get_block_device cert)
     check_ext4_fs "cert" "${cert_blk}" 0
-    mount_fs "ext4" "${cert_blk}" "${ROOTFS_DIR}/mnt/cert" "rw,async"
+    mount_partition "ext4" "${cert_blk}" "${ROOTFS_DIR}/mnt/cert" "${mnt_opts_default},rw"
     mkdir -p ${ROOTFS_DIR}/mnt/cert/ca
     mkdir -p ${ROOTFS_DIR}/mnt/cert/priv
 
     # mount etc partition
     etc_blk=$(get_block_device etc)
     check_ext4_fs "etc" "${etc_blk}" 0
-    mount_fs "ext4" "${etc_blk}" "${ROOTFS_DIR}/mnt/etc" "rw,async"
+    mount_partition "ext4" "${etc_blk}" "${ROOTFS_DIR}/mnt/etc" "${mnt_opts_default},rw"
 
     # mount factory
     factory_blk=$(get_block_device factory)
-    mount_fs "ext4" "${factory_blk}" "${ROOTFS_DIR}/mnt/factory" "ro,async"
+    mount_partition "ext4" "${factory_blk}" "${ROOTFS_DIR}/mnt/factory" "${mnt_opts_default},ro"
 
     # if etc partition is empty we copy the etc dir from factory partition
     if [ ! -d ${ROOTFS_DIR}/mnt/etc/upper ]; then
@@ -67,9 +66,8 @@ fs_mount_run() {
     fi
 
     # mount etc overlay
-    mount -t overlay \
-          -o defaults,noatime,nodiratime,lowerdir=${ROOTFS_DIR}/etc,upperdir=${ROOTFS_DIR}/mnt/etc/upper,workdir=${ROOTFS_DIR}/mnt/etc/work \
-          overlay ${ROOTFS_DIR}/etc
+    mount_overlayfs "${ROOTFS_DIR}/etc" "${ROOTFS_DIR}/mnt/etc/upper" "${ROOTFS_DIR}/mnt/etc/work" \
+                    "${mnt_opts_default}" ${ROOTFS_DIR}/etc
 
     # check data partition to handle unclean (not unmounted) state
     data_blk=$(get_block_device data)
@@ -78,17 +76,20 @@ fs_mount_run() {
     # mount data partition
     #     mount flags can be optionally set via u-boot environment
     data_opts=$(get_bootloader_env_var "data-mount-options")
-    if [ -z "${data_opts}" ]; then data_opts="rw,async"; fi
-    mount_fs "ext4" "${data_blk}" "${ROOTFS_DIR}/mnt/data" "${data_opts}"
+    if [ -n "${data_opts}" ]; then
+        msg "note, bootloader variable data-mount-options set; going to use it"
+    else
+        data_opts="${mnt_opts_default},rw"
+    fi
+    mount_partition "ext4" "${data_blk}" "${ROOTFS_DIR}/mnt/data" "${data_opts}"
     mkdir -p ${ROOTFS_DIR}/mnt/data/home/work
     mkdir -p ${ROOTFS_DIR}/mnt/data/home/upper
     mkdir -p ${ROOTFS_DIR}/mnt/data/var/lib
     mkdir -p ${ROOTFS_DIR}/mnt/data/local
 
     # mount home overlay
-    mount -t overlay \
-          -o defaults,noatime,nodiratime,${data_opts},lowerdir=${ROOTFS_DIR}/home,upperdir=${ROOTFS_DIR}/mnt/data/home/upper,workdir=${ROOTFS_DIR}/mnt/data/home/work \
-          overlay ${ROOTFS_DIR}/home
+    mount_overlayfs "${ROOTFS_DIR}/home" "${ROOTFS_DIR}/mnt/data/home/upper" "${ROOTFS_DIR}/mnt/data/home/work" \
+                    "${data_opts}" "${ROOTFS_DIR}/home"
 
     # bind mount /var/lib
     mkdir -p ${ROOTFS_DIR}/mnt/data/var/lib

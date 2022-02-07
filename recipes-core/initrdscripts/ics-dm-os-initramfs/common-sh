@@ -85,27 +85,35 @@ get_block_device()
     return 0
 }
 
-# mount filesystem
-mount_fs()
+# mount filesystem of partition
+mount_partition()
 {
     local  fs_type="$1"  # filesystem type
     local  blk_dev="$2"  # block device name
     local  mnt_dir="$3"  # mount point
-    local mnt_opts="$4"  # (optional) mount options
-    local def_opts=""
+    local mnt_opts="$4"  # mount options
 
     if [ -z "${blk_dev}" ] || [ ! -b "${blk_dev}" ]; then
         msg_fatal "\"${blk_dev}\" not a valid block device"
         return 1
     fi
 
-    # setup mount options
-    #     the comma separated option list is ordered; i.e., higher preference at the right hand side
-    def_opts="-o defaults,noatime,nodiratime"
-    if [ -n "${mnt_opts}" ]; then def_opts="${def_opts},${mnt_opts}"; fi
-
-    run_cmd mount -t "${fs_type}" "${def_opts}" "${blk_dev} " "${mnt_dir}"
+    run_cmd mount -t "${fs_type}" -o "${mnt_opts}" "${blk_dev} " "${mnt_dir}"
     return $?
+}
+
+# mount overlay filesystem
+mount_overlayfs()
+{
+    local lowerdir="$1"
+    local upperdir="$2"
+    local  workdir="$3"
+    local mnt_opts="$4"  # mount options
+    local  mnt_dir="$5"  # mount point
+
+    run_cmd mount -t overlay \
+                  -o ${mnt_opts},lowerdir=${lowerdir},upperdir=${upperdir},workdir=${workdir} \
+                  overlay ${mnt_dir}
 }
 
 # get value of bootloader environment variable
