@@ -1,0 +1,21 @@
+{
+    "schemaVersion": "1.1",
+    "aduShellTrustedUsers": [
+      "adu",
+      "do"
+    ],
+    "manufacturer": "",
+    "model": "",
+    "agents": [
+      {
+        "name": "AducIotAgent",
+        "runas": "adu",
+        "connectionSource": {
+          "connectionType": "AIS",
+          "connectionData": ""
+        },
+        "manufacturer": "",
+        "model": ""
+      }
+    ]
+  }

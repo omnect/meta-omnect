@@ -1,17 +1,8 @@
 diff --git a/src/utils/eis_utils/src/eis_coms.c b/src/utils/eis_utils/src/eis_coms.c
-index e725839..51f9175 100644
+index 34f1d51..e5e57bd 100644
 --- a/src/utils/eis_utils/src/eis_coms.c
 +++ b/src/utils/eis_utils/src/eis_coms.c
-@@ -73,7 +73,7 @@
- #define EIS_SIGN_REQUEST_URI EIS_SIGN_URI "?" EIS_API_VERSION
- 
- /**
-- * @brief URI for the Certificate Service on the Certificate Service's Unix Domain Socket (UDS) 
-+ * @brief URI for the Certificate Service on the Certificate Service's Unix Domain Socket (UDS)
-  */
- #define EIS_CERT_URI "http://foo/certificates"
- 
-@@ -139,7 +139,7 @@ typedef struct tagEIS_HTTP_WORKLOAD_CONTEXT
+@@ -140,7 +140,7 @@ typedef struct tagEIS_HTTP_WORKLOAD_CONTEXT
  /**
   * @brief Maximum amount of bytes for any EIS response
   */
@@ -20,28 +11,3 @@ index e725839..51f9175 100644
  
  //
  // HTTP Functions
-@@ -171,7 +171,7 @@ static void on_eis_http_error(void* callbackCtx, HTTP_CALLBACK_REASON error_resu
-  * @param contentSize the size of @p content
-  * @param statusCode the status code for the HTTP response (e.g. 404, 500, 200, etc.)
-  * @param responseHeaders header of the response, used in some calls but not needed here
-- * 
-+ *
-  */
- static void on_eis_http_recv(
-     void* callbackCtx,
-@@ -425,7 +425,7 @@ done:
-  * @details The identity response returns the hub hostname, device id, and key handle
-  * Caller must release @p responseBuffer with free()
-  * @param timeoutMS max timeoutMS for the request in milliseconds
-- * @param responseBuffer the buffer that will be allocated by the function to hold the response 
-+ * @param responseBuffer the buffer that will be allocated by the function to hold the response
-  * @returns Returns a value of EISErr
-  */
- EISErr RequestIdentitiesFromEIS(unsigned int timeoutMS, char** responseBuffer)
-@@ -592,4 +592,4 @@ done:
-     free(requestURI);
- 
-     return result;
--}
-\ No newline at end of file
-+}
