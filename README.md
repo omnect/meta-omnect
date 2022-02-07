@@ -26,7 +26,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 `meta-ics-dm` adds the following `DISTRO_FEATURES`:
 - [`enrollment`](https://github.com/ICS-DeviceManagement/enrollment.git)
     - adds an automatic device enrollment demo with provisioning via tpm
-        - it creates a tpm enrollment in your azure device provisioning service for your device
+        - it creates a tpm enrollment in your [azure device provisioning service](https://docs.microsoft.com/en-us/azure/iot-dps/) for your device
         - it creates the provisioning configuration for `iot-identity-service`
     - synchronizes startup of `iot-identity-service` with the enrollment demo
     - depends on `DISTRO_FEATURES` including `tpm` which is not added automatically!
