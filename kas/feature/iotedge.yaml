@@ -2,8 +2,6 @@
 
 header:
   version: 10
-  includes:
-    - kas/feature/iot.yaml
 
 repos:
   ext/meta-virtualization:
@@ -13,4 +11,4 @@ repos:
 local_conf_header:
   meta-ics-dm_feature_iotedge: |
     # enable iotedge
-    DISTRO_FEATURES_append = " iotedge"
+    DISTRO_FEATURES:append = " iotedge"
