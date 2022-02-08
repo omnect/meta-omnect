@@ -21,7 +21,7 @@ flash_mode_enabled() {
     fi
 
     # flash mode triggered at runtime
-    flash_mode=$(fw_printenv ${ICS_DM_FLASH_MODE_VAR} | cut -d'=' -f2)
+    flash_mode=$(get_bootloader_env_var ${ICS_DM_FLASH_MODE_VAR})
     if [ "${flash_mode}" == "1" ]; then
         msg "enable flash mode: by u-boot environment variable ${ICS_DM_FLASH_MODE_VAR}"
         return 0  # enable flash mode; main entry point called
@@ -69,7 +69,7 @@ run_bmap_tool() {
     local blk_dev=""
 
     # detect block device
-    blk_dev=$(readlink -f /dev/disk/by-label/boot)
+    blk_dev=$(get_block_device boot)
     blk_dev=${blk_dev%p*}
     if [ ! -b "${blk_dev}" ]; then msg_fatal "${blk_dev} does not exist or not a block device"; return 1; fi
 
@@ -113,7 +113,7 @@ flash_mode_run() {
     msg "Entering ICS DM flashing mode..."
 
     # disable flash mode for subsequent restarts
-    fw_setenv ${ICS_DM_FLASH_MODE_VAR}
+    set_bootloader_env_var ${ICS_DM_FLASH_MODE_VAR}
 
     # continue startup in case of errors
     setup_network ${ICS_DM_FLASH_MODE_ETH} || return 0

@@ -14,7 +14,7 @@ ICS_DM_TRIGGER_FACTORY_RESET_VAR="factory-reset"
 factory_reset_enabled() {
     local factory_reset=""
 
-    factory_reset=$(fw_printenv ${ICS_DM_TRIGGER_FACTORY_RESET_VAR} | cut -d'=' -f2)
+    factory_reset=$(get_bootloader_env_var ${ICS_DM_TRIGGER_FACTORY_RESET_VAR})
     if [ "${factory_reset}" == "1" ]; then
         msg "Triggered Factory Reset!"
         return 0  # enable main entry point
@@ -25,8 +25,11 @@ factory_reset_enabled() {
 
 # main entry point
 factory_reset_run() {
-    local data_part=$(readlink -f /dev/disk/by-label/data)
-    local  etc_part=$(readlink -f /dev/disk/by-label/etc)
+    local data_part=""
+    local  etc_part=""
+
+    data_part=$(get_block_device data)
+     etc_part=$(get_block_device  etc)
 
     msg "Running Factory Reset..."
 
@@ -35,7 +38,7 @@ factory_reset_run() {
     check_ext4_fs "etc"  "${etc_part}"  1
 
     # remove factory reset trigger at this point; interrupted factory reset will be replayed
-    fw_setenv ${ICS_DM_TRIGGER_FACTORY_RESET_VAR}
+    set_bootloader_env_var ${ICS_DM_TRIGGER_FACTORY_RESET_VAR}
 
     # get into normal startup
     msg "Rebooting system..."
