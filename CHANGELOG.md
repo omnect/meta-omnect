@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - renamed DISTRO_FEATURE `ics-dm-demo` -> `enrollment`
 - enrollment: removed PACKAGECONFIG `tpm` switch; set REQUIRED_MACHINE_FEATURES="tpm2"
 - iotedge-daemon: removed PACKAGECONFIG `ics-dm-demo`
+- swupdate: consolidate adu-key-pub.bb
 
 ## [> 3.1.13.15239607] Q1 2022
 - `iot-hub-device-update`:
