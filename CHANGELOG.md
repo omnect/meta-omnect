@@ -12,7 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - mv kas/feature/ics-dm-demo.yaml -> kas/feature/enrollment.yaml
   - kas/feature/iotedge.yaml doesn't implicitly include kas/feature/iot.yaml anymore
 - removed DISTRO_FEATURE `tpm`; we use poky's MACHINE_FEATURE `tpm2` instead
+- renamed DISTRO_FEATURE `ics-dm-demo` -> `enrollment`
 - enrollment: removed PACKAGECONFIG `tpm` switch; set REQUIRED_MACHINE_FEATURES="tpm2"
+- iotedge-daemon: removed PACKAGECONFIG `ics-dm-demo`
 
 ## [> 3.1.13.15239607] Q1 2022
 - `iot-hub-device-update`:

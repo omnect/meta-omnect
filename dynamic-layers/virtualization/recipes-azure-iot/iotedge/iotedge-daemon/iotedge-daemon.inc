@@ -2,9 +2,6 @@ DEPENDS += "openssl virtual/docker"
 RDEPENDS_${PN} += "docker iot-identity-service"
 INSANE_SKIP_${PN} += "dev-deps"
 
-PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'ics-dm-demo', 'ics-dm-demo', '', d)}"
-PACKAGECONFIG[ics-dm-demo] = ""
-
 export OPENSSL_DIR = "${STAGING_EXECPREFIXDIR}"
 export IOTEDGE_CONNECT_MANAGEMENT_URI = "unix:///var/run/iotedge/mgmt.sock"
 export IOTEDGE_CONNECT_WORKLOAD_URI = "unix:///var/run/iotedge/workload.sock"
