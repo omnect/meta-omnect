@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [> 3.1.13.TODO] Q1 2022
 - imx-boot-phytec: documented source of files
 - kas: consolidates kas/feature/ics-dm-common.yaml -> kas/distro/ics-dm-os.yaml
+- removed DISTRO_FEATURE `tpm`; we use poky's MACHINE_FEATURE `tpm2` instead
+- enrollment: removed PACKAGECONFIG `tpm` switch; set REQUIRED_MACHINE_FEATURES="tpm2"
 
 ## [> 3.1.13.15239607] Q1 2022
 - `iot-hub-device-update`:
