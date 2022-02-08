@@ -5,6 +5,13 @@ SRC_URI += "\
   file://iot-identity-service-identityd.template.toml \
 "
 
+# overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
+LICENSE = "MIT | Apache-2.0"
+LIC_FILES_CHKSUM = " \
+    file://LICENSE-APACHE;md5=650e893673eb59696f3d4ee64f6d2357 \
+    file://LICENSE-MIT;md5=afb814368d9110052a22e0da67f027d3 \
+"
+
 DEPENDS += "\
     azure-iot-sdk-c\
     libeis-utils\

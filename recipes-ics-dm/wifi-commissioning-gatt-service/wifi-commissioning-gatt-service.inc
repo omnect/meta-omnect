@@ -3,6 +3,12 @@ SRC_URI += "\
     file://wifi-commissioning-gatt@.service \
 "
 
+# overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
+LICENSE = "MIT | Apache-2.0"
+LIC_FILES_CHKSUM = " \
+    file://LICENSE-APACHE;md5=650e893673eb59696f3d4ee64f6d2357 \
+    file://LICENSE-MIT;md5=afb814368d9110052a22e0da67f027d3 \
+"
 
 DEPENDS += "dbus"
 RDEPENDS:${PN} += "bash bluez5 (>=5.60) toml-cli wpa-supplicant"

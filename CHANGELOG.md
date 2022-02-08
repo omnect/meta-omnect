@@ -10,12 +10,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - kas:
   - consolidates kas/feature/ics-dm-common.yaml -> kas/distro/ics-dm-os.yaml
   - mv kas/feature/ics-dm-demo.yaml -> kas/feature/enrollment.yaml
-  - kas/feature/iotedge.yaml doesn't implicitly include kas/feature/iot.yaml anymore
+  - kas/feature/iotedge.yaml doesn't implicitly include kas/feature/iot.yaml
+    anymore
 - removed DISTRO_FEATURE `tpm`; we use poky's MACHINE_FEATURE `tpm2` instead
 - renamed DISTRO_FEATURE `ics-dm-demo` -> `enrollment`
-- enrollment: removed PACKAGECONFIG `tpm` switch; set REQUIRED_MACHINE_FEATURES="tpm2"
-- iotedge-daemon: removed PACKAGECONFIG `ics-dm-demo`
+- enrollment: removed PACKAGECONFIG `tpm` switch; set
+  REQUIRED_MACHINE_FEATURES="tpm2"
+- iotedge-cli: overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake
+  generated recipe
+- iotedge-daemon:
+  - removed PACKAGECONFIG `ics-dm-demo`
+  - overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 - swupdate: consolidate adu-key-pub.bb
+- iot-module-template-rs: overwrite LICENSE and LIC_FILES_CHKSUM from
+  cargo-bitbake generated recipe
+- wifi-commissioning-gatt-service: overwrite LICENSE and LIC_FILES_CHKSUM from
+  cargo-bitbake generated recipe
 
 ## [> 3.1.13.15239607] Q1 2022
 - `iot-hub-device-update`:
