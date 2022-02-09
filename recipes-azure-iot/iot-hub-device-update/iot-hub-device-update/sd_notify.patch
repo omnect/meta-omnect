@@ -1,0 +1,58 @@
+diff --git a/src/agent/CMakeLists.txt b/src/agent/CMakeLists.txt
+index a663e88..4f2965e 100644
+--- a/src/agent/CMakeLists.txt
++++ b/src/agent/CMakeLists.txt
+@@ -85,7 +85,8 @@ target_link_libraries (
+             aduc::pnp_helper
+             aduc::system_utils
+             diagnostics_component::diagnostics_interface
+-            diagnostics_component::diagnostics_devicename)
++            diagnostics_component::diagnostics_devicename
++            systemd)
+ 
+ get_filename_component (
+     ADUC_INSTALLEDCRITERIA_FILE_PATH
+diff --git a/src/agent/src/main.c b/src/agent/src/main.c
+index 73b8f12..39b9d63 100644
+--- a/src/agent/src/main.c
++++ b/src/agent/src/main.c
+@@ -45,6 +45,8 @@
+ 
+ #include "eis_utils.h"
+ 
++#include <systemd/sd-daemon.h>
++
+ /**
+  * @brief The timeout for the Edge Identity Service HTTP requests
+  */
+@@ -160,7 +162,7 @@ typedef struct tagPnPComponentEntry
+     const PnPComponentDestroyFunc Destroy;
+     const PnPComponentPropertyUpdateCallback
+         PnPPropertyUpdateCallback; /**< Called when a component's property is updated. (optional) */
+-    
++
+     //
+     // Following data is dynamic.
+     // Must be initialized to NULL in map and remain last entries in this struct.
+@@ -1133,6 +1135,7 @@ int main(int argc, char** argv)
+     int dir_result = ADUC_SystemUtils_MkDirRecursiveDefault(ADUC_DATA_FOLDER);
+     if (dir_result != 0)
+     {
++        ret=dir_result;
+         Log_Error("Cannot create data folder.");
+         goto done;
+     }
+@@ -1150,6 +1153,13 @@ int main(int argc, char** argv)
+ 
+     if (!StartupAgent(&launchArgs))
+     {
++        ret=1;
++        goto done;
++    }
++    else if ( 0 >= sd_notify(0, "READY=1") )
++    {
++        Log_Error("sd_notify failed");
++        ret = 255;
+         goto done;
+     }
+ 

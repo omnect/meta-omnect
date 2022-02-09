@@ -1,0 +1,25 @@
+[Unit]
+Description=Device Update Agent daemon.
+After=network-online.target deliveryoptimization-agent.service systemd-tmpfiles-setup.service aziot-identityd.service time-sync.target
+Wants=network-online.target deliveryoptimization-agent.service aziot-identityd.service
+
+StartLimitBurst=10
+StartLimitIntervalSec=120
+
+[Service]
+Type=notify
+
+Restart=always
+RestartSec=5
+
+User=adu
+Group=adu
+
+ExecStartPre=-/usr/bin/AducIotAgent -l 2 --update-type "microsoft/swupdate:1" -C /usr/lib/adu/extensions/libmicrosoft_swupdate_1.so
+ExecStartPre=-/usr/bin/AducIotAgent -l 2 --update-type "microsoft/update-manifest" -C /usr/lib/adu/extensions/libmicrosoft_steps_1.so
+ExecStartPre=-/usr/bin/AducIotAgent -l 2 -D /usr/lib/adu/extensions/libdeliveryoptimization-content-downloader.so
+ExecStart=/usr/bin/AducIotAgent -l 0 -e
+
+
+[Install]
+WantedBy=multi-user.target

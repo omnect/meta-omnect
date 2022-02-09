@@ -1,10 +1,10 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f9a8a78..151bdf1 100644
+index 5beb6fc..17012a8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -187,6 +187,12 @@ set (
-     "/etc/adu-version"
-     CACHE STRING "Path to the file that contains version info for the image or device.")
+@@ -324,6 +324,12 @@ set (
+     "syslog"
+     CACHE STRING "The syslog group.")
  
 +set (
 +    ADUC_STORAGE_PATH
@@ -16,24 +16,24 @@ index f9a8a78..151bdf1 100644
  option (ADUC_BUILD_UNIT_TESTS "Build unit tests and mock some functionality" OFF)
  option (ADUC_BUILD_DOCUMENTATION "Build documentation files" OFF)
 diff --git a/src/platform_layers/linux_platform_layer/CMakeLists.txt b/src/platform_layers/linux_platform_layer/CMakeLists.txt
-index 3de4a26..d20cc03 100644
+index 3180584..4112567 100644
 --- a/src/platform_layers/linux_platform_layer/CMakeLists.txt
 +++ b/src/platform_layers/linux_platform_layer/CMakeLists.txt
-@@ -50,7 +50,8 @@ target_compile_definitions (
-     PRIVATE ADUC_DEVICEINFO_MANUFACTURER="${ADUC_DEVICEINFO_MANUFACTURER}"
-             ADUC_CONF_FILE_PATH="${ADUC_CONF_FILE_PATH}"
+@@ -63,7 +63,8 @@ target_compile_definitions (
+             ADUC_FILE_USER="${ADUC_FILE_USER}"
              ADUC_DEVICEINFO_MODEL="${ADUC_DEVICEINFO_MODEL}"
--            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}")
-+            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}"
+             ADUC_VERSION_FILE="${ADUC_VERSION_FILE}"
+-            ADUC_BUILD_UNIT_TESTS="${ADUC_BUILD_UNIT_TESTS}")
++            ADUC_BUILD_UNIT_TESTS="${ADUC_BUILD_UNIT_TESTS}"
 +            ADUC_STORAGE_PATH="${ADUC_STORAGE_PATH}")
  
  if (ADUC_BUILD_UNIT_TESTS)
      add_subdirectory (tests)
 diff --git a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
-index 8fd22a0..83cf8e0 100644
+index 3db41a1..7c5962f 100644
 --- a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
 +++ b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
-@@ -104,16 +104,43 @@ static char* DeviceInfo_GetOsName()
+@@ -107,16 +107,43 @@ static char* DeviceInfo_GetOsName()
          return nullptr;
      }
  
@@ -83,7 +83,7 @@ index 8fd22a0..83cf8e0 100644
  }
  
  /**
-@@ -132,18 +159,45 @@ static char* DeviceInfo_GetSwVersion()
+@@ -135,18 +162,45 @@ static char* DeviceInfo_GetSwVersion()
          return nullptr;
      }
  
@@ -137,7 +137,7 @@ index 8fd22a0..83cf8e0 100644
  }
  
  /**
-@@ -279,7 +333,7 @@ static char* DeviceInfo_GetTotalStorage()
+@@ -282,7 +336,7 @@ static char* DeviceInfo_GetTotalStorage()
      {
      };
  

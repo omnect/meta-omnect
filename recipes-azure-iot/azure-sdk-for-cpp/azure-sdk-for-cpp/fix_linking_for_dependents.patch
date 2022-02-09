@@ -1,0 +1,13 @@
+diff --git a/sdk/storage/azure-storage-common/CMakeLists.txt b/sdk/storage/azure-storage-common/CMakeLists.txt
+index ca8db2061..98a732910 100644
+--- a/sdk/storage/azure-storage-common/CMakeLists.txt
++++ b/sdk/storage/azure-storage-common/CMakeLists.txt
+@@ -86,7 +86,7 @@ if(WIN32)
+ else()
+     find_package(LibXml2 REQUIRED)
+     target_include_directories(azure-storage-common PRIVATE ${LIBXML2_INCLUDE_DIRS})
+-    target_link_libraries(azure-storage-common PRIVATE ${LIBXML2_LIBRARIES})
++    target_link_libraries(azure-storage-common PRIVATE LibXml2::LibXml2)
+     find_package(OpenSSL REQUIRED)
+     target_link_libraries(azure-storage-common PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+ endif()
