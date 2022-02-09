@@ -9,9 +9,6 @@ StartLimitIntervalSec=120
 [Service]
 Type=notify
 
-# systemd will try to start the ADU executable 5 times and then give up.
-# We can check logs with journalctl -f -u adu-agent.service
-# Set log verbosity level to 'Debug' and enable IoT Hub tracing.
 Restart=always
 RestartSec=5
 
