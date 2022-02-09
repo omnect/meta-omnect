@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - imx-boot-phytec: documented source of files
 - kas:
   - consolidates kas/feature/ics-dm-common.yaml -> kas/distro/ics-dm-os.yaml
-  - mv kas/feature/ics-dm-demo.yaml -> kas/feature/enrollment.yaml
+  - mv kas/feature/ics-dm-demo.yaml -> kas/example/enrollment.yaml
   - kas/feature/iotedge.yaml doesn't implicitly include kas/feature/iot.yaml
     anymore
+  - split kas/feature/iot.yaml -> kas/example/{iot-module-template-c,iot-module-template-rs}.yaml
+  - mv kas/feature/wifi-commissioning.yaml -> kas/example/wifi-commissioning.yaml
 - removed DISTRO_FEATURE `tpm`; we use poky's MACHINE_FEATURE `tpm2` instead
 - renamed DISTRO_FEATURE `ics-dm-demo` -> `enrollment`
 - enrollment: removed PACKAGECONFIG `tpm` switch; set
@@ -26,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cargo-bitbake generated recipe
 - wifi-commissioning-gatt-service: overwrite LICENSE and LIC_FILES_CHKSUM from
   cargo-bitbake generated recipe
+- mv iot-module-template -> iot-module-template-c
 
 ## [> 3.1.13.15239607] Q1 2022
 - `iot-hub-device-update`:
