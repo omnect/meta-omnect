@@ -8,10 +8,6 @@ This yocto meta layer provides the poky based ICS_DeviceManagement distribution 
 - [iot-identity-service](https://github.com/Azure/iot-identity-service)
 - [iotedge](https://github.com/Azure/iotedge)
 - `ics-os-dm-image` - an updatable device image with A/B rootfs update support; respectively `ics-os-dm-update-image` - the corresponding [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image<br>
-  supported devices:
-    - [raspberrypi](https://www.raspberrypi.org/) 3 and 4
-    - [phytec polis](https://www.phytec.eu/product-eu/single-board-computer/phyboard-polis/)
-
   implicit features:
     - `iot-hub-device-update` and `iot-identity-service` are installed
     - `iot-hub-device-update` is provisioned as module identity via `iot-identity-service`
@@ -94,6 +90,9 @@ For this purpose, the following configuration variables are used:
 ## Compatibility
 `meta-ics-dm` is compatible with the current yocto LTS release branch `dunfell`.
 
+## Supported Devices
+See [README.device.md](./README.device.md).
+
 ## Versioning
 We reflect the used poky version in our version schema. `ics-dm-os` is versioned via `POKY_VERSION.BUILD_NR`, `3.1.x.y` where `x` is poky dunfell's patch version and `y` is the build number.
 
@@ -141,7 +140,7 @@ docker run --rm \
 -e USER_ID=$(id -u) \
 -e GROUP_ID=$(id -g) \
 -e ICS_DM_BUILD_NUMBER=1 \
--e ICS_DM_USER_PASSWORD=ics-dm \
+-e ICS_DM_USER_PASSWORD="<your password>" \
 -e SWUPDATE_PASSWORD_FILE=/builder/priv.pass \
 -e SWUPDATE_PRIVATE_KEY=/builder/priv.pem \
 ghcr.io/siemens/kas/kas \
@@ -219,9 +218,6 @@ sudo fw_setenv factory-reset 1
 This re-creates the corresponding filesystem of partitions `data` and `etc` on the next boot. If the `factory` partition contains a directory `etc`, then the content is copied to the `etc` partition.
 
 **Note:** The factory reset does not ensure data security. The old data is not wiped before re-creating the respective filesystem.
-
-# Todo's
-- ??? document flashing/updating an example rpi4 device????
 
 # License
 
