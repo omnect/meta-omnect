@@ -14,7 +14,6 @@ LIC_FILES_CHKSUM = " \
 
 DEPENDS += "\
     azure-iot-sdk-c\
-    libeis-utils\
 "
 RDEPENDS_${PN} += "\
     ca-certificates\
@@ -23,10 +22,9 @@ RDEPENDS_${PN} += "\
 inherit aziot systemd
 
 do_compile_prepend() {
-    # - it seems cargo wants at least to verify that there are no changes
-    #   in the remote repo in regard to CARGO_HOME
     # - for now we use git to fetch the repo instead of cargo itself
-    # - @ToDo patch cargo.toml file so that it doesnt see a remote ???
+    #   (cargo fetcher can not handle git repos via ssh)
+    # - @ToDo rm as soon the repo is public
     export CARGO_NET_GIT_FETCH_WITH_CLI=true
 
     export LLVM_CONFIG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/bin/llvm-config"
@@ -41,8 +39,8 @@ do_compile_prepend() {
 
 do_install_append() {
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${S}/systemd/ics-dm-iot-module-rs.service ${D}${systemd_system_unitdir}/iot-module-template-rs.service
-    install -m 0644 ${S}/systemd/ics-dm-iot-module-rs.timer ${D}${systemd_system_unitdir}/iot-module-template-rs.timer
+    install -m 0644 ${S}/systemd/iot-module-template-rs.service ${D}${systemd_system_unitdir}/iot-module-template-rs.service
+    install -m 0644 ${S}/systemd/iot-module-template-rs.timer ${D}${systemd_system_unitdir}/iot-module-template-rs.timer
 
     # allow iot-module-template-rs access to device_id secret created by manual provisioning
     install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/iot-module-template-rs.toml
