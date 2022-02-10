@@ -29,7 +29,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
         - it creates a tpm enrollment in your [azure device provisioning service](https://docs.microsoft.com/en-us/azure/iot-dps/) for your device
         - it creates the provisioning configuration for `iot-identity-service`
     - synchronizes startup of `iot-identity-service` with the enrollment demo
-    - depends on `DISTRO_FEATURES` including `tpm` which is not added automatically!
+    - depends on `MACHINE_FEATURES` including `tpm2` which is not added automatically!
     - **note**: this is only intended for demo purposes; this is not a production ready service
 - `iotedge`
     - adds the `iotedge` service with its dependencies
@@ -41,15 +41,16 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - please see section *Initramfs Flash Mode*, below
 - `resize-data`
     - expands the data partition to available space on first boot
-- `tpm`
-    - adds tpm kernel overlay, driver and auto modprobe.
-    (**Currently you have to enable it explicitly for `enrollment`, since it depends hard on tpm.**)
-
-    @todo delete it and use poky's `tpm2` instead, since we depend on a tpm 2.0 module? `tpm2` installs more dependencies then we need though. it installs tools to read and alter tpm 2.0 modules.
 - [`wifi-commissioning`](https://github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git)
     - adds a service which enables wifi commissioning via bluetooth
     - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
     - **note**: this is only intended for demo purposes; this is not a production ready service
+
+### `MACHINE_FEATURES`
+`meta-ics-dm` extends the following `MACHINE_FEATURES`:
+- `tpm2`
+    - adds tpm kernel overlay, driver and auto modprobe for raspberry pi
+    (**Currently you have to enable it explicitly for `enrollment`, since it depends hard on tpm.**)
 
 ### `EXTRA_IMAGE_FEATURES`
 `meta-ics-dm` adds the following configurable `EXTRA_IMAGE_FEATURES`:
