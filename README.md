@@ -48,11 +48,6 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - adds tpm kernel overlay, driver and auto modprobe for raspberry pi
     (**Currently you have to enable it explicitly for `enrollment`, since it depends hard on tpm.**)
 
-### `EXTRA_IMAGE_FEATURES`
-`meta-ics-dm` adds the following configurable `EXTRA_IMAGE_FEATURES`:
-- `ics-dm-debug`
-    - enables output of connection- and identity string in `libeis_utils`, which is a dependency of `iot-module-template-rs`
-
 ### Partition Layout
 `ics-dm-os` uses an `A/B` update partition layout with two readonly rootfs partitions.
 The partition layout is
