@@ -12,14 +12,16 @@ SRC_URI = "\
     file://factory-reset \
     file://resize-data \
     file://fs-mount \
+    file://factory-reset-setup \
 "
 
 do_install() {
-    install -m 0755 -D ${WORKDIR}/rootblk-dev      ${D}/init.d/10-rootblk_dev
-    install -m 0755 -D ${WORKDIR}/common-sh        ${D}/init.d/86-common_sh
-    install -m 0755 -D ${WORKDIR}/factory-reset    ${D}/init.d/87-factory_reset
-    install -m 0755 -D ${WORKDIR}/resize-data      ${D}/init.d/88-resize_data
-    install -m 0755 -D ${WORKDIR}/fs-mount         ${D}/init.d/89-fs_mount
+    install -m 0755 -D ${WORKDIR}/rootblk-dev            ${D}/init.d/10-rootblk_dev
+    install -m 0755 -D ${WORKDIR}/common-sh              ${D}/init.d/86-common_sh
+    install -m 0755 -D ${WORKDIR}/factory-reset          ${D}/init.d/87-factory_reset
+    install -m 0755 -D ${WORKDIR}/resize-data            ${D}/init.d/88-resize_data
+    install -m 0755 -D ${WORKDIR}/fs-mount               ${D}/init.d/89-fs_mount
+    install -m 0755 -D ${WORKDIR}/factory-reset-setup    ${D}/init.d/90-factory_reset_setup
 }
 
 FILES_${PN} = "\
@@ -28,4 +30,5 @@ FILES_${PN} = "\
     /init.d/87-factory_reset \
     /init.d/88-resize_data \
     /init.d/89-fs_mount \
+    /init.d/90-factory_reset_setup \
 "
