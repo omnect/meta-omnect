@@ -141,9 +141,8 @@ docker run --rm \
 ghcr.io/siemens/kas/kas \
 kas build \
 meta-ics-dm/kas/distro/ics-dm-os.yaml:\
-meta-ics-dm/kas/feature/ics-dm-os-common.yaml:\
+meta-ics-dm/kas/example/wifi-commissioning.yaml:\
 meta-ics-dm/kas/feature/iotedge.yaml:\
-meta-ics-dm/kas/feature/wifi-commissioning.yaml:\
 meta-ics-dm/kas/feature/persistent-var-log.yaml:\
 meta-ics-dm/kas/machine/rpi/rpi4.yaml
 
