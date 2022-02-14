@@ -22,7 +22,6 @@ repos:
     url: "https://github.com/sbabic/meta-swupdate.git"
     refspec: d018267c3baf826dfc9b2b7307b4f6183353eed1
 
-
 distro: ics-dm-os
 
 target: ics-dm-os-update-image

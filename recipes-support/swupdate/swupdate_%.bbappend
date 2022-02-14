@@ -6,7 +6,9 @@ PACKAGECONFIG_CONFARGS = ""
 
 inherit useradd
 
-# Generated RSA key with password using command:
+# Generated RSA key file (SWUPDATE_PRIVATE_KEY=priv.pem) with password
+# (SWUPDATE_PASSWORD_FILE=priv.pass) using command:
+#
 # openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
 
 # Generate the public key file using openssl, private key, and password file.
