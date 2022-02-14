@@ -4,8 +4,11 @@
 # handle triggered factory reset
 #
 
-# name of u-boot environment variable used to trigger factory reset
-ICS_DM_TRIGGER_FACTORY_RESET_VAR="factory-reset"
+# name of u-boot environment variable used for factory reset (trigger and wipe mode)
+FACTORY_RESET_VAR="factory-reset"
+
+# u-boot environment variable used to return factory reset status
+FACTORY_RESET_STATUS_VAR="factory-reset-status"
 
 # called by generic INITRAMFS
 factory_reset_enabled() {
@@ -13,6 +16,7 @@ factory_reset_enabled() {
 }
 
 # wipe a partition using dd command
+#   in the case of wear leveling, it does not guarantee strict privacy
 wipe_partition_dd() {
     local part="$1"
     local seek_bytes=$((1024+1024))  # alignment + superblock
@@ -22,11 +26,13 @@ wipe_partition_dd() {
     # skip superblock, to keep label in the case of interruption; may take a longer time
     dd bs=1M if=/dev/urandom iflag=fullblock oflag=direct oflag=seek_bytes seek=${seek_bytes} of=${part} status=progress
     sync
+    udevadm settle
     return 0
 }
 
 # wipe based on commands rm and fstrim
 #   assumption: the disk supports the ATA TRIM command
+#   in the case of wear leveling, it does not guarantee strict privacy
 wipe_partition_fstrim() {
     local part="$1"
     local mnt_point="/tmp/mnt"
@@ -45,7 +51,7 @@ wipe_partition_fstrim() {
     return 0
 }
 
-factory_reset_wipe1() {
+factory_reset_wipe_dd() {
     local data_part="$1"
     local  etc_part="$2"
     local ret=0
@@ -56,7 +62,7 @@ factory_reset_wipe1() {
     return ${ret}
 }
 
-factory_reset_wipe2() {
+factory_reset_wipe_fstrim() {
     local data_part="$1"
     local  etc_part="$2"
     local ret=0
@@ -72,10 +78,10 @@ factory_reset_wipe_custom() {
 
     if [ ! -x ${custom_wipe} ]; then
         msg "ERROR: custom wipe \"${custom_wipe}\" not found or executable; abort..."
-        return 1
+        return 2
     fi
     msg "Running custom wipe ${custom_wipe}..."
-    ${custom_wipe} ${data_part} ${etc_part}
+    ${custom_wipe}
     if [ $? -ne 0 ]; then
         msg "ERROR: custom wipe \"${custom_wipe}\" failed; abort..."
         return 1
@@ -89,7 +95,7 @@ factory_reset_run() {
     local etc_part=""
     local ret=0
 
-    factory_reset_mode=$(fw_printenv ${ICS_DM_TRIGGER_FACTORY_RESET_VAR} | cut -d'=' -f2)
+    factory_reset_mode=$(fw_printenv ${FACTORY_RESET_VAR} | cut -d'=' -f2)
     if [ -z "${factory_reset_mode}" ] || [ ${factory_reset_mode} -eq 0 ]; then
         return  # no factory reset triggered; normal boot
     fi
@@ -101,11 +107,17 @@ factory_reset_run() {
 
     case ${factory_reset_mode} in
         1) ;;  # no wipe
-        2) factory_reset_wipe1       "${data_part}" "${etc_part}" || ret=$?;;
-        3) factory_reset_wipe2       "${data_part}" "${etc_part}" || ret=$?;;
-        4) factory_reset_wipe_custom "${data_part}" "${etc_part}" || ret=$?;;
+        2) factory_reset_wipe_dd "${data_part}" "${etc_part}"
+           ret=$?
+           ;;
+        3) factory_reset_wipe_fstrim "${data_part}" "${etc_part}"
+           ret=$?
+           ;;
+        4) factory_reset_wipe_custom
+           ret=$?
+           ;;
         *) msg "ERROR: factory reset mode ${factory_reset_mode} not supported; abort..."
-           ret=1
+           ret=2
            ;;
     esac
 
@@ -118,7 +130,10 @@ factory_reset_run() {
     # remove factory reset trigger at this point
     # interrupted factory reset will be replayed
     # this causes a new udev event regarding (new) partitions sent by the kernel; the reboot below handles this
-    set_bootloader_env_var ${ICS_DM_TRIGGER_FACTORY_RESET_VAR}
+    set_bootloader_env_var ${FACTORY_RESET_VAR}
+
+    # set return status
+    set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR} ${ret}
 
     # get into normal startup
     msg "Rebooting system..."

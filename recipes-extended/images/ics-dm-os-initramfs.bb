@@ -14,10 +14,6 @@ RESIZE_DATA_PACKAGES = "\
     parted \
 "
 
-# select dd from coreutils not busybox
-ALTERNATIVE_PRIORITY_coreutils = "40"
-ALTERNATIVE_PRIORITY_coreutils[dd] = "100"
-
 PACKAGE_INSTALL = "\
     base-passwd \
     ics-dm-os-initramfs-scripts \

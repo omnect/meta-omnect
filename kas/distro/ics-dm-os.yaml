@@ -67,9 +67,6 @@ env:
   # (plain) password of ics-dm user
   ICS_DM_USER_PASSWORD: ""
 
-  # factory reset: directory containing (optional) customer wipe script custom-wipe
-  FACTORY_RESET_CUSTOM_WIPE_DIR: ""
-
 local_conf_header:
   meta-ics-dm_distro_ics-dm-os: |
     # For more options have a look into "poky/meta-poky/conf/local.conf.sample" resp.
