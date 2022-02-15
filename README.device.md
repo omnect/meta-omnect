@@ -1,11 +1,17 @@
-# bsp features
-| device | wifi | bluetooth | rtc | tpm | gpt partition | pxe boot | flash mode | sdcard boot | emmc boot | fspi boot | secure boot |
-|-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| raspberrypi4-64 | x | x | - | x | x | x | x | x | - | - | - |
-| raspberrypi3 | x | x | - | x | ? | ? | ? | x | - | - | - |
-| phyboard-polis-imx8mm-4 | x | x | x | x | ? | ? | ? | x | ? |? | ? |
+# BSP Features
+| device |  wifi | bluetooth | rtc | tpm | gpt partition | pxe boot | flash mode | sdcard boot | uart (uboot + linux) | PoR detect |
+|-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| [raspberrypi4-64](https://www.raspberrypi.org/) |  x | x | o? | o¹ | x | x | x | x | x | x |
+| [raspberrypi3](https://www.raspberrypi.org/) |  x | x | o? | o¹ | ? | ? | ? | x | x | ?
+| [phyboard-polis-imx8mm-4](https://www.phytec.eu/product-eu/single-board-computer/phyboard-polis/) |  x | x | x | x | ? | ? | ? | x | x | ? |
 
-# todo phyboard-polis-imx8mm-4
- - check if DISTRO_FEATURE "resize-data" works if u-boot is in fspi, and handle
-   it accordingly if it doesn't
- - enable choosing between lwb firmware: etsi, fcc, jp
+| | |
+|-|-:|
+|x| supported |
+|o| optional with extra hardware |
+|?| untested |
+|-| no |
+
+| | |
+|-|-:|
+|¹|  SLB9670 TPM2.0|
