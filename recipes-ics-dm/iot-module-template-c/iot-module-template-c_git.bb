@@ -7,10 +7,9 @@ LIC_FILES_CHKSUM="\
 
 FILESEXTRAPATHS:prepend := "${LAYERDIR_ics_dm}/files:"
 
-# version 0.2.2
-GITREV = "d08ead8831ffdeec8687eb5235148cbb20f93924"
+
 # TODO change to https uri when public
-REPO_URI = "git://git@github.com/ICS-DeviceManagement/iot-module-template.git;protocol=ssh;branch=main;rev=${GITREV}"
+REPO_URI = "git://git@github.com/ICS-DeviceManagement/iot-module-template-c.git;protocol=ssh;nobranch=1;tag=0.2.2"
 SRC_URI = " \
   ${REPO_URI} \
   file://iot-identity-service-keyd.template.toml \

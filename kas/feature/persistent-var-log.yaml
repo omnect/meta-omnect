@@ -5,4 +5,4 @@ header:
 
 local_conf_header:
   meta-ics-dm_feature_persistent-var-log: |
-    DISTRO_FEATURES_append = " persistent-var-log"
+    DISTRO_FEATURES:append = " persistent-var-log"

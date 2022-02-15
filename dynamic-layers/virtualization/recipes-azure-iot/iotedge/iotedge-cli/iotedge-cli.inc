@@ -1,3 +1,7 @@
+# overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
+LICENSE = "MIT"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
+
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "file://iotedge-cli_1.2.0.patch"

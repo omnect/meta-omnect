@@ -5,4 +5,4 @@ header:
 
 local_conf_header:
   meta-ics-dm_feature_tpm: |
-    DISTRO_FEATURES_append = " tpm"
+    MACHINE_FEATURES:append = " tpm2"

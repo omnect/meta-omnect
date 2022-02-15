@@ -16,13 +16,6 @@ B = "${S}"
 
 DEPENDS += "openssl rust-bindgen-native rust-cbindgen-native"
 
-PACKAGECONFIG ??= "\
-    ${@bb.utils.contains('DISTRO_FEATURES', 'ics-dm-demo', 'ics-dm-demo', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'tpm', 'tpm', '', d)} \
-"
-PACKAGECONFIG[ics-dm-demo] = ""
-PACKAGECONFIG[tpm] = ""
-
 CARGO_DISABLE_BITBAKE_VENDORING = "1"
 RUSTFLAGS += "-C panic=unwind"
 
