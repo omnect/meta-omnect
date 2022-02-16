@@ -1,17 +1,14 @@
 #!/bin/sh
 
 #
-#  Setup systemd trigger file used by factory reset, in case of demo-portal user and group exists:
-#      /run/factory-reset/systemd-trigger
-#
-#  TODO: get rid of hard coded user, group demo-portal
+#  Setup systemd trigger file used by factory reset
 #
 
 factory_reset_setup_enabled() {
     return 0
 }
 
-# get ID field from /etc/passwd or /etc/group file
+# get ID field from group file
 get_id() {
     local name="$1"
     local file="$2"
@@ -24,22 +21,21 @@ get_id() {
 
 factory_reset_setup_run() {
     local tmp_dir="${ROOTFS_DIR}/run/factory-reset"  # /run is available in the INITRAMFS
-    local demo_portal_user=""
-    local demo_portal_group=""
+    local trigger_file="${tmp_dir}/systemd-trigger"
+    local factory_reset_group=""
 
-    msg "ics-dm-os initramfs factory reset setup"
-
-    # get user ID
-    demo_portal_user=$(get_id demo-portal ${ROOTFS_DIR}/etc/passwd)
-    if [ -z "${demo_portal_user}" ]; then return; fi
+    msg "ics-dm-os initramfs setup systemd trigger file(s)"
 
     # get group ID
-    demo_portal_group=$(get_id demo-portal ${ROOTFS_DIR}/etc/group)
-    if [ -z "${demo_portal_group}" ]; then return; fi
+    factory_reset_group=$(get_id factory_reset ${ROOTFS_DIR}/etc/group)
+    if [ -z "${factory_reset_group}" ]; then
+        msg "ERROR: group factory_reset not found in rootfs"
+        return
+    fi
 
     # create systemd trigger file
     mkdir -p ${tmp_dir}
-    touch ${tmp_dir}/systemd-trigger
-    chown -v ${demo_portal_user}:${demo_portal_group} ${tmp_dir}/systemd-trigger
-    chmod -v 600 ${tmp_dir}/systemd-trigger
+    touch ${trigger_file}
+    chown -v root:${factory_reset_group} ${trigger_file}
+    chmod -v 660 ${trigger_file}
 }

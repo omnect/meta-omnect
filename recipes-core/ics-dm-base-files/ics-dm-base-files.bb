@@ -44,3 +44,5 @@ do_install() {
     echo "z /mnt/cert/ca 0755 root root -"      >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
     echo "z /mnt/cert/priv 0755 root root -"    >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
 }
+
+inherit factory_reset_group
