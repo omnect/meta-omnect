@@ -24,8 +24,6 @@ factory_reset_setup_run() {
     local trigger_file="${tmp_dir}/systemd-trigger"
     local factory_reset_group=""
 
-    msg "ics-dm-os initramfs setup systemd trigger file(s)"
-
     # get group ID
     factory_reset_group=$(get_id factory_reset ${ROOTFS_DIR}/etc/group)
     if [ -z "${factory_reset_group}" ]; then
