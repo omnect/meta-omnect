@@ -93,7 +93,8 @@ factory_reset_wipe_custom() {
 factory_reset_run() {
     local data_part=""
     local etc_part=""
-    local ret=0
+    local ret1
+    local ret2
 
     factory_reset_mode=$(fw_printenv ${FACTORY_RESET_VAR} | cut -d'=' -f2)
     if [ -z "${factory_reset_mode}" ] || [ ${factory_reset_mode} -eq 0 ]; then
@@ -106,23 +107,24 @@ factory_reset_run() {
     msg "Running Factory Reset [mode=$factory_reset_mode]..."
 
     case ${factory_reset_mode} in
-        1) ;;  # no wipe
+        1) ret2=0; ret1=0  # no wipe
+           ;;
         2) factory_reset_wipe_dd "${data_part}" "${etc_part}"
-           ret=$?
+           ret2=$?; ret1=0
            ;;
         3) factory_reset_wipe_fstrim "${data_part}" "${etc_part}"
-           ret=$?
+           ret2=$?; ret1=0
            ;;
         4) factory_reset_wipe_custom
-           ret=$?
+           ret2=$?; ret1=0
            ;;
         *) msg "ERROR: factory reset mode ${factory_reset_mode} not supported; abort..."
-           ret=2
+           ret2="-"; ret1=1
            ;;
     esac
 
     # no severe errors; enforce mkfs
-    if [ ${ret} -eq 0 ]; then
+    if [ ${ret1} -eq 0 ] && [ ${ret2} -eq 0 ]; then
         check_ext4_fs "data" "${data_part}" 1
         check_ext4_fs "etc"  "${etc_part}"  1
     fi
@@ -133,7 +135,7 @@ factory_reset_run() {
     set_bootloader_env_var ${FACTORY_RESET_VAR}
 
     # set return status
-    set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR} ${ret}
+    set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR} "${ret1}:${ret2}"
 
     # get into normal startup
     msg "Rebooting system..."
