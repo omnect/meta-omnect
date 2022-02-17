@@ -10,12 +10,7 @@ inherit ics_dm_initramfs
 IMAGE_NAME = "${ICS_DM_INITRAMFS_IMAGE_NAME}"
 
 RESIZE_DATA_PACKAGES = "\
-    e2fsprogs-e2fsck \
-    e2fsprogs-mke2fs \
     e2fsprogs-resize2fs \
-    e2fsprogs-tune2fs \
-    libubootenv \
-    libubootenv-bin \
     parted \
 "
 
@@ -25,6 +20,12 @@ PACKAGE_INSTALL = "\
     initramfs-framework-base \
     initramfs-module-udev \
     udev \
+    libubootenv \
+    libubootenv-bin \
+    e2fsprogs-e2fsck \
+    e2fsprogs-mke2fs \
+    e2fsprogs-tune2fs \
+    coreutils \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \

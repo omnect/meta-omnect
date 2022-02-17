@@ -1,3 +1,7 @@
+# This file is copied from https://git.phytec.de/meta-phytec/tree/dynamic-layers/fsl-bsp-release/recipes-bsp/imx-mkimage?h=dunfell.
+# We can not use the file from meta-phytec's dunfell branch directly, since the layer "fsl-bsp-release" doesn't exist for
+# dunfell.
+
 # Signs imx-boot images with NXP's CST tool
 
 inherit hab

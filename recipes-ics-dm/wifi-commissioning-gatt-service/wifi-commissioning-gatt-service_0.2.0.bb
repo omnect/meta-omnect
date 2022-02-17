@@ -6,12 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get wifi-commissioning-gatt-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.1.4"
+# SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.2.0"
 SRC_URI += "git://git@github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "4ba03116e4620328ecda6f85c32b2d4964de384f"
+SRCREV = "ce690b2c34bbb87ccf9ecf30467d8f9a9c759365"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV_append = ".AUTOINC+4ba03116e4"
+PV_append = ".AUTOINC+ce690b2c34"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -100,6 +100,7 @@ SRC_URI += " \
     crate://crates.io/regex/1.5.4 \
     crate://crates.io/rustc-demangle/0.1.21 \
     crate://crates.io/ryu/1.0.5 \
+    crate://crates.io/sd-notify/0.3.0 \
     crate://crates.io/serde/1.0.130 \
     crate://crates.io/serde_derive/1.0.130 \
     crate://crates.io/serde_json/1.0.68 \
@@ -136,11 +137,12 @@ SRC_URI += " \
 
 # FIXME: update generateme with the real MD5 of the license file
 LIC_FILES_CHKSUM = " \
-    "
+    file://MIT OR Apache-2.0;md5=generateme \
+"
 
 SUMMARY = "wifi-commissioning-gatt-service"
 HOMEPAGE = "git@github.com:ICS-DeviceManagement/wifi-commissioning-gatt-service.git"
-LICENSE = "CLOSED"
+LICENSE = "MIT OR Apache-2.0"
 
 # includes this file if it exists but does not fail
 # this is useful for anything you may want to override from

@@ -1,0 +1,10 @@
+# kas config file
+
+header:
+  version: 11
+
+local_conf_header:
+  meta-ics-dm_example_iot_module-template-c: |
+    CORE_IMAGE_EXTRA_INSTALL += "\
+    iot-module-template-c \
+    "

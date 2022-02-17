@@ -5,7 +5,6 @@ LIC_FILES_CHKSUM="\
   file://LICENSE-APACHE;md5=650e893673eb59696f3d4ee64f6d2357 \
 "
 
-
 # version 0.6.1
 GITREV = "53d819c418f71a8f4dc80cfc6a9746226edddbbe"
 # TODO change to https uri when public
@@ -26,15 +25,14 @@ inherit cmake features_check overwrite_src_uri
 
 PACKAGECONFIG ??="\
   ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge', '', d)}\
-  ${@bb.utils.contains('DISTRO_FEATURES', 'tpm', 'tpm', '', d)}\
 "
 PACKAGECONFIG[iotedge] = "-DIOTEDGE:BOOL=ON,-DIOTEDGE:BOOL=OFF"
-PACKAGECONFIG[tpm] = "-DTPM:BOOL=ON,-DTPM:BOOL=OFF"
 
 EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
 EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
 EXTRA_OECMAKE += "-DDEVICE:BOOL=ON"
 EXTRA_OECMAKE += "-DTPM_SIMULATOR:BOOL=OFF"
+EXTRA_OECMAKE += "-DTPM:BOOL=ON"
 
 inherit useradd
 
@@ -70,3 +68,4 @@ FILES_${PN} += "\
   ${systemd_system_unitdir} \
 "
 REQUIRED_DISTRO_FEATURES = "systemd"
+REQUIRED_MACHINE_FEATURES = "tpm2"

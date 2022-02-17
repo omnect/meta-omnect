@@ -5,8 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [> 3.1.13.16230425] Q1 2022
+## [> 3.1.13.16477381] Q1 2022
 - initramfs: create systemd trigger file for factory reset
+
+## [> 3.1.13.16230425] Q1 2022
+- factory reset: add support for wipe modes
+
+## [> 3.1.13.16198777] Q1 2022
+- `wifi-commissioning-gatt-service`:
+  - version bump to 0.2.0
+  - switch systemd service type to `notify`
+
+## [> 3.1.13.16182168] Q1 2022
+- `iot-module-template-rs` version bump to 0.2.1
+
+## [> 3.1.13.15533182] Q1 2022
+- imx-boot-phytec: documented source of files
+- kas:
+  - consolidated kas/feature/ics-dm-common.yaml -> kas/distro/ics-dm-os.yaml
+  - moved kas/feature/ics-dm-demo.yaml -> kas/example/enrollment.yaml
+  - kas/feature/iotedge.yaml doesn't implicitly include kas/feature/iot.yaml
+    anymore
+  - split kas/feature/iot.yaml -> kas/example/{iot-module-template-c,iot-module-template-rs}.yaml
+  - moved kas/feature/wifi-commissioning.yaml -> kas/example/wifi-commissioning.yaml
+- removed DISTRO_FEATURE `tpm`; we use poky's MACHINE_FEATURE `tpm2` instead
+- renamed DISTRO_FEATURE `ics-dm-demo` -> `enrollment`
+- enrollment: removed PACKAGECONFIG `tpm` switch; set
+  REQUIRED_MACHINE_FEATURES="tpm2"
+- iotedge-cli: overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake
+  generated recipe
+- iotedge-daemon:
+  - removed PACKAGECONFIG `ics-dm-demo`
+  - overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
+- swupdate: consolidated adu-key-pub.bb
+- iot-module-template-rs:
+  - overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
+  - version bump to 0.2.0
+- wifi-commissioning-gatt-service:
+  - overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
+  - version bump to 0.1.5
+- moved iot-module-template -> iot-module-template-c
 
 ## [> 3.1.13.15239607] Q1 2022
 - `iot-hub-device-update`:

@@ -3,42 +3,139 @@
 #
 # handle triggered factory reset
 #
-#  NOTE: The current implementation does not provide a secure factory reset, because the data are _NOT_ wiped.
-#  TODO: Implement higher levels of privacy options (e.g.; ICS_DM_TRIGGER_FACTORY_RESET_VAR == 2).
-#
 
-# name of u-boot environment variable used to trigger factory reset
-ICS_DM_TRIGGER_FACTORY_RESET_VAR="factory-reset"
+# name of u-boot environment variable used for factory reset (trigger and wipe mode)
+FACTORY_RESET_VAR="factory-reset"
+
+# u-boot environment variable used to return factory reset status
+FACTORY_RESET_STATUS_VAR="factory-reset-status"
 
 # called by generic INITRAMFS
 factory_reset_enabled() {
-    local factory_reset=""
+    return 0  # enable main entry point
+}
 
-    factory_reset=$(get_bootloader_env_var ${ICS_DM_TRIGGER_FACTORY_RESET_VAR})
-    if [ "${factory_reset}" == "1" ]; then
-        msg "Triggered Factory Reset!"
-        return 0  # enable main entry point
+# wipe a partition using dd command
+#   in the case of wear leveling, it does not guarantee strict privacy
+wipe_partition_dd() {
+    local part="$1"
+    local seek_bytes=$((1024+1024))  # alignment + superblock
+
+    if [ -z "${part}"  ]; then return 1; fi
+
+    # skip superblock, to keep label in the case of interruption; may take a longer time
+    dd bs=1M if=/dev/urandom iflag=fullblock oflag=direct oflag=seek_bytes seek=${seek_bytes} of=${part} status=progress
+    sync
+    udevadm settle
+    return 0
+}
+
+# wipe based on commands rm and fstrim
+#   assumption: the disk supports the ATA TRIM command
+#   in the case of wear leveling, it does not guarantee strict privacy
+wipe_partition_fstrim() {
+    local part="$1"
+    local mnt_point="/tmp/mnt"
+
+    if [ -z "${part}"  ]; then return 1; fi
+
+    run_cmd mkdir -p ${mnt_point}
+    run_cmd mount ${part} ${mnt_point} || return 0  # abort in case of failed mount
+        cd ${mnt_point} || return 1
+            # 1st: remove all
+            run_cmd /bin/rm -rf *
+        cd - >/dev/null
+        # 2nd: tell the disk the removed blocks
+        run_cmd fstrim -v ${mnt_point}
+    run_cmd umount ${mnt_point}
+    return 0
+}
+
+factory_reset_wipe_dd() {
+    local data_part="$1"
+    local  etc_part="$2"
+    local ret=0
+
+    msg "wipe method 1"
+    wipe_partition_dd "${etc_part}"  || ret=$?
+    wipe_partition_dd "${data_part}" || ret=$?
+    return ${ret}
+}
+
+factory_reset_wipe_fstrim() {
+    local data_part="$1"
+    local  etc_part="$2"
+    local ret=0
+
+    msg "wipe method 2"
+    wipe_partition_fstrim "${etc_part}"  || ret=$?
+    wipe_partition_fstrim "${data_part}" || ret=$?
+    return ${ret}
+}
+
+factory_reset_wipe_custom() {
+    local custom_wipe="/opt/factory_reset/custom-wipe"
+
+    if [ ! -x ${custom_wipe} ]; then
+        msg "ERROR: custom wipe \"${custom_wipe}\" not found or executable; abort..."
+        return 2
     fi
-
-    return 1  # no factory reset triggered; normal boot; main entry point _NOT_ called
+    msg "Running custom wipe ${custom_wipe}..."
+    ${custom_wipe}
+    if [ $? -ne 0 ]; then
+        msg "ERROR: custom wipe \"${custom_wipe}\" failed; abort..."
+        return 1
+    fi
+    return 0
 }
 
 # main entry point
 factory_reset_run() {
     local data_part=""
-    local  etc_part=""
+    local etc_part=""
+    local ret1
+    local ret2
+
+    factory_reset_mode=$(fw_printenv ${FACTORY_RESET_VAR} | cut -d'=' -f2)
+    if [ -z "${factory_reset_mode}" ] || [ ${factory_reset_mode} -eq 0 ]; then
+        return  # no factory reset triggered; normal boot
+    fi
 
     data_part=$(get_block_device data)
      etc_part=$(get_block_device  etc)
 
-    msg "Running Factory Reset..."
+    msg "Running Factory Reset [mode=$factory_reset_mode]..."
 
-    # enforce mkfs
-    check_ext4_fs "data" "${data_part}" 1
-    check_ext4_fs "etc"  "${etc_part}"  1
+    case ${factory_reset_mode} in
+        1) ret2=0; ret1=0  # no wipe
+           ;;
+        2) factory_reset_wipe_dd "${data_part}" "${etc_part}"
+           ret2=$?; ret1=0
+           ;;
+        3) factory_reset_wipe_fstrim "${data_part}" "${etc_part}"
+           ret2=$?; ret1=0
+           ;;
+        4) factory_reset_wipe_custom
+           ret2=$?; ret1=0
+           ;;
+        *) msg "ERROR: factory reset mode ${factory_reset_mode} not supported; abort..."
+           ret2="-"; ret1=1
+           ;;
+    esac
 
-    # remove factory reset trigger at this point; interrupted factory reset will be replayed
-    set_bootloader_env_var ${ICS_DM_TRIGGER_FACTORY_RESET_VAR}
+    # no severe errors; enforce mkfs
+    if [ ${ret1} -eq 0 ] && [ ${ret2} -eq 0 ]; then
+        check_ext4_fs "data" "${data_part}" 1
+        check_ext4_fs "etc"  "${etc_part}"  1
+    fi
+
+    # remove factory reset trigger at this point
+    # interrupted factory reset will be replayed
+    # this causes a new udev event regarding (new) partitions sent by the kernel; the reboot below handles this
+    set_bootloader_env_var ${FACTORY_RESET_VAR}
+
+    # set return status
+    set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR} "${ret1}:${ret2}"
 
     # get into normal startup
     msg "Rebooting system..."
