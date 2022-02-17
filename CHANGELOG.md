@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.13.16230425] Q1 2022
+- factory reset: add support for wipe modes
+
 ## [> 3.1.13.16198777] Q1 2022
 - `wifi-commissioning-gatt-service`:
   - version bump to 0.2.0
