@@ -1,0 +1,39 @@
+#!/bin/sh
+
+#
+#  Setup systemd trigger file used by factory reset
+#
+
+factory_reset_setup_enabled() {
+    return 0
+}
+
+# get ID field from group file
+get_id() {
+    local name="$1"
+    local file="$2"
+    local line=""
+
+    line=$(grep -E -e "^${name}:" ${file})
+    if [ -z "${line}" ]; then echo ""; return; fi
+    echo $line | awk -F: '{print $3}'
+}
+
+factory_reset_setup_run() {
+    local tmp_dir="${ROOTFS_DIR}/run/factory-reset"  # /run is available in the INITRAMFS
+    local trigger_file="${tmp_dir}/systemd-trigger"
+    local factory_reset_group=""
+
+    # get group ID
+    factory_reset_group=$(get_id factory_reset ${ROOTFS_DIR}/etc/group)
+    if [ -z "${factory_reset_group}" ]; then
+        msg "ERROR: group factory_reset not found in rootfs"
+        return
+    fi
+
+    # create systemd trigger file
+    mkdir -p ${tmp_dir}
+    touch ${trigger_file}
+    chown -v root:${factory_reset_group} ${trigger_file}
+    chmod -v 660 ${trigger_file}
+}
