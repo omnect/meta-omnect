@@ -3,6 +3,7 @@ FILESEXTRAPATHS:prepend := "${LAYERDIR_ics_dm}/files:"
 SRC_URI += "\
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
+  file://rust_1.54.patch;patchdir=${WORKDIR} \
 "
 
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe

@@ -13,6 +13,6 @@ repos:
       .: 0
   ext/openembedded-core:
     url: "https://github.com/openembedded/openembedded-core.git"
-    refspec: yocto-3.1.13
+    refspec: yocto-3.1.14
     layers:
       meta:

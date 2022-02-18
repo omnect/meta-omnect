@@ -6,7 +6,8 @@ RUSTFLAGS += "--cap-lints allow"
 
 # override rolling SRCREV  "relase/1.2" of iot-identity-service dependency
 # with static rev
-iot_identity_service_rev = "8fc413a9910588b2949eca8ad1ea28246c066f08"
+# aka 1.2.5:
+iot_identity_service_rev = "fb2770eb60f7d87f4f6c6dc1ea51bdff1bf74e1c"
 SRCREV_aziot-cert-common-http = "${iot_identity_service_rev}"
 SRCREV_aziot-certd-config = "${iot_identity_service_rev}"
 SRCREV_aziot-identity-common = "${iot_identity_service_rev}"
