@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [>= 3.1.14.x] Q1 2022
+- kas:
+  - poky: version bump to 3.1.14
+  - meta-openembedded: update to latest head of dunfell branch
+  - meta-swupdate: update to latest head of dunfell branch
+- iot-module-template-rs: version bump to 0.2.2
+- iot-identity-service: version bump to 1.2.5
+- iotedge: version bump to 1.2.7
+
 ## [> 3.1.13.16477381] Q1 2022
 - initramfs: create systemd trigger file for factory reset
 
