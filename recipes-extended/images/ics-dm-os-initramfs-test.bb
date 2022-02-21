@@ -25,7 +25,7 @@ PACKAGE_INSTALL = "\
 inherit ics_dm_user
 
 # enforce flash mode (see /init.d/87-flash_mode)
-ROOTFS_POSTPROCESS_COMMAND_append = " ics_dm_enforce_flash_mode;"
+ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_enforce_flash_mode;"
 ics_dm_enforce_flash_mode() {
     touch ${IMAGE_ROOTFS}/etc/enforce_flash_mode
 }

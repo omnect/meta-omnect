@@ -77,7 +77,7 @@ IMAGE_INSTALL += "${@check_for_devel_tools(d)}"
 # partition.
 # By this postprocess handling both get installed to rootA and are therefore
 # updatable via swupdate.
-ROOTFS_POSTPROCESS_COMMAND_append = " add_kernel_and_initramfs;"
+ROOTFS_POSTPROCESS_COMMAND:append = " add_kernel_and_initramfs;"
 add_kernel_and_initramfs() {
     kernel=$(readlink -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin)
     initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${ICS_DM_INITRAMFS_IMAGE_NAME}.${ICS_DM_INITRAMFS_FSTYPE})
@@ -87,7 +87,7 @@ add_kernel_and_initramfs() {
     ln -sf $(basename ${initramfs}) $D/boot/initramfs.${ICS_DM_INITRAMFS_FSTYPE}
 }
 
-ROOTFS_POSTPROCESS_COMMAND_append = " ics_dm_create_uboot_env_ff_img;"
+ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_create_uboot_env_ff_img;"
 ics_dm_create_uboot_env_ff_img() {
     dd if=/dev/zero bs=1024 count=${ICS_DM_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/ics-dm_uboot_env_ff.img
 }
@@ -104,7 +104,7 @@ ics_dm_create_uboot_env_ff_img() {
 # need a preexisting empty '/etc/machine-id' and thus delete it as late
 # as possible:
 # also we delete fstab, since mounting filesystems is handled in initramfs
-IMAGE_PREPROCESS_COMMAND_append = " remove_unwanted_files; adapt_cert_store; reproducible_final_image_task;"
+IMAGE_PREPROCESS_COMMAND:append = " remove_unwanted_files; adapt_cert_store; reproducible_final_image_task;"
 remove_unwanted_files() {
     rm -f ${IMAGE_ROOTFS}${sysconfdir}/machine-id
     rm -f ${IMAGE_ROOTFS}${sysconfdir}/fstab
