@@ -9,7 +9,7 @@ require azure-iot-sdk-c_git.bb
 
 EXTRA_OECMAKE += "-Duse_prov_client:BOOL=ON"
 
-do_install_append() {
+do_install:append() {
   cp -r ${S}/provisioning_service_client/inc/prov_service_client/* ${D}${includedir}/
   cp provisioning_service_client/libprovisioning_service_client.a ${D}${libdir}/
 }

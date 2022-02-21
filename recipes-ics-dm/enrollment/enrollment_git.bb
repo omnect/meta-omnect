@@ -14,7 +14,7 @@ SRC_URI = "${REPO_URI}"
 S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c-prov"
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
   ca-certificates \
   jq \
   iot-identity-service \
@@ -37,16 +37,16 @@ EXTRA_OECMAKE += "-DTPM:BOOL=ON"
 inherit useradd
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = " \
+GROUPADD_PARAM:${PN} = " \
   -r aziot; \
   -r enrollment; \
   -r tpm \
 "
-USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -g enrollment -G aziot,tpm enrollment"
+USERADD_PARAM:${PN} = "--no-create-home -r -s /bin/false -g enrollment -G aziot,tpm enrollment"
 
 inherit systemd
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${sysconfdir}/ics_dm
     chgrp enrollment ${D}${sysconfdir}/ics_dm
     chmod g+rw ${D}${sysconfdir}/ics_dm
@@ -62,8 +62,8 @@ do_install_append() {
     lnr ${D}${systemd_system_unitdir}/enrollment-patch-config-toml@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/enrollment-patch-config-toml@${ICS_DM_ETH0}.service
 }
 
-SYSTEMD_SERVICE_${PN} = "enrollment-config-apply.path enrollment.service"
-FILES_${PN} += "\
+SYSTEMD_SERVICE:${PN} = "enrollment-config-apply.path enrollment.service"
+FILES:${PN} += "\
   ${libdir}/tmpfiles.d/enrollment.conf \
   ${systemd_system_unitdir} \
 "

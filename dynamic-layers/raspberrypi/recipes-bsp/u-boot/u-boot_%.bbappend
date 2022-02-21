@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://rpi-always-set-fdt_addr-with-firmware-provided-FDT-address.patch \
@@ -7,7 +7,7 @@ SRC_URI += "\
 "
 
 # for rpi4, add support for ethernet bcmgenet (upstream patches)
-SRC_URI_append_raspberrypi4-64 = "\
+SRC_URI:append:raspberrypi4-64 = "\
     file://net-Add-support-for-Broadcom-GENETv5-Ethernet-controller.patch \
     file://net-bcmgenet-Don-t-set-ID_MODE_DIS-when-not-using-RGII.patch \
     file://bcmgenet-fix-DMA-buffer-management.patch \

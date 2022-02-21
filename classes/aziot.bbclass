@@ -1,7 +1,7 @@
 inherit useradd
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = " \
+GROUPADD_PARAM:${PN} = " \
   -r aziot; \
   -r aziotcs; \
   -r aziotid; \
@@ -10,14 +10,14 @@ GROUPADD_PARAM_${PN} = " \
   -r tpm; \
 "
 
-USERADD_PARAM_${PN} = " \
+USERADD_PARAM:${PN} = " \
   -r -g aziotcs -G aziot,aziotks -s /bin/false -d ${localstatedir}/lib/aziot/certd aziotcs; \
   -r -g aziotid -G aziot,aziotcs,aziotks,aziottpm -s /bin/false -d ${localstatedir}/lib/aziot/identityd aziotid; \
   -r -g aziotks -G aziot -s /bin/false -d ${localstatedir}/lib/aziot/keyd aziotks; \
   -r -g aziottpm -G aziot,tpm -s /bin/false -d ${localstatedir}/lib/aziot/tpmd aziottpm; \
 "
 
-do_install_prepend() {
+do_install:prepend() {
     install -d -m 0775 -g aziot ${D}${sysconfdir}/aziot
 
     install -d -m 0750 -g aziotcs ${D}${sysconfdir}/aziot/certd

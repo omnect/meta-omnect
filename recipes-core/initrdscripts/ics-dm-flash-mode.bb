@@ -2,7 +2,7 @@
 #  Provide dedicated initramfs script for flashing images
 #
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/ics-dm-os-initramfs:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/ics-dm-os-initramfs:"
 
 LICENSE = "MIT | Apache-2.0"
 
@@ -20,6 +20,6 @@ do_install() {
     sed -i 's/^ICS_DM_FLASH_MODE_ETH="eth0"/ICS_DM_FLASH_MODE_ETH="${ICS_DM_ETH0}"/' ${D}/init.d/87-flash_mode
 }
 
-FILES_${PN} = "\
+FILES:${PN} = "\
     /init.d/87-flash_mode \
 "

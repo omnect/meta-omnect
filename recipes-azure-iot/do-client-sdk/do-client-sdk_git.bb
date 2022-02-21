@@ -1,5 +1,5 @@
 # Build and install Delivery Optimization Client and SDK.
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 DESCRIPTION = "Delivery Optimization Client"
 HOMEPAGE = "https://github.com/microsoft/do-client.git"

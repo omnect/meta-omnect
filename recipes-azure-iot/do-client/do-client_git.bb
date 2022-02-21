@@ -1,5 +1,5 @@
 # Build and install Delivery Optimization Client and SDK.
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 DESCRIPTION = "Delivery Optimization Client"
 HOMEPAGE = "https://github.com/microsoft/do-client.git"
@@ -22,14 +22,14 @@ EXTRA_OECMAKE += "-DDO_BUILD_TESTS=OFF"
 EXTRA_OECMAKE += "-DDO_PROXY_SUPPORT=ON"
 EXTRA_OECMAKE += "-DDO_INCLUDE_AGENT=ON"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/do-client.service ${D}${systemd_system_unitdir}
 }
 
-SYSTEMD_SERVICE_${PN} = "do-client.service"
-FILES_${PN} += "${systemd_system_unitdir}/do-client.service"
+SYSTEMD_SERVICE:${PN} = "do-client.service"
+FILES:${PN} += "${systemd_system_unitdir}/do-client.service"
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = "-r do;-r adu"
-USERADD_PARAM_${PN} = "--no-create-home -r -s /bin/false -G adu -g do do"
+GROUPADD_PARAM:${PN} = "-r do;-r adu"
+USERADD_PARAM:${PN} = "--no-create-home -r -s /bin/false -G adu -g do do"

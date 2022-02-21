@@ -6,8 +6,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 CARGO_SRC_DIR = "edgelet/aziot-edged"
 
 DEPENDS += "openssl virtual/docker"
-RDEPENDS_${PN} += "docker iot-identity-service"
-INSANE_SKIP_${PN} += "dev-deps"
+RDEPENDS:${PN} += "docker iot-identity-service"
+INSANE_SKIP:${PN} += "dev-deps"
 
 export OPENSSL_DIR = "${STAGING_EXECPREFIXDIR}"
 export IOTEDGE_CONNECT_MANAGEMENT_URI = "unix:///var/run/iotedge/mgmt.sock"
@@ -53,20 +53,20 @@ do_install () {
     install -m 0644 ${S}/edgelet/contrib/systemd/debian/aziot-edged.mgmt.socket  ${D}${systemd_system_unitdir}/aziot-edged.mgmt.socket
 }
 
-USERADD_PARAM_${PN} += "-r -u 15580 -g iotedge -G aziot,aziotcs,aziotid,aziotks,docker,systemd-journal -s /bin/false -d ${localstatedir}/lib/iotedge iotedge;"
+USERADD_PARAM:${PN} += "-r -u 15580 -g iotedge -G aziot,aziotcs,aziotid,aziotks,docker,systemd-journal -s /bin/false -d ${localstatedir}/lib/iotedge iotedge;"
 
-GROUPADD_PARAM_${PN} += " \
+GROUPADD_PARAM:${PN} += " \
     -r docker; \
     -r -g 15580 iotedge; \
     -r systemd-journal; \
 "
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${libdir}/tmpfiles.d/aziot-edged.conf \
     ${localstatedir}/lib/aziot/edged \
     ${systemd_system_unitdir}/* \
 "
 
-SYSTEMD_SERVICE_${PN} = "aziot-edged.service aziot-edged.mgmt.socket aziot-edged.workload.socket"
+SYSTEMD_SERVICE:${PN} = "aziot-edged.service aziot-edged.mgmt.socket aziot-edged.workload.socket"
 
 REQUIRED_DISTRO_FEATURES = "iotedge"

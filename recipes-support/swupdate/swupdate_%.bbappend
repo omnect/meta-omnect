@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_append := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:append := "${THISDIR}/${PN}:"
 
 DEPENDS += "openssl-native"
 
@@ -31,11 +31,11 @@ do_install:append() {
   install -m 0444 public.pem -D ${D}${datadir}/swupdate/public.pem
 }
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${datadir}/swupdate/public.pem \
     ${sysconfdir}/hwrevision \
     ${sysconfdir}/sw-versions \
 "
 
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = "-r adu"
+GROUPADD_PARAM:${PN} = "-r adu"
