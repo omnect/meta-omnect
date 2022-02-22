@@ -13,7 +13,7 @@ This yocto meta layer provides the poky based ICS_DeviceManagement distribution 
     - `iot-hub-device-update` is provisioned as module identity via `iot-identity-service`
     - first boot script `/usr/bin/ics_dm_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-ics-dm/recipes-core/systemd/systemd/ics_dm_first_boot.sh`
     - factory reset via `u-boot` environment variable `factory-reset`
-      - **note**: This feature optionally provides a limited level of data privacy. Please see section *Factory Reset*, below. 
+      - **note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset), below. 
 
 ### `DISTRO_FEATURES`
 `ics-dm-os` depends on [poky](https://www.yoctoproject.org/software-item/poky/).
@@ -258,7 +258,7 @@ sudo reboot
 ```
 **Note:** The u-boot environment variable `data-mount-options` should be removed at the end of the debugging session.
 
-**Note:** Sync mount can damage the flash disk. Do not use it in operational mode.
+**Note:** It is not advised to use sync mount in operational mode.
 
 # License
 
