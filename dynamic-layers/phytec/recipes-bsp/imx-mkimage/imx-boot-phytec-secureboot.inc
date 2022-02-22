@@ -6,10 +6,10 @@
 
 inherit hab
 
-SRC_URI_append_secureboot=" \
+SRC_URI:append_secureboot=" \
                           file://csf_spl_template.txt \
                           file://csf_fit_template.txt"
-DEPENDS_append_secureboot = " nxp-cst-native phytec-dev-ca"
+DEPENDS:append_secureboot = " nxp-cst-native phytec-dev-ca"
 
 CSF_TEMPLATE_PATH_SPL="${WORKDIR}/csf_spl_template.txt"
 CSF_TEMPLATE_PATH_FIT="${WORKDIR}/csf_fit_template.txt"
@@ -187,7 +187,7 @@ python do_sign() {
         bb.note("Signing skipped - non secureboot build")
 }
 
-do_deploy_append_secureboot() {
+do_deploy:append_secureboot() {
  for target in ${IMXBOOT_TARGETS}; do
         #Use first "target" as IMAGE_IMXBOOT_TARGET
         if [ "${IMAGE_IMXBOOT_TARGET}" = "" ]; then

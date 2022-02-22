@@ -12,7 +12,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 SECTION = "BSP"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
 SRC_URI += "file://0002-Fix-size-calculation-in-HAB-FIT-shellscripts.patch "
 
@@ -25,7 +25,7 @@ DEPENDS += " \
     imx-atf \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
 "
-DEPENDS_append_mx8m = " u-boot-mkimage-native dtc-native"
+DEPENDS:append:mx8m = " u-boot-mkimage-native dtc-native"
 BOOT_NAME = "imx-boot"
 PROVIDES = "${BOOT_NAME}"
 
@@ -69,7 +69,7 @@ ATF_MACHINE_NAME_mx8mp = "bl31-imx8mp.bin"
 ATF_MACHINE_NAME_mx8phantomdxl = "bl31-imx8qx.bin"
 ATF_MACHINE_NAME_mx8dxl = "bl31-imx8dxl.bin"
 ATF_MACHINE_NAME_mx8dx = "bl31-imx8dx.bin"
-ATF_MACHINE_NAME_append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
+ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
 TOOLS_NAME ?= "mkimage_imx8"
 
@@ -276,6 +276,6 @@ do_deploy() {
 addtask deploy before do_build after do_compile
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-FILES_${PN} = "/boot"
+FILES:${PN} = "/boot"
 
 COMPATIBLE_MACHINE = "(mx8)"
