@@ -233,7 +233,7 @@ There is also the custom wipe mode. This mode provides the possibility to addres
 In the case of custom wipe, the factory reset (initramfs context) calls `/opt/factory_reset/custom-wipe` before re-creating the filesystems inside the partitions `etc` and `data`.
 In order to establish the custom wipe mode, a Yocto recipe `ics-dm-os-initramfs-scripts.bbappend` has to be supplied, which has to install the required utilities.
 
-The success status of the factory reset is returned by the u-boot environment variable `factory-reset-status`.
+The status of the factory reset is returned by the u-boot environment variable `factory-reset-status`.
 It has the following format:
 ```bnf
 <factory reset status> ::= <main status>':'<subordinated status>
@@ -242,7 +242,7 @@ It has the following format:
 ```
 
 The overall *factory reset status* consists of two parts:
-- *main status*: general processing state; e.g., wipe mode supported
+- *main status*: general processing state; 0 -> wipe mode supported; 1 -> wipe mode unsupported
 - *subordinated status*: execution exit status, in case of *main status* == 0 (success)
 
 In the case of successfully performed factory reset, the u-boot environment variable `factory-reset-status` is set to the value `0:0`.
