@@ -210,7 +210,7 @@ Set the u-boot environment variable `factory-reset`, in order to reset `data` an
 sudo fw_setenv factory-reset 1
 sudo reboot
 ```
-This re-creates the corresponding filesystems of partitions `data` and `etc` on the next boot; i.e., in the initramfs context.
+This re-creates the corresponding filesystems of partitions `data` and `etc` on the next boot (in the initramfs context).
 If the `factory` partition contains a directory `etc`, then the content is copied to the `etc` partition.
 
 In the example above, `factory-reset` is set to the value `1`.
@@ -227,7 +227,7 @@ For this purpose, the u-boot environment variable `factory-reset` can be set to 
 |3 |recursive remove files with rm; notify disk with fstrim |usability depends on use case and hardware|
 |4 |custom wipe                                             |                                          |
 
-**Note:** The provided wipe options does not guarantee total privacy. This is only possible using hardware features of the disk (e.g.; ATA secure erase).
+**Note:** The provided wipe options don't guarantee total privacy. This is only possible using hardware features of the disk (e.g.; ATA secure erase).
 
 There is also the custom wipe mode. This mode provides the possibility to address customer requirements and hardware capabilities.
 In the case of custom wipe, the factory reset (initramfs context) calls `/opt/factory_reset/custom-wipe` before re-creating the filesystems inside the partitions `etc` and `data`.
@@ -240,6 +240,10 @@ It has the following format:
 <main status>          ::= <unsigned integer>
 <subordinated status>  ::= <unsigned integer> | '-'
 ```
+
+The overall *factory reset status* consists of two parts:
+- *main status*: general processing state; e.g., wipe mode supported
+- *subordinated status*: execution exit status, in case of *main status* == 0 (success)
 
 In the case of successfully performed factory reset, the u-boot environment variable `factory-reset-status` is set to the value `0:0`.
 
