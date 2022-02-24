@@ -10,7 +10,7 @@ SRC_URI = "\
     file://etc/profile.d/ics-dm_profile.sh \
 "
 
-FILES_${PN} = "\
+FILES:${PN} = "\
     /etc/sudoers.d/001_ics-dm \
     /etc/profile.d/ics-dm_profile.sh \
     /mnt/cert \
@@ -48,4 +48,4 @@ do_install() {
 #  add factory_reset group
 inherit useradd
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = "-r factory_reset"
+GROUPADD_PARAM:${PN} = "-r factory_reset"

@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/ics-dm-os-initramfs:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/ics-dm-os-initramfs:"
 
 LICENSE = "MIT | Apache-2.0"
 
@@ -24,7 +24,7 @@ do_install() {
     install -m 0755 -D ${WORKDIR}/factory-reset-setup    ${D}/init.d/90-factory_reset_setup
 }
 
-FILES_${PN} = "\
+FILES:${PN} = "\
     /init.d/10-rootblk_dev \
     /init.d/86-common_sh \
     /init.d/87-factory_reset \

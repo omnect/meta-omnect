@@ -5,7 +5,7 @@
 # generate password hash form (plain) password stored in environment
 #   format /etc/shadow: $id$salt$hash,...
 #       -> id=6 : SHA-512
-ROOTFS_PREPROCESS_COMMAND_append = " ics_dm_setup_hash;"
+ROOTFS_PREPROCESS_COMMAND:append = " ics_dm_setup_hash;"
 ics_dm_setup_hash() {
     local hash_val
     if [ -z "${ICS_DM_USER_PASSWORD}" ]; then bbfatal "password not set for ics-dm user"; fi

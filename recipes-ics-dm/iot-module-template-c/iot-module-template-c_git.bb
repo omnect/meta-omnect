@@ -19,13 +19,13 @@ SRC_URI = " \
 S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c libeis-utils"
-RDEPENDS_${PN} = "ca-certificates iot-identity-service"
+RDEPENDS:${PN} = "ca-certificates iot-identity-service"
 
 inherit aziot cmake overwrite_src_uri systemd
 
 EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
 
-do_install_append() {
+do_install:append() {
   # allow iot-module-template access to device_id secret created by manual provisioning
   install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/iot-module-template.toml
 
@@ -36,12 +36,12 @@ do_install_append() {
   install -m 0644 ${S}/systemd/iot-module-template.timer ${D}${systemd_system_unitdir}/
 }
 
-pkg_postinst_${PN}() {
+pkg_postinst:${PN}() {
   sed -i "s/@@UID@@/$(id -u iotmodule-c)/" $D${sysconfdir}/aziot/keyd/config.d/iot-module-template.toml
   sed -i -e "s/@@UID@@/$(id -u iotmodule-c)/" -e "s/@@NAME@@/iot-module-template/" $D${sysconfdir}/aziot/identityd/config.d/iot-module-template.toml
 }
 
-SYSTEMD_SERVICE_${PN} = "iot-module-template.service iot-module-template.timer"
+SYSTEMD_SERVICE:${PN} = "iot-module-template.service iot-module-template.timer"
 
-GROUPADD_PARAM_${PN} += "-r iotmodule-c;"
-USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks -g iotmodule-c iotmodule-c;"
+GROUPADD_PARAM:${PN} += "-r iotmodule-c;"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks -g iotmodule-c iotmodule-c;"

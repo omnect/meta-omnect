@@ -16,13 +16,13 @@ LIC_FILES_CHKSUM = " \
 DEPENDS += "\
     azure-iot-sdk-c\
 "
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     ca-certificates\
     iot-identity-service\
 "
 inherit aziot systemd
 
-do_compile_prepend() {
+do_compile:prepend() {
     # - for now we use git to fetch the repo instead of cargo itself
     #   (cargo fetcher can not handle git repos via ssh)
     # - @ToDo rm as soon the repo is public
@@ -38,7 +38,7 @@ do_compile_prepend() {
     export LIB_PATH_CURL=${STAGING_DIR_TARGET}/usr/
 }
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${S}/systemd/iot-module-template-rs.service ${D}${systemd_system_unitdir}/iot-module-template-rs.service
     install -m 0644 ${S}/systemd/iot-module-template-rs.timer ${D}${systemd_system_unitdir}/iot-module-template-rs.timer
@@ -50,12 +50,12 @@ do_install_append() {
     install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/iot-module-template-rs.toml
 }
 
-pkg_postinst_${PN}() {
+pkg_postinst:${PN}() {
     sed -i "s/@@UID@@/$(id -u iotmodule-rs)/"                                           $D${sysconfdir}/aziot/keyd/config.d/iot-module-template-rs.toml
     sed -i -e "s/@@UID@@/$(id -u iotmodule-rs)/" -e "s/@@NAME@@/ics-dm-iot-module-rs/"  $D${sysconfdir}/aziot/identityd/config.d/iot-module-template-rs.toml
 }
 
-SYSTEMD_SERVICE_${PN} = "iot-module-template-rs.service iot-module-template-rs.timer"
+SYSTEMD_SERVICE:${PN} = "iot-module-template-rs.service iot-module-template-rs.timer"
 
-GROUPADD_PARAM_${PN} += "-r iotmodule-rs;"
-USERADD_PARAM_${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks -g iotmodule-rs iotmodule-rs;"
+GROUPADD_PARAM:${PN} += "-r iotmodule-rs;"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks -g iotmodule-rs iotmodule-rs;"

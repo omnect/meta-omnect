@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://../../../LICENSE.md;md5=95a70c9e1af3b97d8bde6f7435d535a8"
 
@@ -18,7 +18,7 @@ inherit cmake
 
 EXTRA_OECMAKE += "-DCMAKE_MODULE_PATH=${WORKDIR}/git/cmake"
 
-do_configure_prepend() {
+do_configure:prepend() {
     mkdir -p ${S}/inc/aduc
     cp -f ${WORKDIR}/git/src/adu_types/inc/aduc/adu_types.h ${S}/inc/aduc
     cp -f ${WORKDIR}/git/src/utils/c_utils/inc/aduc/* ${S}/inc/aduc
@@ -41,5 +41,5 @@ do_install() {
     install -m 0644 ${B}/libeis_utils.so ${D}${libdir}
 }
 
-FILES_${PN}-dev = "${includedir}"
-FILES_${PN} = "${libdir}/libeis_utils.so"
+FILES:${PN}-dev = "${includedir}"
+FILES:${PN} = "${libdir}/libeis_utils.so"

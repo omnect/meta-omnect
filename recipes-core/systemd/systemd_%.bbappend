@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://80-wlan.network \
@@ -7,9 +7,9 @@ SRC_URI += "\
     file://0001-util-return-the-correct-correct-wd-from-inotify-help.patch \
 "
 
-RDEPENDS_${PN} += "bash"
+RDEPENDS:${PN} += "bash"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${systemd_system_unitdir}
 
     # enable dhcp for wlan devices
@@ -54,7 +54,7 @@ do_install_append() {
     lnr ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service ${D}${sysconfdir}/systemd/system/sysinit.target.wants/systemd-time-wait-sync.service
 }
 
-FILES_${PN} += "\
+FILES:${PN} += "\
     /usr/bin/ics_dm_first_boot.sh \
     ${systemd_unitdir}/network/80-wlan.network \
 "

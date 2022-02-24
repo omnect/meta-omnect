@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/ics-dm-os:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/ics-dm-os:"
 
 DESCRIPTION = "ics-dm-os swupdate image"
 

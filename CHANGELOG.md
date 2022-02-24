@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [>= 3.1.14.16646426] Q1 2022
+- adaptations for changed yocto overrides syntax
+
 ## [>= 3.1.14.x] Q1 2022
 - kas:
   - poky: version bump to 3.1.14

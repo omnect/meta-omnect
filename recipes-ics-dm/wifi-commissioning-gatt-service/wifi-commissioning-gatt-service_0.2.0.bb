@@ -11,7 +11,7 @@ SRC_URI += "git://git@github.com/ICS-DeviceManagement/wifi-commissioning-gatt-se
 SRCREV = "ce690b2c34bbb87ccf9ecf30467d8f9a9c759365"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV_append = ".AUTOINC+ce690b2c34"
+PV:append = ".AUTOINC+ce690b2c34"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched

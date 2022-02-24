@@ -16,15 +16,15 @@ inherit cmake
 EXTRA_OECMAKE += "-Dskip_samples:BOOL=ON"
 
 # fix compilation of iot-hub-device-update, iot-module-template which depend on azure-iot-sdk-c
-do_configure_prepend() {
+do_configure:prepend() {
    sed -i 's/${OPENSSL_LIBRARIES}/crypto ssl/g' ${S}/c-utility/CMakeLists.txt
    sed -i 's/${CURL_LIBRARIES}/curl/g' ${S}/c-utility/CMakeLists.txt
 }
 
-sysroot_stage_all_append () {
+sysroot_stage_all:append () {
     sysroot_stage_dir ${D}${exec_prefix}/cmake ${SYSROOT_DESTDIR}${exec_prefix}/cmake
 }
 
-FILES_${PN}-dev += "${exec_prefix}/cmake"
+FILES:${PN}-dev += "${exec_prefix}/cmake"
 
 BBCLASSEXTEND = "native nativesdk"

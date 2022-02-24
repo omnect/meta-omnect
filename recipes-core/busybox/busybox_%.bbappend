@@ -1,4 +1,4 @@
-do_install_append() {
+do_install:append() {
     # disable busybox klogd when using systemd
     if ${@bb.utils.contains('SRC_URI', 'file://syslog.cfg', 'false','true', d)} && \
        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true','false', d)} ; then
