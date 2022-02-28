@@ -1,7 +1,6 @@
 diff -Naur 0.2.3-r0.orig/azure-iot-sdk/Cargo.toml 0.2.3-r0/azure-iot-sdk/Cargo.toml
 --- 0.2.3-r0.orig/azure-iot-sdk/Cargo.toml	2022-02-27 14:51:51.670927150 +0100
 +++ 0.2.3-r0/azure-iot-sdk/Cargo.toml	2022-02-27 14:46:26.986932954 +0100
-# Manually adapted: fetch eis-utils with git submodule fetcher
 @@ -1,15 +1,15 @@
  [package]
  name = "azure-iot-sdk"
