@@ -32,8 +32,8 @@ factory_reset_setup_run() {
     fi
 
     # create systemd trigger file
-    mkdir -p ${tmp_dir}
-    touch ${trigger_file}
-    chown -v root:${factory_reset_group} ${trigger_file}
-    chmod -v 660 ${trigger_file}
+    run_cmd mkdir -p ${tmp_dir}
+    run_cmd touch ${trigger_file}
+    run_cmd chown root:${factory_reset_group} ${trigger_file}
+    run_cmd chmod 660 ${trigger_file}
 }
