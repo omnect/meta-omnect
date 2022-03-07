@@ -5,10 +5,8 @@ LIC_FILES_CHKSUM="\
   file://LICENSE-APACHE;md5=650e893673eb59696f3d4ee64f6d2357 \
 "
 
-# version 0.6.1
-GITREV = "53d819c418f71a8f4dc80cfc6a9746226edddbbe"
 # TODO change to https uri when public
-REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;rev=${GITREV}"
+REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;tag=0.7.0;"
 SRC_URI = "${REPO_URI}"
 
 S = "${WORKDIR}/git"
@@ -32,7 +30,7 @@ EXTRA_OECMAKE += "-DINSTALL_DIR=${bindir}"
 EXTRA_OECMAKE += "-DSERVICE_INSTALL_DIR=${systemd_system_unitdir}"
 EXTRA_OECMAKE += "-DDEVICE:BOOL=ON"
 EXTRA_OECMAKE += "-DTPM_SIMULATOR:BOOL=OFF"
-EXTRA_OECMAKE += "-DTPM:BOOL=ON"
+EXTRA_OECMAKE += "${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', '-DTPM:BOOL=ON', '', d)}"
 
 inherit useradd
 
