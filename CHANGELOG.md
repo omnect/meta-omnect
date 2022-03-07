@@ -5,18 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [>= 3.1.14.TODO] Q1 2022
+## [> 3.1.14.18644632] Q1 2022
 - enrollment:
   - set cmake flag `TPM` only if `MACHINE_FEATURES` includes `tpm2`
   - version bump to 0.7.0
 
-## [>= 3.1.14.18276533] Q1 2022
+## [> 3.1.14.18276533] Q1 2022
 - fix setup of factory reset trigger file in case of iot
 
-## [>= 3.1.14.17487662] Q1 2022
+## [> 3.1.14.17487662] Q1 2022
 - iot-module-template-rs 0.2.2: version bump and renaming to iot-client-template-rs 0.2.3
 
-## [>= 3.1.14.16646426] Q1 2022
+## [> 3.1.14.16646426] Q1 2022
 - adaptations for changed yocto overrides syntax
 
 ## [>= 3.1.14.x] Q1 2022
