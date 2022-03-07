@@ -5,6 +5,13 @@ SRC_URI += "\
   file://iot-identity-service-identityd.template.toml \
 "
 
+# overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
+LICENSE = "MIT | Apache-2.0"
+LIC_FILES_CHKSUM = " \
+    file://LICENSE-APACHE;md5=650e893673eb59696f3d4ee64f6d2357 \
+    file://LICENSE-MIT;md5=6340606a960b1965e521043f21f8d1bb \
+"
+
 DEPENDS += "\
     azure-iot-sdk-c\
 "
@@ -39,14 +46,32 @@ do_compile_prepend() {
     sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' ${WORKDIR}/azure-iot-sdk/Cargo.toml
     sed -i '/azure-iot-sdk-sys =/c\azure-iot-sdk-sys = { path = '\"../azure-iot-sdk-sys\"' }' ${WORKDIR}/azure-iot-sdk/Cargo.toml
     sed -i '/eis-utils =/c\eis-utils = { path = '\"../eis-utils\"' }' ${WORKDIR}/azure-iot-sdk/Cargo.toml
+
+    sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' ${WORKDIR}/eis-utils/Cargo.toml
+
+    sed -i '/aziot-identity-client-async =/c\aziot-identity-client-async = { path = '\"../iot-identity-service/identity/aziot-identity-client-async\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/aziot-identity-common =/c\aziot-identity-common = { path = '\"../iot-identity-service/identity/aziot-identity-common\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/aziot-identityd-config =/c\aziot-identityd-config = { path = '\"../iot-identity-service/identity/aziot-identityd-config\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/aziot-identity-common-http =/c\aziot-identity-common-http = { path = '\"../iot-identity-service/identity/aziot-identity-common-http\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/aziot-keyd-config =/c\aziot-keyd-config = { path = '\"../iot-identity-service/key/aziot-keyd-config\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/aziot-key-client-async =/c\aziot-key-client-async = { path = '\"../iot-identity-service/key/aziot-key-client-async\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/aziot-key-common =/c\aziot-key-common = { path = '\"../iot-identity-service/key/aziot-key-common\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/aziot-key-common-http =/c\aziot-key-common-http = { path = '\"../iot-identity-service/key/aziot-key-common-http\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/aziot-cert-client-async =/c\aziot-cert-client-async = { path = '\"../iot-identity-service/cert/aziot-cert-client-async\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/aziot-cert-common =/c\aziot-cert-common = { path = '\"../iot-identity-service/cert/aziot-cert-common\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/aziot-certd-config =/c\aziot-certd-config = { path = '\"../iot-identity-service/cert/aziot-certd-config\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/aziot-cert-common-http =/c\aziot-cert-common-http = { path = '\"../iot-identity-service/cert/aziot-cert-common-http\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    sed -i '/http-common =/c\http-common = { path = '\"../iot-identity-service/http-common\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+
+    find ${WORKDIR}/iot-identity-service -name Cargo.toml -type f -exec sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' {} \;
 }
 
 do_install_append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${S}/systemd/demo-portal-module.service ${D}${systemd_system_unitdir}/demo-portal-module.service
     install -m 0644 ${S}/systemd/demo-portal-module.timer ${D}${systemd_system_unitdir}/demo-portal-module.timer
-    install -m 0644 ${S}/systemd/demo-portal-factory.service ${D}${systemd_system_unitdir}/demo-portal-factory.service
-    install -m 0644 ${S}/systemd/demo-portal-factory.path ${D}${systemd_system_unitdir}/demo-portal-factory.path
+    install -m 0644 ${S}/systemd/demo-portal-factory-reset.service ${D}${systemd_system_unitdir}/demo-portal-factory-reset.service
+    install -m 0644 ${S}/systemd/demo-portal-factory-reset.path ${D}${systemd_system_unitdir}/demo-portal-factory-reset.path
     install -m 755 ${S}/script/factory_reset.sh ${D}${bindir}/
 
     # allow demo-portal-module access to device_id secret created by manual provisioning
@@ -61,10 +86,10 @@ pkg_postinst_${PN}() {
     sed -i -e "s/@@UID@@/$(id -u demo-portal)/" -e "s/@@NAME@@/demo-portal-module/"    $D${sysconfdir}/aziot/identityd/config.d/demo-portal-module.toml
 }
 
-SYSTEMD_SERVICE_${PN} = "demo-portal-module.service demo-portal-module.timer demo-portal-factory.path"
+SYSTEMD_SERVICE_${PN} = "demo-portal-module.service demo-portal-module.timer demo-portal-factory-reset.path"
 
 FILES:${PN} += "\
-    ${systemd_system_unitdir}/demo-portal-factory.service \
+    ${systemd_system_unitdir}/demo-portal-factory-reset.service \
     ${bindir}/factory_reset.sh \
 "
 
