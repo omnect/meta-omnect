@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [> 3.1.14.19905831] Q1 2022
+- iot-hub-device-update:
+  - register step:1, script:1 and update-manifest:4 handler at runtime
+  - removed registering of update-manifest (legacy) handler
+
 ## [> 3.1.14.19703570] Q1 2022
 - add demo-portal-module 0.1.1
 
