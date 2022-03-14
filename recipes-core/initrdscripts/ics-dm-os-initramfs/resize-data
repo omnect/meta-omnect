@@ -5,8 +5,10 @@ resize_data_enabled() {
 }
 
 resize_data_run() {
-    # possibly resize data partition
-    if [ "${bootparam_resize_data}" = "1" ]; then
+    local resized_data=$(get_bootloader_env_var "resized_data")
+
+    # data partition not yet resized
+    if [ -z "${resized_data}" ]; then
         msg "ics-dm-os resize data partition"
         data_part=$(get_block_device data)
         [[ $(cat /proc/mounts | grep ${data_part} | wc -l) -ne 0 ]] && echo "error: \"${data_part}\" is mounted." && exit 1

@@ -28,14 +28,6 @@ python create_boot_cmd () {
             # possibly create "bootpart" env var
             f.write("if env exists bootpart;then echo Booting from bootpart=${bootpart};else setenv bootpart 2;saveenv;echo bootpart not set, default to bootpart=${bootpart};fi\n")
 
-            # possibly expand data partition on first boot
-            if bb.utils.contains('DISTRO_FEATURES', 'resize-data', True, False, d):
-                f.write("if test -z \"${resized_data}\"; then setenv resize_data \"resize_data=1\";fi\n")
-
-            # possibly mount persistent journal to /var/log/
-            if bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', True, False, d):
-                bootargs_append+=" persistent_var_log=1"
-
             # possibly load device tree from file
             if fdt_load:
                 f.write("load ${devtype} ${devnum}:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
@@ -51,7 +43,7 @@ python create_boot_cmd () {
 
             # assemble bootargs
             f.write("fdt get value bootargs /chosen bootargs\n")
-            f.write("setenv bootargs \"${bootargs} ${bootargs_append} bootpart=${bootpart} %s ${resize_data}\"\n" % bootargs_append)
+            f.write("setenv bootargs \"${bootargs} ${bootargs_append} %s \"\n" % bootargs_append)
 
             # boot
             f.write("%s ${kernel_addr_r} ${ramdisk_addr_r} ${%s}\n" % (boot_cmd, fdt_addr))
