@@ -66,4 +66,3 @@ FILES:${PN} += "\
   ${systemd_system_unitdir} \
 "
 REQUIRED_DISTRO_FEATURES = "systemd"
-REQUIRED_MACHINE_FEATURES = "tpm2"
