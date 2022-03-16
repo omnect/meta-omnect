@@ -19,7 +19,7 @@ do_install:append() {
     install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/ics_dm_get_deviceid.sh ${D}${bindir}/ics_dm_get_deviceid.sh
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    lnr ${D}${systemd_system_unitdir}/wifi-commissioning-gatt@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wifi-commissioning-gatt@${ICS_DM_WLAN0}.service
+    ln -rs ${D}${systemd_system_unitdir}/wifi-commissioning-gatt@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wifi-commissioning-gatt@${ICS_DM_WLAN0}.service
 }
 
 FILES:${PN} += "\

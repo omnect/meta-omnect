@@ -9,7 +9,7 @@ repos:
   meta-ics-dm:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: ec978232732edbdd875ac367b5a9c04b881f2e19
+    refspec: b5bbdd3964ff28813ccc15422f5db60e69283cad
     layers:
       meta-filesystems:
       meta-networking:
@@ -17,10 +17,10 @@ repos:
       meta-python:
   ext/meta-rust:
     url: "https://github.com/meta-rust/meta-rust.git"
-    refspec: d4384db8c3f0aa01732627f92fc3d446359bf743
+    refspec: c654f5cb928bd4f4c7da7d74a8356fd2a94283f6
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    refspec: 9b864daefacbebe6fb7dcf7373a3421b56b42994
+    refspec: a5ad8f43476a116d9753ea540924349ed0ee2b3c
 
 distro: ics-dm-os
 
@@ -66,6 +66,11 @@ env:
 
   # (plain) password of ics-dm user
   ICS_DM_USER_PASSWORD: ""
+
+  # workaround for kirkstone build problem (poky devtools):
+  #     unable to fetch URL from any source.',
+  #     'https://static.rust-lang.org/dist/rust-std-1.58.0-${RUST_BUILD_ARCH}-unknown-linux-gnu.tar.xz;name=rust-std-snapshot-${RUST_BUILD_ARCH}
+  RUST_BUILD_ARCH: "x86_64"
 
 local_conf_header:
   meta-ics-dm_distro_ics-dm-os: |

@@ -4,7 +4,6 @@ SRC_URI += "\
     file://80-wlan.network \
     file://ics-dm-first-boot.service \
     file://ics_dm_first_boot.sh \
-    file://0001-util-return-the-correct-correct-wd-from-inotify-help.patch \
 "
 
 RDEPENDS:${PN} += "bash"
@@ -20,7 +19,7 @@ do_install:append() {
     # first boot handling
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
     install -m 0644 ${WORKDIR}/ics-dm-first-boot.service ${D}${systemd_system_unitdir}/
-    lnr ${D}${systemd_system_unitdir}/ics-dm-first-boot.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/ics-dm-first-boot.service
+    ln -rs ${D}${systemd_system_unitdir}/ics-dm-first-boot.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/ics-dm-first-boot.service
     install -m 0755 -D ${WORKDIR}/ics_dm_first_boot.sh ${D}${bindir}/
 
     # persistent /var/log
@@ -51,7 +50,7 @@ do_install:append() {
 
     # sync time on sysinit
     install -d ${D}${sysconfdir}/systemd/system/sysinit.target.wants
-    lnr ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service ${D}${sysconfdir}/systemd/system/sysinit.target.wants/systemd-time-wait-sync.service
+    ln -rs ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service ${D}${sysconfdir}/systemd/system/sysinit.target.wants/systemd-time-wait-sync.service
 }
 
 FILES:${PN} += "\

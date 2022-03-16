@@ -6,4 +6,4 @@ header:
 repos:
   ext/meta-raspberrypi:
     url: "https://github.com/agherzan/meta-raspberrypi.git"
-    refspec: 934064a01903b2ba9a82be93b3f0efdb4543a0e8
+    refspec: bc10842957212450023adfcbad5a73c21b28fce7
