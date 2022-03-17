@@ -33,3 +33,6 @@ PACKAGE_INSTALL = "\
 "
 
 inherit ${@bb.utils.contains('DISTRO_FEATURES', 'initramfs-flash-mode', 'ics_dm_user', '', d)}
+
+# check consistency of script ordering
+ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_initramfs_check;"

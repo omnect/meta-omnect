@@ -29,3 +29,6 @@ ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_enforce_flash_mode;"
 ics_dm_enforce_flash_mode() {
     touch ${IMAGE_ROOTFS}/etc/enforce_flash_mode
 }
+
+# check consistency of script ordering
+ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_initramfs_check;"
