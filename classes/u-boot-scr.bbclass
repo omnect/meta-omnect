@@ -4,10 +4,6 @@ COMPATIBLE = "rpi"
 python create_boot_cmd () {
     boot_cmd=d.getVar("KERNEL_BOOTCMD")
     boot_cmd_file=d.getVar("WORKDIR") + "/boot.cmd"
-    bootargs_append=""
-    bootargs_append_tmp=d.getVar("UBOOT_BOOTARGS_APPEND")
-    if bootargs_append_tmp:
-        bootargs_append+=bootargs_append_tmp
     device_tree=d.getVar("KERNEL_DEVICETREE_FN")
     fdt_addr=d.getVar("UBOOT_FDT_ADDR")
     fdt_load=d.getVar("UBOOT_FDT_LOAD")
@@ -41,9 +37,9 @@ python create_boot_cmd () {
             # load initrd
             f.write("load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % ics_dm_initramfs_fs_type)
 
-            # assemble bootargs
+            # assemble bootargs: from device tree + extra-bootargs for debugging purpose
             f.write("fdt get value bootargs /chosen bootargs\n")
-            f.write("setenv bootargs \"${bootargs} ${bootargs_append} %s \"\n" % bootargs_append)
+            f.write("setenv bootargs \"${bootargs} ${extra-bootargs}\"\n")
 
             # boot
             f.write("%s ${kernel_addr_r} ${ramdisk_addr_r} ${%s}\n" % (boot_cmd, fdt_addr))
