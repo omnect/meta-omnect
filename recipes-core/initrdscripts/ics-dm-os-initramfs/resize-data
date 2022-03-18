@@ -5,7 +5,7 @@ resize_data_enabled() {
 }
 
 resize_data_run() {
-    local resized_data=$(get_bootloader_env_var "resized_data")
+    local resized_data=$(get_bootloader_env_var "resized-data")
 
     # data partition not yet resized
     if [ -z "${resized_data}" ]; then
@@ -27,6 +27,6 @@ resize_data_run() {
         sync
 
         # set resized_data in u-boot env
-        set_bootloader_env_var resized_data 1
+        set_bootloader_env_var resized-data 1
     fi
 }
