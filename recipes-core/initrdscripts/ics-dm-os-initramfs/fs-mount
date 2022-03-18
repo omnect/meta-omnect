@@ -5,14 +5,15 @@ fs_mount_enabled() {
 }
 
 fs_mount_run() {
-    msg "ics-dm-os initramfs fs mount"
+    local bootpart=""
 
     if [ -z "${ROOTFS_DIR}" ]; then
         fatal "no ROOTFS_DIR"
         return 1
     fi
 
-    debug bootparam_bootpart=${bootparam_bootpart}
+    bootpart=$(get_bootloader_env_var "bootpart")
+    msg "ics-dm-os initramfs fs mount [bootpart=${bootpart}]"
 
     # currently we can not boot root via label and have to get the root dev
     # ourselves.
@@ -32,7 +33,7 @@ fs_mount_run() {
     mnt_opts_default="defaults,noatime,nodiratime,async"
 
     # mount rootfs
-    rootfs=/dev/${mmcblk}p${bootparam_bootpart}
+    rootfs=/dev/${mmcblk}p${bootpart}
     mount_partition "ext4" ${rootfs} ${ROOTFS_DIR} "${mnt_opts_default},ro"
 
     # load overlay kernelmodule
@@ -98,12 +99,6 @@ fs_mount_run() {
     # bind mount /usr/local
     mkdir -p ${ROOTFS_DIR}/mnt/data/local
     mount -o bind ${ROOTFS_DIR}/mnt/data/local ${ROOTFS_DIR}/usr/local
-
-    # bind mount /var/log
-    if [ "${bootparam_persistent_var_log}" = "1" ]; then
-        mkdir -p ${ROOTFS_DIR}/mnt/data/log
-        mount -o bind ${ROOTFS_DIR}/mnt/data/log ${ROOTFS_DIR}/var/log
-    fi
 
     # mount tmpfs
     mount -t tmpfs -o mode=0755,nodev,nosuid,strictatime tmpfs  ${ROOTFS_DIR}/run
