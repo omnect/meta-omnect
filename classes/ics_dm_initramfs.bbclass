@@ -30,6 +30,7 @@ python sstate_report_unihash() {
 }
 
 # check consistency of script ordering
+ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_initramfs_check;"
 ics_dm_initramfs_check() {
     file_numbers=$(ls -1 ${IMAGE_ROOTFS}/init.d/ | sed 's/^\([0-9]\+\)-.*$/\1/g')
     if [ "$(echo ${file_numbers})" != "$(echo ${file_numbers} | sort -u)" ]; then
