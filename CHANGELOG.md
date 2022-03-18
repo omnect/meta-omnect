@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [> 3.1.14.TODO] Q1 2022
 - replace layer-specific kernel command line options by u-boot environment variables
 
+## [> 3.1.14.21851669] Q1 2022
+- enrollment:
+  - don't require `MACHINE_FEATURES` to include `tpm2`
+  - version bump to 0.7.1
+
 ## [> 3.1.14.19905831] Q1 2022
 - iot-hub-device-update:
   - register step:1, script:1 and update-manifest:4 handler at runtime
