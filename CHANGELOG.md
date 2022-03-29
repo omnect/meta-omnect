@@ -12,8 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - meta-swupdate: version bump
   - meta-virtualization: version bump
   - removed distro/oe.yaml
-- raspberrypi 4 bootloader: set config arm_boost=1, so e.g. "cm4" and "p400"
-  can run as fast as firmware/board allows
 - bash/profile: set default `PROMPT_COMMAND` and own default `PS1`
 
 ## [> 3.1.14.24302255] Q1 2022
