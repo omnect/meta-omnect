@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM="\
 "
 
 # TODO change to https uri when public
-REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;tag=0.7.1;"
+REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;tag=0.7.2;"
 SRC_URI = "${REPO_URI}"
 
 S = "${WORKDIR}/git"
