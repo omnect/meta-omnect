@@ -3,8 +3,8 @@
 header:
   version: 11
 
-local_conf_header:
-  meta-ics-dm_example_iot_client-template-rs: |
-    CORE_IMAGE_EXTRA_INSTALL += "\
-    iot-client-template-rs \
-    "
+#local_conf_header:
+#  meta-ics-dm_example_iot_client-template-rs: |
+#    CORE_IMAGE_EXTRA_INSTALL += "\
+#    iot-client-template-rs \
+#    "
