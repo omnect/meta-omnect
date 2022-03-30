@@ -15,9 +15,6 @@ repos:
       meta-networking:
       meta-oe:
       meta-python:
-  ext/meta-rust:
-    url: "https://github.com/meta-rust/meta-rust.git"
-    refspec: c654f5cb928bd4f4c7da7d74a8356fd2a94283f6
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     refspec: a5ad8f43476a116d9753ea540924349ed0ee2b3c
