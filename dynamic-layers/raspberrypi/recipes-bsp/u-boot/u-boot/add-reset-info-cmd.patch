@@ -13,15 +13,6 @@ Subject: [PATCH] Add u-boot command rstinfo used to check for power-on reset
  create mode 100644 arch/arm/mach-bcm283x/sys_info.c
  create mode 100644 cmd/rstinfo.c
 
-diff --git a/arch/arm/mach-bcm283x/Makefile b/arch/arm/mach-bcm283x/Makefile
-index 7cd068832f..e92bfe9616 100644
---- a/arch/arm/mach-bcm283x/Makefile
-+++ b/arch/arm/mach-bcm283x/Makefile
-@@ -4,3 +4,4 @@
- 
- obj-$(CONFIG_BCM2835) += lowlevel_init.o
- obj-y	+= init.o reset.o mbox.o msg.o phys2bus.o
-+obj-$(CONFIG_DISPLAY_CPUINFO) += sys_info.o
 diff --git a/arch/arm/mach-bcm283x/sys_info.c b/arch/arm/mach-bcm283x/sys_info.c
 new file mode 100644
 index 0000000000..611711e280
@@ -61,36 +52,7 @@ index 0000000000..611711e280
 +	printf("Reset cause: %s\n", get_reset_cause());
 +	return 0;
 +}
-diff --git a/cmd/Kconfig b/cmd/Kconfig
-index 1e4cf146c5..68ac78c7e6 100644
---- a/cmd/Kconfig
-+++ b/cmd/Kconfig
-@@ -234,6 +234,13 @@ config CMD_REGINFO
- 	help
- 	  Register dump
- 
-+config CMD_RSTINFO
-+	bool "rstinfo"
-+	depends on BCM2711
-+	default n
-+	help
-+	  Detect the restart cause. Set the (non-persistent) environment variable rstinfo accordingly.
-+
- endmenu
- 
- menu "Boot commands"
-diff --git a/cmd/Makefile b/cmd/Makefile
-index 3ac7104546..96249e2402 100644
---- a/cmd/Makefile
-+++ b/cmd/Makefile
-@@ -117,6 +117,7 @@ obj-$(CONFIG_CMD_REGINFO) += reginfo.o
- obj-$(CONFIG_CMD_REISER) += reiser.o
- obj-$(CONFIG_CMD_REMOTEPROC) += remoteproc.o
- obj-$(CONFIG_CMD_ROCKUSB) += rockusb.o
-+obj-$(CONFIG_CMD_RSTINFO) += rstinfo.o
- obj-$(CONFIG_SANDBOX) += host.o
- obj-$(CONFIG_CMD_SATA) += sata.o
- obj-$(CONFIG_CMD_NVME) += nvme.o
+
 diff --git a/cmd/rstinfo.c b/cmd/rstinfo.c
 new file mode 100644
 index 0000000000..f16452f789
@@ -105,7 +67,7 @@ index 0000000000..f16452f789
 +#include <command.h>
 +
 +extern int print_cpuinfo(void);
-+static int do_rstinfo(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++static int do_rstinfo(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 +{
 +	(void)cmdtp;
 +	(void)flag;
