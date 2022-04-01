@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [>= 3.1.15.x] Q1 2022
+- kas:
+  - poky: version bump to 3.1.15
+  - open-embedded: version bump
+  - meta-swupdate: version bump
+  - meta-virtualization: version bump
+  - removed distro/oe.yaml
+- bash/profile: set default `PROMPT_COMMAND` and own default `PS1`
+
+## [> 3.1.14.24302255] Q1 2022
+- iot-identity-service: version bump to 1.2.6
+- iotedge: version bump to 1.2.8
+
+## [> 3.1.14.23418869] Q1 2022
+- use 0.7.2 enrollment
+
+## [> 3.1.14.21880135] Q1 2022
+- replace layer-specific kernel command line options by u-boot environment variables
+
+## [> 3.1.14.21851669] Q1 2022
+- enrollment:
+  - don't require `MACHINE_FEATURES` to include `tpm2`
+  - version bump to 0.7.1
+
 ## [> 3.1.14.19905831] Q1 2022
 - iot-hub-device-update:
   - register step:1, script:1 and update-manifest:4 handler at runtime

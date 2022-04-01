@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM="\
 "
 
 # TODO change to https uri when public
-REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;tag=0.7.0;"
+REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;tag=0.7.2;"
 SRC_URI = "${REPO_URI}"
 
 S = "${WORKDIR}/git"
@@ -66,4 +66,3 @@ FILES:${PN} += "\
   ${systemd_system_unitdir} \
 "
 REQUIRED_DISTRO_FEATURES = "systemd"
-REQUIRED_MACHINE_FEATURES = "tpm2"
