@@ -30,6 +30,7 @@ IMAGE_INSTALL = "\
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
     ics-dm-base-files \
+    iot-hub-device-update \
     packagegroup-core-ssh-dropbear \
     procps \
     sudo \
