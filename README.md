@@ -134,6 +134,7 @@ docker run --rm \
 -v $(pwd):/builder \
 -e USER_ID=$(id -u) \
 -e GROUP_ID=$(id -g) \
+-e ICS_DM_VERSION=0.0.0.1 \
 -e ICS_DM_BUILD_NUMBER=1 \
 -e ICS_DM_USER_PASSWORD="<your password>" \
 -e SWUPDATE_PASSWORD_FILE=/builder/priv.pass \

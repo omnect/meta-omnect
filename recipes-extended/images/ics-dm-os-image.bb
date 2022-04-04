@@ -71,6 +71,13 @@ def check_for_devel_tools(d):
 
 IMAGE_INSTALL += "${@check_for_devel_tools(d)}"
 
+ROOTFS_PREPROCESS_COMMAND:append  = " check_distro_version;"
+check_distro_version() {
+    if [[ "${ICS_DM_VERSION}" != ${DISTRO_VERSION_ORIG}.* ]]; then
+        bbfatal "ICS_DM_VERSION (${ICS_DM_VERSION}) does not match DISTRO_VERSION (${DISTRO_VERSION_ORIG})."
+    fi
+}
+
 # We don't want to add kernel and initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
 # If we add it to IMAGE_BOOT_FILES, wic would move it to the boot

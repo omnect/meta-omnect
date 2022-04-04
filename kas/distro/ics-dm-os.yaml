@@ -30,7 +30,8 @@ env:
   # distro vars
   DISTRO_NAME_PREFIX: ""
   DISTRO_NAME_SUFFIX: ""
-  # build number which is reflected in DISTRO_VERSION
+  # version and build number which are reflected in DISTRO_VERSION
+  ICS_DM_VERSION: "0.0.0.0"
   ICS_DM_BUILD_NUMBER: "0"
 
   # partition configuration
