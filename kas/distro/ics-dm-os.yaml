@@ -64,11 +64,6 @@ env:
   # (plain) password of ics-dm user
   ICS_DM_USER_PASSWORD: ""
 
-  # workaround for kirkstone build problem (poky devtools):
-  #     unable to fetch URL from any source.',
-  #     'https://static.rust-lang.org/dist/rust-std-1.58.0-${RUST_BUILD_ARCH}-unknown-linux-gnu.tar.xz;name=rust-std-snapshot-${RUST_BUILD_ARCH}
-  RUST_BUILD_ARCH: "x86_64"
-
 local_conf_header:
   meta-ics-dm_distro_ics-dm-os: |
     # For more options have a look into "poky/meta-poky/conf/local.conf.sample" resp.

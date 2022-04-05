@@ -1,21 +1,13 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
+# kirkstone: for raspberrypi4-64, enforce rpi_4_config configuration, instead of generic arm64
+#     (see machine configuration meta-raspberrypi/conf/machine/raspberrypi4-64.conf)
+UBOOT_MACHINE:raspberrypi4-64 = "rpi_4_config"
+
 SRC_URI += "\
     file://rpi-always-set-fdt_addr-with-firmware-provided-FDT-address.patch \
     file://set-config_mmc_env_dev.patch \
 "
-
-# for rpi4, add support for ethernet bcmgenet (upstream patches)
-# kirkstone: support for bcmgenet now present in u-boot
-#SRC_URI:append:raspberrypi4-64 = "\
-#    file://net-Add-support-for-Broadcom-GENETv5-Ethernet-controller.patch \
-#    file://net-bcmgenet-Don-t-set-ID_MODE_DIS-when-not-using-RGII.patch \
-#    file://bcmgenet-fix-DMA-buffer-management.patch \
-#    file://bcmgenet-Add-support-for-rgmii-rxid.patch \
-#    file://rpi4-Update-memory-map-to-accommodate-scb-devices.patch \
-#    file://rpi4-shorten-a-mapping-for-the-DRAM.patch \
-#    file://enable-genet-ethernet-fragment.cfg \
-#"
 
 SRC_URI:append:raspberrypi4-64 = "\
     file://add-reset-info-config.patch \
