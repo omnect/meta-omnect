@@ -37,6 +37,7 @@ IMAGE_INSTALL = "\
     packagegroup-core-ssh-dropbear \
     procps \
     sudo \
+    jq \
     u-boot-fw-utils \
 "
 
