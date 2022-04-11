@@ -8,10 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [> 3.1.15.3x] Q2 2022
  - introduce new version scheme:
    - DISTRO_VERSION is set to a git tag plus a current build number (provided externally by build environment) 
-   - git tag must follow the following scheme: x.x.x.x, e.g.: 3.1.15.1
+   - git tag must follow the following scheme: x.x.x.x, e.g.: 3.1.15.3
      - first three fields reflect the current yocto version (e.g. 3.1.15)
-     - fourth field is ics-dm release number that is incremented with each PR in meta-ics-dm or ics-dm-os, e.g.; 3.1.15.1
-     - the current build number is appended to the fourth field, e.g.: build number 26095706 leads to 3.1.15.126095706
+     - fourth field is ics-dm release number that is incremented with each PR in meta-ics-dm or ics-dm-os, e.g.; 3.1.15.3
+     - the current build number is appended to the fourth field, e.g.: build number 26095706 leads to 3.1.15.326095706
 
 ## [> 3.1.15.26095706] Q2 2022
 - iot-client-template-rs:
