@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [> 3.1.15.1x] Q2 2022
+## [> 3.1.15.3x] Q2 2022
  - introduce new version scheme:
    - DISTRO_VERSION is set to a git tag plus a current build number (provided externally by build environment) 
    - git tag must follow the following scheme: x.x.x.x, e.g.: 3.1.15.1
