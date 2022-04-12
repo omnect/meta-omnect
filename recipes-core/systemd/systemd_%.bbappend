@@ -9,6 +9,16 @@ SRC_URI += "\
 
 RDEPENDS:${PN} += "bash"
 
+configure_hw_watchdog() {
+    local cfg_file="${D}${sysconfdir}/systemd/system.conf"
+    [ -n ${SYSTEMD_RuntimeWatchdogSec}  ] && \
+        sed -i 's|^#RuntimeWatchdogSec=.*$|RuntimeWatchdogSec=${SYSTEMD_RuntimeWatchdogSec}|' ${cfg_file}
+    [ -n ${SYSTEMD_RebootWatchdogSec}   ] && \
+        sed -i 's|^#RebootWatchdogSec=.*$|RebootWatchdogSec=${SYSTEMD_RebootWatchdogSec}|' ${cfg_file}
+    [ -n ${SYSTEMD_ShutdownWatchdogSec} ] && \
+        sed -i 's|^#ShutdownWatchdogSec=.*$|ShutdownWatchdogSec=${SYSTEMD_ShutdownWatchdogSec}|' ${cfg_file}
+}
+
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}
 
@@ -52,6 +62,9 @@ do_install:append() {
     # sync time on sysinit
     install -d ${D}${sysconfdir}/systemd/system/sysinit.target.wants
     lnr ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service ${D}${sysconfdir}/systemd/system/sysinit.target.wants/systemd-time-wait-sync.service
+
+    # enable hardware watchdog for supported platforms
+    if [ "${MACHINE}" = "raspberrypi4-64" ]; then  configure_hw_watchdog; fi
 }
 
 FILES:${PN} += "\
