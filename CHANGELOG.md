@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [> 3.1.15.TODO] Q2 2022
 - enable, configure hardware watchdog for raspberrypi4-64 platform
+## [> 3.1.15.26343127] Q2 2022
+- iotedge: version bump to 1.2.9
 
 ## [> 3.1.15.26095706] Q2 2022
 - iot-client-template-rs:
