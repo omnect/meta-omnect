@@ -37,7 +37,6 @@ IMAGE_INSTALL = "\
     packagegroup-core-ssh-dropbear \
     procps \
     sudo \
-    jq \
     u-boot-fw-utils \
 "
 
@@ -60,6 +59,7 @@ ICS_DM_DEVEL_TOOLS_DEFAULT = "\
     tcpdump \
     valgrind \
     e2fsprogs e2fsprogs-tune2fs \
+    jq \
 "
 
 # check environment variable ICS_DM_DEVEL_TOOLS
