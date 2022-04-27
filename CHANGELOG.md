@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [> 3.1.15.TODO] Q2 2022
+## [> 3.1.15.31258601] Q2 2022
 - install systemd aziot-tpmd service and socket only if tpm2 is part of MACHINE_FEATURES,
   in order to prevent useless log entries like 'could not initialize TPM' flooding the log
   and stressing the flash memory, in case of TPM not to be used or present and persistent log feature.
