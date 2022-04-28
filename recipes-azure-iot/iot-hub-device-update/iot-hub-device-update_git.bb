@@ -22,7 +22,7 @@ SRC_URI = "git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=0
            file://history_consent.json \
            file://request_consent.json \
            file://user_consent.json \
-           file://installed_criteria.json \
+           file://installed_criteria \
            "
 
 S = "${WORKDIR}/git"
