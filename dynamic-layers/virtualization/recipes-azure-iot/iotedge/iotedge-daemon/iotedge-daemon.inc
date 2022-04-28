@@ -5,6 +5,10 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 # overwrite CARGO_SRC_DIR from cargo-bitbake generated recipe
 CARGO_SRC_DIR = "edgelet/aziot-edged"
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/../:"
+
+SRC_URI += "file://iotedge_1.2.9.patch"
+
 DEPENDS += "openssl virtual/docker"
 RDEPENDS:${PN} += "docker iot-identity-service"
 INSANE_SKIP:${PN} += "dev-deps"
