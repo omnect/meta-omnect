@@ -1,28 +1,28 @@
 do_configure:append() {
-    # Workaround for Yocto Dunfell Branch, we expect that in Yocto Kirkstone this patch can be removed
-    sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' ${S}/Cargo.toml
-    sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' ${WORKDIR}/sd-notify/Cargo.toml
-    sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' ${WORKDIR}/azure-iot-sdk-sys/Cargo.toml
-    sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' ${WORKDIR}/azure-iot-sdk/Cargo.toml
-    sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' ${WORKDIR}/eis-utils/Cargo.toml
-    find ${WORKDIR}/iot-identity-service -name Cargo.toml -type f -exec sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' {} \;
+    # patch cargo edition from 2021 to 2018
+    # workaround for yocto dunfell branch. it is expected that in yocto kirkstone this patch can be removed.
+    find ${WORKDIR} -name Cargo.toml -type f -exec sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' {} \;
 
-    # Workaround for Yocto Dunfell Branch, we expect that in Yocto Kirkstone this patch can be removed
-    sed -i '/azure-iot-sdk =/c\azure-iot-sdk = { path = '\"../azure-iot-sdk\"' }' ${S}/Cargo.toml
-    sed -i '/sd-notify =/c\sd-notify = { path = '\"../sd-notify\"' , optional = true }' ${S}/Cargo.toml
-    sed -i '/azure-iot-sdk-sys =/c\azure-iot-sdk-sys = { path = '\"../azure-iot-sdk-sys\"' }' ${WORKDIR}/azure-iot-sdk/Cargo.toml
-    sed -i '/eis-utils =/c\eis-utils = { path = '\"../eis-utils\"' }' ${WORKDIR}/azure-iot-sdk/Cargo.toml
-    sed -i '/aziot-identity-client-async =/c\aziot-identity-client-async = { path = '\"../iot-identity-service/identity/aziot-identity-client-async\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/aziot-identity-common =/c\aziot-identity-common = { path = '\"../iot-identity-service/identity/aziot-identity-common\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/aziot-identityd-config =/c\aziot-identityd-config = { path = '\"../iot-identity-service/identity/aziot-identityd-config\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/aziot-identity-common-http =/c\aziot-identity-common-http = { path = '\"../iot-identity-service/identity/aziot-identity-common-http\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/aziot-keyd-config =/c\aziot-keyd-config = { path = '\"../iot-identity-service/key/aziot-keyd-config\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/aziot-key-client-async =/c\aziot-key-client-async = { path = '\"../iot-identity-service/key/aziot-key-client-async\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/aziot-key-common =/c\aziot-key-common = { path = '\"../iot-identity-service/key/aziot-key-common\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/aziot-key-common-http =/c\aziot-key-common-http = { path = '\"../iot-identity-service/key/aziot-key-common-http\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/aziot-cert-client-async =/c\aziot-cert-client-async = { path = '\"../iot-identity-service/cert/aziot-cert-client-async\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/aziot-cert-common =/c\aziot-cert-common = { path = '\"../iot-identity-service/cert/aziot-cert-common\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/aziot-certd-config =/c\aziot-certd-config = { path = '\"../iot-identity-service/cert/aziot-certd-config\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/aziot-cert-common-http =/c\aziot-cert-common-http = { path = '\"../iot-identity-service/cert/aziot-cert-common-http\"' }' ${WORKDIR}/eis-utils/Cargo.toml
-    sed -i '/http-common =/c\http-common = { path = '\"../iot-identity-service/http-common\"' }' ${WORKDIR}/eis-utils/Cargo.toml
+    # patch paths to iot-identity-service services in eis-utils
+    # workaround for yocto dunfell branch.it is expected that in yocto kirkstone this patch can be removed.
+
+    sed -i -e 's/azure-iot-sdk =.*/azure-iot-sdk = { path = \"..\/azure-iot-sdk\" }/' \
+           -e 's/sd-notify =.*/sd-notify = { path = \"..\/sd-notify\" , optional = true }/' ${S}/Cargo.toml
+
+    sed -i -e 's/azure-iot-sdk-sys =.*/azure-iot-sdk-sys = { path = \"..\/azure-iot-sdk-sys\" }/' \
+           -e 's/eis-utils =.*/eis-utils = { path = \"..\/eis-utils\" }/' ${WORKDIR}/azure-iot-sdk/Cargo.toml
+
+    sed -i -e 's/aziot-identity-client-async =.*/aziot-identity-client-async = { path = \"..\/iot-identity-service\/identity\/aziot-identity-client-async\" }/' \
+           -e 's/aziot-identity-common =.*/aziot-identity-common = { path = \"..\/iot-identity-service\/identity\/aziot-identity-common\" }/' \
+           -e 's/aziot-identityd-config =.*/aziot-identityd-config = { path = \"..\/iot-identity-service\/identity\/aziot-identityd-config\" }/' \
+           -e 's/aziot-identity-common-http =.*/aziot-identity-common-http = { path = \"..\/iot-identity-service\/identity\/aziot-identity-common-http\" }/' \
+           -e 's/aziot-keyd-config =.*/aziot-keyd-config = { path = \"..\/iot-identity-service\/key\/aziot-keyd-config\" }/' \
+           -e 's/aziot-key-client-async =.*/aziot-key-client-async = { path = \"..\/iot-identity-service\/key\/aziot-key-client-async\" }/' \
+           -e 's/aziot-key-common =.*/aziot-key-common = { path = \"..\/iot-identity-service\/key\/aziot-key-common\" }/' \
+           -e 's/aziot-key-common-http =.*/aziot-key-common-http = { path = \"..\/iot-identity-service\/key\/aziot-key-common-http\" }/' \
+           -e 's/aziot-cert-client-async =.*/aziot-cert-client-async = { path = \"..\/iot-identity-service\/cert\/aziot-cert-client-async\" }/' \
+           -e 's/aziot-cert-common =.*/aziot-cert-common = { path = \"..\/iot-identity-service\/cert\/aziot-cert-common\" }/' \
+           -e 's/aziot-certd-config =.*/aziot-certd-config = { path = \"..\/iot-identity-service\/cert\/aziot-certd-config\" }/' \
+           -e 's/aziot-cert-common-http =.*/aziot-cert-common-http = { path = \"..\/iot-identity-service\/cert\/aziot-cert-common-http\" }/' \
+           -e 's/http-common =.*/http-common = { path = \"..\/iot-identity-service\/http-common\" }/' ${WORKDIR}/eis-utils/Cargo.toml
 }

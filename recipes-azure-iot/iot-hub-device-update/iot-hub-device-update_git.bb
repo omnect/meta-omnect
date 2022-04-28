@@ -17,7 +17,7 @@ SRC_URI = "git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=0
            file://iot-hub-device-update.conf \
            file://iot-identity-service-keyd.template.toml \
            file://iot-identity-service-identityd.template.toml \
-           file://content_handler.patch \
+           file://0001-add-swupdate-user-consent-handler.patch \
            "
 
 S = "${WORKDIR}/git"
@@ -95,13 +95,13 @@ do_install:append() {
   install -m 0644 ${WORKDIR}/adu-agent.timer    ${D}${systemd_system_unitdir}/
 
   # user_consent
-  install -d ${D}${sysconfdir}/ics_dm
-  touch ${D}${sysconfdir}/ics_dm/user_consent_conf
-  touch ${D}${sysconfdir}/ics_dm/user_consent_installed_criteria
-  chown adu:adu ${D}${sysconfdir}/ics_dm/user_consent_conf
-  chown adu:adu ${D}${sysconfdir}/ics_dm/user_consent_installed_criteria
-  chmod ug+rw ${D}${sysconfdir}/ics_dm/user_consent_conf
-  chmod u+rw ${D}${sysconfdir}/ics_dm/user_consent_installed_criteria
+  install -d ${D}${sysconfdir}/ics_dm/consent
+  install -m 0770 -o adu -g adu ${WORKDIR}/consent_conf.json ${D}${sysconfdir}/ics_dm/consent/
+  install -m 0770 -o adu -g adu ${WORKDIR}/history_consent.json ${D}${sysconfdir}/ics_dm/consent/
+  install -m 0770 -o adu -g adu ${WORKDIR}/request_consent.json ${D}${sysconfdir}/ics_dm/consent/
+  install -d ${D}${sysconfdir}/ics_dm/consent/swupdate
+  install -m 0770 -o adu -g adu ${WORKDIR}/user_consent.json ${D}${sysconfdir}/ics_dm/consent/swupdate/
+  install -m 0770 -o adu -g adu ${WORKDIR}/installed_criteria ${D}${sysconfdir}/ics_dm/consent/swupdate/
 }
 
 pkg_postinst:${PN}() {
