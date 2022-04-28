@@ -18,6 +18,11 @@ SRC_URI = "git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=0
            file://iot-identity-service-keyd.template.toml \
            file://iot-identity-service-identityd.template.toml \
            file://0001-add-swupdate-user-consent-handler.patch \
+           file://consent_conf.json \
+           file://history_consent.json \
+           file://request_consent.json \
+           file://user_consent.json \
+           file://installed_criteria.json \
            "
 
 S = "${WORKDIR}/git"
