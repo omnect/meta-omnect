@@ -53,6 +53,17 @@ do_install:append() {
     ln -rs ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service ${D}${sysconfdir}/systemd/system/sysinit.target.wants/systemd-time-wait-sync.service
 }
 
+# for rpi3 and rpi4, use hardware watchdog (see MACHINEOVERRIDES)
+do_install:append:rpi() {
+    local cfg_file="${D}${sysconfdir}/systemd/system.conf"
+    [ -n ${SYSTEMD_RuntimeWatchdogSec}  ] && \
+        sed -i 's|^#RuntimeWatchdogSec=.*$|RuntimeWatchdogSec=${SYSTEMD_RuntimeWatchdogSec}|' ${cfg_file}
+    [ -n ${SYSTEMD_RebootWatchdogSec}   ] && \
+        sed -i 's|^#RebootWatchdogSec=.*$|RebootWatchdogSec=${SYSTEMD_RebootWatchdogSec}|' ${cfg_file}
+    [ -n ${SYSTEMD_ShutdownWatchdogSec} ] && \
+        sed -i 's|^#ShutdownWatchdogSec=.*$|ShutdownWatchdogSec=${SYSTEMD_ShutdownWatchdogSec}|' ${cfg_file}
+}
+
 FILES:${PN} += "\
     /usr/bin/ics_dm_first_boot.sh \
     ${systemd_unitdir}/network/80-wlan.network \

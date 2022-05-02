@@ -29,6 +29,14 @@ env:
   DISTRO_NAME_SUFFIX: ""
   # build number which is reflected in DISTRO_VERSION
   ICS_DM_BUILD_NUMBER: "0"
+  # changelog version and repo uri of meta-ics-dm
+  META_ICS_DM_VERSION: "META_ICS_DM_VERSION_NOT_SET" 
+  META_ICS_DM_GIT_REPO: "META_ICS_DM_GIT_REPO_NOT_SET" 
+  # changelog version, revision, branch and repo uri of ics-dm-os
+  ICS_DM_OS_VERSION: "ICS_DM_OS_VERSION_NOT_SET" 
+  ICS_DM_OS_GIT_SHA: "ICS_DM_OS_GIT_SHA_NOT_SET"
+  ICS_DM_OS_GIT_BRANCH: "ICS_DM_OS_GIT_BRANCH_NOT_SET"
+  ICS_DM_OS_GIT_REPO: "ICS_DM_OS_GIT_REPO_NOT_SET" 
 
   # partition configuration
   ICS_DM_PART_SIZE_BOOT: "40960"

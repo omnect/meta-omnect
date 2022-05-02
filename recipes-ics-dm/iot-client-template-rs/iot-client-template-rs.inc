@@ -3,7 +3,6 @@ FILESEXTRAPATHS:prepend := "${LAYERDIR_ics_dm}/files:"
 SRC_URI += "\
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
-  file://rust_1.54.patch;patchdir=${WORKDIR} \
 "
 
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
@@ -32,7 +31,6 @@ do_compile:prepend() {
     export BINDGEN_EXTRA_CLANG_ARGS="${TUNE_CCARGS}"
 
     export LIB_PATH_AZURESDK=${STAGING_DIR_TARGET}/usr/
-    export LIB_PATH_EISUTILS=${STAGING_DIR_TARGET}/usr/
     export LIB_PATH_UUID=${STAGING_DIR_TARGET}/usr/
     export LIB_PATH_OPENSSL=${STAGING_DIR_TARGET}/usr/
     export LIB_PATH_CURL=${STAGING_DIR_TARGET}/usr/

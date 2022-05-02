@@ -37,27 +37,6 @@ IMAGE_INSTALL = "\
     u-boot-fw-utils \
 "
 
-ICS_DM_DEVEL_TOOLS_DEFAULT = "\
-    curl \
-    ethtool \
-    gdbserver \
-    htop \
-    ldd \
-    lshw \
-    lsof \
-    ltrace \
-    mmc-utils \
-    parted \
-    screen \
-    smartmontools \
-    strace \
-    sysstat \
-    systemd-analyze \
-    tcpdump \
-    valgrind \
-    e2fsprogs e2fsprogs-tune2fs \
-"
-
 # check environment variable ICS_DM_DEVEL_TOOLS
 def check_for_devel_tools(d):
     # use default list part of this recipe
