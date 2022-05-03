@@ -3,27 +3,28 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_ics_dm}/files:"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
-SRC_URI = "git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=0.8.0;nobranch=1 \
-           file://adu-swupdate-key.patch \
-           file://eis-utils-cert-chain-buffer.patch \
-           ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'ics-dm-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
-           file://linux_platform_layer.patch \
-           file://rpipart_to_bootpart.patch \
-           file://sd_notify.patch \
-           file://adu-agent.service \
-           file://adu-agent.timer \
-           file://du-config.json \
-           file://du-diagnostics-config.json \
-           file://iot-hub-device-update.conf \
-           file://iot-identity-service-keyd.template.toml \
-           file://iot-identity-service-identityd.template.toml \
-           file://0001-add-swupdate-user-consent-handler.patch \
-           file://consent_conf.json \
-           file://history_consent.json \
-           file://request_consent.json \
-           file://user_consent.json \
-           file://installed_criteria \
-           "
+SRC_URI = " \
+  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=0.8.0;nobranch=1 \
+  file://adu-swupdate-key.patch \
+  file://eis-utils-cert-chain-buffer.patch \
+  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'ics-dm-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
+  file://linux_platform_layer.patch \
+  file://rpipart_to_bootpart.patch \
+  file://sd_notify.patch \
+  file://adu-agent.service \
+  file://adu-agent.timer \
+  file://du-config.json \
+  file://du-diagnostics-config.json \
+  file://iot-hub-device-update.conf \
+  file://iot-identity-service-keyd.template.toml \
+  file://iot-identity-service-identityd.template.toml \
+  file://0001-add-swupdate-user-consent-handler.patch \
+  file://consent_conf.json \
+  file://history_consent.json \
+  file://request_consent.json \
+  file://user_consent.json \
+  file://installed_criteria \
+"
 
 S = "${WORKDIR}/git"
 
