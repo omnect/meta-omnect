@@ -1,15 +1,15 @@
-From b09663d0ee2166946536f12edbc13822331300e3 Mon Sep 17 00:00:00 2001
+From 9d94ddb4155b31b6c56f39e845725e42cc3f534a Mon Sep 17 00:00:00 2001
 From: Joerg Zeidler <joerg.zeidler@conplement.de>
-Date: Tue, 26 Apr 2022 09:08:29 +0200
+Date: Tue, 3 May 2022 14:10:18 +0200
 Subject: [PATCH] add swupdate user consent handler
 
 Signed-off-by: Joerg Zeidler <joerg.zeidler@conplement.de>
 ---
  src/content_handlers/CMakeLists.txt           |   1 +
  .../swupdate_consent_handler/CMakeLists.txt   |  35 ++
- .../inc/aduc/swupdate_consent_handler.hpp     |  66 +++
- .../src/swupdate_consent_handler.cpp          | 419 ++++++++++++++++++
- 4 files changed, 521 insertions(+)
+ .../inc/aduc/swupdate_consent_handler.hpp     |  68 +++
+ .../src/swupdate_consent_handler.cpp          | 426 ++++++++++++++++++
+ 4 files changed, 530 insertions(+)
  create mode 100644 src/content_handlers/swupdate_consent_handler/CMakeLists.txt
  create mode 100644 src/content_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
  create mode 100644 src/content_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
@@ -69,10 +69,10 @@ index 0000000..517f874
 +install (TARGETS ${target_name} LIBRARY DESTINATION ${ADUC_EXTENSIONS_INSTALL_FOLDER})
 diff --git a/src/content_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp b/src/content_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
 new file mode 100644
-index 0000000..b0ccc08
+index 0000000..fe3a0ed
 --- /dev/null
 +++ b/src/content_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
-@@ -0,0 +1,66 @@
+@@ -0,0 +1,68 @@
 +/**
 + * @file swupdate_consent_handler.hpp
 + * @brief Defines SWUpdateConsentHandlerImpl.
@@ -124,27 +124,29 @@ index 0000000..b0ccc08
 +    ADUC_Result IsInstalled(const tagADUC_WorkflowData* workflowData) override;
 +
 +private:
++    const std::string generalConsent = "swupdate";
++    
 +    // Private constructor, must call CreateContentHandler factory method.
 +    SWUpdateConsentHandlerImpl()
 +    {
 +    }
-+
++    std::string ValueOrEmpty(const char* s);
 +    std::string ReadValueFromFile(const std::string& filePath);
 +    JSON_Object* ReadJsonDataFile(const std::string& filePath);
 +    bool GetGeneralConsent(void);
 +    bool UserConsentAgreed(const std::string& version);
 +    ADUC_GeneralResult UpdateConsentRequestJsonFile(const std::string& version);
 +    ADUC_GeneralResult UpdateConsentHistoryJsonFile(const std::string& version);
-+    std::string GetVersion(char * installedCriteria);
++    std::string GetVersion(const std::string& installedCriteria);
 +};
 +
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/content_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/content_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 0000000..07e414e
+index 0000000..ca76b4c
 --- /dev/null
 +++ b/src/content_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
-@@ -0,0 +1,419 @@
+@@ -0,0 +1,426 @@
 +/**
 + * @file swupdate_consent_handler.cpp
 + * @brief Implementation of ContentHandler API for update content swupdate_consent.
@@ -219,6 +221,17 @@ index 0000000..07e414e
 +}
 +
 +/**
++ * @brief Convert char pointer to string
++ *
++ * @param s Pointer to char
++ * @return std::string Returns the value from char pointer. Returns empty string if there was an error.
++ */
++std::string SWUpdateConsentHandlerImpl::ValueOrEmpty(const char* s)
++{
++    return s == nullptr ? std::string() : s;
++}
++
++/**
 + * @brief Reads a first line of a file, trims trailing whitespace, and returns as string.
 + *
 + * @param filePath Path to the file to read value from.
@@ -229,20 +242,20 @@ index 0000000..07e414e
 +    if (filePath.empty())
 +    {
 +        Log_Error("Empty file path.");
-+        return std::string{};
++        return "";
 +    }
 +
 +    if ((filePath.length()) + 1 > PATH_MAX)
 +    {
 +        Log_Error("Path is too long.");
-+        return std::string{};
++        return "";
 +    }
 +
 +    std::ifstream file(filePath);
 +    if (!file.is_open())
 +    {
 +        Log_Error("File %s failed to open, error: %d", filePath.c_str(), errno);
-+        return std::string{};
++        return "";
 +    }
 +
 +    std::string result;
@@ -250,7 +263,7 @@ index 0000000..07e414e
 +    if (file.bad())
 +    {
 +        Log_Error("Unable to read from file %s, error: %d", filePath.c_str(), errno);
-+        return std::string{};
++        return "";
 +    }
 +
 +    // Trim whitespace
@@ -299,8 +312,10 @@ index 0000000..07e414e
 +        {
 +            for (int i = 0; i < json_array_get_count(array); i++)
 +            {
-+                Log_Info("parsing json array genenral_consent: %s \n", json_array_get_string(array, i));
-+                if ("swupdate" == json_array_get_string(array, i))
++                std::string generalConsentStatus = ValueOrEmpty(json_array_get_string(array, i));
++                Log_Info("parsing json array genenral_consent: %s \n", generalConsentStatus.c_str());
++                
++                if (generalConsent == generalConsentStatus)
 +                {
 +                    Log_Info("genenral_consent found for swupdate\n");
 +                    return true;
@@ -328,13 +343,10 @@ index 0000000..07e414e
 +    }
 +    else
 +    {
-+        const char * userConsent = json_object_get_string(data, "consent");
-+        if (nullptr != userConsent)
++        std::string userConsent = ValueOrEmpty(json_object_get_string(data, "consent"));
++        if (userConsent == version)
 +        {
-+            if (userConsent == version)
-+            {
-+                return true;
-+            }
++            return true;
 +        }
 +    }
 +    return false;
@@ -424,23 +436,21 @@ index 0000000..07e414e
 + * @return std::string Returns the version from given installed criteria. Returns empty string if there was an error.
 + *
 + */
-+std::string SWUpdateConsentHandlerImpl::GetVersion(char * installedCriteria)
++std::string SWUpdateConsentHandlerImpl::GetVersion(const std::string& installedCriteria)
 +{
-+    char* version;
-+    version = strchr(installedCriteria, ' ');
++    std::string version(strchr(installedCriteria.c_str(), ' '));
 +
-+    if (nullptr == version)
++    if (version.empty())
 +    {
 +        Log_Error("couldn't read version from installedCriteria");
-+        return std::string{};
++        return "";
 +    }
 +    else
 +    {
-+        Log_Info("read version \"%s\" from installedCriteria", version);
-+        std::string result(version);
++        Log_Info("read version \"%s\" from installedCriteria", version.c_str());
 +        // Trim whitespace
-+        ADUC::StringUtils::Trim(result);
-+        return result;
++        ADUC::StringUtils::Trim(version);
++        return version;
 +    }
 +}
 +
@@ -452,8 +462,9 @@ index 0000000..07e414e
 +{
 +    std::fstream f;
 +    bool consent = false;
-+    char* installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
-+    std::string version{ GetVersion(installedCriteria) };
++    char * installedCriteria_workflow = workflow_get_installed_criteria(workflowData->WorkflowHandle);
++    std::string installedCriteria = ValueOrEmpty(installedCriteria_workflow);
++    std::string version = GetVersion(installedCriteria);
 +
 +    Log_Info("swupdate waiting for user consent");
 +
@@ -486,8 +497,8 @@ index 0000000..07e414e
 +    // write data
 +    f << installedCriteria << std::endl;
 +    f.close();
-+
-+    workflow_free_string(installedCriteria);
++    
++    workflow_free_string(installedCriteria_workflow);
 +    return ADUC_Result{ ADUC_Result_Download_Success };
 +}
 +
@@ -531,10 +542,10 @@ index 0000000..07e414e
 +ADUC_Result SWUpdateConsentHandlerImpl::IsInstalled(const tagADUC_WorkflowData* workflowData)
 +{
 +    std::fstream f;
-+    char* installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
-+    ADUC_Result result;
-+
-+    std::string userConsentCriteria{ ReadValueFromFile(ADUC_SWUPDATE_CONSENT_INSTALLED_CRITERIA_FILE) };
++    ADUC_Result result = { ADUC_Result_IsInstalled_NotInstalled };
++    char* installedCriteria_workflow = workflow_get_installed_criteria(workflowData->WorkflowHandle);
++    std::string installedCriteria = ValueOrEmpty(installedCriteria_workflow);
++    std::string userConsentCriteria = ReadValueFromFile(ADUC_SWUPDATE_CONSENT_INSTALLED_CRITERIA_FILE);
 +
 +    if (true == GetGeneralConsent())
 +    {
@@ -552,16 +563,14 @@ index 0000000..07e414e
 +    }
 +    else if (userConsentCriteria == installedCriteria)
 +    {
-+        Log_Info("swupdate consent for Installed criteria %s was installed", installedCriteria);
++        Log_Info("swupdate consent for Installed criteria %s was installed", installedCriteria.c_str());
 +        result = { ADUC_Result_IsInstalled_Installed };
 +    }
 +    else
 +    {
-+        Log_Info("swupdate consent Installed criteria %s was not installed, the current criteria is %s", installedCriteria, userConsentCriteria.c_str());
-+        result = { ADUC_Result_IsInstalled_NotInstalled };
++        Log_Info("swupdate consent Installed criteria %s was not installed, the current criteria is %s", installedCriteria.c_str(), userConsentCriteria.c_str());
 +    }
-+
-+    workflow_free_string(installedCriteria);
++    workflow_free_string(installedCriteria_workflow);
 +    return result;
 +}
 -- 
