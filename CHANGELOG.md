@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [dunfell-1.0.1] Q2 2022
+- fix ICS_DM_DEVEL_TOOLS_DEFAULT: add jq command-line JSON processor, needed for base test
+
+## [dunfell-1.0.0] Q2 2022
+- new versioning scheme for CHANGELOG.md:
+  - switch to yoctoversion-major.minor.patch
+- add to /etc/os-release:
+  - MACHINE_FEATURES
+  - meta-ics-dm version, revision and branch
+  - ics-dm-os version, revision and branch
+
+## [> 3.1.15.31509222] Q2 2022
+- add jq command-line JSON processor, needed for base test
+
 ## [> 3.1.15.31258601] Q2 2022
 - install systemd aziot-tpmd service and socket only if tpm2 is part of MACHINE_FEATURES,
   in order to prevent useless log entries like 'could not initialize TPM' flooding the log
@@ -12,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [> 3.1.15.31043252] Q2 2022
 - enable, configure hardware watchdog for raspberrypi platform
-
+  
 ## [> 3.1.15.26343127] Q2 2022
 - iotedge: version bump to 1.2.9
 
