@@ -23,7 +23,6 @@ SRC_URI = " \
   file://history_consent.json \
   file://request_consent.json \
   file://user_consent.json \
-  file://installed_criteria \
 "
 
 S = "${WORKDIR}/git"
@@ -107,7 +106,7 @@ do_install:append() {
   install -m 0770 -o adu -g adu ${WORKDIR}/request_consent.json ${D}${sysconfdir}/ics_dm/consent/
   install -d ${D}${sysconfdir}/ics_dm/consent/swupdate
   install -m 0770 -o adu -g adu ${WORKDIR}/user_consent.json ${D}${sysconfdir}/ics_dm/consent/swupdate/
-  install -m 0770 -o adu -g adu ${WORKDIR}/installed_criteria ${D}${sysconfdir}/ics_dm/consent/swupdate/
+  install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/ics_dm/consent/swupdate/installed_criteria
 }
 
 pkg_postinst:${PN}() {
