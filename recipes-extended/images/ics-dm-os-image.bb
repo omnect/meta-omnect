@@ -27,6 +27,7 @@ IMAGE_BASENAME = "ics-dm-os"
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 IMAGE_INSTALL = "\
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
     ics-dm-base-files \

@@ -13,6 +13,9 @@ S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 PV:append = ".AUTOINC+ce690b2c34"
 
+# used by pkg_config crate, in turn used by libdbus_sys crate
+DEPENDS += "pkgconfig-native"
+
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
 SRC_URI += " \
