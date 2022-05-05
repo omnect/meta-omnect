@@ -19,10 +19,6 @@ SRC_URI = " \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
   file://0001-add-swupdate-user-consent-handler.patch \
-  file://consent_conf.json \
-  file://history_consent.json \
-  file://request_consent.json \
-  file://user_consent.json \
 "
 
 S = "${WORKDIR}/git"
@@ -101,11 +97,11 @@ do_install:append() {
 
   # user_consent
   install -d ${D}${sysconfdir}/ics_dm/consent
-  install -m 0770 -o adu -g adu ${WORKDIR}/consent_conf.json ${D}${sysconfdir}/ics_dm/consent/
-  install -m 0770 -o adu -g adu ${WORKDIR}/history_consent.json ${D}${sysconfdir}/ics_dm/consent/
-  install -m 0770 -o adu -g adu ${WORKDIR}/request_consent.json ${D}${sysconfdir}/ics_dm/consent/
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/consent_conf.json ${D}${sysconfdir}/ics_dm/consent/
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/history_consent.json ${D}${sysconfdir}/ics_dm/consent/
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/request_consent.json ${D}${sysconfdir}/ics_dm/consent/
   install -d ${D}${sysconfdir}/ics_dm/consent/swupdate
-  install -m 0770 -o adu -g adu ${WORKDIR}/user_consent.json ${D}${sysconfdir}/ics_dm/consent/swupdate/
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/ics_dm/consent/swupdate/
   install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/ics_dm/consent/swupdate/installed_criteria
 }
 
@@ -122,6 +118,11 @@ FILES:${PN} += " \
   ${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml \
   ${systemd_system_unitdir}/adu-agent.service \
   ${systemd_system_unitdir}/adu-agent.timer \
+  ${sysconfdir}/ics_dm/consent/consent_conf.json \
+  ${sysconfdir}/ics_dm/consent/history_consent.json \
+  ${sysconfdir}/ics_dm/consent/request_consent.json \
+  ${sysconfdir}/ics_dm/consent/swupdate/user_consent.json \
+  ${sysconfdir}/ics_dm/consent/swupdate/installed_criteria \
   "
 
 GROUPADD_PARAM:${PN} += "-r adu;-r do;"

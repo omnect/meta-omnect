@@ -1,16 +1,24 @@
-From 9d94ddb4155b31b6c56f39e845725e42cc3f534a Mon Sep 17 00:00:00 2001
+From 2f2cb04943036975f1bb7eb378b893c3fd8a616e Mon Sep 17 00:00:00 2001
 From: Joerg Zeidler <joerg.zeidler@conplement.de>
-Date: Tue, 3 May 2022 14:10:18 +0200
+Date: Thu, 5 May 2022 11:39:53 +0200
 Subject: [PATCH] add swupdate user consent handler
 
 Signed-off-by: Joerg Zeidler <joerg.zeidler@conplement.de>
 ---
  src/content_handlers/CMakeLists.txt           |   1 +
  .../swupdate_consent_handler/CMakeLists.txt   |  35 ++
+ .../files/consent_conf.json                   |   5 +
+ .../files/history_consent.json                |   6 +
+ .../files/request_consent.json                |   4 +
+ .../files/user_consent.json                   |   3 +
  .../inc/aduc/swupdate_consent_handler.hpp     |  68 +++
- .../src/swupdate_consent_handler.cpp          | 426 ++++++++++++++++++
- 4 files changed, 530 insertions(+)
+ .../src/swupdate_consent_handler.cpp          | 433 ++++++++++++++++++
+ 8 files changed, 555 insertions(+)
  create mode 100644 src/content_handlers/swupdate_consent_handler/CMakeLists.txt
+ create mode 100644 src/content_handlers/swupdate_consent_handler/files/consent_conf.json
+ create mode 100644 src/content_handlers/swupdate_consent_handler/files/history_consent.json
+ create mode 100644 src/content_handlers/swupdate_consent_handler/files/request_consent.json
+ create mode 100644 src/content_handlers/swupdate_consent_handler/files/user_consent.json
  create mode 100644 src/content_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
  create mode 100644 src/content_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 
@@ -67,6 +75,52 @@ index 0000000..517f874
 +            )
 +
 +install (TARGETS ${target_name} LIBRARY DESTINATION ${ADUC_EXTENSIONS_INSTALL_FOLDER})
+diff --git a/src/content_handlers/swupdate_consent_handler/files/consent_conf.json b/src/content_handlers/swupdate_consent_handler/files/consent_conf.json
+new file mode 100644
+index 0000000..69f9ca4
+--- /dev/null
++++ b/src/content_handlers/swupdate_consent_handler/files/consent_conf.json
+@@ -0,0 +1,5 @@
++{
++  "general_consent": [
++    "swupdate"
++  ]
++}
+\ No newline at end of file
+diff --git a/src/content_handlers/swupdate_consent_handler/files/history_consent.json b/src/content_handlers/swupdate_consent_handler/files/history_consent.json
+new file mode 100644
+index 0000000..698c790
+--- /dev/null
++++ b/src/content_handlers/swupdate_consent_handler/files/history_consent.json
+@@ -0,0 +1,6 @@
++{
++  "user_consent_history": {
++      "swupdate": [
++      ]
++  }
++}
+\ No newline at end of file
+diff --git a/src/content_handlers/swupdate_consent_handler/files/request_consent.json b/src/content_handlers/swupdate_consent_handler/files/request_consent.json
+new file mode 100644
+index 0000000..0e4bea7
+--- /dev/null
++++ b/src/content_handlers/swupdate_consent_handler/files/request_consent.json
+@@ -0,0 +1,4 @@
++{
++  "user_consent_request": {
++  }
++}
+\ No newline at end of file
+diff --git a/src/content_handlers/swupdate_consent_handler/files/user_consent.json b/src/content_handlers/swupdate_consent_handler/files/user_consent.json
+new file mode 100644
+index 0000000..0e0dcd2
+--- /dev/null
++++ b/src/content_handlers/swupdate_consent_handler/files/user_consent.json
+@@ -0,0 +1,3 @@
++{
++
++}
+\ No newline at end of file
 diff --git a/src/content_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp b/src/content_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
 new file mode 100644
 index 0000000..fe3a0ed
@@ -143,10 +197,10 @@ index 0000000..fe3a0ed
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/content_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/content_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 0000000..ca76b4c
+index 0000000..ecb5f88
 --- /dev/null
 +++ b/src/content_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
-@@ -0,0 +1,426 @@
+@@ -0,0 +1,433 @@
 +/**
 + * @file swupdate_consent_handler.cpp
 + * @brief Implementation of ContentHandler API for update content swupdate_consent.
@@ -296,7 +350,9 @@ index 0000000..ca76b4c
 + */
 +bool SWUpdateConsentHandlerImpl::GetGeneralConsent(void)
 +{
++    bool status = false;
 +    JSON_Object* data = ReadJsonDataFile(ADUC_SWUPDATE_CONSENT_CONF_FILE);
++
 +    if (nullptr == data)
 +    {
 +        Log_Error("No ADUC_SWUPDATE_CONSENT_CONF_FILE data file provided, or missing json content");
@@ -318,12 +374,15 @@ index 0000000..ca76b4c
 +                if (generalConsent == generalConsentStatus)
 +                {
 +                    Log_Info("genenral_consent found for swupdate\n");
-+                    return true;
++                    status = true;
++                    break;
 +                }
 +            }
 +        }
++        json_value_free(json_object_get_wrapping_value(data));
 +    }
-+    return false;
++
++    return status;
 +}
 +
 +/**
@@ -335,6 +394,7 @@ index 0000000..ca76b4c
 + */
 +bool SWUpdateConsentHandlerImpl::UserConsentAgreed(const std::string& version)
 +{
++    bool status = false;
 +    JSON_Object* data = ReadJsonDataFile(ADUC_SWUPDATE_CONSENT_USER_FILE);
 +
 +    if (nullptr == data)
@@ -346,10 +406,11 @@ index 0000000..ca76b4c
 +        std::string userConsent = ValueOrEmpty(json_object_get_string(data, "consent"));
 +        if (userConsent == version)
 +        {
-+            return true;
++            status = true;
 +        }
++        json_value_free(json_object_get_wrapping_value(data));
 +    }
-+    return false;
++    return status;
 +}
 +/**
 + * @brief Request a user consent for given version
