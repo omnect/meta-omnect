@@ -12,12 +12,13 @@ SRC_URI = " \
   file://rpipart_to_bootpart.patch \
   file://sd_notify.patch \
   file://adu-agent.service \
-  file://adu-agent.timer  \
+  file://adu-agent.timer \
   file://du-config.json \
   file://du-diagnostics-config.json \
   file://iot-hub-device-update.conf \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
+  file://0001-add-swupdate-user-consent-handler.patch \
 "
 
 S = "${WORKDIR}/git"
@@ -93,6 +94,15 @@ do_install:append() {
   install -d ${D}${systemd_system_unitdir}
   install -m 0644 ${WORKDIR}/adu-agent.service  ${D}${systemd_system_unitdir}/
   install -m 0644 ${WORKDIR}/adu-agent.timer    ${D}${systemd_system_unitdir}/
+
+  # user_consent
+  install -d ${D}${sysconfdir}/ics_dm/consent
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/consent_conf.json ${D}${sysconfdir}/ics_dm/consent/
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/history_consent.json ${D}${sysconfdir}/ics_dm/consent/
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/request_consent.json ${D}${sysconfdir}/ics_dm/consent/
+  install -d ${D}${sysconfdir}/ics_dm/consent/swupdate
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/ics_dm/consent/swupdate/
+  install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/ics_dm/consent/swupdate/installed_criteria
 }
 
 pkg_postinst:${PN}() {
@@ -108,6 +118,11 @@ FILES:${PN} += " \
   ${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml \
   ${systemd_system_unitdir}/adu-agent.service \
   ${systemd_system_unitdir}/adu-agent.timer \
+  ${sysconfdir}/ics_dm/consent/consent_conf.json \
+  ${sysconfdir}/ics_dm/consent/history_consent.json \
+  ${sysconfdir}/ics_dm/consent/request_consent.json \
+  ${sysconfdir}/ics_dm/consent/swupdate/user_consent.json \
+  ${sysconfdir}/ics_dm/consent/swupdate/installed_criteria \
   "
 
 GROUPADD_PARAM:${PN} += "-r adu;-r do;"

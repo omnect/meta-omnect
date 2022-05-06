@@ -67,6 +67,7 @@ GROUPADD_PARAM:${PN} += " \
   -r demo-portal; \
   -r factory_reset; \
   -r disk; \
+  -r adu; \
 "
 
-USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,factory_reset,disk -g demo-portal demo-portal;"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,factory_reset,disk,adu -g demo-portal demo-portal;"
