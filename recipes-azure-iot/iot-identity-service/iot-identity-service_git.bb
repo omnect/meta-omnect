@@ -4,11 +4,12 @@ inherit aziot cargo systemd
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
-SRC_URI = "gitsm://git@github.com/Azure/iot-identity-service.git;protocol=ssh;nobranch=1;branch=release/1.2;tag=1.2.6"
-SRC_URI += " \
+SRC_URI = "gitsm://git@github.com/Azure/iot-identity-service.git;protocol=ssh;nobranch=1;branch=release/1.2 \
     file://iot-identity-service-certd.template.toml \
     file://tpm-compile-fix.patch \
+    file://0001-adapt-for-yocto-kirkstone.patch \
 "
+SRCREV = "ff90e7d71b08b8bd74a5c4adfd6b2d73fda39ac7"
 
 S = "${WORKDIR}/git"
 B = "${S}"
