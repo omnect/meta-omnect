@@ -57,14 +57,7 @@ fs_mount_run() {
     factory_blk=$(get_block_device factory)
     mount_partition "ext4" "${factory_blk}" "${ROOTFS_DIR}/mnt/factory" "${mnt_opts_default},ro"
 
-    # if etc partition is empty we copy the etc dir from factory partition
-    if [ ! -d ${ROOTFS_DIR}/mnt/etc/upper ]; then
-        mkdir -p ${ROOTFS_DIR}/mnt/etc/upper
-        mkdir -p ${ROOTFS_DIR}/mnt/etc/work
-        if [ -d ${ROOTFS_DIR}/mnt/factory/etc ]; then
-            cp -rfp ${ROOTFS_DIR}/mnt/factory/etc/. ${ROOTFS_DIR}/mnt/etc/upper
-        fi
-    fi
+    setup_etc_from_factory "${ROOTFS_DIR}/mnt" 0
 
     # mount etc overlay
     mount_overlayfs "${ROOTFS_DIR}/etc" "${ROOTFS_DIR}/mnt/etc/upper" "${ROOTFS_DIR}/mnt/etc/work" \

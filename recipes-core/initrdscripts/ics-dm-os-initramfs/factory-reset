@@ -3,9 +3,22 @@
 #
 # handle triggered factory reset
 #
+#   + The factory reset has to be performed before mounting the logical filesystem tree,
+#     because it re-formats the filesystems part of the partitions etc and data.
+#
+#   + In the case of a present restore list (see FACTORY_RESET_RESTORE_LIST_VAR, below),
+#     the filesystems etc and data have to be mounted, in order to make the backup.
+#
 
 # name of u-boot environment variable used for factory reset (trigger and wipe mode)
 FACTORY_RESET_VAR="factory-reset"
+
+# name of u-boot environment variable used for optional list of path names to be restored,
+# surviving the factory reset
+FACTORY_RESET_RESTORE_LIST_VAR="factory-reset-restore-list"
+
+# directory used to backup and restore paths in FACTORY_RESET_RESTORE_LIST_VAR
+FACTORY_RESET_BACKUP_DIR="/tmp/factory_reset/backup"
 
 # u-boot environment variable used to return factory reset status
 FACTORY_RESET_STATUS_VAR="factory-reset-status"
@@ -52,24 +65,20 @@ wipe_partition_fstrim() {
 }
 
 factory_reset_wipe_dd() {
-    local data_part="$1"
-    local  etc_part="$2"
     local ret=0
 
     msg "wipe method 1"
-    wipe_partition_dd "${etc_part}"  || ret=$?
-    wipe_partition_dd "${data_part}" || ret=$?
+    wipe_partition_dd "${ETC_PART}"  || ret=$?
+    wipe_partition_dd "${DATA_PART}" || ret=$?
     return ${ret}
 }
 
 factory_reset_wipe_fstrim() {
-    local data_part="$1"
-    local  etc_part="$2"
     local ret=0
 
     msg "wipe method 2"
-    wipe_partition_fstrim "${etc_part}"  || ret=$?
-    wipe_partition_fstrim "${data_part}" || ret=$?
+    wipe_partition_fstrim "${ETC_PART}"  || ret=$?
+    wipe_partition_fstrim "${DATA_PART}" || ret=$?
     return ${ret}
 }
 
@@ -89,56 +98,157 @@ factory_reset_wipe_custom() {
     return 0
 }
 
-# main entry point
-factory_reset_run() {
-    local data_part=""
-    local etc_part=""
-    local ret1
-    local ret2
-
-    factory_reset_mode=$(fw_printenv ${FACTORY_RESET_VAR} | cut -d'=' -f2)
-    if [ -z "${factory_reset_mode}" ] || [ ${factory_reset_mode} -eq 0 ]; then
-        return  # no factory reset triggered; normal boot
-    fi
-
-    data_part=$(get_block_device data)
-     etc_part=$(get_block_device  etc)
-
-    msg "Running Factory Reset [mode=$factory_reset_mode]..."
-
-    case ${factory_reset_mode} in
-        1) ret2=0; ret1=0  # no wipe
-           ;;
-        2) factory_reset_wipe_dd "${data_part}" "${etc_part}"
-           ret2=$?; ret1=0
-           ;;
-        3) factory_reset_wipe_fstrim "${data_part}" "${etc_part}"
-           ret2=$?; ret1=0
-           ;;
-        4) factory_reset_wipe_custom
-           ret2=$?; ret1=0
-           ;;
-        *) msg "ERROR: factory reset mode ${factory_reset_mode} not supported; abort..."
-           ret2="-"; ret1=1
-           ;;
-    esac
-
-    # no severe errors; enforce mkfs
-    if [ ${ret1} -eq 0 ] && [ ${ret2} -eq 0 ]; then
-        check_ext4_fs "data" "${data_part}" 1
-        check_ext4_fs "etc"  "${etc_part}"  1
-    fi
-
+factory_reset_finish() {
     # remove factory reset trigger at this point
     # interrupted factory reset will be replayed
     # this causes a new udev event regarding (new) partitions sent by the kernel; the reboot below handles this
     set_bootloader_env_var ${FACTORY_RESET_VAR}
+    set_bootloader_env_var ${FACTORY_RESET_RESTORE_LIST_VAR}
 
     # set return status
-    set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR} "${ret1}:${ret2}"
+    set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR} "${RET1}:${RET2}"
 
     # get into normal startup
     msg "Rebooting system..."
     reboot -f
     # -- never reached --
+}
+
+# backup/restore file or directory
+factory_reset_backup_restore() {
+    local path_name="$1"  # file or directory
+    local   mnt_dir="$2"  # mount point
+    local do_backup="$3"  # 0: backup | 1: restore
+    local backup_dir=""
+
+    if [ ${do_backup} -eq 1 ]; then msg "backup: ${path_name}"; else msg "restore: ${path_name}"; fi
+
+    # map logical path name to partition-specific one; keep synchronized with fs-mount
+    # in the case of overlayfs, the upper dir can be accessed in a regular way
+    case ${path_name} in
+              /etc/*) mnt_dir="${mnt_dir}/etc";  path_name="upper/${path_name#/etc/}";;
+             /home/*) mnt_dir="${mnt_dir}/data"; path_name="home/upper/${path_name#/home/}";;
+          /var/lib/*) mnt_dir="${mnt_dir}/data"; path_name="var/lib/${path_name#/var/lib/}";;
+          /var/log/*) mnt_dir="${mnt_dir}/data"; path_name="log/${path_name#/var/log/}";;
+        /usr/local/*) mnt_dir="${mnt_dir}/data"; path_name="local/${path_name#/usr/local/}";;
+                   *) msg "backup/restore path \"${path_name}\" not supported; ignore..."; return;;
+    esac
+
+    if [ ${do_backup} -eq 1 ]; then
+        if [ ! -e "${mnt_dir}/${path_name}" ]; then
+            msg "->does not exist; ignore..."
+            return
+        fi
+        # do backup, keep permissions and ownership
+        cp --parents -av "${mnt_dir}/${path_name}" "${FACTORY_RESET_BACKUP_DIR}"
+    else
+        if [ ! -e "${FACTORY_RESET_BACKUP_DIR}/${mnt_dir}/${path_name}" ]; then
+            msg "->does not exist; ignore..."
+            return
+        fi
+        cd ${FACTORY_RESET_BACKUP_DIR}/${mnt_dir}
+            # do restore, keep permissions and ownership
+            cp --parents -av "${path_name}" "${mnt_dir}"
+        cd -
+    fi
+}
+
+iterate_restore_list() {
+    local restore_list="$1"
+    local      mnt_dir="$2"
+    local    do_backup="$3"
+    local old_ifs="$IFS"
+
+    IFS=";"  # field separator
+        set -- ${restore_list}  # set $1, $2,...
+        while [ $# -gt 0 ]; do
+            factory_reset_backup_restore "$1" "${mnt_dir}" "${do_backup}"
+            shift
+        done
+    IFS=${old_ifs}
+}
+
+factory_reset_mount() {
+    local mnt_dir="$1"
+    check_ext4_fs  "etc" "${ETC_PART}"  0
+    check_ext4_fs "data" "${DATA_PART}" 0
+
+    mkdir -p ${mnt_dir}/factory ${mnt_dir}/etc ${mnt_dir}/data
+    if ! mount_partition "ext4" "${FACTORY_PART}" "${mnt_dir}/factory" "defaults,ro" || \
+       ! mount_partition "ext4" "${ETC_PART}"     "${mnt_dir}/etc"     "defaults,rw" || \
+       ! mount_partition "ext4" "${DATA_PART}"    "${mnt_dir}/data"    "defaults,rw"; then
+    
+        RET2="-"; RET1=2
+        factory_reset_finish  # does not return
+    fi
+}
+
+factory_reset_umount() {
+    local mnt_dir="$1"
+    umount ${mnt_dir}/factory ${mnt_dir}/etc ${mnt_dir}/data
+}
+
+# main entry point
+factory_reset_run() {
+    local mnt_dir="/tmp/mnt_restore"
+
+    factory_reset_mode=$(get_bootloader_env_var "${FACTORY_RESET_VAR}")
+    if [ -z "${factory_reset_mode}" ] || [ ${factory_reset_mode} -eq 0 ]; then
+        return  # no factory reset triggered; normal boot
+    fi
+
+    factory_reset_restore_list=$(get_bootloader_env_var "${FACTORY_RESET_RESTORE_LIST_VAR}")
+
+    FACTORY_PART=$(get_block_device factory)
+       DATA_PART=$(get_block_device    data)
+        ETC_PART=$(get_block_device     etc)
+
+    msg "Running Factory Reset [mode=${factory_reset_mode}]..."
+
+    if [ -n "${factory_reset_restore_list}" ]; then
+        msg "restore list present"
+        factory_reset_mount "${mnt_dir}"  # partitions needed
+
+        # do the backup
+        mkdir -p ${FACTORY_RESET_BACKUP_DIR}
+        iterate_restore_list "${factory_reset_restore_list}" "${mnt_dir}" 1
+
+        factory_reset_umount "${mnt_dir}"
+    fi
+
+    case ${factory_reset_mode} in
+        1) RET2=0; RET1=0  # no wipe
+           ;;
+        2) factory_reset_wipe_dd
+           RET2=$?; RET1=0
+           ;;
+        3) factory_reset_wipe_fstrim
+           RET2=$?; RET1=0
+           ;;
+        4) factory_reset_wipe_custom
+           RET2=$?; RET1=0
+           ;;
+        *) msg "ERROR: factory reset mode ${factory_reset_mode} not supported; abort..."
+           RET2="-"; RET1=1
+           ;;
+    esac
+
+    # severe errors
+    if [ ${RET1} -ne 0 ] || [ ${RET2} -ne 0 ]; then factory_reset_finish; fi
+
+    # no severe errors; enforce mkfs
+    check_ext4_fs "data" "${DATA_PART}" 1
+    check_ext4_fs "etc"  "${ETC_PART}"  1
+
+    if [ -n "${factory_reset_restore_list}" ]; then
+        factory_reset_mount "${mnt_dir}"  # partitions needed
+
+        # 1st setup etc from factory partition
+        setup_etc_from_factory ${mnt_dir} 1
+
+        # 2nd restore backup
+        iterate_restore_list "${factory_reset_restore_list}" "${mnt_dir}" 0
+    fi
+
+    factory_reset_finish  # does not return
 }

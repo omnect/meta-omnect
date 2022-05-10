@@ -130,3 +130,19 @@ set_bootloader_env_var()
     local var_value="$2"  # empty string to delete variable
     fw_setenv ${var_name} ${var_value}
 }
+
+# if etc partition is empty, copy the etc dir from factory partition
+setup_etc_from_factory()
+{
+    local rootfs_dir="$1"
+    local    enforce="$2"
+
+    mkdir -p ${rootfs_dir}/etc/work
+    if [ ${enforce} -eq 1 ] || [ ! -d ${rootfs_dir}/etc/upper ]; then
+        mkdir -p ${rootfs_dir}/etc/upper
+        if [ -d ${rootfs_dir}/factory/etc ]; then
+            msg "setup etc from factory partition"
+            cp -rfp ${rootfs_dir}/factory/etc/. ${rootfs_dir}/etc/upper
+        fi
+    fi
+}
