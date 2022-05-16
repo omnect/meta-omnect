@@ -237,7 +237,7 @@ The factory reset provides the option to exclude particular files or directories
 For example, it may make sense to keep the WIFI configuration, in order to prevent loosing the network connectivity.
 For this purpose, the u-boot environment variable `factory-reset-restore-list` has to be used for.
 In the following example, the regular file `/etc/wpa_supplicant/wpa_supplicant-wlan0.conf` and the directory
-`/etc/aziot/identityd/` survive the factory reset:
+`/etc/aziot/identityd/` survives the factory reset:
 
 ```sh
 sudo fw_setenv factory-reset-restore-list '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf;/etc/aziot/identityd/'
