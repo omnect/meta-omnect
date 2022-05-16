@@ -1,6 +1,6 @@
-From 2f2cb04943036975f1bb7eb378b893c3fd8a616e Mon Sep 17 00:00:00 2001
+From b0c1ca3a8a4391fc60e547ca9dc3bbda19dbb589 Mon Sep 17 00:00:00 2001
 From: Joerg Zeidler <joerg.zeidler@conplement.de>
-Date: Thu, 5 May 2022 11:39:53 +0200
+Date: Fri, 13 May 2022 14:31:11 +0200
 Subject: [PATCH] add swupdate user consent handler
 
 Signed-off-by: Joerg Zeidler <joerg.zeidler@conplement.de>
@@ -11,9 +11,9 @@ Signed-off-by: Joerg Zeidler <joerg.zeidler@conplement.de>
  .../files/history_consent.json                |   6 +
  .../files/request_consent.json                |   4 +
  .../files/user_consent.json                   |   3 +
- .../inc/aduc/swupdate_consent_handler.hpp     |  68 +++
- .../src/swupdate_consent_handler.cpp          | 433 ++++++++++++++++++
- 8 files changed, 555 insertions(+)
+ .../inc/aduc/swupdate_consent_handler.hpp     |  70 +++
+ .../src/swupdate_consent_handler.cpp          | 509 ++++++++++++++++++
+ 8 files changed, 633 insertions(+)
  create mode 100644 src/content_handlers/swupdate_consent_handler/CMakeLists.txt
  create mode 100644 src/content_handlers/swupdate_consent_handler/files/consent_conf.json
  create mode 100644 src/content_handlers/swupdate_consent_handler/files/history_consent.json
@@ -102,13 +102,13 @@ index 0000000..698c790
 \ No newline at end of file
 diff --git a/src/content_handlers/swupdate_consent_handler/files/request_consent.json b/src/content_handlers/swupdate_consent_handler/files/request_consent.json
 new file mode 100644
-index 0000000..0e4bea7
+index 0000000..9f35e52
 --- /dev/null
 +++ b/src/content_handlers/swupdate_consent_handler/files/request_consent.json
 @@ -0,0 +1,4 @@
 +{
-+  "user_consent_request": {
-+  }
++  "user_consent_request": [
++  ]
 +}
 \ No newline at end of file
 diff --git a/src/content_handlers/swupdate_consent_handler/files/user_consent.json b/src/content_handlers/swupdate_consent_handler/files/user_consent.json
@@ -123,10 +123,10 @@ index 0000000..0e0dcd2
 \ No newline at end of file
 diff --git a/src/content_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp b/src/content_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
 new file mode 100644
-index 0000000..fe3a0ed
+index 0000000..71366dc
 --- /dev/null
 +++ b/src/content_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,70 @@
 +/**
 + * @file swupdate_consent_handler.hpp
 + * @brief Defines SWUpdateConsentHandlerImpl.
@@ -189,7 +189,9 @@ index 0000000..fe3a0ed
 +    JSON_Object* ReadJsonDataFile(const std::string& filePath);
 +    bool GetGeneralConsent(void);
 +    bool UserConsentAgreed(const std::string& version);
++    bool AppendArrayRecord(const JSON_Object *root, const char *arrayName, JSON_Value *record);
 +    ADUC_GeneralResult UpdateConsentRequestJsonFile(const std::string& version);
++    ADUC_GeneralResult CleanConsentRequestJsonFile(void);
 +    ADUC_GeneralResult UpdateConsentHistoryJsonFile(const std::string& version);
 +    std::string GetVersion(const std::string& installedCriteria);
 +};
@@ -197,10 +199,10 @@ index 0000000..fe3a0ed
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/content_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/content_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 0000000..ecb5f88
+index 0000000..b53879c
 --- /dev/null
 +++ b/src/content_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
-@@ -0,0 +1,433 @@
+@@ -0,0 +1,509 @@
 +/**
 + * @file swupdate_consent_handler.cpp
 + * @brief Implementation of ContentHandler API for update content swupdate_consent.
@@ -412,6 +414,31 @@ index 0000000..ecb5f88
 +    }
 +    return status;
 +}
++
++/**
++ * @brief add records to an json array
++ *
++ * @param root  root of the parsed file
++ * @param arrayName  the value name can be hierarchical as a dot separated string.
++ * @param record  record to add
++ * @return "true" in case successfully, otherwise "false" will be returned
++ *
++ */
++bool SWUpdateConsentHandlerImpl::AppendArrayRecord(const JSON_Object *root, const char *arrayName, JSON_Value *record)
++{
++    bool result = false;
++    JSON_Array *array;
++
++    array = json_object_dotget_array(root, arrayName);
++
++    if(json_array_append_value(array, record) == JSONSuccess)
++    {
++        result = true;
++    }
++
++    return result;
++}
++
 +/**
 + * @brief Request a user consent for given version
 + *
@@ -431,19 +458,65 @@ index 0000000..ecb5f88
 +    }
 +    else
 +    {
-+        JSON_Object* data2 = json_object_get_object(data, "user_consent_request");
-+        if (nullptr == data2)
++        JSON_Array* array = json_object_get_array(data, "user_consent_request");
++        if (nullptr == array)
 +        {
 +            Log_Error("No user_consent_request in ADUC_SWUPDATE_CONSENT_REQUEST_FILE data file provided");
 +        }
 +        else
 +        {
-+            json_object_set_string(data2, "swupdate", version.c_str());
++  
++            JSON_Value* swupdateValue = json_value_init_object();
++            JSON_Object* swupdateObject = json_value_get_object(swupdateValue);            
++            json_object_set_string(swupdateObject, "swupdate", version.c_str());
++            if(true == AppendArrayRecord(data, "user_consent_request", swupdateValue))
++            {
++                json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_REQUEST_FILE);
++                result = ADUC_GeneralResult_Success;
++            }
++            else
++            {
++                Log_Error("append to user_consent_request in ADUC_SWUPDATE_CONSENT_REQUEST_FILE not working");
++            }
++        }
++        json_value_free(rootValue);        
++    }
++
++    return result;
++}
++
++/**
++ * @brief Clean request user consent
++ *
++ * @return ADUC_GeneralResult
++ *
++ */
++ADUC_GeneralResult SWUpdateConsentHandlerImpl::CleanConsentRequestJsonFile(void)
++{
++    ADUC_GeneralResult result = ADUC_GeneralResult_Failure;
++    JSON_Value* rootValue = json_parse_file(ADUC_SWUPDATE_CONSENT_REQUEST_FILE);
++    JSON_Object* data = json_value_get_object(rootValue);
++
++    if (nullptr == data)
++    {
++        Log_Error("No ADUC_SWUPDATE_CONSENT_REQUEST_FILE data file provided");
++    }
++    else
++    {
++        JSON_Array* array = json_object_get_array(data, "user_consent_request");
++        if (nullptr == array)        
++        {
++            Log_Error("No user_consent_request in ADUC_SWUPDATE_CONSENT_REQUEST_FILE data file provided");
++        }
++        else
++        {
++            json_array_clear(array);
 +            json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_REQUEST_FILE);
 +            result = ADUC_GeneralResult_Success;
 +        }
++        json_value_free(rootValue);
 +    }
-+    json_value_free(rootValue);
++
 +    return result;
 +}
 +
@@ -485,8 +558,9 @@ index 0000000..ecb5f88
 +                result = ADUC_GeneralResult_Success;
 +            }
 +        }
++        json_value_free(rootValue);
 +    }
-+    json_value_free(rootValue);
++
 +    return result;
 +}
 +
@@ -529,6 +603,9 @@ index 0000000..ecb5f88
 +
 +    Log_Info("swupdate waiting for user consent");
 +
++    // cleanup request JSON file to prevent duplicate information in array due to e.g. device reboot
++    CleanConsentRequestJsonFile();
++    
 +    // log message already present in function, return value currently not needed to evaluate
 +    UpdateConsentRequestJsonFile(version);
 +
@@ -551,6 +628,7 @@ index 0000000..ecb5f88
 +        ThreadAPI_Sleep(1000);
 +    }
 +
++    CleanConsentRequestJsonFile();
 +    Log_Info("swupdate user consent succeeded");
 +
 +    // open and clear file
