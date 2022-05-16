@@ -233,6 +233,20 @@ There is also the custom wipe mode. This mode provides the possibility to addres
 In the case of custom wipe, the factory reset (initramfs context) calls `/opt/factory_reset/custom-wipe` before re-creating the filesystems inside the partitions `etc` and `data`.
 In order to establish the custom wipe mode, a Yocto recipe `ics-dm-os-initramfs-scripts.bbappend` has to be supplied, which has to install the required utilities.
 
+The factory reset provides the option to exclude particular files or directories.
+For example, it may make sense to keep the WIFI configuration, in order to prevent loosing the network connectivity.
+For this purpose, the u-boot environment variable `factory-reset-restore-list` has to be used for.
+In the following example, the regular file `/etc/wpa_supplicant/wpa_supplicant-wlan0.conf` and the directory
+`/etc/aziot/identityd/` survive the factory reset:
+
+```sh
+sudo fw_setenv factory-reset-restore-list '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf;/etc/aziot/identityd/'
+```
+
+The list of path names is separated by the character `;` and is enclosed by the `'` quotation mark.
+The factory reset is directed to the partitions `etc` and `data`.
+Therefore, path names with the following prefixes are allowed: `/etc/`, `/home/`, `/var/lib/`, `/var/log/` and `/usr/local/`.
+
 The status of the factory reset is returned by the u-boot environment variable `factory-reset-status`.
 It has the following format:
 ```bnf
@@ -242,7 +256,7 @@ It has the following format:
 ```
 
 The overall *factory reset status* consists of two parts:
-- *main status*: general processing state; 0 -> wipe mode supported; 1 -> wipe mode unsupported
+- *main status*: general processing state; 0 -> wipe mode supported; 1 -> wipe mode unsupported; 2 -> restore failure
 - *subordinated status*: execution exit status, in case of *main status* == 0 (success)
 
 In the case of successfully performed factory reset, the u-boot environment variable `factory-reset-status` is set to the value `0:0`.
