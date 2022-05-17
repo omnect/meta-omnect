@@ -157,15 +157,11 @@ iterate_restore_list() {
     local restore_list="$1"
     local      mnt_dir="$2"
     local    do_backup="$3"
-    local old_ifs="$IFS"
 
-    IFS=";"  # field separator
-        set -- ${restore_list}  # set $1, $2,...
-        while [ $# -gt 0 ]; do
-            factory_reset_backup_restore "$1" "${mnt_dir}" "${do_backup}"
-            shift
-        done
-    IFS=${old_ifs}
+    restore_list=${restore_list//;/ }
+    for i in ${restore_list}; do
+        factory_reset_backup_restore "${i}" "${mnt_dir}" "${do_backup}"
+    done
 }
 
 factory_reset_mount() {
