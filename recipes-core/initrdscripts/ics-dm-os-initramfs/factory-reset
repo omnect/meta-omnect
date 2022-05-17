@@ -7,7 +7,8 @@
 #     because it re-formats the filesystems part of the partitions etc and data.
 #
 #   + In the case of a present restore list (see FACTORY_RESET_RESTORE_LIST_VAR, below),
-#     the filesystems etc and data have to be mounted, in order to make the backup.
+#     the filesystems etc and data have to be mounted, in order to establish the logical
+#     filesystem tree, needed for backup and restore.
 #
 
 # name of u-boot environment variable used for factory reset (trigger and wipe mode)
@@ -117,76 +118,73 @@ factory_reset_finish() {
 # backup/restore file or directory
 factory_reset_backup_restore() {
     local path_name="$1"  # file or directory
-    local   mnt_dir="$2"  # mount point
-    local do_backup="$3"  # 0: backup | 1: restore
-    local backup_dir=""
+    local do_backup="$2"  # 0: backup | 1: restore
+    local ret=0
 
     if [ ${do_backup} -eq 1 ]; then msg "backup: ${path_name}"; else msg "restore: ${path_name}"; fi
 
-    # map logical path name to partition-specific one; keep synchronized with fs-mount
-    # in the case of overlayfs, the upper dir can be accessed in a regular way
-    case ${path_name} in
-              /etc/*) mnt_dir="${mnt_dir}/etc";  path_name="upper/${path_name#/etc/}";;
-             /home/*) mnt_dir="${mnt_dir}/data"; path_name="home/upper/${path_name#/home/}";;
-          /var/lib/*) mnt_dir="${mnt_dir}/data"; path_name="var/lib/${path_name#/var/lib/}";;
-          /var/log/*) mnt_dir="${mnt_dir}/data"; path_name="log/${path_name#/var/log/}";;
-        /usr/local/*) mnt_dir="${mnt_dir}/data"; path_name="local/${path_name#/usr/local/}";;
-                   *) msg "backup/restore path \"${path_name}\" not supported; ignore..."; return;;
-    esac
-
     if [ ${do_backup} -eq 1 ]; then
-        if [ ! -e "${mnt_dir}/${path_name}" ]; then
+        if [ ! -e "${ROOTFS_DIR}/${path_name}" ]; then
             msg "->does not exist; ignore..."
-            return
+            return 0
         fi
         # do backup, keep permissions and ownership
-        cp --parents -av "${mnt_dir}/${path_name}" "${FACTORY_RESET_BACKUP_DIR}"
+        cp --parents -av "${ROOTFS_DIR}/${path_name}" "${FACTORY_RESET_BACKUP_DIR}"
+        ret=$?
     else
-        if [ ! -e "${FACTORY_RESET_BACKUP_DIR}/${mnt_dir}/${path_name}" ]; then
+        if [ ! -e "${FACTORY_RESET_BACKUP_DIR}/${ROOTFS_DIR}/${path_name}" ]; then
             msg "->does not exist; ignore..."
-            return
+            return 0
         fi
-        cd ${FACTORY_RESET_BACKUP_DIR}/${mnt_dir}
+        cd ${FACTORY_RESET_BACKUP_DIR}/${ROOTFS_DIR}
             # do restore, keep permissions and ownership
-            cp --parents -av "${path_name}" "${mnt_dir}"
+            cp --parents -av "${path_name:1}" "${ROOTFS_DIR}"
+            ret=$?
         cd -
     fi
+
+    sync
+    return ${ret}
 }
 
 iterate_restore_list() {
     local restore_list="$1"
-    local      mnt_dir="$2"
-    local    do_backup="$3"
+    local    do_backup="$2"
+    local ret=0
+    local status=0
 
     restore_list=${restore_list//;/ }
     for i in ${restore_list}; do
-        factory_reset_backup_restore "${i}" "${mnt_dir}" "${do_backup}"
+        factory_reset_backup_restore "${i}" "${do_backup}"; ret=$?
+        if [ ${ret} -ne 0 ]; then status=${ret}; fi
     done
+    return ${status}
 }
 
 factory_reset_mount() {
-    local mnt_dir="$1"
-    check_ext4_fs  "etc" "${ETC_PART}"  0
-    check_ext4_fs "data" "${DATA_PART}" 0
-
-    mkdir -p ${mnt_dir}/factory ${mnt_dir}/etc ${mnt_dir}/data
-    if ! mount_partition "ext4" "${FACTORY_PART}" "${mnt_dir}/factory" "defaults,ro" || \
-       ! mount_partition "ext4" "${ETC_PART}"     "${mnt_dir}/etc"     "defaults,rw" || \
-       ! mount_partition "ext4" "${DATA_PART}"    "${mnt_dir}/data"    "defaults,rw"; then
-    
-        RET2="-"; RET1=2
-        factory_reset_finish  # does not return
-    fi
+    setup_rootfs_partition "${ROOTFS_DIR}" "defaults,ro"
+    insmod_overlayfs "${ROOTFS_DIR}"
+    mount_partition "ext4" "${FACTORY_PART}" "${ROOTFS_DIR}/mnt/factory" "defaults,ro"
+    setup_etc_partition  "${ROOTFS_DIR}" "$(get_block_device etc)"  "defaults,rw"
+    setup_data_partition "${ROOTFS_DIR}" "$(get_block_device data)" "defaults,rw"
+    setup_persistent_var_log "${ROOTFS_DIR}"
 }
 
 factory_reset_umount() {
-    local mnt_dir="$1"
-    umount ${mnt_dir}/factory ${mnt_dir}/etc ${mnt_dir}/data
+    umount_persistent_var_log "${ROOTFS_DIR}"
+    umount_data_partition "${ROOTFS_DIR}"
+    umount_etc_partition  "${ROOTFS_DIR}"
+    run_cmd umount "${ROOTFS_DIR}/mnt/factory"
+    umount_rootfs_partition "${ROOTFS_DIR}"
 }
 
 # main entry point
 factory_reset_run() {
-    local mnt_dir="/tmp/mnt_restore"
+
+    if [ -z "${ROOTFS_DIR}" ]; then
+        fatal "no ROOTFS_DIR"
+        return 1
+    fi
 
     factory_reset_mode=$(get_bootloader_env_var "${FACTORY_RESET_VAR}")
     if [ -z "${factory_reset_mode}" ] || [ ${factory_reset_mode} -eq 0 ]; then
@@ -203,13 +201,17 @@ factory_reset_run() {
 
     if [ -n "${factory_reset_restore_list}" ]; then
         msg "restore list present"
-        factory_reset_mount "${mnt_dir}"  # partitions needed
+        factory_reset_mount  # logical filesystem tree
 
         # do the backup
         mkdir -p ${FACTORY_RESET_BACKUP_DIR}
-        iterate_restore_list "${factory_reset_restore_list}" "${mnt_dir}" 1
+        iterate_restore_list "${factory_reset_restore_list}" 1
+        if [ $? -ne 0 ]; then
+            RET2="-"; RET1=2
+            factory_reset_finish  # does not return
+        fi
 
-        factory_reset_umount "${mnt_dir}"
+        factory_reset_umount  # prepare subsequent re-format
     fi
 
     case ${factory_reset_mode} in
@@ -237,13 +239,13 @@ factory_reset_run() {
     check_ext4_fs "etc"  "${ETC_PART}"  1
 
     if [ -n "${factory_reset_restore_list}" ]; then
-        factory_reset_mount "${mnt_dir}"  # partitions needed
+        factory_reset_mount  # logical filesystem tree
 
-        # 1st setup etc from factory partition
-        setup_etc_from_factory ${mnt_dir} 1
-
-        # 2nd restore backup
-        iterate_restore_list "${factory_reset_restore_list}" "${mnt_dir}" 0
+        # restore backup
+        iterate_restore_list "${factory_reset_restore_list}" 0
+        if [ $? -ne 0 ]; then
+            RET2="-"; RET1=2
+        fi
     fi
 
     factory_reset_finish  # does not return
