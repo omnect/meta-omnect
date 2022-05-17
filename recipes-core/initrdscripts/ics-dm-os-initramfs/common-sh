@@ -142,7 +142,7 @@ setup_etc_from_factory()
         mkdir -p ${rootfs_dir}/etc/upper
         if [ -d ${rootfs_dir}/factory/etc ]; then
             msg "setup etc from factory partition"
-            cp -rfp ${rootfs_dir}/factory/etc/. ${rootfs_dir}/etc/upper
+            cp -av ${rootfs_dir}/factory/etc/. ${rootfs_dir}/etc/upper
         fi
     fi
 }
