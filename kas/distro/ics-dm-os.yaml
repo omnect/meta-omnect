@@ -9,7 +9,7 @@ repos:
   meta-ics-dm:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: bb2b5b31a80eb164e47649036878773614e4dbdf
+    refspec: 5357c7a40eaf8d1bcf7ff58edbba8e9527e40c7d
     layers:
       meta-filesystems:
       meta-networking:
