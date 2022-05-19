@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [dunfell-1.2.0] Q2 2022
+- kas:
+  - meta-openembedded: updated to latest HEAD of dunfell
+  - meta-swupdate: updated to latest HEAD of dunfell
+  - poky: updated to 3.1.16
+  - meta-virtualization: updated to latest HEAD of dunfell
+- enrollment: updated to 0.8.0 (allows setting `DEVICE_ID` or
+  `DEVICE_ID_PREFIX` via environment file, e.g. via inject)
+
 ## [dunfell-1.1.0] Q2 2022
 - add user consent handling for iot-hub-device-update
 - demo-portal-module: version bump to 0.4.1
@@ -30,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [> 3.1.15.31043252] Q2 2022
 - enable, configure hardware watchdog for raspberrypi platform
-  
+
 ## [> 3.1.15.26343127] Q2 2022
 - iotedge: version bump to 1.2.9
 
