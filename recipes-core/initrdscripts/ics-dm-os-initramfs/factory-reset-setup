@@ -22,6 +22,7 @@ get_id() {
 factory_reset_setup_run() {
     local tmp_dir="${ROOTFS_DIR}/run/factory-reset"  # /run is available in the INITRAMFS
     local trigger_file="${tmp_dir}/systemd-trigger"
+    local restore_list="${tmp_dir}/restore-list"
     local factory_reset_group=""
 
     # get group ID
@@ -34,6 +35,9 @@ factory_reset_setup_run() {
     # create systemd trigger file
     run_cmd mkdir -p ${tmp_dir}
     run_cmd touch ${trigger_file}
+    run_cmd touch ${restore_list}
     run_cmd chown root:${factory_reset_group} ${trigger_file}
+    run_cmd chown root:${factory_reset_group} ${restore_list}
     run_cmd chmod 660 ${trigger_file}
+    run_cmd chmod 660 ${restore_list}
 }

@@ -102,6 +102,18 @@ mount_partition()
     return $?
 }
 
+# load overlayfs kernel module
+insmod_overlayfs()
+{
+    local rootfs_dir="$1"
+    local ko_file="${rootfs_dir}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko"
+
+    # built as kernel module
+    if [ -f "${ko_file}" ]; then
+        insmod "${ko_file}"
+    fi
+}
+
 # mount overlay filesystem
 mount_overlayfs()
 {
@@ -129,4 +141,144 @@ set_bootloader_env_var()
     local  var_name="$1"
     local var_value="$2"  # empty string to delete variable
     fw_setenv ${var_name} ${var_value}
+}
+
+# if etc partition is empty, copy the etc dir from factory partition
+setup_etc_from_factory()
+{
+    local rootfs_dir="$1"
+
+    if [ ! -d "${rootfs_dir}/mnt/etc/upper" ]; then
+        mkdir -p "${rootfs_dir}/mnt/etc/upper"
+        mkdir -p "${rootfs_dir}/mnt/etc/work"
+        if [ -d "${rootfs_dir}/mnt/factory/etc" ]; then
+            msg "setup etc from factory partition"
+            cp -av "${rootfs_dir}/mnt/factory/etc/." "${rootfs_dir}/mnt/etc/upper"
+        fi
+    fi
+}
+
+setup_rootfs_partition()
+{
+    local rootfs_dir="$1"
+    local   mnt_opts="$2"
+    local bootpart=""
+    local boot_blk=""
+    local mmcblk=""
+
+    bootpart=$(get_bootloader_env_var "bootpart")
+    msg "setup rootfs partition [bootpart=${bootpart}]"
+
+    # currently we can not boot root via label and have to get the root dev
+    # ourselves.
+    # reason: on first boot you have the labels: rootA, rootB where rootB is an
+    # empty partition. on the boot after the first update, you have only
+    # label rootA, the label rootB disappeared, because adu-swupdate.sh doesnt
+    # set a e2fs label. After a second update you don't have a root partition
+    # with a label anymore.
+
+    # get mmcblk at runtime, so we can boot devices which can switch between
+    # emmc and sdcard with the same image.
+    boot_blk=$(get_block_device boot)
+    mmcblk=${boot_blk##*/}
+    mmcblk=${mmcblk%p*};
+
+    # mount rootfs
+    mount_partition "ext4" "/dev/${mmcblk}p${bootpart}" "${rootfs_dir}" "${mnt_opts}"
+}
+
+umount_rootfs_partition()
+{
+    local rootfs_dir="$1"
+    run_cmd umount "${rootfs_dir}"
+}
+
+setup_etc_partition()
+{
+    local     rootfs_dir="$1"
+    local        etc_blk="$2"
+    local       mnt_opts="$3"
+
+    msg "setup etc partition"
+
+    # check etc partition to handle unclean (not unmounted) state
+    check_ext4_fs "etc" "${etc_blk}" 0
+
+    # mount etc partition
+    mount_partition "ext4" "${etc_blk}" "${rootfs_dir}/mnt/etc" "${mnt_opts}"
+
+    setup_etc_from_factory "${rootfs_dir}"
+
+    # mount etc overlay
+    mount_overlayfs "${rootfs_dir}/etc" "${rootfs_dir}/mnt/etc/upper" "${rootfs_dir}/mnt/etc/work" \
+                    "${mnt_opts}" "${rootfs_dir}/etc"
+}
+
+umount_etc_partition()
+{
+    local rootfs_dir="$1"
+
+    run_cmd umount "${rootfs_dir}/etc"
+    run_cmd umount "${rootfs_dir}/mnt/etc"
+}
+
+setup_data_partition()
+{
+    local rootfs_dir="$1"
+    local   data_blk="$2"
+    local   mnt_opts="$3"
+
+    msg "setup data partition"
+
+    # check data partition to handle unclean (not unmounted) state
+    check_ext4_fs "data" "${data_blk}" 0
+
+    # mount data partition
+    mount_partition "ext4" "${data_blk}" "${rootfs_dir}/mnt/data" "${mnt_opts}"
+
+    # mount home overlay
+    mkdir -p "${rootfs_dir}/mnt/data/home/work"
+    mkdir -p "${rootfs_dir}/mnt/data/home/upper"
+    mkdir -p "${rootfs_dir}/mnt/data/var/lib"
+    mkdir -p "${rootfs_dir}/mnt/data/local"
+    mount_overlayfs "${rootfs_dir}/home" "${rootfs_dir}/mnt/data/home/upper" "${rootfs_dir}/mnt/data/home/work" \
+                    "${mnt_opts}" "${rootfs_dir}/home"
+
+    # bind mount /var/lib
+    mkdir -p "${rootfs_dir}/mnt/data/var/lib"
+    run_cmd mount -o bind "${rootfs_dir}/mnt/data/var/lib" "${rootfs_dir}/var/lib"
+
+    # bind mount /usr/local
+    mkdir -p "${rootfs_dir}/mnt/data/local"
+    run_cmd mount -o bind "${rootfs_dir}/mnt/data/local" "${rootfs_dir}/usr/local"
+}
+
+umount_data_partition()
+{
+    local rootfs_dir="$1"
+
+    run_cmd umount "${rootfs_dir}/usr/local"
+    run_cmd umount "${rootfs_dir}/var/lib"
+    run_cmd umount "${rootfs_dir}/home"
+    run_cmd umount "${rootfs_dir}/mnt/data"
+}
+
+setup_persistent_var_log()
+{
+    local rootfs_dir="$1"
+
+    if grep ^DISTRO_FEATURES ${rootfs_dir}/etc/os-release | grep -q '[" ]persistent-var-log[ "]'; then
+        msg "setup persistent var log"
+        mkdir -p ${rootfs_dir}/mnt/data/log
+        run_cmd mount -o bind ${rootfs_dir}/mnt/data/log ${rootfs_dir}/var/log
+    fi
+}
+
+umount_persistent_var_log()
+{
+    local rootfs_dir="$1"
+
+    if grep ^DISTRO_FEATURES ${rootfs_dir}/etc/os-release | grep -q '[" ]persistent-var-log[ "]'; then
+        run_cmd umount ${rootfs_dir}/var/log
+    fi
 }

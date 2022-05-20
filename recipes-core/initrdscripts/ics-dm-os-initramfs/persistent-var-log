@@ -11,7 +11,5 @@ persistent_var_log_run() {
         fatal "no ROOTFS_DIR"
         return 1
     fi
-
-    mkdir -p ${ROOTFS_DIR}/mnt/data/log
-    mount -o bind ${ROOTFS_DIR}/mnt/data/log ${ROOTFS_DIR}/var/log
+    setup_persistent_var_log "${ROOTFS_DIR}"
 }
