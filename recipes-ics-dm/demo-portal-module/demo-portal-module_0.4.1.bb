@@ -13,6 +13,8 @@ SRCREV = "ba2eafadd355fa31c1850665ff6dfef2122e5015"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
+# used by pkg_config crate, in turn used by libdbus_sys crate
+DEPENDS += "pkgconfig-native"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -207,16 +209,16 @@ SRCREV_FORMAT .= "_iot-identity-service"
 SRCREV_iot-identity-service = "6af42eefc84351ec7af510213561a40948ed9045"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/iot-identity-service"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.5.5"
+SRCREV_azure-iot-sdk = "84efdc9a5d5e6a0fcfdb2e442e3e3e329a73cb43"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
-SRCREV_azure-iot-sdk-sys = "0.2.3"
+SRCREV_azure-iot-sdk-sys = "3fa2404ff1d29b9ac04a59ddc15e23c894cd01f3"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk-sys"
 SRCREV_FORMAT .= "_eis-utils"
-SRCREV_eis-utils = "0.2.2"
+SRCREV_eis-utils = "aca6c68ca99764d638ac34638e5fe839f2064f03"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/eis-utils"
 SRCREV_FORMAT .= "_sd-notify"
-SRCREV_sd-notify = "v0.5.0"
+SRCREV_sd-notify = "c36f0bf43e154452fb97ab7da42db14fcd2571a3"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/sd-notify"
 
 # FIXME: update generateme with the real MD5 of the license file
