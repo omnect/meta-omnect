@@ -24,6 +24,10 @@ FACTORY_RESET_BACKUP_DIR="/tmp/factory_reset/backup"
 # u-boot environment variable used to return factory reset status
 FACTORY_RESET_STATUS_VAR="factory-reset-status"
 
+# factory reset status
+FACTORY_RESET_RET1=""
+FACTORY_RESET_RET2=""
+
 # called by generic INITRAMFS
 factory_reset_enabled() {
     return 0  # enable main entry point
@@ -107,7 +111,7 @@ factory_reset_finish() {
     set_bootloader_env_var ${FACTORY_RESET_RESTORE_LIST_VAR}
 
     # set return status
-    set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR} "${RET1}:${RET2}"
+    set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR} "${FACTORY_RESET_RET1}:${FACTORY_RESET_RET2}"
 
     # get into normal startup
     msg "Rebooting system..."
@@ -115,33 +119,42 @@ factory_reset_finish() {
     # -- never reached --
 }
 
-# backup/restore file or directory
-factory_reset_backup_restore() {
+# backup file or directory
+factory_reset_backup() {
     local path_name="$1"  # file or directory
-    local do_backup="$2"  # 0: backup | 1: restore
     local ret=0
 
-    if [ ${do_backup} -eq 1 ]; then msg "backup: ${path_name}"; else msg "restore: ${path_name}"; fi
+    msg "backup: ${path_name}"
 
-    if [ ${do_backup} -eq 1 ]; then
-        if [ ! -e "${ROOTFS_DIR}/${path_name}" ]; then
-            msg "->does not exist; ignore..."
-            return 0
-        fi
-        # do backup, keep permissions and ownership
-        cp --parents -av "${ROOTFS_DIR}/${path_name}" "${FACTORY_RESET_BACKUP_DIR}"
-        ret=$?
-    else
-        if [ ! -e "${FACTORY_RESET_BACKUP_DIR}/${ROOTFS_DIR}/${path_name}" ]; then
-            msg "->does not exist; ignore..."
-            return 0
-        fi
-        cd ${FACTORY_RESET_BACKUP_DIR}/${ROOTFS_DIR}
-            # do restore, keep permissions and ownership
-            cp --parents -av "${path_name:1}" "${ROOTFS_DIR}"
-            ret=$?
-        cd -
+    if [ ! -e "${ROOTFS_DIR}/${path_name}" ]; then
+        msg "->does not exist; ignore..."
+        return 0
     fi
+
+    # do backup, keep permissions and ownership
+    cp --parents -av "${ROOTFS_DIR}/${path_name}" "${FACTORY_RESET_BACKUP_DIR}"
+    ret=$?
+
+    sync
+    return ${ret}
+}
+
+factory_reset_restore() {
+    local path_name="$1"  # file or directory
+    local ret=0
+
+    msg "restore: ${path_name}"
+
+    if [ ! -e "${FACTORY_RESET_BACKUP_DIR}/${ROOTFS_DIR}/${path_name}" ]; then
+        msg "->does not exist; ignore..."
+        return 0
+    fi
+
+    cd ${FACTORY_RESET_BACKUP_DIR}/${ROOTFS_DIR}
+        # do restore, keep permissions and ownership
+        cp --parents -av "${path_name:1}" "${ROOTFS_DIR}"
+        ret=$?
+    cd -
 
     sync
     return ${ret}
@@ -155,8 +168,13 @@ iterate_restore_list() {
 
     restore_list=${restore_list//;/ }
     for i in ${restore_list}; do
-        factory_reset_backup_restore "${i}" "${do_backup}"; ret=$?
-        if [ ${ret} -ne 0 ]; then status=${ret}; fi
+        if [ ${do_backup} -eq 1 ]; then
+            factory_reset_backup "${i}"; ret=$?
+            if [ ${ret} -ne 0 ]; then status=${ret}; break; fi  # break backup ; deliver failure
+        else
+            factory_reset_restore "${i}"; ret=$?
+            if [ ${ret} -ne 0 ]; then status=${ret}; fi  # continue restoring next paths; deliver failure
+        fi
     done
     return ${status}
 }
@@ -207,7 +225,8 @@ factory_reset_run() {
         mkdir -p ${FACTORY_RESET_BACKUP_DIR}
         iterate_restore_list "${factory_reset_restore_list}" 1
         if [ $? -ne 0 ]; then
-            RET2="-"; RET1=2
+            # severe error; do not continue with factory reset
+            FACTORY_RESET_RET2="-"; FACTORY_RESET_RET1=2
             factory_reset_finish  # does not return
         fi
 
@@ -215,24 +234,24 @@ factory_reset_run() {
     fi
 
     case ${factory_reset_mode} in
-        1) RET2=0; RET1=0  # no wipe
+        1) FACTORY_RESET_RET2=0; FACTORY_RESET_RET1=0  # no wipe
            ;;
         2) factory_reset_wipe_dd
-           RET2=$?; RET1=0
+           FACTORY_RESET_RET2=$?; FACTORY_RESET_RET1=0
            ;;
         3) factory_reset_wipe_fstrim
-           RET2=$?; RET1=0
+           FACTORY_RESET_RET2=$?; FACTORY_RESET_RET1=0
            ;;
         4) factory_reset_wipe_custom
-           RET2=$?; RET1=0
+           FACTORY_RESET_RET2=$?; FACTORY_RESET_RET1=0
            ;;
         *) msg "ERROR: factory reset mode ${factory_reset_mode} not supported; abort..."
-           RET2="-"; RET1=1
+           FACTORY_RESET_RET2="-"; FACTORY_RESET_RET1=1
            ;;
     esac
 
     # severe errors
-    if [ ${RET1} -ne 0 ] || [ ${RET2} -ne 0 ]; then factory_reset_finish; fi
+    if [ ${FACTORY_RESET_RET1} -ne 0 ] || [ ${FACTORY_RESET_RET2} -ne 0 ]; then factory_reset_finish; fi
 
     # no severe errors; enforce mkfs
     check_ext4_fs "data" "${DATA_PART}" 1
@@ -244,7 +263,7 @@ factory_reset_run() {
         # restore backup
         iterate_restore_list "${factory_reset_restore_list}" 0
         if [ $? -ne 0 ]; then
-            RET2="-"; RET1=2
+            FACTORY_RESET_RET2="-"; FACTORY_RESET_RET1=2
         fi
     fi
 

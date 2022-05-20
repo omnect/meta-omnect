@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [dunfell-1.3.0] Q2 2022
 - add factory reset restore list
 - demo-portal-module: version bump to 0.5.0
-- update user consent handling for iot-hub-device-update
+- update user consent handling for iot-hub-device-update:
+  - change user_consent_request in request_consent.json to json array type
+  - clean user_consent_request info after succeeded user consent
 
 ## [dunfell-1.2.0] Q2 2022
 - kas:

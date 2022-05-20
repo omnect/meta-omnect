@@ -245,7 +245,12 @@ sudo fw_setenv factory-reset-restore-list '/etc/wpa_supplicant/wpa_supplicant-wl
 
 The list of path names is separated by the character `;` and is enclosed by the `'` quotation mark.
 The factory reset is directed to the partitions `etc` and `data`.
-Therefore, path names with the following prefixes are allowed: `/etc/`, `/home/`, `/var/lib/`, `/var/log/` and `/usr/local/`.
+Therefore, path names with the following prefixes are allowed: `/etc/`, `/home/`, `/var/lib/`, `/var/log/`, `/usr/local/` and /mnt/data.
+
+In the case of an error during the backup of a file or directory part of the restore list, the whole factory reset will be aborted
+and the partitions `etc` and `data` remain untouched.
+In the case of an error during the restore of a file or directory, the restore processing will be continued with other paths part of the restore list.
+In both cases, the error will be indicated by the factory reset status (see below).
 
 The status of the factory reset is returned by the u-boot environment variable `factory-reset-status`.
 It has the following format:
@@ -256,7 +261,7 @@ It has the following format:
 ```
 
 The overall *factory reset status* consists of two parts:
-- *main status*: general processing state; 0 -> wipe mode supported; 1 -> wipe mode unsupported; 2 -> restore failure
+- *main status*: general processing state; 0 -> wipe mode supported; 1 -> wipe mode unsupported; 2 -> backup/restore failure
 - *subordinated status*: execution exit status, in case of *main status* == 0 (success)
 
 In the case of successfully performed factory reset, the u-boot environment variable `factory-reset-status` is set to the value `0:0`.
