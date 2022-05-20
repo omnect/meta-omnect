@@ -1,8 +1,4 @@
 do_configure:append() {
-    # patch cargo edition from 2021 to 2018
-    # workaround for yocto dunfell branch. it is expected that in yocto kirkstone this patch can be removed.
-    find ${WORKDIR} -name Cargo.toml -type f -exec sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' {} \;
-
     # patch paths to iot-identity-service services in eis-utils
     # workaround for yocto dunfell branch.it is expected that in yocto kirkstone this patch can be removed.
 
