@@ -37,8 +37,8 @@ fs_mount_run() {
     mount_partition "ext4" ${rootfs} ${ROOTFS_DIR} "${mnt_opts_default},ro"
 
     # load overlay kernelmodule
-    if [ -f ${ROOTFS_DIR}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko  ]; then
-        insmod ${ROOTFS_DIR}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko
+    if [ -f ${ROOTFS_DIR}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko.xz  ]; then
+        insmod ${ROOTFS_DIR}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko.xz
     fi
 
     # mount cert
