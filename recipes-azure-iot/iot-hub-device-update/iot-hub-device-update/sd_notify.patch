@@ -13,7 +13,7 @@ index a663e88..4f2965e 100644
  get_filename_component (
      ADUC_INSTALLEDCRITERIA_FILE_PATH
 diff --git a/src/agent/src/main.c b/src/agent/src/main.c
-index 73b8f12..39b9d63 100644
+index a46fa05..7b22260 100644
 --- a/src/agent/src/main.c
 +++ b/src/agent/src/main.c
 @@ -45,6 +45,8 @@
@@ -25,15 +25,6 @@ index 73b8f12..39b9d63 100644
  /**
   * @brief The timeout for the Edge Identity Service HTTP requests
   */
-@@ -160,7 +162,7 @@ typedef struct tagPnPComponentEntry
-     const PnPComponentDestroyFunc Destroy;
-     const PnPComponentPropertyUpdateCallback
-         PnPPropertyUpdateCallback; /**< Called when a component's property is updated. (optional) */
--    
-+
-     //
-     // Following data is dynamic.
-     // Must be initialized to NULL in map and remain last entries in this struct.
 @@ -1133,6 +1135,7 @@ int main(int argc, char** argv)
      int dir_result = ADUC_SystemUtils_MkDirRecursiveDefault(ADUC_DATA_FOLDER);
      if (dir_result != 0)
