@@ -4,7 +4,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
 SRC_URI = " \
-  git://github.com/azure/iot-hub-device-update.git;protocol=https;branch=main \
+  git://github.com/azure/iot-hub-device-update.git;protocol=https;nobranch=1;branch=main \
   file://adu-swupdate-key.patch \
   file://eis-utils-cert-chain-buffer.patch \
   ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'ics-dm-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
@@ -48,7 +48,8 @@ do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 DEPENDS = "systemd"
 RDEPENDS:${PN} = "bash swupdate"
-SRCREV = "2cd165ba05cf7a6eff34cbf6c26e4ae30cc9d5d9"
+# main: 0.8.1
+SRCREV = "f8432de8288852bc57eaaef0fa41bea1bf612832"
 
 EXTRA_OECMAKE += "-DADUC_LOG_FOLDER=/var/log/aduc-logs"
 EXTRA_OECMAKE += "-DADUC_CONTENT_HANDLERS=microsoft/swupdate"
