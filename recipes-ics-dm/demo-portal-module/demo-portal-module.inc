@@ -21,7 +21,7 @@ RDEPENDS:${PN} += "\
 "
 inherit aziot systemd
 
-CARGO_BUILD_FLAGS += "--locked"
+#CARGO_BUILD_FLAGS += "--locked"
 
 do_compile:prepend() {
     # - for now we use git to fetch the repo instead of cargo itself
