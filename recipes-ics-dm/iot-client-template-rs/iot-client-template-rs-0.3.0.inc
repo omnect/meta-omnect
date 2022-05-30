@@ -4,13 +4,13 @@ do_configure:append() {
     find ${WORKDIR} -name Cargo.toml -type f -exec sed -i '/edition = '\"2021\"'/c\edition = '\"2018\"'' {} \;
 
     # patch paths to iot-identity-service services in eis-utils
-    # workaround for yocto dunfell branch.it is expected that in yocto kirkstone this patch can be removed.
+    # workaround for yocto dunfell branch. it is expected that in yocto kirkstone this patch can be removed.
 
-    sed -i -e 's/azure-iot-sdk =.*/azure-iot-sdk = { path = \"..\/azure-iot-sdk\" }/' \
-           -e 's/sd-notify =.*/sd-notify = { path = \"..\/sd-notify\" , optional = true }/' ${S}/Cargo.toml
+    sed -i -e 's/azure-iot-sdk =.*/azure-iot-sdk = { path = \"..\/azure-iot-sdk\", default-features = false }/' \
+           -e 's/sd-notify =.*/sd-notify = { path = \"..\/sd-notify\", optional = true }/' ${S}/Cargo.toml
 
-    sed -i -e 's/azure-iot-sdk-sys =.*/azure-iot-sdk-sys = { path = \"..\/azure-iot-sdk-sys\" }/' \
-           -e 's/eis-utils =.*/eis-utils = { path = \"..\/eis-utils\" }/' ${WORKDIR}/azure-iot-sdk/Cargo.toml
+    sed -i -e 's/azure-iot-sdk-sys =.*/azure-iot-sdk-sys = { path = \"..\/azure-iot-sdk-sys\", default-features = false }/' \
+           -e 's/eis-utils =.*/eis-utils = { path = \"..\/eis-utils\", optional = true }/' ${WORKDIR}/azure-iot-sdk/Cargo.toml
 
     sed -i -e 's/aziot-identity-client-async =.*/aziot-identity-client-async = { path = \"..\/iot-identity-service\/identity\/aziot-identity-client-async\" }/' \
            -e 's/aziot-identity-common =.*/aziot-identity-common = { path = \"..\/iot-identity-service\/identity\/aziot-identity-common\" }/' \
