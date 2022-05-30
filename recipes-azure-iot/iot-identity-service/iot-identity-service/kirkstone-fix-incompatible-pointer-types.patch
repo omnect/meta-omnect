@@ -1,0 +1,103 @@
+diff --git a/key/aziot-key-openssl-engine/build/engine.c b/key/aziot-key-openssl-engine/build/engine.c
+index 73d7bef..4c81b93 100644
+--- a/key/aziot-key-openssl-engine/build/engine.c
++++ b/key/aziot-key-openssl-engine/build/engine.c
+@@ -17,8 +17,8 @@
+  * so invoke them from C instead of creating complicated bindings.
+  */
+ 
+-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+-int aziot_key_dupf_engine_ex_data(CRYPTO_EX_DATA *to, const CRYPTO_EX_DATA *from, void *from_d, int idx, long argl, void *argp);
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++int aziot_key_dupf_engine_ex_data(CRYPTO_EX_DATA *to, const CRYPTO_EX_DATA *from, void **from_d, int idx, long argl, void *argp);
+ #else
+ int aziot_key_dupf_engine_ex_data(CRYPTO_EX_DATA *to, CRYPTO_EX_DATA *from, void *from_d, int idx, long argl, void *argp);
+ #endif
+@@ -33,8 +33,8 @@ int aziot_key_get_engine_ex_index() {
+ 	return ENGINE_get_ex_new_index(0, NULL, NULL, aziot_key_dupf_engine_ex_data, NULL);
+ }
+ 
+-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+-int aziot_key_dupf_ec_key_ex_data(CRYPTO_EX_DATA *to, const CRYPTO_EX_DATA *from, void *from_d, int idx, long argl, void *argp);
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++int aziot_key_dupf_ec_key_ex_data(CRYPTO_EX_DATA *to, const CRYPTO_EX_DATA *from, void **from_d, int idx, long argl, void *argp);
+ #else
+ int aziot_key_dupf_ec_key_ex_data(CRYPTO_EX_DATA *to, CRYPTO_EX_DATA *from, void *from_d, int idx, long argl, void *argp);
+ #endif
+@@ -48,8 +48,8 @@ int aziot_key_get_ec_key_ex_index() {
+ #endif
+ }
+ 
+-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+-int aziot_key_dupf_rsa_ex_data(CRYPTO_EX_DATA *to, const CRYPTO_EX_DATA *from, void *from_d, int idx, long argl, void *argp);
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++int aziot_key_dupf_rsa_ex_data(CRYPTO_EX_DATA *to, const CRYPTO_EX_DATA *from, void **from_d, int idx, long argl, void *argp);
+ #else
+ int aziot_key_dupf_rsa_ex_data(CRYPTO_EX_DATA *to, CRYPTO_EX_DATA *from, void *from_d, int idx, long argl, void *argp);
+ #endif
+
+diff --git a/key/aziot-key-openssl-engine/src/engine.rs b/key/aziot-key-openssl-engine/src/engine.rs
+index 40aa040..9d465b0 100644
+--- a/key/aziot-key-openssl-engine/src/engine.rs
++++ b/key/aziot-key-openssl-engine/src/engine.rs
+@@ -124,7 +124,7 @@ impl crate::ex_data::HasExData<Engine> for openssl_sys::ENGINE {
+ unsafe extern "C" fn aziot_key_dupf_engine_ex_data(
+     _to: *mut openssl_sys::CRYPTO_EX_DATA,
+     _from: *const openssl_sys::CRYPTO_EX_DATA,
+-    from_d: *mut std::ffi::c_void,
++    from_d: *mut *mut std::ffi::c_void,
+     idx: std::os::raw::c_int,
+     _argl: std::os::raw::c_long,
+     _argp: *mut std::ffi::c_void,
+
+diff --git a/key/aziot-key-openssl-engine/src/ec_key.rs b/key/aziot-key-openssl-engine/src/ec_key.rs
+index 1d81769..ecdd37d 100644
+--- a/key/aziot-key-openssl-engine/src/ec_key.rs
++++ b/key/aziot-key-openssl-engine/src/ec_key.rs
+@@ -11,7 +11,7 @@ impl crate::ex_data::HasExData<crate::ex_data::KeyExData> for openssl_sys::EC_KE
+ unsafe extern "C" fn aziot_key_dupf_ec_key_ex_data(
+     _to: *mut openssl_sys::CRYPTO_EX_DATA,
+     _from: *const openssl_sys::CRYPTO_EX_DATA,
+-    from_d: *mut std::ffi::c_void,
++    from_d: *mut *mut std::ffi::c_void,
+     idx: std::os::raw::c_int,
+     _argl: std::os::raw::c_long,
+     _argp: *mut std::ffi::c_void,
+
+diff --git a/key/aziot-key-openssl-engine/src/rsa.rs b/key/aziot-key-openssl-engine/src/rsa.rs
+index 8206fcc..862316f 100644
+--- a/key/aziot-key-openssl-engine/src/rsa.rs
++++ b/key/aziot-key-openssl-engine/src/rsa.rs
+@@ -11,7 +11,7 @@ impl crate::ex_data::HasExData<crate::ex_data::KeyExData> for openssl_sys::RSA {
+ unsafe extern "C" fn aziot_key_dupf_rsa_ex_data(
+     _to: *mut openssl_sys::CRYPTO_EX_DATA,
+     _from: *const openssl_sys::CRYPTO_EX_DATA,
+-    from_d: *mut std::ffi::c_void,
++    from_d: *mut *mut std::ffi::c_void,
+     idx: std::os::raw::c_int,
+     _argl: std::os::raw::c_long,
+     _argp: *mut std::ffi::c_void,
+
+diff --git a/key/aziot-key-openssl-engine/src/ex_data.rs b/key/aziot-key-openssl-engine/src/ex_data.rs
+index 3ddbfa3..e21d4cd 100644
+--- a/key/aziot-key-openssl-engine/src/ex_data.rs
++++ b/key/aziot-key-openssl-engine/src/ex_data.rs
+@@ -96,15 +96,15 @@ where
+     Ok(())
+ }
+ 
+-pub(crate) unsafe fn dup<T, U>(from_d: *mut std::ffi::c_void, idx: std::os::raw::c_int)
++pub(crate) unsafe fn dup<T, U>(from_d: *mut *mut std::ffi::c_void, idx: std::os::raw::c_int)
+ where
+     T: HasExData<U>,
+ {
+     let ex_index = <T as HasExData<U>>::index().as_raw();
+     assert_eq!(idx, ex_index);
+ 
+-    // Although `dup_func`'s signature types `from_d` as `void*`, it is in fact a `void**` - it points to the pointer returned by
+-    // calling `CRYPTO_get_ex_data` on the `from` object. After `dup_func` returns, openssl takes whatever `from_d` is pointing to,
++    // `from_d` points to the pointer returned by calling `CRYPTO_get_ex_data` on the `from` object.
++    // After `dup_func` returns, openssl takes whatever `from_d` is pointing to,
+     // and sets it as the ex data of the `to` object using `CRYPTO_set_ex_data`.
+     //
+     // Ref: https://www.openssl.org/docs/man1.1.1/man3/CRYPTO_get_ex_new_index.html (search for `dup_func`)
