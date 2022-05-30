@@ -10,6 +10,8 @@ LIC_FILES_CHKSUM = " \
     file://LICENSE-MIT;md5=afb814368d9110052a22e0da67f027d3 \
 "
 
+CARGO_BUILD_FLAGS += "--locked"
+
 DEPENDS += "dbus"
 RDEPENDS:${PN} += "bash bluez5 (>=5.60) toml-cli wpa-supplicant"
 
