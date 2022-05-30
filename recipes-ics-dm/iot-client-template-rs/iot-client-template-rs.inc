@@ -21,7 +21,8 @@ RDEPENDS:${PN} += "\
 "
 inherit aziot systemd
 
-CARGO_BUILD_FLAGS += "--locked"
+## cannot enable flag below since cargo edition is patched from 2021 to 2018 for dunfell
+#CARGO_BUILD_FLAGS += "--locked"
 
 do_compile:prepend() {
     # - for now we use git to fetch the repo instead of cargo itself

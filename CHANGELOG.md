@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [dunfell-1.3.2] Q2 2022
 - update to `iot-client-template-rs` 0.3.0
 - update to `demo-portal-module` 0.5.1
-- add "--locked" build option for icsdm iot modules
 
 ## [dunfell-1.3.1] Q2 2022
 - update to `iot-hub-device-update` 0.8.1
