@@ -10,7 +10,7 @@ software =
 					{
 						name = "@@SOFTWARE_NAME@@"
 						filename = "ics-dm-os-@@MACHINE@@.ext4.gz";
-						sha256 = "$swupdate_get_sha256(@ics-dm-os-@@MACHINE@@.ext4.gz)";
+						sha256 = "$swupdate_get_sha256(ics-dm-os-@@MACHINE@@.ext4.gz)";
 						type = "raw";
 						compressed = true;
 						device = "/dev/ics_dm/rootblkp2";
