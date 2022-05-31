@@ -9,7 +9,7 @@ inherit cargo
 
 # how to get iot-client-template-rs could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/iot-client-template-rs/0.2.4"
-SRC_URI += "git://git@github.com/ICS-DeviceManagement/iot-client-template-rs.git;protocol=ssh;nobranch=1;branch=main"
+SRC_URI += "git://git@github.com/ICS-DeviceManagement/iot-client-template-rs.git;protocol=https;branch=main"
 SRCREV = "88ec2d204668fa40ad94fb88019658d685383a03"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
@@ -173,11 +173,11 @@ SRC_URI += " \
     crate://crates.io/windows_i686_msvc/0.34.0 \
     crate://crates.io/windows_x86_64_gnu/0.34.0 \
     crate://crates.io/windows_x86_64_msvc/0.34.0 \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=iot-identity-service;destsuffix=iot-identity-service \
-    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk-sys.git;protocol=ssh;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
-    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk.git;protocol=ssh;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
-    git://git@github.com/ICS-DeviceManagement/eis-utils.git;protocol=ssh;nobranch=1;name=eis-utils;destsuffix=eis-utils \
-    git://git@github.com/ICS-DeviceManagement/sd-notify.git;protocol=ssh;nobranch=1;name=sd-notify;destsuffix=sd-notify \
+    git://git@github.com/Azure/iot-identity-service.git;protocol=https;branch=main;name=iot-identity-service;destsuffix=iot-identity-service \
+    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk-sys.git;protocol=https;branch=main;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
+    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk.git;protocol=https;branch=main;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
+    git://git@github.com/ICS-DeviceManagement/eis-utils.git;protocol=https;branch=main;name=eis-utils;destsuffix=eis-utils \
+    git://git@github.com/ICS-DeviceManagement/sd-notify.git;protocol=https;branch=master;name=sd-notify;destsuffix=sd-notify \
 "
 
 SRCREV_FORMAT .= "_iot-identity-service"

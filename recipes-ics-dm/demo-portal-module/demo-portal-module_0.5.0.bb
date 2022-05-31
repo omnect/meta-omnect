@@ -8,7 +8,7 @@ inherit cargo
 
 # how to get demo-portal-module could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/demo-portal-module/0.5.0"
-SRC_URI += "git://git@github.com/ICS-DeviceManagement/demo-portal-module.git;protocol=ssh;nobranch=1;branch=main"
+SRC_URI += "git://git@github.com/ICS-DeviceManagement/demo-portal-module.git;protocol=https;branch=main"
 SRCREV = "96ae725f184a001f7abb02954f2b539b64278ad4"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
@@ -198,11 +198,11 @@ SRC_URI += " \
     crate://crates.io/windows_x86_64_gnu/0.36.1 \
     crate://crates.io/windows_x86_64_msvc/0.36.1 \
     crate://crates.io/ws2_32-sys/0.2.1 \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=iot-identity-service;destsuffix=iot-identity-service \
-    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk-sys.git;protocol=ssh;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
-    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk.git;protocol=ssh;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
-    git://git@github.com/ICS-DeviceManagement/eis-utils.git;protocol=ssh;nobranch=1;name=eis-utils;destsuffix=eis-utils \
-    git://git@github.com/ICS-DeviceManagement/sd-notify.git;protocol=ssh;nobranch=1;name=sd-notify;destsuffix=sd-notify \
+    git://git@github.com/Azure/iot-identity-service.git;protocol=https;branch=main;name=iot-identity-service;destsuffix=iot-identity-service \
+    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk-sys.git;protocol=https;branch=main;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
+    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk.git;protocol=https;branch=main;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
+    git://git@github.com/ICS-DeviceManagement/eis-utils.git;protocol=https;branch=main;name=eis-utils;destsuffix=eis-utils \
+    git://git@github.com/ICS-DeviceManagement/sd-notify.git;protocol=https;branch=master;name=sd-notify;destsuffix=sd-notify \
 "
 SRCREV_FORMAT .= "_iot-identity-service"
 SRCREV_iot-identity-service = "6af42eefc84351ec7af510213561a40948ed9045"
