@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [dunfell-1.3.3] Q2 2022
+- fixed warning: "Syntax for sha256 changed..."
+
 ## [dunfell-1.3.2] Q2 2022
 - update to `iot-client-template-rs` 0.3.0
 - update to `demo-portal-module` 0.5.1
