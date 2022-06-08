@@ -39,15 +39,15 @@ do_install:append() {
     fi
 
     # configure journald
-    [ ! -z ${JOURNALD_SystemMaxUse} ]       && sed -i 's/^#SystemMaxUse=/SystemMaxUse=${JOURNALD_SystemMaxUse} /' ${D}${sysconfdir}/systemd/journald.conf
-    [ ! -z ${JOURNALD_SystemKeepFree} ]     && sed -i 's/^#SystemKeepFree=/SystemKeepFree=${JOURNALD_SystemKeepFree} /' ${D}${sysconfdir}/systemd/journald.conf
-    [ ! -z ${JOURNALD_SystemMaxFileSize} ]  && sed -i 's/^#SystemMaxFileSize=/SystemMaxFileSize=${JOURNALD_SystemMaxFileSize} /' ${D}${sysconfdir}/systemd/journald.conf
-    [ ! -z ${JOURNALD_SystemMaxFiles} ]     && sed -i 's/^#SystemMaxFiles=/SystemMaxFiles=${JOURNALD_SystemMaxFiles} /' ${D}${sysconfdir}/systemd/journald.conf
-    [ ! -z ${JOURNALD_RuntimeMaxUse} ]      && sed -i 's/^#RuntimeMaxUse=/RuntimeMaxUse=${JOURNALD_RuntimeMaxUse} /' ${D}${sysconfdir}/systemd/journald.conf
-    [ ! -z ${JOURNALD_RuntimeKeepFree} ]    && sed -i 's/^#RuntimeKeepFree=/RuntimeKeepFree=${JOURNALD_RuntimeKeepFree} /' ${D}${sysconfdir}/systemd/journald.conf
-    [ ! -z ${JOURNALD_RuntimeMaxFileSize} ] && sed -i 's/^#RuntimeMaxFileSize=/RuntimeMaxFileSize=${JOURNALD_RuntimeMaxFileSize} /' ${D}${sysconfdir}/systemd/journald.conf
-    [ ! -z ${JOURNALD_RuntimeMaxFiles} ]    && sed -i 's/^#RuntimeMaxFiles=/RuntimeMaxFiles=${JOURNALD_RuntimeMaxFiles} /' ${D}${sysconfdir}/systemd/journald.conf
-    [ ! -z ${JOURNALD_ForwardToSyslog} ]    && sed -i -E 's/^#ForwardToSyslog=(.*)/ForwardToSyslog=${JOURNALD_ForwardToSyslog} /' ${D}${sysconfdir}/systemd/journald.conf
+    [ -n "${JOURNALD_SystemMaxUse}" ]       && sed -i 's/^#SystemMaxUse=/SystemMaxUse=${JOURNALD_SystemMaxUse} /' ${D}${sysconfdir}/systemd/journald.conf
+    [ -n "${JOURNALD_SystemKeepFree}" ]     && sed -i 's/^#SystemKeepFree=/SystemKeepFree=${JOURNALD_SystemKeepFree} /' ${D}${sysconfdir}/systemd/journald.conf
+    [ -n "${JOURNALD_SystemMaxFileSize}" ]  && sed -i 's/^#SystemMaxFileSize=/SystemMaxFileSize=${JOURNALD_SystemMaxFileSize} /' ${D}${sysconfdir}/systemd/journald.conf
+    [ -n "${JOURNALD_SystemMaxFiles}" ]     && sed -i 's/^#SystemMaxFiles=/SystemMaxFiles=${JOURNALD_SystemMaxFiles} /' ${D}${sysconfdir}/systemd/journald.conf
+    [ -n "${JOURNALD_RuntimeMaxUse}" ]      && sed -i 's/^#RuntimeMaxUse=/RuntimeMaxUse=${JOURNALD_RuntimeMaxUse} /' ${D}${sysconfdir}/systemd/journald.conf
+    [ -n "${JOURNALD_RuntimeKeepFree}" ]    && sed -i 's/^#RuntimeKeepFree=/RuntimeKeepFree=${JOURNALD_RuntimeKeepFree} /' ${D}${sysconfdir}/systemd/journald.conf
+    [ -n "${JOURNALD_RuntimeMaxFileSize}" ] && sed -i 's/^#RuntimeMaxFileSize=/RuntimeMaxFileSize=${JOURNALD_RuntimeMaxFileSize} /' ${D}${sysconfdir}/systemd/journald.conf
+    [ -n "${JOURNALD_RuntimeMaxFiles}" ]    && sed -i 's/^#RuntimeMaxFiles=/RuntimeMaxFiles=${JOURNALD_RuntimeMaxFiles} /' ${D}${sysconfdir}/systemd/journald.conf
+    [ -n "${JOURNALD_ForwardToSyslog}" ]    && sed -i -E 's/^#ForwardToSyslog=(.*)/ForwardToSyslog=${JOURNALD_ForwardToSyslog} /' ${D}${sysconfdir}/systemd/journald.conf
 
     # sync time on sysinit
     install -d ${D}${sysconfdir}/systemd/system/sysinit.target.wants
@@ -57,11 +57,11 @@ do_install:append() {
 # for rpi3 and rpi4, use hardware watchdog (see MACHINEOVERRIDES)
 do_install:append:rpi() {
     local cfg_file="${D}${sysconfdir}/systemd/system.conf"
-    [ -n ${SYSTEMD_RuntimeWatchdogSec}  ] && \
+    [ -n "${SYSTEMD_RuntimeWatchdogSec}"  ] && \
         sed -i 's|^#RuntimeWatchdogSec=.*$|RuntimeWatchdogSec=${SYSTEMD_RuntimeWatchdogSec}|' ${cfg_file}
-    [ -n ${SYSTEMD_RebootWatchdogSec}   ] && \
+    [ -n "${SYSTEMD_RebootWatchdogSec}"   ] && \
         sed -i 's|^#RebootWatchdogSec=.*$|RebootWatchdogSec=${SYSTEMD_RebootWatchdogSec}|' ${cfg_file}
-    [ -n ${SYSTEMD_ShutdownWatchdogSec} ] && \
+    [ -n "${SYSTEMD_ShutdownWatchdogSec}" ] && \
         sed -i 's|^#ShutdownWatchdogSec=.*$|ShutdownWatchdogSec=${SYSTEMD_ShutdownWatchdogSec}|' ${cfg_file}
 }
 
