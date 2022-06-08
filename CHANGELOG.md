@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [dunfell-1.3.4] Q2 2022
+- make the hardware watchdog configuration specific for the raspberrypi platform, because the deadline
+  depends on the hardware capabilities
+
 ## [dunfell-1.3.3] Q2 2022
 - fixed warning: "Syntax for sha256 changed..."
 
