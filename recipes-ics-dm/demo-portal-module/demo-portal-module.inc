@@ -5,6 +5,20 @@ SRC_URI += "\
   file://iot-identity-service-identityd.template.toml \
 "
 
+# used by pkg_config crate, in turn used by libdbus_sys crate
+DEPENDS += "pkgconfig-native"
+
+SRCREV_FORMAT .= "_iot-identity-service"
+SRCREV_iot-identity-service = "6af42eefc84351ec7af510213561a40948ed9045"
+SRCREV_FORMAT .= "_azure-iot-sdk"
+SRCREV_azure-iot-sdk = "21c4d345093ad85318d2efe00a4aac33ebb1b950"
+SRCREV_FORMAT .= "_azure-iot-sdk-sys"
+SRCREV_azure-iot-sdk-sys = "f2c05d51392d86a85f6d4115e7faa8d7ea642ec8"
+SRCREV_FORMAT .= "_eis-utils"
+SRCREV_eis-utils = "aca6c68ca99764d638ac34638e5fe839f2064f03"
+SRCREV_FORMAT .= "_sd-notify"
+SRCREV_sd-notify = "c36f0bf43e154452fb97ab7da42db14fcd2571a3"
+
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \

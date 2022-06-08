@@ -8,13 +8,11 @@ inherit cargo
 
 # how to get demo-portal-module could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/demo-portal-module/0.5.1"
-SRC_URI += "git://git@github.com/ICS-DeviceManagement/demo-portal-module.git;protocol=ssh;branch=main"
+SRC_URI += "git://git@github.com/ICS-DeviceManagement/demo-portal-module.git;protocol=ssh;nobranch=1;branch=main"
 SRCREV = "0f3102748c6e8ed5c4290b8022abe29294bf5b50"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
-# used by pkg_config crate, in turn used by libdbus_sys crate
-DEPENDS += "pkgconfig-native"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -198,26 +196,26 @@ SRC_URI += " \
     crate://crates.io/windows_x86_64_gnu/0.36.1 \
     crate://crates.io/windows_x86_64_msvc/0.36.1 \
     crate://crates.io/ws2_32-sys/0.2.1 \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;branch=main;name=iot-identity-service;destsuffix=iot-identity-service \
-    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk-sys.git;protocol=ssh;branch=main;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
-    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk.git;protocol=ssh;branch=main;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
-    git://git@github.com/ICS-DeviceManagement/eis-utils.git;protocol=ssh;branch=main;name=eis-utils;destsuffix=eis-utils \
-    git://git@github.com/ICS-DeviceManagement/sd-notify.git;protocol=ssh;branch=master;name=sd-notify;destsuffix=sd-notify \
+    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=iot-identity-service;destsuffix=iot-identity-service \
+    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk-sys.git;protocol=ssh;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
+    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk.git;protocol=ssh;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
+    git://git@github.com/ICS-DeviceManagement/eis-utils.git;protocol=ssh;nobranch=1;name=eis-utils;destsuffix=eis-utils \
+    git://git@github.com/ICS-DeviceManagement/sd-notify.git;protocol=ssh;nobranch=1;name=sd-notify;destsuffix=sd-notify \
 "
 SRCREV_FORMAT .= "_iot-identity-service"
 SRCREV_iot-identity-service = "6af42eefc84351ec7af510213561a40948ed9045"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/iot-identity-service"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "21c4d345093ad85318d2efe00a4aac33ebb1b950"
+SRCREV_azure-iot-sdk = "0.8.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
-SRCREV_azure-iot-sdk-sys = "f2c05d51392d86a85f6d4115e7faa8d7ea642ec8"
+SRCREV_azure-iot-sdk-sys = "0.3.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk-sys"
 SRCREV_FORMAT .= "_eis-utils"
-SRCREV_eis-utils = "aca6c68ca99764d638ac34638e5fe839f2064f03"
+SRCREV_eis-utils = "0.2.2"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/eis-utils"
 SRCREV_FORMAT .= "_sd-notify"
-SRCREV_sd-notify = "c36f0bf43e154452fb97ab7da42db14fcd2571a3"
+SRCREV_sd-notify = "v0.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/sd-notify"
 
 # FIXME: update generateme with the real MD5 of the license file
