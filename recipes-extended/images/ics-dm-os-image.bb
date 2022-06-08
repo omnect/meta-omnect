@@ -39,6 +39,11 @@ IMAGE_INSTALL = "\
     u-boot-fw-utils \
 "
 
+#  kirkstone: iotedge not yet supported
+#IMAGE_INSTALL += "\
+#    ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' iotedge-daemon iotedge-cli kernel-modules', '', d)} \
+#"
+
 # check environment variable ICS_DM_DEVEL_TOOLS
 def check_for_devel_tools(d):
     # use default list part of this recipe

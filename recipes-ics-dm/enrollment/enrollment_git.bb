@@ -18,8 +18,12 @@ RDEPENDS:${PN} = " \
   ca-certificates \
   jq \
   iot-identity-service \
-  ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge-cli', '', d)} \
 "
+
+#  kirkstone: iotedge not yet supported
+#RDEPENDS:${PN} = " \
+#  ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge-cli', '', d)} \
+#"
 
 inherit cmake features_check overwrite_src_uri
 
