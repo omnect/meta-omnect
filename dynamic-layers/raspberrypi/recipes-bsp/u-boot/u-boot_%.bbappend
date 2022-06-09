@@ -10,7 +10,6 @@ SRC_URI += "\
 "
 
 SRC_URI:append:raspberrypi4-64 = "\
-    file://add-reset-info-config.patch \
-    file://add-reset-info-cmd.patch \
+    file://add-reset-info.patch \
     file://enable-reset-info-cmd-fragment.cfg \
 "
