@@ -4,7 +4,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
 SRC_URI = " \
-  git://github.com/azure/iot-hub-device-update.git;protocol=https;branch=main;tag=0.8.1 \
+  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=0.8.1;branch=main \
   file://adu-swupdate-key.patch \
   file://eis-utils-cert-chain-buffer.patch \
   ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'ics-dm-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
@@ -19,6 +19,7 @@ SRC_URI = " \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
   file://0001-add-swupdate-user-consent-handler.patch \
+  file://workaround-deprecated-declarations-openssl3.patch \
 "
 PV = "${SRCPV}"
 
@@ -44,12 +45,6 @@ RDEPENDS:${PN} = " \
 
 inherit aziot cmake systemd
 
-# kirkstone:
-do_configure[noexec] = "1"
-do_compile[noexec] = "1"
-DEPENDS = "systemd"
-RDEPENDS:${PN} = "bash swupdate"
-
 EXTRA_OECMAKE += "-DADUC_LOG_FOLDER=/var/log/aduc-logs"
 EXTRA_OECMAKE += "-DADUC_CONTENT_HANDLERS=microsoft/swupdate"
 EXTRA_OECMAKE += "-DADUC_INSTALL_DAEMON=OFF"
@@ -65,8 +60,7 @@ EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${ADU_DEVICEPROPERTIES_MODEL}'"
 #ics-dm adaptions (linux_platform_layer.patch)
 EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
 
-# kirkstone
-do_install:NOappend() {
+do_install:append() {
   # adu configuration
   install -d ${D}${sysconfdir}/adu
   jq  --arg adu_deviceproperties_manufacturer ${ADU_DEVICEPROPERTIES_MANUFACTURER} \
@@ -113,17 +107,10 @@ do_install:NOappend() {
   install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/ics_dm/consent/swupdate/installed_criteria
 }
 
-# kirkstone
-do_install() {
-   install -d ${D}${libdir}/adu
-   install -m 0755 ${WORKDIR}/git/src/adu-shell/scripts/adu-swupdate.sh ${D}/${libdir}/adu/adu-swupdate.sh
+pkg_postinst:${PN}() {
+  sed -i "s/@@UID@@/$(id -u adu)/" $D${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml
+  sed -i -e "s/@@UID@@/$(id -u adu)/" -e "s/@@NAME@@/AducIotAgent/" $D${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
 }
-
-# kirkstone
-#pkg_postinst:${PN}() {
-#  sed -i "s/@@UID@@/$(id -u adu)/" $D${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml
-#  sed -i -e "s/@@UID@@/$(id -u adu)/" -e "s/@@NAME@@/AducIotAgent/" $D${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
-#}
 
 SYSTEMD_SERVICE:${PN} = "adu-agent.service adu-agent.timer"
 FILES:${PN} += " \
@@ -139,15 +126,6 @@ FILES:${PN} += " \
   ${sysconfdir}/ics_dm/consent/swupdate/user_consent.json \
   ${sysconfdir}/ics_dm/consent/swupdate/installed_criteria \
   "
-
-# kirkstone
-FILES:${PN} = " \
-  ${libdir}/adu \
-  ${sysconfdir}/aziot/identityd/config.d \
-  ${sysconfdir}/aziot/certd/config.d \
-  ${sysconfdir}/aziot/keyd/config.d \
-"
-SYSTEMD_SERVICE:${PN} = ""
 
 GROUPADD_PARAM:${PN} += "-r adu;-r do;"
 USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G disk,aziotcs,aziotid,aziotks,do -g adu adu;"
