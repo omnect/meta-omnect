@@ -12,6 +12,9 @@ LIC_FILES_CHKSUM = " \
     file://LICENSE-MIT;md5=afb814368d9110052a22e0da67f027d3 \
 "
 
+# used by pkg_config crate, in turn used by libdbus_sys crate
+DEPENDS += "pkgconfig-native"
+
 DEPENDS += "\
     azure-iot-sdk-c\
 "

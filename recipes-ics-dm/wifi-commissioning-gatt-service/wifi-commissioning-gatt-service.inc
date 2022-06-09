@@ -12,6 +12,9 @@ LIC_FILES_CHKSUM = " \
 
 CARGO_BUILD_FLAGS += "--locked"
 
+# used by pkg_config crate, in turn used by libdbus_sys crate
+DEPENDS += "pkgconfig-native"
+
 DEPENDS += "dbus"
 RDEPENDS:${PN} += "bash bluez5 (>=5.60) toml-cli wpa-supplicant"
 
