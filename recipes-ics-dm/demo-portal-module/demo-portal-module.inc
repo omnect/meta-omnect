@@ -5,6 +5,9 @@ SRC_URI += "\
   file://iot-identity-service-identityd.template.toml \
 "
 
+# kirkstone:
+PV = "${SRCPV}"
+
 # used by pkg_config crate, in turn used by libdbus_sys crate
 DEPENDS += "pkgconfig-native"
 

@@ -1,7 +1,4 @@
 
-# kirkstone:
-PV = "${SRCPV}"
-
 do_configure:append() {
     # patch paths to iot-identity-service services in eis-utils
     # workaround for yocto dunfell branch. it is expected that in yocto kirkstone this patch can be removed.

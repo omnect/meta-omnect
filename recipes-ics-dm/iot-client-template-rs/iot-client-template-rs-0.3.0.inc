@@ -1,7 +1,4 @@
 
-# kirkstone:
-PV = "${SRCPV}"
-
 do_configure:append() {
 
     # patch paths to iot-identity-service services in eis-utils

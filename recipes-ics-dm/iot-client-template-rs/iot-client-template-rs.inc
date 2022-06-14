@@ -4,6 +4,8 @@ SRC_URI += "\
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
 "
+# kirkstone:
+PV = "${SRCPV}"
 
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LICENSE = "MIT | Apache-2.0"
