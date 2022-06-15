@@ -23,10 +23,10 @@ index 0000000000..611711e280
 +#include <asm/arch/wdog.h>
 +#include <asm/io.h>
 +
-+#if defined(CONFIG_BCM2711)
++#if defined(CONFIG_ARCH_BCM283X)
 +
 +/* see https://paulwratt.github.io/rpi-internal-registers-online/Region_PM.html#pm_rsts */
-+#define BCM_2711_PM_RSTS_HADPOR (12)
++#define BCM_2835_PM_RSTS_HADPOR (12)
 +
 +char *get_reset_cause(void)
 +{
@@ -34,7 +34,7 @@ index 0000000000..611711e280
 +	uint32_t rsts = 0;
 +
 +	rsts = readl(&regs->rsts);
-+	if ( rsts & (1 << BCM_2711_PM_RSTS_HADPOR) ) {
++	if ( rsts & (1 << BCM_2835_PM_RSTS_HADPOR) ) {
 +		return "POR";
 +	}
 +
@@ -116,7 +116,7 @@ index 02c298fdbe..d3b579008f 100644
  
 +config CMD_RSTINFO
 +	bool "rstinfo"
-+	depends on BCM2711
++	depends on ARCH_BCM283X
 +	default n
 +	help
 +	  Detect the restart cause. Set the (non-persistent) environment variable rstinfo accordingly.

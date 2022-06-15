@@ -6,7 +6,6 @@ SRC_URI += "\
 "
 
 SRC_URI:append:raspberrypi4-64 = "\
-    file://set-config-bcm2711.cfg \
     file://add-reset-info.patch \
     file://enable-reset-info-cmd-fragment.cfg \
 "
