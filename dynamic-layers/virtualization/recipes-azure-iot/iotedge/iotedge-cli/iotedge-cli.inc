@@ -7,11 +7,6 @@ CARGO_SRC_DIR = "edgelet/iotedge"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${THISDIR}/../:"
 
-SRC_URI += " \
-    file://iotedge-cli_1.2.0.patch \
-    file://iotedge_1.2.9.patch \
-"
-
 DEPENDS += "openssl"
 RDEPENDS:${PN} += "iot-identity-service"
 
