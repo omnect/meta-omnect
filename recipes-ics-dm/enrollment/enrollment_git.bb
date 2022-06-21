@@ -8,6 +8,7 @@ LIC_FILES_CHKSUM="\
 # TODO change to https uri when public
 REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;tag=0.8.0;"
 SRC_URI = "${REPO_URI}"
+PV = "${SRCPV}"
 
 S = "${WORKDIR}/git"
 
@@ -16,8 +17,12 @@ RDEPENDS:${PN} = " \
   ca-certificates \
   jq \
   iot-identity-service \
-  ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge-cli', '', d)} \
 "
+
+#  kirkstone: iotedge not yet supported
+#RDEPENDS:${PN} = " \
+#  ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge-cli', '', d)} \
+#"
 
 inherit cmake features_check overwrite_src_uri
 
@@ -57,7 +62,7 @@ do_install:append() {
     install -m 755 ${S}/scripts/patch_config_toml.sh ${D}${bindir}/
 
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    lnr ${D}${systemd_system_unitdir}/enrollment-patch-config-toml@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/enrollment-patch-config-toml@${ICS_DM_ETH0}.service
+    ln -rs ${D}${systemd_system_unitdir}/enrollment-patch-config-toml@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/enrollment-patch-config-toml@${ICS_DM_ETH0}.service
 }
 
 SYSTEMD_SERVICE:${PN} = "enrollment-config-apply.path enrollment.service"

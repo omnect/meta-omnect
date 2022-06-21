@@ -21,3 +21,8 @@ ICS_DM_ETH0 = "eth0"
 
 # wlan device name
 ICS_DM_WLAN0 = "wlan0"
+
+# configure hardware watchdog
+# the maximum watchdog deadline depends on the hardware capabilities
+SYSTEMD_RuntimeWatchdogSec  = "15"
+SYSTEMD_RebootWatchdogSec   = "15"

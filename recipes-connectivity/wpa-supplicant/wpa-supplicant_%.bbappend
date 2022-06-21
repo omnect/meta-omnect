@@ -7,7 +7,7 @@ do_install:append() {
         install -d ${D}${sysconfdir}/wpa_supplicant
         install -m 0644 ${WORKDIR}/wpa_supplicant-wlan0.conf ${D}${sysconfdir}/wpa_supplicant/wpa_supplicant-${ICS_DM_WLAN0}.conf
         install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-        lnr ${D}${systemd_system_unitdir}/wpa_supplicant@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wpa_supplicant@${ICS_DM_WLAN0}.service
+        ln -rs ${D}${systemd_system_unitdir}/wpa_supplicant@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wpa_supplicant@${ICS_DM_WLAN0}.service
     fi
 }
 

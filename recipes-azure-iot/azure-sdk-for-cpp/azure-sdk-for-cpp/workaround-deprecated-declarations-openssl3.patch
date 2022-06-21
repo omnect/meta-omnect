@@ -1,0 +1,24 @@
+From d91425486af48d7ae35669630947c94a571bd37c Mon Sep 17 00:00:00 2001
+From: Kas User <kas@example.com>
+Date: Thu, 9 Jun 2022 14:23:23 +0000
+Subject: [PATCH] workaround for deprecated declarations enforced by openssl
+ 3.0.X (used by Yocto kirkstone)
+
+---
+ CMakeLists.txt | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 114802c3..b131914c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -76,6 +76,9 @@ if(MSVC_USE_STATIC_CRT AND MSVC)
+   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+ endif()
+ 
++# workaround for deprecated declarations enforced by openssl 3.0.X (used by Yocto kirkstone)
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
++
+ if(BUILD_TESTING)
+   include(AddGoogleTest)
+   enable_testing ()  

@@ -106,7 +106,7 @@ mount_partition()
 insmod_overlayfs()
 {
     local rootfs_dir="$1"
-    local ko_file="${rootfs_dir}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko"
+    local ko_file="${rootfs_dir}/lib/modules/$(uname -r)/kernel/fs/overlayfs/overlay.ko.xz"
 
     # built as kernel module
     if [ -f "${ko_file}" ]; then

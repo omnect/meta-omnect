@@ -44,7 +44,7 @@ setup_network() {
 
     # start dhcp client; it is backgrounding in the case the IP address was assigned or timeout
     mkdir -p /tmp
-    run_cmd dhclient -v -w ${if_name} || return 1
+    run_cmd dhcpcd ${if_name} || return 1
 
     # wait for IPv4 address
     while true; do

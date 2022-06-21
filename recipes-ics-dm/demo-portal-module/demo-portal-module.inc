@@ -5,6 +5,12 @@ SRC_URI += "\
   file://iot-identity-service-identityd.template.toml \
 "
 
+# kirkstone:
+PV = "${SRCPV}"
+
+# used by pkg_config crate, in turn used by libdbus_sys crate
+DEPENDS += "pkgconfig-native"
+
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
