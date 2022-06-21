@@ -5,11 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [dunfell-1.3.6] Q2 2022
+- iotedge: version bump to 1.2.10
 
 ## [dunfell-1.3.5] Q2 2022
- - poky: update to 3.1.17
- - meta-openembedded, meta-swupdate, meta-phytec, meta-freescale: update to latest dunfell head
- - Readme: added `scp` usage for new openssh clients (>=9.0)
+- poky: update to 3.1.17
+- meta-openembedded, meta-swupdate, meta-phytec, meta-freescale: update to latest dunfell head
+- Readme: added `scp` usage for new openssh clients (>=9.0)
 
 ## [dunfell-1.3.4] Q2 2022
 - make the hardware watchdog configuration specific for the raspberrypi platform, because the deadline

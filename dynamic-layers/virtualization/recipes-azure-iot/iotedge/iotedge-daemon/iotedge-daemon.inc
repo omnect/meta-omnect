@@ -7,8 +7,6 @@ CARGO_SRC_DIR = "edgelet/aziot-edged"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/../:"
 
-SRC_URI += "file://iotedge_1.2.9.patch"
-
 DEPENDS += "openssl virtual/docker"
 RDEPENDS:${PN} += "docker iot-identity-service"
 INSANE_SKIP:${PN} += "dev-deps"
