@@ -13,7 +13,7 @@ This yocto meta layer provides the poky based ICS_DeviceManagement distribution 
     - `iot-hub-device-update` is provisioned as module identity via `iot-identity-service`
     - first boot script `/usr/bin/ics_dm_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-ics-dm/recipes-core/systemd/systemd/ics_dm_first_boot.sh`
     - factory reset via `u-boot` environment variable `factory-reset`
-      - **note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset), below. 
+      - **note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset), below.
 
 ### `DISTRO_FEATURES`
 `ics-dm-os` depends on [poky](https://www.yoctoproject.org/software-item/poky/).
@@ -193,6 +193,12 @@ In the next step, the bmap file and the wic image file have to be transferred, b
 scp ics-dm-os-*.wic.bmap ics-dm@<target-ip>:wic-image.bmap
 scp ics-dm-os-*.wic.xz ics-dm@<target-ip>:wic-image.fifo.xz
 ```
+On systems with new openssh clients >= 9.0 you have to use the legacy option when using `scp`. (See [here](https://www.openssh.com/txt/release-9.0) for details.) :
+```sh
+scp -O ics-dm-os-*.wic.bmap ics-dm@<target-ip>:wic-image.bmap
+scp -O ics-dm-os-*.wic.xz ics-dm@<target-ip>:wic-image.fifo.xz
+```
+
 The password for the *ics-dm* user used by the rootfs has to be used.
 The *ics-dm* user used by the initramfs is independent from the *ics-dm* user used by the rootfs.
 At build time, the configuration (ICS_DM_USER_PASSWORD) is applied for both. The passwords are identical.

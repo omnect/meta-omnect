@@ -1,5 +1,5 @@
 diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
-index b024da6bf7..ac8f0cf9a3 100644
+index f162b2852c..ac8f0cf9a3 100644
 --- a/include/configs/phycore_imx8mm.h
 +++ b/include/configs/phycore_imx8mm.h
 @@ -11,8 +11,6 @@
@@ -16,7 +16,7 @@ index b024da6bf7..ac8f0cf9a3 100644
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
 -	"image=Image\0" \
--	"console=ttymxc2,115200\0" \
+-	"console=ttymxc2\0" \
 +	"boot_script=fatload mmc ${devnum}:1 ${script_addr_r} /boot.scr; source ${script_addr_r}\0" \
 +	"bootargs=console=ttymxc2,115200\0" \
 +	"bootpart=2\0" \
@@ -32,8 +32,8 @@ index b024da6bf7..ac8f0cf9a3 100644
 -	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
 -	"mmcroot=2\0" \
 -	"mmcautodetect=yes\0" \
--	"mmcargs=setenv bootargs console=${console} " \
--		"root=/dev/mmcblk${mmcdev}p${mmcroot} rootwait rw\0" \
+-	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+-		"root=/dev/mmcblk${mmcdev}p${mmcroot} fsck.repair=yes rootwait rw \0" \
 -	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 -	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
 -	"mmcboot=echo Booting from mmc ...; " \
@@ -44,7 +44,7 @@ index b024da6bf7..ac8f0cf9a3 100644
 -			"echo WARN: Cannot load the DT; " \
 -		"fi;\0 " \
 -	"nfsroot=/nfs\0" \
--	"netargs=setenv bootargs console=${console} root=/dev/nfs ip=${nfsip} " \
+-	"netargs=setenv bootargs console=${console},${baudrate} root=/dev/nfs ip=${nfsip} " \
 -		"nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
 -	"netboot=echo Booting from net ...; " \
 -		"if test ${ip_dyn} = yes; then " \
