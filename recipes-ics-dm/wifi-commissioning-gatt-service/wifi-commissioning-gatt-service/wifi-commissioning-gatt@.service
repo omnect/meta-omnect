@@ -1,6 +1,6 @@
 [Unit]
 Description=wifi-commissioning-gatt: commissioning wifi via bt
-Requires=wpa_supplicant@%i.service bluetooth.service
+Requires=wpa_supplicant@%i.service bluetooth.service bluetooth.target
 After=wpa_supplicant@%i.service bluetooth.service bluetooth.target
 
 [Service]
