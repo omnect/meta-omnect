@@ -4,7 +4,7 @@ inherit aziot cargo systemd
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
-SRC_URI = "gitsm://git@github.com/Azure/iot-identity-service.git;protocol=ssh;nobranch=1;branch=release/1.2;tag=1.2.6"
+SRC_URI = "gitsm://git@github.com/Azure/iot-identity-service.git;protocol=ssh;nobranch=1;branch=release/1.3;tag=1.3.0"
 SRC_URI += " \
     file://iot-identity-service-certd.template.toml \
     file://tpm-compile-fix.patch \
@@ -16,7 +16,6 @@ B = "${S}"
 DEPENDS += "openssl rust-bindgen-native rust-cbindgen-native"
 
 CARGO_DISABLE_BITBAKE_VENDORING = "1"
-RUSTFLAGS += "-C panic=unwind"
 
 do_compile() {
     oe_cargo_fix_env

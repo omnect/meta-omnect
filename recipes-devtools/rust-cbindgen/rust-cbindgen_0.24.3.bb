@@ -8,7 +8,7 @@ do_compile() {
     oe_cargo_fix_env
     export RUSTFLAGS="${RUSTFLAGS}"
     export RUST_TARGET_PATH="${RUST_TARGET_PATH}"
-    cargo install cbindgen --version 0.15.0 --locked
+    cargo install cbindgen --version ${PV} --locked
 }
 
 do_install() {

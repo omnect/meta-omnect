@@ -11,7 +11,7 @@ do_compile() {
     export RUST_TARGET_PATH="${RUST_TARGET_PATH}"
 
     export LLVM_CONFIG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/bin/llvm-config"
-    cargo install bindgen --version 0.54.0 --locked
+    cargo install bindgen --version ${PV} --locked
 }
 
 do_install() {
