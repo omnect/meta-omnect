@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rust-cbindgen: update to 0.24.3
 - demo-portal-module: removed edition patching
 - iot-client-template-rs: removed edition patching
+- wifi-commissioning-gatt-server: update to 0.2.3
 
 ## [dunfell-1.4.1] Q3 2022
 - updated `iot-hub-device-update` to 0.8.2
