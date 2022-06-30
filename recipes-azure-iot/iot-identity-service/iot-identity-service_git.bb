@@ -13,7 +13,7 @@ SRC_URI += " \
 S = "${WORKDIR}/git"
 B = "${S}"
 
-DEPENDS += "openssl rust-bindgen-native rust-cbindgen-native"
+DEPENDS += "openssl bindgen-native cbindgen-native"
 
 CARGO_DISABLE_BITBAKE_VENDORING = "1"
 

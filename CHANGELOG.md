@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iotedge + iot-identity-service: update to stable 1.3.0 (breaking changes in cert renewal)
 - distro.conf: global setting `RUST_PANIC_STRATEGY = "abort"` to compile iotedge 1.3.0
 - kas: changed meta-rust dependency to fork with rust 1.61.0
-- rust-bindgen: update to 0.60.1
-- rust-cbindgen: update to 0.24.3
+- rust/bindgen: update to 0.60.1
+- rust/cbindgen: update to 0.24.3
 - demo-portal-module: removed edition patching
 - iot-client-template-rs: removed edition patching
 - wifi-commissioning-gatt-server: update to 0.2.3
