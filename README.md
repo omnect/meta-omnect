@@ -37,6 +37,8 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - please see section *Initramfs Flash Mode*, below
 - `resize-data`
     - expands the data partition to available space on first boot
+- `panic-on-oom`
+    - trigger kernel panic in case of out-of-memory, instead of running the OOM killer
 - [`wifi-commissioning`](https://github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git)
     - adds a service which enables wifi commissioning via bluetooth
     - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
