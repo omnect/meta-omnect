@@ -37,8 +37,6 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - please see section *Initramfs Flash Mode*, below
 - `resize-data`
     - expands the data partition to available space on first boot
-- `panic-on-oom`
-    - trigger kernel panic in case of out-of-memory, instead of running the OOM killer
 - [`wifi-commissioning`](https://github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git)
     - adds a service which enables wifi commissioning via bluetooth
     - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
@@ -118,6 +116,8 @@ Provide the environment variables `SWUPDATE_PASSWORD_FILE` and `SWUPDATE_PRIVATE
 Furthermore you have to provide the environment variable `ICS_DM_USER_PASSWORD` which sets the password of the default user `ics-dm`.
 
 Optionally set `ICS_DM_BUILD_NUMBER` to set a meaningful build number in the distro version. The default is `0`.
+
+There is the configuration variable `ICS_DM_VM_PANIC_ON_OOM` used to define the out-of-memory (OOM) handling.
 
 ### Example build via `kas`
 

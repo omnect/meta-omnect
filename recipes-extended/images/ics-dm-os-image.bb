@@ -69,14 +69,7 @@ add_kernel_and_initramfs() {
 # setup ics-dm specific sysctl configuration (see systemd-sysctl.service)
 ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_setup_sysctl_config;"
 ics_dm_setup_sysctl_config() {
-    local vm_panic_on_oom=""
-
-    if ${@bb.utils.contains('DISTRO_FEATURES', 'panic-on-oom', 'true', 'false', d)}; then
-        vm_panic_on_oom="2"
-    else
-        vm_panic_on_oom="0"
-    fi
-    echo "vm.panic_on_oom = ${vm_panic_on_oom}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/ics-dm.conf
+    echo "vm.panic_on_oom = ${ICS_DM_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/ics-dm.conf
 }
 
 ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_create_uboot_env_ff_img;"

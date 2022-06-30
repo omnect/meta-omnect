@@ -50,6 +50,9 @@ env:
   ICS_DM_PART_SIZE_ETC: "40960"
   ICS_DM_PART_SIZE_DATA: "524288"
 
+  # OOM configuration
+  ICS_DM_VM_PANIC_ON_OOM: "0"
+
   # yocto build vars
   DEPLOY_DIR: "${TOPDIR}/deploy"
   DL_DIR: "${TOPDIR}/download"
