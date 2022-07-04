@@ -66,6 +66,12 @@ add_kernel_and_initramfs() {
     ln -sf $(basename ${initramfs}) $D/boot/initramfs.${ICS_DM_INITRAMFS_FSTYPE}
 }
 
+# setup ics-dm specific sysctl configuration (see systemd-sysctl.service)
+ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_setup_sysctl_config;"
+ics_dm_setup_sysctl_config() {
+    echo "vm.panic_on_oom = ${ICS_DM_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/ics-dm.conf
+}
+
 ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_create_uboot_env_ff_img;"
 ics_dm_create_uboot_env_ff_img() {
     dd if=/dev/zero bs=1024 count=${ICS_DM_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/ics-dm_uboot_env_ff.img
