@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [dunfell-1.5.0] Q3 2022
 - iotedge + iot-identity-service: update to stable 1.3.0 (breaking changes in cert renewal)
-- iot-identity-service: refactored to use vendored cargo packages, so we're able to mirror
-  the corresponding cargo package sources and reproduce our builds
+- iot-identity-service: refactored to use cargo fetcher to fetch cargo package dependencies,
+  so we're able to mirror the corresponding cargo package sources and reproduce our builds
 - distro.conf: global setting `RUST_PANIC_STRATEGY = "abort"` to compile iotedge 1.3.0
 - kas: changed meta-rust dependency to fork with rust 1.61.0
 - rust/bindgen: update to 0.60.1
