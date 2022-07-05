@@ -6,16 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [dunfell-1.5.0] Q3 2022
-- iotedge + iot-identity-service: update to stable 1.3.0 (breaking changes in cert renewal)
+- iotedge + iot-identity-service: updated to stable 1.3.0 (breaking changes in cert renewal)
 - iot-identity-service: refactored to use cargo fetcher to fetch cargo package dependencies,
   so we're able to mirror the corresponding cargo package sources and reproduce our builds
 - distro.conf: global setting `RUST_PANIC_STRATEGY = "abort"` to compile iotedge 1.3.0
 - kas: changed meta-rust dependency to fork with rust 1.61.0
-- rust/bindgen: update to 0.60.1
-- rust/cbindgen: update to 0.24.3
+- rust/bindgen: updated to 0.60.1
+- rust/cbindgen: updated to 0.24.3
 - demo-portal-module: removed edition patching
 - iot-client-template-rs: removed edition patching
-- wifi-commissioning-gatt-server: update to 0.2.3
+- wifi-commissioning-gatt-server: updated to 0.2.3
 
 ## [dunfell-1.4.1] Q3 2022
 - updated `iot-hub-device-update` to 0.8.2
