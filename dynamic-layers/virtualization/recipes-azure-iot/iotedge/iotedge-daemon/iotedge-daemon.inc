@@ -55,7 +55,10 @@ do_install () {
     install -m 0644 ${S}/edgelet/contrib/systemd/debian/aziot-edged.mgmt.socket  ${D}${systemd_system_unitdir}/aziot-edged.mgmt.socket
 }
 
-USERADD_PARAM:${PN} += "-r -u 15580 -g iotedge -G aziot,aziotcs,aziotid,aziotks,docker,systemd-journal -s /bin/false -d ${localstatedir}/lib/iotedge iotedge;"
+USERADD_PARAM:${PN} += " \
+    -r -u 15580 -g iotedge -G aziot,aziotcs,aziotid,aziotks,docker,systemd-journal -s /bin/false -d ${localstatedir}/lib/iotedge iotedge; \
+    -r -g iotedge -s /sbin/false -M edgeagentuser; \
+"
 
 GROUPADD_PARAM:${PN} += " \
     -r docker; \

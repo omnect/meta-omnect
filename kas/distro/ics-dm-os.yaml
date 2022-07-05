@@ -16,8 +16,8 @@ repos:
       meta-oe:
       meta-python:
   ext/meta-rust:
-    url: "https://github.com/meta-rust/meta-rust.git"
-    refspec: d4384db8c3f0aa01732627f92fc3d446359bf743
+    url: "https://github.com/mlilien/meta-rust.git"
+    refspec: 4b95d156a166550cdc96672cb680e56cc32e794a
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     refspec: 649f9d9e0ae64a5bb1f74f6d6edf678327d1dbf6
