@@ -5,8 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.2.0] Q3 2022
+- merged changes from dunfell: dunfell-1.3.8 - dunfell-1.5.0
+
 ## [kirkstone-0.1.1] Q2 2022
-- merge changes from dunfell: #97, #98 and #99
+- merged changes from dunfell: #97, #98 and #99
 
 ## [kirkstone-0.1.0] Q2 2022
 - initial version supporting yocto kirkstone

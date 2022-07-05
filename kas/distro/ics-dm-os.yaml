@@ -15,6 +15,9 @@ repos:
       meta-networking:
       meta-oe:
       meta-python:
+  ext/meta-rust:
+    url: "https://github.com/mlilien/meta-rust.git"
+    refspec: 4b95d156a166550cdc96672cb680e56cc32e794a
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     refspec: 4a86f3a64ee5248861aad0d3829c345e88a1f71d
@@ -46,6 +49,9 @@ env:
   ICS_DM_PART_SIZE_CERT: "40960"
   ICS_DM_PART_SIZE_ETC: "40960"
   ICS_DM_PART_SIZE_DATA: "524288"
+
+  # OOM configuration
+  ICS_DM_VM_PANIC_ON_OOM: "0"
 
   # yocto build vars
   DEPLOY_DIR: "${TOPDIR}/deploy"

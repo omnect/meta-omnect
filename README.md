@@ -117,6 +117,8 @@ Furthermore you have to provide the environment variable `ICS_DM_USER_PASSWORD` 
 
 Optionally set `ICS_DM_BUILD_NUMBER` to set a meaningful build number in the distro version. The default is `0`.
 
+There is the configuration variable `ICS_DM_VM_PANIC_ON_OOM` used to define the out-of-memory (OOM) handling.
+
 ### Example build via `kas`
 
 This repository provides [`kas`](https://kas.readthedocs.io/en/latest/) configuration files to build `ics-dm-os`.
