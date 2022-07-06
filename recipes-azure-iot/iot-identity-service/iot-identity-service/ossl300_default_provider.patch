@@ -1,0 +1,26 @@
+diff --git a/cert/aziot-certd/src/lib.rs b/cert/aziot-certd/src/lib.rs
+index 6a2690c..53491d0 100644
+--- a/cert/aziot-certd/src/lib.rs
++++ b/cert/aziot-certd/src/lib.rs
+@@ -51,6 +51,8 @@ pub async fn main(
+     config_path: PathBuf,
+     config_directory_path: PathBuf,
+ ) -> Result<(Connector, http::Service), Box<dyn StdError>> {
++    openssl::provider::Provider::try_load(None, "default", true)?;
++
+     let Config {
+         homedir_path,
+         cert_issuance,
+diff --git a/identity/aziot-identityd/src/lib.rs b/identity/aziot-identityd/src/lib.rs
+index 92bff4c..88428cb 100644
+--- a/identity/aziot-identityd/src/lib.rs
++++ b/identity/aziot-identityd/src/lib.rs
+@@ -60,6 +60,8 @@ pub async fn main(
+     config_path: std::path::PathBuf,
+     config_directory_path: std::path::PathBuf,
+ ) -> Result<(http_common::Connector, http::Service), Box<dyn std::error::Error>> {
++    openssl::provider::Provider::try_load(None, "default", true)?;
++
+     let settings = settings.check().map_err(InternalError::BadSettings)?;
+ 
+     let homedir_path = &settings.homedir;

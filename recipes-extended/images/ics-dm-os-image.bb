@@ -28,6 +28,7 @@ IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'enrollment', ' enrollment', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' iotedge-daemon iotedge-cli kernel-modules', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
@@ -38,11 +39,6 @@ IMAGE_INSTALL = "\
     sudo \
     u-boot-fw-utils \
 "
-
-#  kirkstone: iotedge not yet supported
-#IMAGE_INSTALL += "\
-#    ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' iotedge-daemon iotedge-cli kernel-modules', '', d)} \
-#"
 
 # check environment variable ICS_DM_DEVEL_TOOLS
 def check_for_devel_tools(d):

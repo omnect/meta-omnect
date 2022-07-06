@@ -1,3 +1,15 @@
+SRC_URI += " \
+    file://ossl300_fix_incompatible_pointer_types.patch;patchdir=${WORKDIR}/aziot-cert-client-async \
+    file://ossl300_openssl-errors.patch;patchdir=${WORKDIR}/aziot-cert-client-async \
+"
+
+# we patch aziot-cert-client-async to use openssl-errors 0.2 so we have to provide
+# it and its dependencies
+SRC_URI += " \
+    crate://crates.io/cfg-if/0.1.10 \
+    crate://crates.io/openssl-errors/0.2.0 \
+"
+
 # override rolling SRCREV  "relase/1.3" of iot-identity-service dependency
 # with static rev
 # aka 1.3.0:
