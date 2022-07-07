@@ -12,6 +12,8 @@ SRC_URI = " \
 
 S = "${WORKDIR}/git/src/utils/eis_utils"
 
+PV:append = ".${SRCPV}"
+
 DEPENDS = "azure-iot-sdk-c"
 
 inherit cmake
