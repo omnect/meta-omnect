@@ -14,15 +14,11 @@ S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c-prov"
 RDEPENDS:${PN} = " \
+  ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge-cli', '', d)} \
   ca-certificates \
   jq \
   iot-identity-service \
 "
-
-#  kirkstone: iotedge not yet supported
-#RDEPENDS:${PN} = " \
-#  ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge-cli', '', d)} \
-#"
 
 inherit cmake features_check overwrite_src_uri
 

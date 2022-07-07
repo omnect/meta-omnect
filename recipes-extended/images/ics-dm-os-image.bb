@@ -28,6 +28,7 @@ IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'enrollment', ' enrollment', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' iotedge-daemon iotedge-cli kernel-modules', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
@@ -38,11 +39,6 @@ IMAGE_INSTALL = "\
     sudo \
     u-boot-fw-utils \
 "
-
-#  kirkstone: iotedge not yet supported
-#IMAGE_INSTALL += "\
-#    ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' iotedge-daemon iotedge-cli kernel-modules', '', d)} \
-#"
 
 # check environment variable ICS_DM_DEVEL_TOOLS
 def check_for_devel_tools(d):
@@ -68,6 +64,12 @@ add_kernel_and_initramfs() {
     install -m 0644 ${initramfs} $D/boot/
     ln -sf $(basename ${kernel}) $D/boot/${KERNEL_IMAGETYPE}.bin
     ln -sf $(basename ${initramfs}) $D/boot/initramfs.${ICS_DM_INITRAMFS_FSTYPE}
+}
+
+# setup ics-dm specific sysctl configuration (see systemd-sysctl.service)
+ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_setup_sysctl_config;"
+ics_dm_setup_sysctl_config() {
+    echo "vm.panic_on_oom = ${ICS_DM_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/ics-dm.conf
 }
 
 ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_create_uboot_env_ff_img;"

@@ -1,0 +1,13 @@
+diff --git a/conf/layer.conf b/conf/layer.conf
+index 53b2368..48becaf 100644
+--- a/conf/layer.conf
++++ b/conf/layer.conf
+@@ -9,7 +9,7 @@ BBFILE_PATTERN_rust-layer := "^${LAYERDIR}/"
+ BBFILE_PRIORITY_rust-layer = "7"
+ 
+ LAYERDEPENDS_rust-layer = "core openembedded-layer"
+-LAYERSERIES_COMPAT_rust-layer = "dunfell gatesgarth hardknott honister"
++LAYERSERIES_COMPAT_rust-layer = "dunfell gatesgarth hardknott honister kirkstone"
+ 
+ # Override security flags
+ require conf/distro/include/rust_security_flags.inc

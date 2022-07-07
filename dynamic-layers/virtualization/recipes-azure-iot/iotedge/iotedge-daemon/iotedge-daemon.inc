@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 # overwrite CARGO_SRC_DIR from cargo-bitbake generated recipe
 CARGO_SRC_DIR = "edgelet/aziot-edged"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/../:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/../:${LAYERDIR_ics_dm}/files/iotedge-patches:"
 
 DEPENDS += "openssl virtual/docker"
 RDEPENDS:${PN} += "docker iot-identity-service"
@@ -55,7 +55,10 @@ do_install () {
     install -m 0644 ${S}/edgelet/contrib/systemd/debian/aziot-edged.mgmt.socket  ${D}${systemd_system_unitdir}/aziot-edged.mgmt.socket
 }
 
-USERADD_PARAM:${PN} += "-r -u 15580 -g iotedge -G aziot,aziotcs,aziotid,aziotks,docker,systemd-journal -s /bin/false -d ${localstatedir}/lib/iotedge iotedge;"
+USERADD_PARAM:${PN} += " \
+    -r -u 15580 -g iotedge -G aziot,aziotcs,aziotid,aziotks,docker,systemd-journal -s /bin/false -d ${localstatedir}/lib/iotedge iotedge; \
+    -r -g iotedge -s /sbin/false -M edgeagentuser; \
+"
 
 GROUPADD_PARAM:${PN} += " \
     -r docker; \

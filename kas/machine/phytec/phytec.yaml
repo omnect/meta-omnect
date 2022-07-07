@@ -6,10 +6,10 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    refspec: 303df2999e4ba8f051c3d497b0f4f807f77fcef0
+    refspec: e5d6aaa8919a9e4b77023cbb49f05761acd4246f
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
-    refspec: 3cb29cff92568ea835ef070490f185349d712837
+    refspec: 24ec778deb92f3ca3372cb5f4df56edcc0e899ed
 
 env:
   ACCEPT_FSL_EULA: "0"
