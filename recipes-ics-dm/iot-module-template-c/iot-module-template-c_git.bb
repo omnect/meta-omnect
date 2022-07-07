@@ -15,6 +15,7 @@ SRC_URI = " \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
 "
+PV = "${SRCPV}"
 
 S = "${WORKDIR}/git"
 
