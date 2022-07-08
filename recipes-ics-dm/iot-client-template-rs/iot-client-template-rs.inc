@@ -26,15 +26,40 @@ RDEPENDS:${PN} += "\
 "
 inherit aziot systemd
 
-## cannot enable flag below since cargo edition is patched from 2021 to 2018 for dunfell
+# we can not set locked, because we currently patch Cargo.toml.
+# as soon as we publish the repo and can access it via https,
+# we can enable locked builds.
+# since we build offline anyway, it's questionable if we benefit from it
+# anyway.
 #CARGO_BUILD_FLAGS += "--locked"
 
-do_compile:prepend() {
-    # - for now we use git to fetch the repo instead of cargo itself
-    #   (cargo fetcher can not handle git repos via ssh)
-    # - @ToDo rm as soon the repo is public
-    export CARGO_NET_GIT_FETCH_WITH_CLI=true
+do_configure:append() {
 
+    # patch paths to enable offline builds. cargo_common.bbclass can not handle
+    # git dependencies with ssh links well.
+
+    sed -i -e 's/azure-iot-sdk =.*/azure-iot-sdk = { path = \"..\/azure-iot-sdk\", default-features = false }/' \
+           -e 's/sd-notify =.*/sd-notify = { path = \"..\/sd-notify\", optional = true }/' ${S}/Cargo.toml
+
+    sed -i -e 's/azure-iot-sdk-sys =.*/azure-iot-sdk-sys = { path = \"..\/azure-iot-sdk-sys\", default-features = false }/' \
+           -e 's/eis-utils =.*/eis-utils = { path = \"..\/eis-utils\", optional = true }/' ${WORKDIR}/azure-iot-sdk/Cargo.toml
+
+    sed -i -e 's/aziot-identity-client-async =.*/aziot-identity-client-async = { path = \"..\/iot-identity-service\/identity\/aziot-identity-client-async\" }/' \
+           -e 's/aziot-identity-common =.*/aziot-identity-common = { path = \"..\/iot-identity-service\/identity\/aziot-identity-common\" }/' \
+           -e 's/aziot-identityd-config =.*/aziot-identityd-config = { path = \"..\/iot-identity-service\/identity\/aziot-identityd-config\" }/' \
+           -e 's/aziot-identity-common-http =.*/aziot-identity-common-http = { path = \"..\/iot-identity-service\/identity\/aziot-identity-common-http\" }/' \
+           -e 's/aziot-keyd-config =.*/aziot-keyd-config = { path = \"..\/iot-identity-service\/key\/aziot-keyd-config\" }/' \
+           -e 's/aziot-key-client-async =.*/aziot-key-client-async = { path = \"..\/iot-identity-service\/key\/aziot-key-client-async\" }/' \
+           -e 's/aziot-key-common =.*/aziot-key-common = { path = \"..\/iot-identity-service\/key\/aziot-key-common\" }/' \
+           -e 's/aziot-key-common-http =.*/aziot-key-common-http = { path = \"..\/iot-identity-service\/key\/aziot-key-common-http\" }/' \
+           -e 's/aziot-cert-client-async =.*/aziot-cert-client-async = { path = \"..\/iot-identity-service\/cert\/aziot-cert-client-async\" }/' \
+           -e 's/aziot-cert-common =.*/aziot-cert-common = { path = \"..\/iot-identity-service\/cert\/aziot-cert-common\" }/' \
+           -e 's/aziot-certd-config =.*/aziot-certd-config = { path = \"..\/iot-identity-service\/cert\/aziot-certd-config\" }/' \
+           -e 's/aziot-cert-common-http =.*/aziot-cert-common-http = { path = \"..\/iot-identity-service\/cert\/aziot-cert-common-http\" }/' \
+           -e 's/http-common =.*/http-common = { path = \"..\/iot-identity-service\/http-common\" }/' ${WORKDIR}/eis-utils/Cargo.toml
+}
+
+do_compile:prepend() {
     export LLVM_CONFIG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/bin/llvm-config"
     export BINDGEN_EXTRA_CLANG_ARGS="${TUNE_CCARGS}"
 
