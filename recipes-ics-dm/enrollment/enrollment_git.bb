@@ -14,6 +14,7 @@ S = "${WORKDIR}/git"
 DEPENDS = "azure-iot-sdk-c-prov"
 RDEPENDS:${PN} = " \
   bash \
+  toml-cli \
   ca-certificates \
   jq \
   iot-identity-service \
