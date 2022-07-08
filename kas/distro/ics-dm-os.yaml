@@ -27,7 +27,7 @@ repos:
         path: "kas/patches/meta-rust-kirkstone-compatibility.patch"
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    refspec: 4a86f3a64ee5248861aad0d3829c345e88a1f71d
+    refspec: e6e2b70159dfd40067a65c07aca91ec31931629b
 
 distro: ics-dm-os
 

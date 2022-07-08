@@ -6,10 +6,15 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    refspec: e5d6aaa8919a9e4b77023cbb49f05761acd4246f
+    refspec: a7e21f931cd57455889267d0fd7cdaf21c66a0d8
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     refspec: 24ec778deb92f3ca3372cb5f4df56edcc0e899ed
+  ext/meta-imx:
+    url: "https://source.codeaurora.org/external/imx/meta-imx"
+    refspec: 5bc708f56575a878da17f2148e959c95d06cf8db
+    layers:
+      meta-bsp:
 
 env:
   ACCEPT_FSL_EULA: "0"
