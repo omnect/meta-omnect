@@ -6,13 +6,15 @@ LIC_FILES_CHKSUM="\
 "
 
 # TODO change to https uri when public
-REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;tag=0.8.0;"
+REPO_URI = "git://git@github.com/ICS-DeviceManagement/enrollment.git;protocol=ssh;branch=main;tag=0.8.2;"
 SRC_URI = "${REPO_URI}"
 
 S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c-prov"
 RDEPENDS:${PN} = " \
+  bash \
+  toml-cli \
   ca-certificates \
   jq \
   iot-identity-service \
