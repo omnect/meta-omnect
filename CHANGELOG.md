@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [dunfell-1.5.3] Q3 2022
+- refactored wifi-commissioning-gatt-service:
+  - moved ics_dm_get_deviceid.sh to ics-dm-base-files
+  - removed systemd service file
+  - bump wifi-commissioning-gatt-service to version 0.2.5, which provides its own systemd service file
+
 ## [dunfell-1.5.2] Q3 2022
 - enable offline builds for ics-dm rust modules which have dependencies to git
   repositories via ssh
