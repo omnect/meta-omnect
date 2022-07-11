@@ -7,6 +7,10 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     refspec: a7e21f931cd57455889267d0fd7cdaf21c66a0d8
+    patches:
+      p001:
+        repo: "meta-ics-dm"
+        path: "kas/patches/meta-phytec_do_not_overwrite_BBMASK.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     refspec: 24ec778deb92f3ca3372cb5f4df56edcc0e899ed

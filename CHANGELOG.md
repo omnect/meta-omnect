@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - updated to latest meta-swupdate
   - updated to latest meta-virtualization
   - updated to latest meta-phytec
-  - added meta-imx layer for phytec polis support
+  - added meta-imx layer for phytec bsp support
+  - fixed `phytec polis` kirkstone integration
+  - added `phytec tauri l` support
 
 ## [kirkstone-0.2.3] Q3 2022
 - merged changes from dunfell: dunfell-1.5.1 - dunfell-1.5.2

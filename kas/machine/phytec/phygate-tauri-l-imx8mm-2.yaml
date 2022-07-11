@@ -1,0 +1,8 @@
+# kas config file
+
+header:
+  version: 11
+  includes:
+    - kas/machine/phytec/phytec.yaml
+
+machine: phygate-tauri-l-imx8mm-2
