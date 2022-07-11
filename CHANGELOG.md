@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [dunfell-1.6.0] Q3 2022
+- kas:
+  - updated meta-raspberrypi to latest dunfell head
+  - updated meta-swupdate to latest dunfell head
+- swupdate:
+  - updated sw-description so that derived distros can reuse it in their
+    update-images
+- wifi-commissioning-gatt-service: updated to 0.2.4
+  (fixes builds on rpi3)
+
+
 ## [dunfell-1.5.2] Q3 2022
 - enable offline builds for ics-dm rust modules which have dependencies to git
   repositories via ssh
