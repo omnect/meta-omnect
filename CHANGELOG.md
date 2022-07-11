@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     update-images
 - wifi-commissioning-gatt-service: updated to 0.2.4
   (fixes builds on rpi3)
+- ics-dm rust components depending on azure-iot-sdk: refactored to use a common
+  bbclass
 
 
 ## [dunfell-1.5.2] Q3 2022
