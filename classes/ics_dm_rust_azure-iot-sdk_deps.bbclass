@@ -39,6 +39,7 @@ aziot-key-client-async = { path = "${WORKDIR}/aziot-cert-client-async/key/aziot-
 aziot-key-common = { path = "${WORKDIR}/aziot-cert-client-async/key/aziot-key-common" }
 aziot-key-common-http = { path = "${WORKDIR}/aziot-cert-client-async/key/aziot-key-common-http" }
 aziot-keyd-config = { path = "${WORKDIR}/aziot-cert-client-async/key/aziot-keyd-config" }
+http-common = { path = "${WORKDIR}/aziot-cert-client-async/http-common" }
 EOF
     fi
 }
