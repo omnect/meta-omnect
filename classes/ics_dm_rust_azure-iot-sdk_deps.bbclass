@@ -8,13 +8,12 @@ do_configure:prepend() {
     verify_frozen
 
     # patch
-    marker="# ics_dm_rust_azure-iot-sdk.bbclass:"
+    marker="# ics_dm_rust_azure-iot-sdk_deps.bbclass:"
     if [ -z "$(grep "${marker}" "${S}/${CARGO_WORKSPACE_ROOT}/Cargo.toml")" ]; then
 
 cat <<EOF >> "${S}/${CARGO_WORKSPACE_ROOT}/Cargo.toml"
 
 ${marker}
-
 [patch.'ssh://git@github.com/ICS-DeviceManagement/azure-iot-sdk.git']
 azure-iot-sdk = { path = "${WORKDIR}/azure-iot-sdk" }
 
