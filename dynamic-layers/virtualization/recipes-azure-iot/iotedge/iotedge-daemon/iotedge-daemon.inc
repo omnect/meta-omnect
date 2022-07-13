@@ -10,7 +10,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/../:"
 
 DEPENDS += "openssl virtual/docker"
 RDEPENDS:${PN} += "docker iot-identity-service"
-# marcel: deactivated  INSANE_SKIP:${PN} += "dev-deps"
 
 export OPENSSL_DIR = "${STAGING_EXECPREFIXDIR}"
 export IOTEDGE_CONNECT_MANAGEMENT_URI = "unix:///var/run/iotedge/mgmt.sock"
