@@ -6,12 +6,21 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get wifi-commissioning-gatt-service could be as easy as but default to a git checkout:
+<<<<<<<< HEAD:recipes-ics-dm/wifi-commissioning-gatt-service/wifi-commissioning-gatt-service_0.2.4.bb
 # SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.2.4"
 SRC_URI += "git://git@github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git;protocol=ssh;nobranch=1;branch=main"
 SRCREV = "4c81d067885d9e64afeea26975ccf86b76d9824b"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 PV:append = ".AUTOINC+4c81d06788"
+========
+# SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.2.5"
+SRC_URI += "git://git@github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git;protocol=ssh;nobranch=1;branch=main"
+SRCREV = "958f5c4aaf48bcc0357da12e38a0c54c4d4aa7d2"
+S = "${WORKDIR}/git"
+CARGO_SRC_DIR = ""
+PV:append = ".AUTOINC+958f5c4aaf"
+>>>>>>>> icsdm/dunfell:recipes-ics-dm/wifi-commissioning-gatt-service/wifi-commissioning-gatt-service_0.2.5.bb
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
