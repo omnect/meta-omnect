@@ -19,7 +19,7 @@ RDEPENDS:${PN} += "\
     ca-certificates\
     iot-identity-service\
 "
-inherit aziot ics_dm_rust_azure-iot-sdk systemd
+inherit aziot ics_dm_rust_azure-iot-sdk_deps systemd
 
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}

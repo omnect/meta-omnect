@@ -15,8 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - wifi-commissioning-gatt-service: updated to 0.2.4
   (fixes builds on rpi3)
 - ics-dm rust components depending on azure-iot-sdk: refactored to use a common
-  bbclass
-
+  bbclass to build (also fixes offline builds)
+- iotedge-cli/iotedge-daemon: refactored to use a common bbclass to enable offline
+  builds
 
 ## [dunfell-1.5.2] Q3 2022
 - enable offline builds for ics-dm rust modules which have dependencies to git

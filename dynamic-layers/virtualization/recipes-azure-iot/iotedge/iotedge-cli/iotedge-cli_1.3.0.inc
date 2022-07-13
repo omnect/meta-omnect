@@ -1,3 +1,5 @@
+SRC_URI += "file://config-common_branch_fix_for_offline_build.patch"
+
 # override rolling SRCREV  "relase/1.3" of iot-identity-service dependency
 # with static rev
 # aka 1.3.0:

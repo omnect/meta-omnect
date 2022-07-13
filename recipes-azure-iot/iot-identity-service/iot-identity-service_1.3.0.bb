@@ -10,6 +10,8 @@ SRC_URI += " \
     file://tpm-compile-fix.patch \
 "
 
+CARGO_BUILD_FLAGS += "--offline"
+
 # the following was generated via cargo-bitbake in ${S}/identity/aziot-identityd
 SRC_URI += " \
     crate://crates.io/addr2line/0.14.1 \
