@@ -6,12 +6,18 @@ LIC_FILES_CHKSUM = "\
 "
 
 SRC_URI = "\
+    file://usr/bin/ics_dm_get_deviceid.sh \
     file://etc/sudoers.d/001_ics-dm \
     file://etc/profile.d/ics-dm_profile.sh \
     file://etc/profile.d/ics-dm_prompt.sh \
 "
 
+RDEPENDS:${PN} += "\
+  bash \
+"
+
 FILES:${PN} = "\
+    /usr/bin/ics_dm_get_deviceid.sh \
     /etc/sudoers.d/001_ics-dm \
     /etc/profile.d/ics-dm_profile.sh \
     /etc/profile.d/ics-dm_prompt.sh \
@@ -25,8 +31,10 @@ FILES:${PN} = "\
 "
 
 do_install() {
+    install -d ${D}/usr/bin/
     install -d ${D}/etc/sudoers.d/
     install -d ${D}/etc/profile.d/
+    install -m 0755 ${WORKDIR}/usr/bin/ics_dm_get_deviceid.sh ${D}/usr/bin/
     install -m 0644 ${WORKDIR}/etc/sudoers.d/001_ics-dm ${D}/etc/sudoers.d/
     install -m 0644 ${WORKDIR}/etc/profile.d/ics-dm_profile.sh ${D}/etc/profile.d/
     install -m 0644 ${WORKDIR}/etc/profile.d/ics-dm_prompt.sh ${D}/etc/profile.d/

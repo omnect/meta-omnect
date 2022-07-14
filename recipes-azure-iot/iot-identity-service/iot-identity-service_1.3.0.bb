@@ -16,6 +16,8 @@ SRC_URI += " \
     file://ossl300_Cargo.lock.patch \
 "
 
+CARGO_BUILD_FLAGS += "--offline"
+
 # the following was generated via cargo-bitbake in ${S}/identity/aziot-identityd
 SRC_URI += " \
     crate://crates.io/addr2line/0.17.0 \
