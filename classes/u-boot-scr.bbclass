@@ -31,6 +31,14 @@ python create_boot_cmd () {
             # load device tree
             f.write("fdt addr ${%s}\n" % fdt_addr)
 
+            # TODO optionally allow to load device tree overlays, e.g. disable
+            # spi and eth on polis or tauri-l:
+            #
+            # fdt resize
+            # setexpr fdtovaddr ${fdt_addr_r} + F000
+            # load ${devtype} ${devnum}:${bootpart} ${fdtovaddr} /boot/imx8mm-phycore-no-spiflash.dtbo && fdt apply ${fdtovaddr}
+            # load ${devtype} ${devnum}:${bootpart} ${fdtovaddr} /boot/imx8mm-phycore-no-eth.dtbo && fdt apply ${fdtovaddr}
+ 
             # load kernel
             f.write("load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)
 
