@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.3.1] Q3 2022
 - merged changes from dunfell: dunfell-1.5.3 - dunfell-1.6.0
+- fixed iot-client-template-rs bug when fetching source
 
 ## [kirkstone-0.3.0] Q3 2022
 - kas:

@@ -7,6 +7,13 @@ SRC_URI += "\
 # kirkstone:
 PV = "${SRCPV}"
 
+# we have to truncate ${PV}, it's to long for do_fetch
+python() {
+    pv = d.getVar('PV')
+    pv = pv[:128]
+    d.setVar('PV', pv)
+}
+
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
