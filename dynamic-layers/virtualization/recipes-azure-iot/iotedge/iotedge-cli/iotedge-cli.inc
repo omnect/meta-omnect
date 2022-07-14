@@ -4,13 +4,14 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 
 # overwrite CARGO_SRC_DIR from cargo-bitbake generated recipe
 CARGO_SRC_DIR = "edgelet/iotedge"
+CARGO_WORKSPACE_ROOT = "edgelet"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${THISDIR}/../:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/../:${LAYERDIR_ics_dm}/files/iotedge-patches:"
 
 DEPENDS += "openssl"
 RDEPENDS:${PN} += "iot-identity-service"
 
-inherit features_check
+inherit features_check ics_dm_rust_iot-identity-service_deps
 
 export OPENSSL_DIR = "${STAGING_EXECPREFIXDIR}"
 export IOTEDGE_CONNECT_MANAGEMENT_URI = "unix:///var/run/iotedge/mgmt.sock"

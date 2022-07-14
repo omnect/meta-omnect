@@ -6,12 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get wifi-commissioning-gatt-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.2.3"
-SRC_URI += "git://git@github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git;protocol=ssh;nobranch=1;branch=update"
-SRCREV = "954d6468253848c34d4c75381f69da8cc6e01750"
+# SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.2.5"
+SRC_URI += "git://git@github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git;protocol=ssh;nobranch=1;branch=main"
+SRCREV = "958f5c4aaf48bcc0357da12e38a0c54c4d4aa7d2"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+3d96f64bea"
+PV:append = ".AUTOINC+958f5c4aaf"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -26,7 +26,7 @@ SRC_URI += " \
     crate://crates.io/bluer/0.15.0 \
     crate://crates.io/bytes/1.1.0 \
     crate://crates.io/cfg-if/1.0.0 \
-    crate://crates.io/clap/3.2.7 \
+    crate://crates.io/clap/3.2.8 \
     crate://crates.io/clap_derive/3.2.7 \
     crate://crates.io/clap_lex/0.2.4 \
     crate://crates.io/custom_debug/0.5.0 \
@@ -49,7 +49,7 @@ SRC_URI += " \
     crate://crates.io/futures/0.3.21 \
     crate://crates.io/generic-array/0.14.5 \
     crate://crates.io/getrandom/0.2.7 \
-    crate://crates.io/hashbrown/0.12.1 \
+    crate://crates.io/hashbrown/0.12.2 \
     crate://crates.io/heck/0.4.0 \
     crate://crates.io/hermit-abi/0.1.19 \
     crate://crates.io/hex/0.4.3 \
@@ -68,26 +68,26 @@ SRC_URI += " \
     crate://crates.io/num-derive/0.3.3 \
     crate://crates.io/num-traits/0.2.15 \
     crate://crates.io/num_cpus/1.13.1 \
-    crate://crates.io/once_cell/1.12.0 \
+    crate://crates.io/once_cell/1.13.0 \
     crate://crates.io/opaque-debug/0.3.0 \
     crate://crates.io/os_str_bytes/6.1.0 \
-    crate://crates.io/pin-project-internal/1.0.10 \
+    crate://crates.io/pin-project-internal/1.0.11 \
     crate://crates.io/pin-project-lite/0.2.9 \
-    crate://crates.io/pin-project/1.0.10 \
+    crate://crates.io/pin-project/1.0.11 \
     crate://crates.io/pin-utils/0.1.0 \
     crate://crates.io/pkg-config/0.3.25 \
     crate://crates.io/proc-macro-error-attr/1.0.4 \
     crate://crates.io/proc-macro-error/1.0.4 \
     crate://crates.io/proc-macro2/1.0.40 \
     crate://crates.io/quote/1.0.20 \
-    crate://crates.io/regex-syntax/0.6.26 \
-    crate://crates.io/regex/1.5.6 \
+    crate://crates.io/regex-syntax/0.6.27 \
+    crate://crates.io/regex/1.6.0 \
     crate://crates.io/rustversion/1.0.7 \
     crate://crates.io/ryu/1.0.10 \
     crate://crates.io/sd-notify/0.4.0 \
-    crate://crates.io/serde/1.0.137 \
-    crate://crates.io/serde_derive/1.0.137 \
-    crate://crates.io/serde_json/1.0.81 \
+    crate://crates.io/serde/1.0.138 \
+    crate://crates.io/serde_derive/1.0.138 \
+    crate://crates.io/serde_json/1.0.82 \
     crate://crates.io/sha3/0.9.1 \
     crate://crates.io/signal-hook-registry/1.4.0 \
     crate://crates.io/slab/0.4.6 \
@@ -118,7 +118,7 @@ SRC_URI += " \
     crate://crates.io/windows_i686_msvc/0.36.1 \
     crate://crates.io/windows_x86_64_gnu/0.36.1 \
     crate://crates.io/windows_x86_64_msvc/0.36.1 \
-    crate://crates.io/wpactrl/0.4.0 \
+    crate://crates.io/wpactrl/0.5.1 \
 "
 
 
