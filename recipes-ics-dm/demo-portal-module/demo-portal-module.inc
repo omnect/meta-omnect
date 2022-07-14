@@ -8,6 +8,13 @@ SRC_URI += "\
 # kirkstone:
 PV = "${SRCPV}"
 
+# we have to truncate ${PV}, it's to long for do_fetch
+python() {
+    pv = d.getVar('PV')
+    pv = pv[:128]
+    d.setVar('PV', pv)
+}
+
 # used by pkg_config crate, in turn used by libdbus_sys crate
 DEPENDS += "pkgconfig-native"
 
