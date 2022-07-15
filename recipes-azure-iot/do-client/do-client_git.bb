@@ -15,7 +15,7 @@ S = "${WORKDIR}/git"
 
 DEPENDS = "curl boost cpprest msft-gsl libproxy"
 
-inherit cmake features_check systemd useradd
+inherit cmake systemd useradd
 
 EXTRA_OECMAKE += "-DCMAKE_BUILD_TYPE=Release"
 EXTRA_OECMAKE += "-DDO_BUILD_TESTS=OFF"

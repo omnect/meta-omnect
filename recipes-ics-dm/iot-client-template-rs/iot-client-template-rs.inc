@@ -4,8 +4,8 @@ SRC_URI += "\
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
 "
-# kirkstone:
-PV = "${SRCPV}"
+
+PV .= "_${SRCPV}"
 
 # we have to truncate ${PV}, it's to long for do_fetch
 python() {
