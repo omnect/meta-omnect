@@ -10,8 +10,10 @@ ICS_DM_BOOT_SCR_NAME = "test-boot.scr"
 
 # 0xC031111 is rpi4 1.1 (https://elinux.org/RPi_HardwareHistory)
 ICS_DM_BOOT_SCR_TEST_CMDS:raspberrypi4-64  = 'setenv bootcmd_pxe "dhcp; run fix_rpi4_1_1; if pxe get; then pxe boot; fi"; '
-ICS_DM_BOOT_SCR_TEST_CMDS:raspberrypi4-64 .= 'setenv fix_rpi4_1_1 "if test \"0xC03111\" = \"${board_revision}\"; then setenv bootfile /custom/; setenv extra-bootargs sdhci.debug_quirks2=4; saveenv; fi"; '
+ICS_DM_BOOT_SCR_TEST_CMDS:raspberrypi4-64 .= 'setenv fix_rpi4_1_1 "if test \"0xC03111\" = \"${board_revision}\"; then setenv bootfile /${MACHINE}-${BRANCH}-quirks/; setenv extra-bootargs sdhci.debug_quirks2=4; saveenv; fi"; '
+ICS_DM_BOOT_SCR_TEST_CMDS:raspberrypi4-64 .= 'if test -z "${bootfile}"; then setenv bootfile /${MACHINE}-${BRANCH}/; saveenv; fi; '
 ICS_DM_BOOT_SCR_TEST_CMDS:raspberrypi4-64 .= 'run fix_rpi4_1_1;rstinfo; if test "${rstinfo}" = "POR"; then echo "Power-on detected; going to run PXE boot..."; run bootcmd_pxe; fi'
 
-ICS_DM_BOOT_SCR_TEST_CMDS      = 'rstinfo; if test "${rstinfo}" = "POR"; then echo "Power-on detected; going to run PXE boot..."; run bootcmd_pxe; fi'
+ICS_DM_BOOT_SCR_TEST_CMDS  = 'if test -z "${bootfile}"; then setenv bootfile /${MACHINE}-${BRANCH}/; saveenv; fi; '
+ICS_DM_BOOT_SCR_TEST_CMDS .= 'rstinfo; if test "${rstinfo}" = "POR"; then echo "Power-on detected; going to run PXE boot..."; run bootcmd_pxe; fi'
 inherit deploy nopackages u-boot-scr

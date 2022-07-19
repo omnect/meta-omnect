@@ -17,10 +17,10 @@ do_compile:append() {
 }
 
 do_install:append() {
-  if [ -z "${HW_REV}" ];then bb_error "HW_REV not set" ;exit 1; fi
-  if [ -z "${MACHINE}" ];then bb_error "MACHINE not set";exit 1; fi
-  if [ -z "${SOFTWARE_NAME}" ];then bb_error "SOFTWARE_NAME not set"; exit 1; fi
-  if [ -z "${SOFTWARE_VERSION}" ];then bb_error "SOFTWARE_VERSION not set"; exit 1; fi
+  if [ -z "${HW_REV}" ];then bberror "HW_REV not set" ;exit 1; fi
+  if [ -z "${MACHINE}" ];then bberror "MACHINE not set";exit 1; fi
+  if [ -z "${SOFTWARE_NAME}" ];then bberror "SOFTWARE_NAME not set"; exit 1; fi
+  if [ -z "${SOFTWARE_VERSION}" ];then bberror "SOFTWARE_VERSION not set"; exit 1; fi
 
   echo "${MACHINE} ${HW_REV}" >> ${D}/${sysconfdir}/hwrevision
   echo "${SOFTWARE_NAME} ${SOFTWARE_VERSION}" >> ${D}/${sysconfdir}/sw-versions
