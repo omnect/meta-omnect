@@ -13,7 +13,7 @@ S = "${WORKDIR}/git"
 
 DEPENDS = "boost msft-gsl"
 
-inherit cmake features_check
+inherit cmake
 
 EXTRA_OECMAKE += "-DCMAKE_BUILD_TYPE=Release"
 EXTRA_OECMAKE += "-DDO_BUILD_TESTS=OFF"
