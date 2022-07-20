@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.3.4] Q3 2022
+- kas:
+  - updated to latest meta-freescale
+  - updated to latest meta-openembedded
+  - updated to latest meta-virtualization
+
 ## [kirkstone-0.3.3] Q3 2022
 - demo-portal-module: version bump to 0.5.4
 - iot-client-template-rs: version bump to 0.4.2
