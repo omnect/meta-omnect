@@ -29,13 +29,27 @@ RDEPENDS:${PN} = "iot-identity-service"
 
 S = "${WORKDIR}/git/src"
 
-inherit cmake
+inherit cmake systemd
 
 EXTRA_OECMAKE += "-DCMAKE_BUILD_TYPE=Release"
 EXTRA_OECMAKE += "-Duse_prov_client=ON"
 EXTRA_OECMAKE += "-Dhsm_type_symm_key=ON"
 EXTRA_OECMAKE += "-DBUILD_TESTS=OFF"
 
+do_install:append() {
+  mkdir -p ${D}${sysconfdir}/aziot/identityd/config.d/
+  ln -sr ${D}${sysconfdir}/osconfig/osconfig.toml               ${D}${sysconfdir}/aziot/identityd/config.d/
 
+  mkdir -p ${D}${systemd_system_unitdir}
+  mv ${D}${sysconfdir}/systemd/system/osconfig.service          ${D}${systemd_system_unitdir}/
+  mv ${D}${sysconfdir}/systemd/system/osconfig-platform.service ${D}${systemd_system_unitdir}/
+}
 
-FILES:${PN} += "/usr/lib/osconfig"
+SYSTEMD_SERVICE:${PN} = " \
+  osconfig.service \
+  osconfig-platform.service \
+"
+FILES:${PN} += " \
+  /usr/lib/osconfig \
+  /lib/systemd \
+"
