@@ -29,7 +29,7 @@ RDEPENDS:${PN} = "iot-identity-service"
 
 S = "${WORKDIR}/git/src"
 
-inherit cmake systemd
+inherit cmake systemd useradd
 
 EXTRA_OECMAKE += "-DCMAKE_BUILD_TYPE=Release"
 EXTRA_OECMAKE += "-Duse_prov_client=ON"
@@ -37,10 +37,10 @@ EXTRA_OECMAKE += "-Dhsm_type_symm_key=ON"
 EXTRA_OECMAKE += "-DBUILD_TESTS=OFF"
 
 do_install:append() {
-  mkdir -p ${D}${sysconfdir}/aziot/identityd/config.d/
-  ln -sr ${D}${sysconfdir}/osconfig/osconfig.toml               ${D}${sysconfdir}/aziot/identityd/config.d/
+  install -m 0600 -o aziotid -g aziotid -D ${D}${sysconfdir}/osconfig/osconfig.toml ${D}${sysconfdir}/aziot/identityd/config.d/osconfig.toml
+  rm ${D}${sysconfdir}/osconfig/osconfig.toml
 
-  mkdir -p ${D}${systemd_system_unitdir}
+  install -d -m 0755 ${D}${systemd_system_unitdir}
   mv ${D}${sysconfdir}/systemd/system/osconfig.service          ${D}${systemd_system_unitdir}/
   mv ${D}${sysconfdir}/systemd/system/osconfig-platform.service ${D}${systemd_system_unitdir}/
 }
@@ -52,4 +52,15 @@ SYSTEMD_SERVICE:${PN} = " \
 FILES:${PN} += " \
   /usr/lib/osconfig \
   /lib/systemd \
+"
+USERADD_PACKAGES = "${PN}"
+GROUPADD_PARAM:${PN} = " \
+  -r aziot; \
+  -r aziotcs; \
+  -r aziotid; \
+  -r aziotks; \
+  -r aziottpm; \
+"
+USERADD_PARAM:${PN} = " \
+  -r -g aziotid -G aziot,aziotcs,aziotks,aziottpm -s /bin/false -d ${localstatedir}/lib/aziot/identityd aziotid; \
 "
