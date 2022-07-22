@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get iot-client-template-rs could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/iot-client-template-rs/0.4.2"
+# SRC_URI += "crate://crates.io/iot-client-template-rs/0.4.3"
 SRC_URI += "git://git@github.com/ICS-DeviceManagement/iot-client-template-rs.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "c495520206fbdf5db0b2c7c092770488e2ba4749"
+SRCREV = "0d5712ae6d99fd39ae7fc0cbf116762f1e4432f4"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -155,7 +155,7 @@ SRC_URI += " \
     crate://crates.io/vec_map/0.8.2 \
     crate://crates.io/version_check/0.9.4 \
     crate://crates.io/want/0.3.0 \
-    crate://crates.io/wasi/0.10.2+wasi-snapshot-preview1 \
+    crate://crates.io/wasi/0.10.0+wasi-snapshot-preview1 \
     crate://crates.io/wasi/0.11.0+wasi-snapshot-preview1 \
     crate://crates.io/which/4.2.5 \
     crate://crates.io/winapi-i686-pc-windows-gnu/0.4.0 \
@@ -224,10 +224,10 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "6af42eefc84351ec7af510213561a40948ed9045"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.8.2"
+SRCREV_azure-iot-sdk = "0.8.3"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
-SRCREV_azure-iot-sdk-sys = "0.5.0"
+SRCREV_azure-iot-sdk-sys = "0.5.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk-sys"
 SRCREV_FORMAT .= "_eis-utils"
 SRCREV_eis-utils = "0.2.2"
