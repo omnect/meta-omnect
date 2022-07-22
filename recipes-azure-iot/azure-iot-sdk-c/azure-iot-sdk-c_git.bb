@@ -1,5 +1,5 @@
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_ics_dm}/files/azure-iot-sdk-c-patches::"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_ics_dm}/files/azure-iot-sdk-c-patches:"
 
 DESCRIPTION = "Microsoft Azure IoT SDKs and libraries for C"
 AUTHOR = "Microsoft Corporation"
