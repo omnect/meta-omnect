@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.3.8] Q3 2022
-- demo-portal-module: fixed panic when closing message channel
+- demo-portal-module version bump to 0.5.6 and iot-client-template-rs version bump to 0.4.4:
+  - fixed panic when closing message channel
 
 ## [kirkstone-0.3.7] Q3 2022
 - removed `ics-dm-os` test artefact recipes
