@@ -17,7 +17,6 @@ fs_mount_run() {
     mnt_opts_default="defaults,noatime,nodiratime,async"
 
     setup_rootfs_partition "${ROOTFS_DIR}" "${mnt_opts_default},ro"
-    insmod_overlayfs "${ROOTFS_DIR}"
 
     # mount cert
     cert_blk=$(get_block_device cert)
