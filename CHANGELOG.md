@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.3.10] Q3 2022
+- always link overlayfs to linux kernel, instead of using loadable module:
+  - static linking of overlayfs is enforced by the (optional) layer meta-virtualization
+  - handle linking method in the same way, independent from the presence of meta-virtualization
+
 ## [kirkstone-0.3.9] Q3 2022
 - kas:
   - updated to latest meta-freescale

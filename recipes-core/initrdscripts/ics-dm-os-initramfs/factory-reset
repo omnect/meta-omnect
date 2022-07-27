@@ -181,7 +181,6 @@ iterate_restore_list() {
 
 factory_reset_mount() {
     setup_rootfs_partition "${ROOTFS_DIR}" "defaults,ro"
-    insmod_overlayfs "${ROOTFS_DIR}"
     mount_partition "ext4" "${FACTORY_PART}" "${ROOTFS_DIR}/mnt/factory" "defaults,ro"
     setup_etc_partition  "${ROOTFS_DIR}" "$(get_block_device etc)"  "defaults,rw"
     setup_data_partition "${ROOTFS_DIR}" "$(get_block_device data)" "defaults,rw"
