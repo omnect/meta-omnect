@@ -9,7 +9,7 @@ repos:
   meta-ics-dm:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: deee226017877d51188e0a46f9e6b93c10ffbb34
+    refspec: f22bf6efaae61a8fd9272be64e7d75223c58922e
     layers:
       meta-filesystems:
       meta-networking:
@@ -20,7 +20,7 @@ repos:
     refspec: 4b95d156a166550cdc96672cb680e56cc32e794a
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    refspec: ee778009c33f11c41141b58db57790865f8d2e0e
+    refspec: 7b3622e918e4b80fd748516fff9c49fc48481407
 
 distro: ics-dm-os
 
