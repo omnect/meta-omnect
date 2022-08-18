@@ -25,9 +25,3 @@ SRC_URI += " \
     file://hci_uart-as-module.cfg \
     file://imx-sdma-as-module.cfg \
 "
-
-# always link overlayfs to linux kernel, instead of using loadable module,
-# as enforced by the layer meta-virtualization, which is not always present
-SRC_URI += " \
-    file://enable-overlayfs.cfg \
-"
