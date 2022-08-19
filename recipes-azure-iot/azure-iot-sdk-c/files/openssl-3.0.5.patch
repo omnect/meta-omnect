@@ -20,8 +20,8 @@ index 4a3df849..e75e301a 100644
          }
          else
          {
--#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && (OPENSSL_VERSION_NUMBER < 0x20000000L)
-+#if (OPENSSL_VERSION_NUMBER >= 0x10100000L)
+-#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && (OPENSSL_VERSION_NUMBER < 0x20000000L) || defined(LIBRESSL_VERSION_NUMBER)
++#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
              const BIO_METHOD* bio_method;
  #else
              BIO_METHOD* bio_method;
@@ -33,8 +33,8 @@ index 5a9e5ac2..df4abcfe 100644
                  // certificates.
 
                  /* Codes_SRS_X509_OPENSSL_07_006: [ If successful x509_openssl_add_ecc_credentials shall to import each certificate in the cert chain. ] */
--#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && (OPENSSL_VERSION_NUMBER < 0x20000000L)
-+#if (OPENSSL_VERSION_NUMBER >= 0x10100000L)
+-#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && (OPENSSL_VERSION_NUMBER < 0x20000000L) || defined(LIBRESSL_VERSION_NUMBER)
++#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
                  SSL_CTX_clear_extra_chain_certs(ssl_ctx);
  #else
                  if (ssl_ctx->extra_certs != NULL)
@@ -42,8 +42,8 @@ index 5a9e5ac2..df4abcfe 100644
          else
          {
              /*Codes_SRS_X509_OPENSSL_02_012: [ x509_openssl_add_certificates shall get the memory BIO method function by calling BIO_s_mem. ]*/
--#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && (OPENSSL_VERSION_NUMBER < 0x20000000L)
-+#if (OPENSSL_VERSION_NUMBER >= 0x10100000L)
+-#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && (OPENSSL_VERSION_NUMBER < 0x20000000L) || defined(LIBRESSL_VERSION_NUMBER)
++#if (OPENSSL_VERSION_NUMBER >= 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
              const BIO_METHOD* bio_method;
  #else
              BIO_METHOD* bio_method;
