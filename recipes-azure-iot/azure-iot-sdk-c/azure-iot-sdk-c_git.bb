@@ -18,6 +18,7 @@ DEPENDS = "util-linux curl openssl"
 
 inherit cmake
 
+EXTRA_OECMAKE += "-Duse_prov_client:BOOL=OFF"
 EXTRA_OECMAKE += "-Dskip_samples:BOOL=ON"
 
 # fix compilation of iot-hub-device-update, iot-client-template which depend on azure-iot-sdk-c
