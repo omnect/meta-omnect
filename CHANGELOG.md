@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.3.13] Q3 2022
-- azure-iot-sdk-c updated to LTS_07_2022_Ref01
+- updated `azure-iot-sdk-c` to LTS_07_2022_Ref01
+- updated `enrollment` to 0.8.3
 
 ## [kirkstone-0.3.12] Q3 2022
 - reworked static linking of overlayfs to linux kernel, instead of using loadable module:
