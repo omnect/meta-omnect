@@ -8,7 +8,7 @@ SRC_URI = "gitsm://github.com/Azure/azure-iot-sdk-c.git;branch=lts_01_2022;tag=L
 PV = "${SRCPV}"
 
 SRC_URI += " \
-    file://0001-adapt-for-openssl-3.0.3.patch \
+    file://openssl-3.0.5.patch \
 "
 
 S = "${WORKDIR}/git"

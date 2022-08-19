@@ -5,10 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.3.11] Q3 2022
+## [kirkstone-0.3.12] Q3 2022
 - reworked static linking of overlayfs to linux kernel, instead of using loadable module:
   - made kernel config fragment enable-overlayfs.cfg independent from BSP layer
 - enforced kmod over busbox kernel module utilities
+
+## [kirkstone-0.3.11] Q3 2022
+- kas:
+  - updated poky to 4.0.3
+  - updated to latest meta-openembedded
+  - updated to latest meta-swupdate
+  - updated to latest meta-virtualization
+- azure-iot-c-sdk,iot-identity-service: adapted openssl patches to openssl 3.0.5
 
 ## [kirkstone-0.3.10] Q3 2022
 - always link overlayfs to linux kernel, instead of using loadable module:
