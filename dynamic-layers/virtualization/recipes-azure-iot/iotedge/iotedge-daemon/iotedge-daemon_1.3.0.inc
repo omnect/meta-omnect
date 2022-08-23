@@ -2,6 +2,7 @@ SRC_URI += " \
     file://config-common_branch_fix_for_offline_build.patch \
     file://ossl300_fix_incompatible_pointer_types.patch;patchdir=${WORKDIR}/aziot-cert-client-async \
     file://ossl300_openssl-errors.patch;patchdir=${WORKDIR}/aziot-cert-client-async \
+    file://content-type-handling.patch;patchdir=${WORKDIR}/aziot-cert-client-async \
 "
 
 # we patch aziot-cert-client-async to use openssl-errors 0.2 so we have to provide
