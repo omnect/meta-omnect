@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.3.15] Q3 2022
+- iot-client-template-rs, demo-portal-module, iot-module-template-c:
+  - start service after time-sync target to avoid time jumps during service start
+
 ## [kirkstone-0.3.14] Q3 2022
 - `iot-identity-service/iotedge`: fixed provisioning of modules using request content-type different than 'application\json'
 

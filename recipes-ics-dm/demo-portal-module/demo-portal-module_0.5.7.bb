@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get demo-portal-module could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/demo-portal-module/0.5.6"
+# SRC_URI += "crate://crates.io/demo-portal-module/0.5.7"
 SRC_URI += "git://git@github.com/ICS-DeviceManagement/demo-portal-module.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "5d6bb33377eb71af42d66a416c2b7291103fc19f"
+SRCREV = "636456273db91bb4bec7fadb09776e81678a65a7"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
