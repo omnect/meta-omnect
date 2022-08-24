@@ -12,7 +12,7 @@ do_install:append() {
     install -d ${D}${systemd_system_unitdir}
 
     # enable dhcp for wlan devices
-    if ${bb.utils.contains('MACHINE_FEATURES', 'wifi', 'true', 'false', d)}; then
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'true', 'false', d)}; then
         install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network/
         sed -i 's/^Name=wlan0/Name=${ICS_DM_WLAN0}/' ${D}${systemd_unitdir}/network/80-wlan.network
         sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${ICS_DM_ETH0} --interface=${ICS_DM_WLAN0}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
