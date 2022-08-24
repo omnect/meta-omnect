@@ -14,6 +14,7 @@ SRC_URI += " \
     file://ossl300_default_provider.patch \
     file://ossl300_openssl-errors.patch \
     file://ossl300_Cargo.lock.patch \
+    file://content-type-handling.patch \
 "
 
 CARGO_BUILD_FLAGS += "--offline"
