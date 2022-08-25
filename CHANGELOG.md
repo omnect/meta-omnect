@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.3.16] Q3 2022
+- phygate tauri-l: removed features from `MACHINE_FEATURES` the hardware doesn't provide per se
+- systemd-networkd-wait-online.service: only add interface `ICS_DM_WLAN0` if
+  `MACHINE_FEATURES` includes `wifi`
+
 ## [kirkstone-0.3.15] Q3 2022
 - iot-client-template-rs, demo-portal-module, iot-module-template-c:
   - start service after time-sync target to avoid time jumps during service start
