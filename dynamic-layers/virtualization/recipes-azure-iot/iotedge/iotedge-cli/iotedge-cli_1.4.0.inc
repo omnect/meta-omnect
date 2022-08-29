@@ -1,9 +1,7 @@
-SRC_URI += "file://config-common_branch_fix_for_offline_build.patch"
-
-# override rolling SRCREV  "relase/1.3" of iot-identity-service dependency
+# override rolling SRCREV  "relase/1.4" of iot-identity-service dependency
 # with static rev
-# aka 1.3.0:
-iot_identity_service_rev = "72c12e64113eb76492b9a8e2a08ed7412869237b"
+# aka 1.4.0:
+iot_identity_service_rev = "c281b76772f16d7389fd6b25872c2119e539eab8"
 SRCREV_aziot-cert-client-async = "${iot_identity_service_rev}"
 SRCREV_aziot-cert-common-http = "${iot_identity_service_rev}"
 SRCREV_aziot-certd-config = "${iot_identity_service_rev}"

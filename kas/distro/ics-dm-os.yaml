@@ -15,16 +15,6 @@ repos:
       meta-networking:
       meta-oe:
       meta-python:
-  ext/meta-rust:
-    url: "https://github.com/mlilien/meta-rust.git"
-    refspec: 4b95d156a166550cdc96672cb680e56cc32e794a
-    patches:
-      # we have to patch meta-rust, because it is not compatible with
-      # kirkstone per se. we have to explicitly mask pokys rust recipes.
-      # thus we can't patch meta-rust for kirkstone compatibility upstream.
-      p001:
-        repo: "meta-ics-dm"
-        path: "kas/patches/meta-rust-kirkstone-compatibility.patch"
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     refspec: fabbcc623d41794fbfa97c38b9da941ed2cdcdcc
