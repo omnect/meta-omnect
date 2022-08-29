@@ -1,0 +1,170 @@
+From 95072c260ffda6fded564086d20084d82004cfe1 Mon Sep 17 00:00:00 2001
+From: SteffenRumler <steffen.rumler@conplement.de>
+Date: Wed, 14 Sep 2022 14:47:06 +0200
+Subject: [PATCH] add reset info
+
+---
+ arch/arm/include/asm/arch-imx8m/imx-regs.h | 11 +++++++--
+ arch/arm/mach-imx/cpu.c                    | 12 +++++++++-
+ arch/arm/mach-imx/imx8m/soc.c              | 12 ++++++++++
+ cmd/Kconfig                                |  7 ++++++
+ cmd/Makefile                               |  1 +
+ cmd/rstinfo.c                              | 26 ++++++++++++++++++++++
+ 6 files changed, 66 insertions(+), 3 deletions(-)
+ create mode 100644 cmd/rstinfo.c
+
+diff --git a/arch/arm/include/asm/arch-imx8m/imx-regs.h b/arch/arm/include/asm/arch-imx8m/imx-regs.h
+index 352be7adea..379efd8c37 100644
+--- a/arch/arm/include/asm/arch-imx8m/imx-regs.h
++++ b/arch/arm/include/asm/arch-imx8m/imx-regs.h
+@@ -47,7 +47,7 @@
+ #define IOMUXC_GPR_BASE_ADDR	0x30340000
+ #define OCOTP_BASE_ADDR		0x30350000
+ #define ANATOP_BASE_ADDR	0x30360000
+-#define SNVS_HP_BASE_ADDR	0x30370000
++#define SNVS_BASE_ADDR		0x30370000
+ #define CCM_BASE_ADDR		0x30380000
+ #define SRC_BASE_ADDR		0x30390000
+ #define GPC_BASE_ADDR		0x303A0000
+@@ -255,7 +255,14 @@
+ #define IOMUXC_GPR_GPR1_GPR_ENET1_TX_CLK_SEL_SHIFT 13
+ #define IOMUXC_GPR_GPR1_GPR_ENET_QOS_INTF_SEL_MASK 0x70000
+ 
+-#define SNVS_HPSR              (SNVS_HP_BASE_ADDR + 0x14)
++#define SNVS_HPSR              (SNVS_BASE_ADDR + 0x14)
++#define SNVS_LPSR		0x4c
++#define SNVS_LPLVDR		0x64
++#define SNVS_LPPGDR_INIT	0x41736166
++#define SNVS_LPGPR0		0x90
++#define SNVS_LPGPR1		0x94
++#define SNVS_LPGPR2		0x98
++#define SNVS_LPGPR3		0x9C
+ 
+ struct iomuxc_gpr_base_regs {
+ 	u32 gpr[48];
+diff --git a/arch/arm/mach-imx/cpu.c b/arch/arm/mach-imx/cpu.c
+index 7fd58af068..07dbc97313 100644
+--- a/arch/arm/mach-imx/cpu.c
++++ b/arch/arm/mach-imx/cpu.c
+@@ -26,6 +26,7 @@
+ #include <sata.h>
+ #include <dm/device-internal.h>
+ #include <dm/uclass-internal.h>
++#include <fsl_wdog.h>
+ 
+ #ifdef CONFIG_VIDEO_GIS
+ #include <gis.h>
+@@ -56,11 +57,20 @@ u32 get_imx_reset_cause(void)
+ }
+ 
+ #if defined(CONFIG_DISPLAY_CPUINFO) && !defined(CONFIG_SPL_BUILD)
+-static char *get_reset_cause(void)
++char *get_reset_cause(void)
+ {
++	static u32 snvs_lpgpr3 = 0xffffffff;
++
++	/* use SNVS (Secure Non-Volatile Storage) LPGPR3 register to detect warm starts */
++	if ( snvs_lpgpr3 == 0xffffffff ) {
++		snvs_lpgpr3 = readl(SNVS_BASE_ADDR + SNVS_LPGPR3);
++		writel(0x0112358d, SNVS_BASE_ADDR + SNVS_LPGPR3);
++	}
++
+ 	switch (get_imx_reset_cause()) {
+ 	case 0x00001:
+ 	case 0x00011:
++		if ( snvs_lpgpr3 == 0x0112358d ) return "WARM BOOT";
+ 		return "POR";
+ 	case 0x00004:
+ 		return "CSU";
+diff --git a/arch/arm/mach-imx/imx8m/soc.c b/arch/arm/mach-imx/imx8m/soc.c
+index 9789e10f5e..a417a28985 100644
+--- a/arch/arm/mach-imx/imx8m/soc.c
++++ b/arch/arm/mach-imx/imx8m/soc.c
+@@ -586,6 +586,16 @@ static void secure_lockup(void)
+ }
+ #endif
+ 
++static void imx8m_setup_snvs(void)
++{
++	/* Enable SNVS clock */
++	clock_enable(CCGR_SNVS, 1);
++	/* Initialize glitch detect */
++	writel(SNVS_LPPGDR_INIT, SNVS_BASE_ADDR + SNVS_LPLVDR);
++	/* Clear interrupt status */
++	writel(0xffffffff, SNVS_BASE_ADDR + SNVS_LPSR);
++}
++
+ int arch_cpu_init(void)
+ {
+ 	struct ocotp_regs *ocotp = (struct ocotp_regs *)OCOTP_BASE_ADDR;
+@@ -639,6 +649,8 @@ int arch_cpu_init(void)
+ 			writel(0x200, &ocotp->ctrl_clr);
+ 	}
+ 
++	imx8m_setup_snvs();  /* Secure Non-Volatile Storage */
++
+ 	return 0;
+ }
+ 
+diff --git a/cmd/Kconfig b/cmd/Kconfig
+index d4db6e20ec..ca2b1e44db 100644
+--- a/cmd/Kconfig
++++ b/cmd/Kconfig
+@@ -157,6 +157,13 @@ config CMD_REGINFO
+ 	help
+ 	  Register dump
+ 
++config CMD_RSTINFO
++	bool "rstinfo"
++	depends on DISPLAY_CPUINFO
++	default n
++	help
++	  Detect the restart cause. Set the (non-persistent) environment variable rstinfo accordingly.
++
+ config CMD_TLV_EEPROM
+ 	bool "tlv_eeprom"
+ 	depends on I2C_EEPROM
+diff --git a/cmd/Makefile b/cmd/Makefile
+index c5aafdb357..32233771da 100644
+--- a/cmd/Makefile
++++ b/cmd/Makefile
+@@ -133,6 +133,7 @@ obj-$(CONFIG_CMD_REISER) += reiser.o
+ obj-$(CONFIG_CMD_REMOTEPROC) += remoteproc.o
+ obj-$(CONFIG_CMD_RNG) += rng.o
+ obj-$(CONFIG_CMD_ROCKUSB) += rockusb.o
++obj-$(CONFIG_CMD_RSTINFO) += rstinfo.o
+ obj-$(CONFIG_CMD_RTC) += rtc.o
+ obj-$(CONFIG_SANDBOX) += host.o
+ obj-$(CONFIG_CMD_SATA) += sata.o
+diff --git a/cmd/rstinfo.c b/cmd/rstinfo.c
+new file mode 100644
+index 0000000000..29f5d99332
+--- /dev/null
++++ b/cmd/rstinfo.c
+@@ -0,0 +1,26 @@
++/*
++ *  Get Reset Cause
++ */
++
++#include <common.h>
++#include <command.h>
++
++extern char *get_reset_cause(void);
++static int do_rstinfo(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
++{
++	(void)cmdtp;
++	(void)flag;
++	(void)argc;
++	(void)argv;
++	const char *reset_cause;
++
++	reset_cause = get_reset_cause();
++	printf("Reset cause: %s; set rstinfo environment variable\n", reset_cause);
++	env_set("rstinfo", reset_cause);
++	return 0;
++}
++
++U_BOOT_CMD(rstinfo, 1, 1, do_rstinfo,
++		"get restart cause",
++		"  - get the restart cause; set the environment variable rstinfo accordingly\n"
++);
