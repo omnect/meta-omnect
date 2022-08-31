@@ -15,6 +15,13 @@ repos:
       meta-networking:
       meta-oe:
       meta-python:
+  # we need meta-tpm independend of feature/tpm.yaml to be able
+  # to build iot-identity-service
+  ext/meta-security:
+    url: "https://git.yoctoproject.org/meta-security"
+    refspec: c79262a30bd385f5dbb009ef8704a1a01644528e
+    layers:
+      meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     refspec: fabbcc623d41794fbfa97c38b9da941ed2cdcdcc
