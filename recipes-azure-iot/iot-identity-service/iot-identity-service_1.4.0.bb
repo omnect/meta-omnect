@@ -6,8 +6,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
 # attention iot-identity-service 1.4 used by iotedge 1.4 is not officially tagged yet. so we use
 # the srcrev of latest release/1.4 HEAD
-# SRC_URI = "gitsm://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;tag=1.4.0"
-SRC_URI = "gitsm://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;rev=c281b76772f16d7389fd6b25872c2119e539eab8"
+# SRC_URI = "git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;tag=1.4.0"
+SRC_URI = "git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;rev=c281b76772f16d7389fd6b25872c2119e539eab8"
 
 SRC_URI += " \
     file://iot-identity-service-certd.template.toml \
@@ -15,6 +15,7 @@ SRC_URI += " \
     file://ossl300_default_provider.patch \
     file://ossl300_openssl-errors.patch \
     file://ossl300_Cargo.lock.patch \
+    file://iot-identity-service_PR_451.patch \
 "
 
 CARGO_BUILD_FLAGS += "--offline"
@@ -248,18 +249,16 @@ PV:append = ".${SRCPV}"
 S = "${WORKDIR}/git"
 B = "${S}"
 
-# TODO instead of building tpm2-tss in context of iot-identity-service we should try to
-# depend on tpm2-tss from meta-security instead?
-DEPENDS += " \
-    acl-native \
-    autoconf-native \
-    autoconf-archive-native \
-    automake-native \
+DEPENDS = " \
     bindgen-native \
     cbindgen-native \
-    libtool-native \
     openssl \
     pkgconfig-native \
+    libtss2 \
+"
+
+RDEPENDS:${PN} = " \
+    libtss2-tcti-device \
 "
 
 do_compile() {
@@ -276,6 +275,9 @@ do_compile() {
 
     sed -i 's/^RELEASE = 0$/RELEASE = 1/'       ${S}/Makefile
     sed -i -e 's/CARGO_TARGET = \(.*\)/CARGO_TARGET = ${TARGET_SYS}/g' ${S}/Makefile
+
+    # we don't build tpm2-tss as part of this build
+    rm -rf third-party/tpm2-tss
 
     make default
 }
