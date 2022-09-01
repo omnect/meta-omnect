@@ -1,5 +1,7 @@
 [Unit]
-Description=first boot
+Description=ics-dm first boot
+Before=first-boot-complete.target
+Wants=first-boot-complete.target
 ConditionFirstBoot=yes
 
 # CAUTION!!!
