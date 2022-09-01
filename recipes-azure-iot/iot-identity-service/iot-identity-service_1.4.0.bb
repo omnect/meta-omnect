@@ -15,7 +15,7 @@ SRC_URI += " \
     file://ossl300_default_provider.patch \
     file://ossl300_openssl-errors.patch \
     file://ossl300_Cargo.lock.patch \
-    file://aziot-tpmd-dirty-fix.patch \
+    file://iot-identity-service_PR_451.patch \
 "
 
 CARGO_BUILD_FLAGS += "--offline"
