@@ -65,6 +65,11 @@ do_install:append:rpi() {
         sed -i 's|^#RebootWatchdogSec=.*$|RebootWatchdogSec=${SYSTEMD_RebootWatchdogSec}|' ${cfg_file}
 }
 
+# adapt tauri-l systemd-networkd-wait-online.service state
+do_install:append:phygate-tauri-l-imx8mm-2() {
+    sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${ICS_DM_ETH0} --interface=${ICS_DM_ETH1}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+}
+
 FILES:${PN} += "\
     /usr/bin/ics_dm_first_boot.sh \
     ${systemd_unitdir}/network/80-wlan.network \
