@@ -23,9 +23,6 @@ eis-utils = { path = "${WORKDIR}/eis-utils" }
 [patch.'ssh://git@github.com/ICS-DeviceManagement/azure-iot-sdk-sys.git']
 azure-iot-sdk-sys = { path = "${WORKDIR}/azure-iot-sdk-sys" }
 
-[patch.'ssh://git@github.com/ICS-DeviceManagement/sd-notify.git']
-sd-notify = { path = "${WORKDIR}/sd-notify" }
-
 [patch.'https://git@github.com/Azure/iot-identity-service.git']
 aziot-cert-client-async = { path = "${WORKDIR}/aziot-cert-client-async/cert/aziot-cert-client-async" }
 aziot-cert-common = { path = "${WORKDIR}/aziot-cert-client-async/cert/aziot-cert-common" }
