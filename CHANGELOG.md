@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.4.5] Q3 2022
+- demo-portal-module: bumped to 0.5.9
+- iot-client-template-rs: bumped to 0.4.7
+
 ## [kirkstone-0.4.4] Q3 2022
 - run ics-dm-first-boot.service before first-boot-complete.target
 
