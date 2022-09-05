@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.4.7] Q3 2022
+- changed first boot handling:
+  - wait until systemd state network online and time-sync reached
+
 ## [kirkstone-0.4.6] Q3 2022
 - fix build error in release "kirkstone-0.4.5"
 
