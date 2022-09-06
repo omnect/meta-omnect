@@ -1,5 +1,6 @@
 [Unit]
 Description=ics-dm first boot
+After=time-sync.target
 Before=first-boot-complete.target
 Wants=first-boot-complete.target
 ConditionFirstBoot=yes
