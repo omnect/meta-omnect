@@ -4,11 +4,11 @@
 # optionally provide flashing whole disk image in INITRAMFS context
 #
 
-ICS_DM_FLASH_MODE_VAR="initramfs-flash-mode"
+ICS_DM_FLASH_MODE_VAR="flash-mode"
 ICS_DM_FLASH_MODE_FLAG_FILE="/etc/enforce_flash_mode"
 ICS_DM_FLASH_MODE_ETH="eth0"
-ICS_DM_FLASH_MODE_FIFO="/home/ics-dm/wic-image.fifo.xz"
-ICS_DM_FLASH_MODE_BMAP_FILE="/home/ics-dm/wic-image.bmap"
+ICS_DM_FLASH_MODE_FIFO="/home/ics-dm/wic.xz"
+ICS_DM_FLASH_MODE_BMAP_FILE="/home/ics-dm/wic.bmap"
 
 # called by generic INITRAMFS
 flash_mode_enabled() {

@@ -32,9 +32,9 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedge` runtime dependency `moby`
 - `persistent-var-log`
     - enables a persistent /var/log which is stored in the data partition
-- `initramfs-flash-mode`
+- `flash-mode`
     - provides the possibility to flash complete disk images
-    - please see section *Initramfs Flash Mode*, below
+    - please see section *Flash Mode*, below
 - `resize-data`
     - expands the data partition to available space on first boot
 - [`wifi-commissioning`](https://github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git)
@@ -174,15 +174,15 @@ See [ics-dm-cli iot-identity-service configuration](https://github.com/ICS-Devic
 
 ## Usage
 
-### Initramfs Flash Mode
+### Flash Mode
 This mode is used to flash the complete disk image including all partitions to the target system.
 It uses the initramfs context, because in this mode the block device is free for writing images.
-Enable the distribution feature `initramfs-flash-mode` at build time, if you want to use it.
+Enable the distribution feature `flash-mode` at build time, if you want to use it.
 
-In order to trigger the Initramfs Flash Mode, use the following commands on the target system:
+In order to trigger the Flash Mode, use the following commands on the target system:
 ```sh
 sudo -s
-fw_setenv initramfs-flash-mode 1
+fw_setenv flash-mode 1
 reboot
 ...
 Entering ICS DM flashing mode...
@@ -192,13 +192,13 @@ Note, the *fw_setenv* command requires root permissions.
 
 In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
 ```sh
-scp ics-dm-os-*.wic.bmap ics-dm@<target-ip>:wic-image.bmap
-scp ics-dm-os-*.wic.xz ics-dm@<target-ip>:wic-image.fifo.xz
+scp ics-dm-os-*.wic.bmap ics-dm@<target-ip>:wic.bmap
+scp ics-dm-os-*.wic.xz ics-dm@<target-ip>:wic.xz
 ```
 On systems with new openssh clients >= 9.0 you have to use the legacy option when using `scp`. (See [here](https://www.openssh.com/txt/release-9.0) for details.) :
 ```sh
-scp -O ics-dm-os-*.wic.bmap ics-dm@<target-ip>:wic-image.bmap
-scp -O ics-dm-os-*.wic.xz ics-dm@<target-ip>:wic-image.fifo.xz
+scp -O ics-dm-os-*.wic.bmap ics-dm@<target-ip>:wic.bmap
+scp -O ics-dm-os-*.wic.xz ics-dm@<target-ip>:wic.xz
 ```
 
 The password for the *ics-dm* user used by the rootfs has to be used.
@@ -206,10 +206,10 @@ The *ics-dm* user used by the initramfs is independent from the *ics-dm* user us
 At build time, the configuration (ICS_DM_USER_PASSWORD) is applied for both. The passwords are identical.
 Later during runtime, changing the password in the rootfs is not synchronized to the initramfs.
 
-The destination file names have to be *wic-image.bmap* and *wic-image.fifo.xz*.
+The destination file names have to be *wic.bmap* and *wic.xz*.
 
 After finishing the flash procedure, the system reboots automatically.
-The u-boot environment variable *initramfs-flash-mode* will be deleted automatically.
+The u-boot environment variable *flash-mode* will be deleted automatically.
 In this way, the system enters the normal mode, booting the new image.
 
 ### Factory Reset
