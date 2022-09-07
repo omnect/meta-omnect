@@ -356,7 +356,7 @@ do_install() {
     install -d -m 0755  ${D}${systemd_system_unitdir}
     install -m 0644     ${S}/cert/aziot-certd/aziot-certd.service.in ${D}${systemd_system_unitdir}/aziot-certd.service
     sed -i \
-        -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' \
+        -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service time-sync.target/' \
         -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
         -e 's#@libexecdir@#/usr/libexec#g' \
         -e '/Environment=\(.*\)$/d' \
@@ -367,7 +367,7 @@ do_install() {
 
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.service.in ${D}${systemd_system_unitdir}/aziot-identityd.service
     sed -i \
-        -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' \
+        -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service time-sync.target/' \
         -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
         -e 's#@libexecdir@#/usr/libexec#g' \
         -e '/Environment=\(.*\)$/d' \
@@ -376,7 +376,7 @@ do_install() {
 
     install -m 0644     ${S}/key/aziot-keyd/aziot-keyd.service.in ${D}${systemd_system_unitdir}/aziot-keyd.service
     sed -i \
-        -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' \
+        -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service time-sync.target/' \
         -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
         -e 's#@libexecdir@#/usr/libexec#g' \
         -e '/Environment=\(.*\)$/d' \
