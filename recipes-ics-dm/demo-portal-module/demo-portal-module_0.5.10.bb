@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get demo-portal-module could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/demo-portal-module/0.5.9"
+# SRC_URI += "crate://crates.io/demo-portal-module/0.5.10"
 SRC_URI += "git://git@github.com/ICS-DeviceManagement/demo-portal-module.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "c5610e74ee278a5d99cc5e41e7963463e3e82f97"
+SRCREV = "bc676f5ffad365dc25e3ff904dcf82809692e3d1"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -16,11 +16,14 @@ CARGO_SRC_DIR = ""
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
 SRC_URI += " \
+    crate://crates.io/addr2line/0.17.0 \
+    crate://crates.io/adler/1.0.2 \
     crate://crates.io/aho-corasick/0.7.18 \
     crate://crates.io/ansi_term/0.12.1 \
     crate://crates.io/async-trait/0.1.57 \
     crate://crates.io/atty/0.2.14 \
     crate://crates.io/autocfg/1.1.0 \
+    crate://crates.io/backtrace/0.3.66 \
     crate://crates.io/base64/0.13.0 \
     crate://crates.io/bindgen/0.59.2 \
     crate://crates.io/bitflags/1.3.2 \
@@ -60,6 +63,7 @@ SRC_URI += " \
     crate://crates.io/futures/0.3.24 \
     crate://crates.io/generic-array/0.14.6 \
     crate://crates.io/getrandom/0.2.7 \
+    crate://crates.io/gimli/0.26.2 \
     crate://crates.io/glob/0.3.0 \
     crate://crates.io/h2/0.3.14 \
     crate://crates.io/hashbrown/0.12.3 \
@@ -91,12 +95,14 @@ SRC_URI += " \
     crate://crates.io/linked-hash-map/0.5.6 \
     crate://crates.io/linked_hash_set/0.1.4 \
     crate://crates.io/lock_api/0.4.8 \
+    crate://crates.io/log-panics/2.1.0 \
     crate://crates.io/log/0.4.17 \
     crate://crates.io/matches/0.1.9 \
     crate://crates.io/memchr/2.5.0 \
     crate://crates.io/memoffset/0.6.5 \
     crate://crates.io/mime/0.3.16 \
     crate://crates.io/minimal-lexical/0.2.1 \
+    crate://crates.io/miniz_oxide/0.5.4 \
     crate://crates.io/mio/0.8.4 \
     crate://crates.io/nix/0.23.1 \
     crate://crates.io/nom/7.1.1 \
@@ -104,6 +110,7 @@ SRC_URI += " \
     crate://crates.io/notify/5.0.0 \
     crate://crates.io/num_cpus/1.13.1 \
     crate://crates.io/num_threads/0.1.6 \
+    crate://crates.io/object/0.29.0 \
     crate://crates.io/once_cell/1.13.1 \
     crate://crates.io/openssl-macros/0.1.0 \
     crate://crates.io/openssl-sys/0.9.75 \
@@ -126,6 +133,7 @@ SRC_URI += " \
     crate://crates.io/redox_syscall/0.2.16 \
     crate://crates.io/regex-syntax/0.6.27 \
     crate://crates.io/regex/1.6.0 \
+    crate://crates.io/rustc-demangle/0.1.21 \
     crate://crates.io/rustc-hash/1.1.0 \
     crate://crates.io/ryu/1.0.11 \
     crate://crates.io/same-file/1.0.6 \
