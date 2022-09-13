@@ -28,3 +28,5 @@ ICS_DM_PART_SIZE_UBOOT_ENV = "64"
 
 # mask fw_env.config configuration of meta-phytec, we generate that ourselves
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
+
+MACHINEOVERRIDES .= ":phytec-imx8mm"
