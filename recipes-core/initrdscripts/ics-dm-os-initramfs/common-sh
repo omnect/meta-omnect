@@ -52,8 +52,6 @@ check_ext4_fs()
         # check filesystem again with forced mode
         run_cmd fsck.ext4  ${block_device} -f -y || return 1
 
-        # get /dev/disk/by-label/<name> available
-        run_cmd udevadm trigger -w ${block_device}
     else
         if [ ${fsck_res} -eq 2 ]; then
             # -- corrected by fsck, but reboot required --
@@ -72,8 +70,7 @@ get_block_device()
     local label="$1"  # label designating block device
     local blk_dev=""
 
-    # currently filesystem labels are used; TODO: use partition labels based on GPT
-    blk_dev=$(readlink -f /dev/disk/by-label/${label})
+    blk_dev=$(readlink -f /dev/ics_dm/${label})
 
     if [ -z "${blk_dev}" ] || [ ! -b "${blk_dev}" ]; then
         msg_fatal "\"${blk_dev}\" not a valid block device [label=${label}]"  # output: /dev/console
@@ -120,7 +117,9 @@ mount_overlayfs()
 get_bootloader_env_var()
 {
     local var_name="$1"
-    fw_printenv ${var_name} | cut -d'=' -f2
+    local value=$(fw_printenv ${var_name} | cut -d'=' -f2)
+    debug "get_bootloader_env_var ${var_name}=${value}"
+    echo ${value}
 }
 
 # set/delete bootloader environment variable

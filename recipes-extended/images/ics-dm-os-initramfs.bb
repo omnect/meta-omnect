@@ -18,8 +18,7 @@ PACKAGE_INSTALL = "\
     base-passwd \
     ics-dm-os-initramfs-scripts \
     initramfs-framework-base \
-    initramfs-module-udev \
-    udev \
+    initramfs-module-debug \
     libubootenv \
     libubootenv-bin \
     e2fsprogs-e2fsck \

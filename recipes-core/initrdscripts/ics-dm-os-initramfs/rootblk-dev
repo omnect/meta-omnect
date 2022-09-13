@@ -7,15 +7,26 @@ rootblk_dev_enabled() {
 rootblk_dev_run() {
     msg "ics-dm-os initramfs rootblk-dev"
 
+    [ -z "${bootparam_root}" ] && msg "no root device set" && return 1
+
     mkdir -p /dev/ics_dm
     cd /dev/ics_dm
 
-    rootblk=$(readlink /dev/disk/by-label/boot)
+    rootblk=${bootparam_root}
     rootblk=${rootblk##*/}
     rootblk=${rootblk%p*}
+    debug rootblk=${rootblk}
 
     ln -sf /dev/${rootblk} rootblk
     for i in /dev/${rootblk}p*; do
         ln -sf ${i} rootblkp${i##*p}
     done
+    ln -sf /dev/${rootblk}p1 boot
+    ln -sf /dev/${rootblk}p2 rootA
+    ln -sf /dev/${rootblk}p3 rootB
+    # todo gpt vs mbr
+    ln -sf /dev/${rootblk}p5 factory
+    ln -sf /dev/${rootblk}p6 cert
+    ln -sf /dev/${rootblk}p7 etc
+    ln -sf /dev/${rootblk}p8 data
 }

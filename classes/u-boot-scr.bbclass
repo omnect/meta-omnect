@@ -38,7 +38,7 @@ python create_boot_cmd () {
             # setexpr fdtovaddr ${fdt_addr_r} + F000
             # load ${devtype} ${devnum}:${bootpart} ${fdtovaddr} /boot/imx8mm-phycore-no-spiflash.dtbo && fdt apply ${fdtovaddr}
             # load ${devtype} ${devnum}:${bootpart} ${fdtovaddr} /boot/imx8mm-phycore-no-eth.dtbo && fdt apply ${fdtovaddr}
- 
+
             # load kernel
             f.write("load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)
 
@@ -47,7 +47,7 @@ python create_boot_cmd () {
 
             # assemble bootargs: from device tree + extra-bootargs for debugging purpose
             f.write("fdt get value bootargs /chosen bootargs\n")
-            f.write("setenv bootargs \"${bootargs} ${extra-bootargs}\"\n")
+            f.write("setenv bootargs \"root=/dev/${devtype}blk${devnum}p${bootpart} ${bootargs} ${extra-bootargs}\"\n")
 
             # boot
             f.write("%s ${kernel_addr_r} ${ramdisk_addr_r} ${%s}\n" % (boot_cmd, fdt_addr))
