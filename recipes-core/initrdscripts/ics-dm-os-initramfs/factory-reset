@@ -44,7 +44,6 @@ wipe_partition_dd() {
     # skip superblock, to keep label in the case of interruption; may take a longer time
     dd bs=1M if=/dev/urandom iflag=fullblock oflag=direct oflag=seek_bytes seek=${seek_bytes} of=${part} status=progress
     sync
-    udevadm settle
     return 0
 }
 

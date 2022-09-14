@@ -73,10 +73,6 @@ run_bmap_tool() {
     blk_dev=${blk_dev%p*}
     if [ ! -b "${blk_dev}" ]; then msg_fatal "${blk_dev} does not exist or not a block device"; return 1; fi
 
-    # stop auto mount
-    udevadm settle
-    udevadm control -e
-
     # setup FIFO
     run_cmd mkfifo ${ICS_DM_FLASH_MODE_FIFO} || return 1
     run_cmd chown ics-dm:ics-dm ${ICS_DM_FLASH_MODE_FIFO} || return 1
