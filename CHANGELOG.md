@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - wifi-commissioning-gatt-service:
   - updated to version 0.2.6
   - added user `wifi-commissioning-gatt` which executes the service
+  - restart rpi bluetooth on wifi-commissioning-gatt-service restarts
   (fixes systemd warning: "Special user nobody configured, this is not safe!")
 
 ## [kirkstone-0.4.12] Q3 2022
