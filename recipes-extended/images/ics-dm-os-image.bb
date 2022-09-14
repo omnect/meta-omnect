@@ -55,8 +55,8 @@ IMAGE_INSTALL += "${@check_for_devel_tools(d)}"
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
 # If we add it to IMAGE_BOOT_FILES, wic would move it to the boot
 # partition.
-# By this postprocess handling it gets installed to rootA and are therefore
-# is updatable via swupdate.
+# By this postprocess handling it gets installed to rootA and is therefore
+# updatable via swupdate.
 ROOTFS_POSTPROCESS_COMMAND:append = " add_kernel_and_initramfs;"
 add_kernel_and_initramfs() {
     initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${ICS_DM_INITRAMFS_IMAGE_NAME}.${ICS_DM_INITRAMFS_FSTYPE})
