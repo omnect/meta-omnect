@@ -1,21 +1,10 @@
-From 730d851106c4541e7a4f210317228f32535cb30b Mon Sep 17 00:00:00 2001
-From: Kas User <kas@example.com>
-Date: Tue, 5 Apr 2022 08:31:43 +0000
-Subject: [PATCH] Fix device dependency in hciuart.service
-
----
- debian/pi-bluetooth.hciuart.service | 1 +
- 1 file changed, 1 insertion(+)
-
 diff --git a/debian/pi-bluetooth.hciuart.service b/debian/pi-bluetooth.hciuart.service
-index 31323d7..cb02e07 100644
+index 31323d7..5c866de 100644
 --- a/debian/pi-bluetooth.hciuart.service
 +++ b/debian/pi-bluetooth.hciuart.service
-@@ -2,6 +2,7 @@
- Description=Configure Bluetooth Modems connected by UART
- ConditionFileNotEmpty=/proc/device-tree/soc/gpio@7e200000/bt_pins/brcm,pins
- After=dev-serial1.device
-+Requires=dev-serial1.device
+@@ -8,4 +8,4 @@ Type=forking
+ ExecStart=/usr/bin/btuart
  
- [Service]
- Type=forking
+ [Install]
+-WantedBy=multi-user.target
++WantedBy=dev-serial1.device
