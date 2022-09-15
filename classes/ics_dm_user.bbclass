@@ -16,5 +16,5 @@ ics_dm_setup_hash() {
 
 inherit extrausers
 EXTRA_USERS_PARAMS = "\
-    useradd -p '$(cat ${WORKDIR}/ics_dm_pwd_hash)' ics-dm; \
+    useradd -p '$(cat ${WORKDIR}/ics_dm_pwd_hash)' -u 15581 ics-dm; \
 "
