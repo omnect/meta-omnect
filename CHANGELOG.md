@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.5.1] Q3 2022
+- rpi:
+  - fixed kernel cmdline and removed default "root" device entry set from meta-raspberrypi
+  - removed uneffective statement to set the default cmdline
+
 ## [kirkstone-0.5.0] Q3 2022
 - phytec imx8mm: added reset cause in u-boot-imx
 

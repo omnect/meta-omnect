@@ -10,8 +10,8 @@ ENABLE_UART = "1"
 # wic: how to partition
 WKS_FILE = "ics-dm-os.rpi.wks.in"
 
-# overwrite kernel cmdline from meta-raspberrypi
-CMDLINE ?= "dwc_otg.lpm_enable=0 ${SERIAL}"
+# overwrite CMDLINE_ROOTFS from meta-raspberrypi, we set "root" in boot.scr
+CMDLINE_ROOTFS = ""
 
 # u-boot config vars
 UBOOT_FDT_ADDR = "fdt_addr"
