@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.5.3] Q3 2022
+- iot-identity-service: revert kirkstone-0.5.2 (it's not recommended to synchronize with
+  systemd-udev-settle and it didn't help anyway)
+
 ## [kirkstone-0.5.2] Q3 2022
 - iot-identity-service: fixed race condition between tpm udev rule and `aziot-tpmd`
 
