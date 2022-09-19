@@ -386,7 +386,7 @@ do_install() {
     if ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', 'true', 'false', d)}; then
         install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.service.in ${D}${systemd_system_unitdir}/aziot-tpmd.service
         sed -i \
-            -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' \
+            -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service systemd-udev-settle.service dev-tpmrm0.device/' \
             -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
             -e 's#@libexecdir@#/usr/libexec#g' \
             -e '/Environment=\(.*\)$/d' \

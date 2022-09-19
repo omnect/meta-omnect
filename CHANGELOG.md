@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.5.2] Q3 2022
+- iot-identity-service: fixed race condition between tpm udev rule and `aziot-tpmd`
+
+## [kirkstone-0.5.1] Q3 2022
+- rpi:
+  - fixed kernel cmdline and removed default "root" device entry set from meta-raspberrypi
+  - removed uneffective statement to set the default cmdline
+
+## [kirkstone-0.5.0] Q3 2022
+- phytec imx8mm: added reset cause in u-boot-imx
+
+## [kirkstone-0.4.13] Q3 2022
+- iot-identity-service: fixed race condition between `dev-tpmrm0.device` and `aziot-tpmd`
+- wifi-commissioning-gatt-service:
+  - updated to version 0.2.6
+  - added user `wifi-commissioning-gatt` which executes the service
+  - restart rpi bluetooth on wifi-commissioning-gatt-service restarts
+  (fixes systemd warning: "Special user nobody configured, this is not safe!")
+
 ## [kirkstone-0.4.12] Q3 2022
 - don't install kernel twice into rootfs
 - initramfs:
