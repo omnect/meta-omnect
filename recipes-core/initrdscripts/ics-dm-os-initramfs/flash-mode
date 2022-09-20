@@ -115,6 +115,7 @@ flash_mode_run() {
     setup_network ${ICS_DM_FLASH_MODE_ETH} || return 0
     run_bmap_tool || return 0
 
+    sync
     msg "Rebooting system..."
     reboot -f
     # -- never reached --
