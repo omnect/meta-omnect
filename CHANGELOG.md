@@ -5,8 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.5.4] Q3 2022
+## [kirkstone-0.5.5] Q3 2022
 - initramfs: explicitly sync before reboot in flash-mode
+
+## [kirkstone-0.5.4] Q3 2022
+- set static uid/gid 15581 for user ics-dm
 
 ## [kirkstone-0.5.3] Q3 2022
 - iot-identity-service: revert kirkstone-0.5.2 (it's not recommended to synchronize with
