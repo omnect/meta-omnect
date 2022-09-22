@@ -24,6 +24,7 @@ rootblk_dev_run() {
     ln -sf /dev/${rootblk}p1 boot
     ln -sf /dev/${rootblk}p2 rootA
     ln -sf /dev/${rootblk}p3 rootB
+    ln -sf /dev/${rootblk}p4 extended
     # todo gpt vs mbr
     ln -sf /dev/${rootblk}p5 factory
     ln -sf /dev/${rootblk}p6 cert

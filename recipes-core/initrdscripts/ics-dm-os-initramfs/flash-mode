@@ -4,7 +4,14 @@
 # optionally provide flashing whole disk image in INITRAMFS context
 #
 
+# Flash Mode
+#     1    flash disk image from network to active block device
+#     2    clone disk image from active block device to other one
+#
+ICS_DM_FLASH_MODE=""
+
 ICS_DM_FLASH_MODE_VAR="flash-mode"
+ICS_DM_FLASH_DEVPATH_VAR="flash-mode-devpath"
 ICS_DM_FLASH_MODE_FLAG_FILE="/etc/enforce_flash_mode"
 ICS_DM_FLASH_MODE_ETH="eth0"
 ICS_DM_FLASH_MODE_FIFO="/home/ics-dm/wic.xz"
@@ -12,19 +19,18 @@ ICS_DM_FLASH_MODE_BMAP_FILE="/home/ics-dm/wic.bmap"
 
 # called by generic INITRAMFS
 flash_mode_enabled() {
-    local flash_mode=""
-
     # flash mode fixed part of the initramfs image
     if [ -f ${ICS_DM_FLASH_MODE_FLAG_FILE} ]; then
         msg "enable flash mode: by ${ICS_DM_FLASH_MODE_FLAG_FILE}"
-        return 0  # enable flash mode; main entry point called
+        ICS_DM_FLASH_MODE=1
+        return 0  # enable flash mode; call main entry point
     fi
 
     # flash mode triggered at runtime
-    flash_mode=$(get_bootloader_env_var ${ICS_DM_FLASH_MODE_VAR})
-    if [ "${flash_mode}" == "1" ]; then
-        msg "enable flash mode: by u-boot environment variable ${ICS_DM_FLASH_MODE_VAR}"
-        return 0  # enable flash mode; main entry point called
+    ICS_DM_FLASH_MODE=$(get_bootloader_env_var ${ICS_DM_FLASH_MODE_VAR})
+    if [ -n "${ICS_DM_FLASH_MODE}" ]; then
+        msg "enable flash mode: by u-boot environment variable ${ICS_DM_FLASH_MODE_VAR}: ${ICS_DM_FLASH_MODE}"
+        return 0  # enable flash mode; call main entry point
     fi
 
     return 1  # disable flash mode; normal boot; main entry point _NOT_ called
@@ -104,19 +110,132 @@ run_bmap_tool() {
     return 0  # success
 }
 
-# main entry point
-flash_mode_run() {
-    msg "Entering ICS DM flashing mode..."
+# deploy WIC image via network to (same) active block device
+run_flash_mode_1() {
+    msg "Entering ICS DM flashing mode 1 ..."
 
     # disable flash mode for subsequent restarts
     set_bootloader_env_var ${ICS_DM_FLASH_MODE_VAR}
 
-    # continue startup in case of errors
-    setup_network ${ICS_DM_FLASH_MODE_ETH} || return 0
-    run_bmap_tool || return 0
+    setup_network ${ICS_DM_FLASH_MODE_ETH} || return
+    run_bmap_tool || return
 
     sync
     msg "Rebooting system..."
     reboot -f
     # -- never reached --
+}
+
+# clone active disk image to other block device
+run_flash_mode_2() {
+    local dev_path=""
+    local part_type=""
+    local blk_dev_dst=""
+    local blk_dev_src=""
+    local data_partition=""
+    local rootfs_bootpart=""
+    local act_rootfs_partition=""
+
+    msg "Entering ICS DM flashing mode 2 ..."
+
+    # disable flash mode for subsequent restarts
+    set_bootloader_env_var ${ICS_DM_FLASH_MODE_VAR}
+
+    # detect destination block device for device path
+    dev_path=$(get_bootloader_env_var ${ICS_DM_FLASH_DEVPATH_VAR} | cut -d= -f2)
+    if [ -z "${dev_path}" ]; then
+        msg_fatal "bootloader environment variable \"${ICS_DM_FLASH_DEVPATH_VAR}\" not set"
+        return 1
+    fi
+    set_bootloader_env_var ${ICS_DM_FLASH_DEVPATH_VAR}
+    for i in $(seq 1 30); do
+        blk_dev_dst=$(udevadm info --query=property --path="${dev_path}" | grep ^DEVNAME= | cut -d= -f2)
+        if [ -n "${blk_dev_dst}" ]; then break; fi
+        sleep 1
+    done
+    if [ ${i} -eq 30 ]; then
+        msg_fatal "cannot detect block device from device path \"${dev_path}\""
+        return 1
+    fi
+
+    # detect source block device
+    blk_dev_src=$(get_block_device boot)
+    blk_dev_src=${blk_dev_src%p*}
+    if [ ! -b "${blk_dev_src}" ]; then msg_fatal "${blk_dev_src} does not exist or not a block device"; return 1; fi
+
+    # detect current rootfs
+    rootfs_bootpart=$(get_bootloader_env_var bootpart | cut -d= -f2)
+    case "${rootfs_bootpart}" in
+      2) act_rootfs_partition="/dev/ics_dm/rootA";;
+      3) act_rootfs_partition="/dev/ics_dm/rootB";;
+      *) msg_fatal "cannot detect rootfs bootpart"; return 1;;
+    esac
+
+    # check for MBR partition type
+    part_type=$(parted ${blk_dev_src} print | grep '^Partition Table:' | awk -F: '{print $2}')
+    part_type="${part_type// /}"
+    if [ ! "${part_type}" == 'msdos' ]; then
+        msg_fatal "partition type \"${part_type}\" not supported"
+        return 1
+    fi
+
+    data_partition=$(readlink -f /dev/ics_dm/data)
+    if [ -z "${data_partition}" ]; then
+        msg_fatal "cannot detect data partition"
+        return 1
+    fi
+
+    extended_partition=$(readlink -f /dev/ics_dm/extended)
+    if [ -z "${extended_partition}" ]; then
+        msg_fatal "cannot detect extended partition"
+        return 1
+    fi
+
+    msg "cloning: ${blk_dev_src} -> ${blk_dev_dst}"
+
+    # clone MBR, set data partition to start size
+    if ! sfdisk -d "${blk_dev_src}" | \
+             sed "s|\(^${data_partition}.*size=[[:space:]]\+\)\([[:digit:]]\+,\)\(.*\)$|\1 1048576, \3|g" | \
+                 sed "s|\(^${extended_partition}.*size=[[:space:]]\+\)\([[:digit:]]\+,\)\(.*\)$|\1 1318914, \3|g" | \
+                     sfdisk "${blk_dev_dst}"; then
+        msg_fatal "clone MBR failed"
+        return 1
+    fi
+    run_cmd sync
+
+    # copy partitions boot, factory, cert and etc
+    run_cmd dd if=/dev/ics_dm/boot    of="$(readlink -f ${blk_dev_dst}*1)" bs=10M || return 1
+    run_cmd dd if=/dev/ics_dm/factory of="$(readlink -f ${blk_dev_dst}*5)" bs=10M || return 1
+    run_cmd dd if=/dev/ics_dm/cert    of="$(readlink -f ${blk_dev_dst}*6)" bs=10M || return 1
+    run_cmd dd if=/dev/ics_dm/etc     of="$(readlink -f ${blk_dev_dst}*7)" bs=10M || return 1
+
+    # copy current rootfs to rootfsA
+    run_cmd e2image -ra -p "${act_rootfs_partition}" "$(readlink -f ${blk_dev_dst}*2)" || return 1
+
+    # enforce default bootloader environment
+    run_cmd dd if=/dev/zero bs=65536 count=1 | tr "\000" "\377" >/tmp/uboot_env_ff.img
+    run_cmd dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=50331648 || return 1
+    run_cmd dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=52428800 || return 1
+
+    return 0
+}
+
+# main entry point
+flash_mode_run() {
+    case ${ICS_DM_FLASH_MODE} in
+        1) run_flash_mode_1
+           ;;
+        2) set -o pipefail
+           run_flash_mode_2 2>&1 | tee /tmp/flash-mode-2.log; RET=$?
+           setup_rootfs_partition "${ROOTFS_DIR}" "defaults,noatime,nodiratime,async,rw" 
+           run_cmd cp /tmp/flash-mode-2.log ${ROOTFS_DIR}/boot/flash-mode-2.log
+           run_cmd sync
+           run_cmd umount "${ROOTFS_DIR}"
+           if [ $RET -eq 0 ]; then run_cmd poweroff -f; fi
+           ;;
+        *) msg "flash mode \"${ICS_DM_FLASH_MODE}\" not supported; ignore...";;
+    esac
+
+    # continue startup in case of errors
+    return 0
 }
