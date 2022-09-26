@@ -11,7 +11,7 @@ SRC_URI = "\
     file://common-sh \
     file://factory-reset \
     file://fs-mount \
-    file://factory-reset-setup \
+    file://remote-features-setup \
 "
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ' file://resize-data', '', d)}"
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ' file://persistent-var-log', '', d)}"
@@ -27,7 +27,7 @@ do_install() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', 'true', 'false', d)}; then
         install -m 0755 -D ${WORKDIR}/persistent-var-log ${D}/init.d/90-persistent_var_log
     fi
-    install -m 0755 -D ${WORKDIR}/factory-reset-setup    ${D}/init.d/95-factory_reset_setup
+    install -m 0755 -D ${WORKDIR}/remote-features-setup    ${D}/init.d/95-remote_features_setup
 }
 
 FILES:${PN} = "\

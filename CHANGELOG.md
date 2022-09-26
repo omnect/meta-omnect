@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.6.0] Q3 2022
+- demo-portal-module:
+  - renamed to remote-features-module
+  - moved from example to default feature
+  - added direct method "reboot"
+  - merged existing demo-portal and factory_reset user to remote_features user
+
 ## [kirkstone-0.5.6] Q3 2022
 - azure-iot-sdk-c: updated to LTS_07_2022_Ref02
 
