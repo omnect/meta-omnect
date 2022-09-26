@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - moved from example to default feature
   - added direct method "reboot"
   - merged existing demo-portal and factory_reset user to remote_features user
+- iot-client-template-rs: bumped to 0.4.9
 
 ## [kirkstone-0.5.6] Q3 2022
 - azure-iot-sdk-c: updated to LTS_07_2022_Ref02
