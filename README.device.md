@@ -3,7 +3,6 @@
 |-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | [raspberrypi4-64](https://www.raspberrypi.org/)                                                   | x    | x         | o?  | o¹  | x²            | x        | x           | x               | x          |
 | [raspberrypi3](https://www.raspberrypi.org/)                                                      | x    | x         | o?  | o¹  | -             | todo     | x           | x               | ?          |
-| [phyboard-polis-imx8mm-4](https://www.phytec.eu/product-eu/single-board-computer/phyboard-polis/) | x    | x         | x   | x   | x²            | todo     | x           | x               | todo       |
 
 | | |
 |-|-:|
