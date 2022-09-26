@@ -9,15 +9,15 @@ repos:
   meta-ics-dm:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: f22bf6efaae61a8fd9272be64e7d75223c58922e
+    refspec: 6792ebdd966aa0fb662989529193a0940fbfee00
     layers:
       meta-filesystems:
       meta-networking:
       meta-oe:
       meta-python:
   ext/meta-rust:
-    url: "https://github.com/mlilien/meta-rust.git"
-    refspec: 4b95d156a166550cdc96672cb680e56cc32e794a
+    url: "https://github.com/meta-rust/meta-rust.git"
+    refspec: 59c4377bdbc67aa306068d19b016136998fadcec
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     refspec: 7b3622e918e4b80fd748516fff9c49fc48481407

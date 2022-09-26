@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [dunfell-1.6.5] Q3 2022
+- kas:
+  - switch back to meta-rust
+  - updated poky to 3.1.19
+  - updated to latest meta-openembedded
+  - updated to latest meta-virtualization
+  - removed meta-phytec, meta-freescale
+- removed meta-phytec, meta-freescale from dynamic-layers
+- removed phytec references from README
+
 ## [dunfell-1.6.4] Q3 2022
 - renamed, for better usability:
   - feature, u-boot environment variable: initramfs-flash-mode -> flash-mode

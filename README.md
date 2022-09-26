@@ -100,8 +100,6 @@ We reflect the used poky version in our version schema. `ics-dm-os` is versioned
     - [poky](https://git.yoctoproject.org/poky)
 - optional:
     - [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization) (optional - via dynamic layer, `iotedge` depends on it)
-    - [meta-phytec](https://github.com/phytec/meta-phytec) (optional - via dynamic layer, phytec polis support depends on it)
-    - [meta-freescale](https://github.com/Freescale/meta-freescale) (optional - via dynamic layer, phytec polis support depends on it)
     - [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git) (optional - via dynamic layer, raspberrypi support depends on it)
 
 
@@ -155,7 +153,6 @@ The `ics-dm-os-update-image` artefact is named `ics-dm-os-update-image-raspberry
 
 ### Layer prioritization orchestration
 If you want to add additional yocto layers to your build, you can adapt layer priorities in `conf/layer.conf`. This layer is the last in the `BBLAYERS` yocto variable when you build with our `kas` configuration files. If not, you have to possibly adapt layer prioritization values in the last layer included in `BBLAYERS`.
-E.g. we reset the layer prioritization of `meta-phytec` to `9`, to ensure it is less than the prioritization of `meta-ics-dm`.
 
 ## Runtime configuration
 
@@ -299,10 +296,6 @@ The layer is licensed under either of
 * MIT license ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
 
 at your option if not noted otherwise.
-
-The content of `dynamic-layers/phytec/recipes-kernel/lwb-radio-firmware` is licensed under MIT license ([LICENSE-MIT](dynamic-layers/phytec/recipes-kernel/lwb-radio-firmware/COPYING.MIT)).
-
-The content of `dynamic-layers/phytec/recipes-bsp/imx-mkimage/imx-boot-phytec*` is licensed under MIT license ([LICENSE-MIT](https://git.phytec.de/meta-phytec/tree/COPYING.MIT?h=dunfell)).
 
 # Contribution
 
