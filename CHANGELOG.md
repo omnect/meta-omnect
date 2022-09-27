@@ -8,9 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.6.0] Q3 2022
 - demo-portal-module:
   - renamed to remote-features-module
-  - moved from example to default feature
   - added direct method "reboot"
   - merged existing demo-portal and factory_reset user to remote_features user
+  - kas: moved from example to default feature
 - iot-client-template-rs: bumped to 0.4.9
 
 ## [kirkstone-0.5.6] Q3 2022
