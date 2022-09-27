@@ -56,7 +56,7 @@ do_install() {
     echo "z /mnt/cert/priv 0755 root root -"    >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
 }
 
-#  add remote_features group
+#  add icsdm_device_service group
 inherit useradd
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM:${PN} = "-r remote_features"
+GROUPADD_PARAM:${PN} = "-r icsdm_device_service"

@@ -4,7 +4,7 @@ header:
   version: 11
 
 local_conf_header:
-  meta-ics-dm_feature_remote-features-module: |
+  meta-ics-dm_feature_icsdm-device-service: |
     CORE_IMAGE_EXTRA_INSTALL += "\
-    remote-features-module \
+    icsdm-device-service \
     "
