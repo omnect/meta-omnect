@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-#  Setup systemd trigger file used by factory reset and reboot
+#  Setup files used to trigger factory reset and reboot
 #
 
 icsdm_device_service_setup_enabled() {
