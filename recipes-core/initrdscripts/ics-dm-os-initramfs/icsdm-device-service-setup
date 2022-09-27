@@ -21,9 +21,9 @@ get_id() {
 
 icsdm_device_service_setup_run() {
     local tmp_dir="${ROOTFS_DIR}/run/icsdm-device-service"  # /run is available in the INITRAMFS
-    local factory_reset_trigger_file="${tmp_dir}/factory-reset-systemd-trigger"
+    local factory_reset_trigger_file="${tmp_dir}/factory-reset-trigger"
     local factory_reset_restore_list="${tmp_dir}/factory-reset-restore-list"
-    local reboot_trigger_file="${tmp_dir}/reboot-systemd-trigger"
+    local reboot_trigger_file="${tmp_dir}/reboot-trigger"
     local icsdm_device_service_group=""
 
     # get group ID
