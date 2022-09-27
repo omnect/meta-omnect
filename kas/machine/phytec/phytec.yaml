@@ -6,7 +6,7 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    refspec: b8f28fb21dda24c502e168e012691dc4f9672be0
+    refspec: 456776f109d78f84f78d17c92bbb0fe63a62f583
     patches:
       p001:
         repo: "meta-ics-dm"

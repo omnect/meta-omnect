@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.5.7] Q3 2022
+- kas:
+  - updated poky to 4.0.4
+  - updated to latest meta-openembedded
+  - updated to latest meta-virtualization
+  - updated to latest meta-phytec
+
 ## [kirkstone-0.5.6] Q3 2022
 - azure-iot-sdk-c: updated to LTS_07_2022_Ref02
 
