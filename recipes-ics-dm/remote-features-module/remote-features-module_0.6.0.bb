@@ -8,10 +8,10 @@ inherit cargo
 # how to get remote-features-module could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/remote-features-module/0.6.0"
 SRC_URI += "git://git@github.com/JanZachmann/demo-portal-module.git;protocol=ssh;nobranch=1;branch=rename-crate"
-SRCREV = "e298a0804f34a66037d905dc5d27aba317bdb69d"
+SRCREV = "29322caf880e6d8aae0b9e2ff45c347ff316a3fb"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+e298a0804f"
+PV:append = ".AUTOINC+29322caf88"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
