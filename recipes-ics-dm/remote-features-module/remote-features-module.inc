@@ -51,7 +51,7 @@ do_install:append() {
 }
 
 pkg_postinst:${PN}() {
-    sed -i "s/@@UID@@/$(id -u remote-features)/"                                           $D${sysconfdir}/aziot/keyd/config.d/remote-features-module.toml
+    sed -i "s/@@UID@@/$(id -u remote_features)/"                                           $D${sysconfdir}/aziot/keyd/config.d/remote-features-module.toml
     sed -i -e "s/@@UID@@/$(id -u remote-features)/" -e "s/@@NAME@@/remote-features-module/"    $D${sysconfdir}/aziot/identityd/config.d/remote-features-module.toml
 }
 
