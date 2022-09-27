@@ -35,7 +35,7 @@ FILES:${PN} = "\
     /init.d/85-common_sh \
     /init.d/86-factory_reset \
     /init.d/89-fs_mount \
-    /init.d/95-factory_reset_setup \
+    /init.d/95-remote_features_setup \
 "
 FILES:${PN}:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ' /init.d/88-resize_data', '', d)}"
 FILES:${PN}:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ' /init.d/90-persistent_var_log', '', d)}"

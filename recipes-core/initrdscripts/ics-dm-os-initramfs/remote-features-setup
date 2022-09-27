@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-#  Setup systemd trigger file used by factory reset
+#  Setup systemd trigger file used by factory reset and reboot
 #
 
 remote_features_setup_enabled() {
