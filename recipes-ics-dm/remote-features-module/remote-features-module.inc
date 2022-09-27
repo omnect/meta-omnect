@@ -55,7 +55,12 @@ pkg_postinst:${PN}() {
     sed -i -e "s/@@UID@@/$(id -u remote-features)/" -e "s/@@NAME@@/remote-features-module/"    $D${sysconfdir}/aziot/identityd/config.d/remote-features-module.toml
 }
 
-SYSTEMD_SERVICE:${PN} = "remote-features-module.service remote-features-module.timer remote-features-factory-reset.path"
+SYSTEMD_SERVICE:${PN} = " \
+    remote-features-module.service \
+    remote-features-module.timer \
+    remote-features-factory-reset.path \
+    remote-features-reboot.path \
+"
 
 FILES:${PN} += "\
     ${systemd_system_unitdir}/remote-features-factory-reset.service \
