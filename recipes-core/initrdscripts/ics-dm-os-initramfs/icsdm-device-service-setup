@@ -33,7 +33,7 @@ icsdm_device_service_setup_run() {
         return
     fi
 
-    # create systemd trigger file
+    # create files
     run_cmd mkdir -p ${tmp_dir}
     run_cmd touch ${factory_reset_trigger_file}
     run_cmd touch ${factory_reset_restore_list}
