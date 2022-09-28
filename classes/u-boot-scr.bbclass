@@ -17,19 +17,19 @@ python create_boot_cmd () {
             # echo bootmedium and device
             f.write("echo \"Boot script loaded from ${devtype} ${devnum}\"\n")
 
-            # in the case of test boot script
-            if ics_dm_boot_scr_test_cmds:
-                f.write("%s\n" % (ics_dm_boot_scr_test_cmds))
-
-            # possibly create "bootpart" env var
-            f.write("if env exists bootpart;then echo Booting from bootpart=${bootpart};else setenv bootpart 2;saveenv;echo bootpart not set, default to bootpart=${bootpart};fi\n")
-
             # possibly load device tree from file
             if fdt_load:
                 f.write("load ${devtype} ${devnum}:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
 
             # load device tree
             f.write("fdt addr ${%s}\n" % fdt_addr)
+
+            # in the case of test boot script
+            if ics_dm_boot_scr_test_cmds:
+                f.write("%s\n" % (ics_dm_boot_scr_test_cmds))
+
+            # possibly create "bootpart" env var
+            f.write("if env exists bootpart;then echo Booting from bootpart=${bootpart};else setenv bootpart 2;saveenv;echo bootpart not set, default to bootpart=${bootpart};fi\n")
 
             # TODO optionally allow to load device tree overlays, e.g. disable
             # spi and eth on polis or tauri-l:
