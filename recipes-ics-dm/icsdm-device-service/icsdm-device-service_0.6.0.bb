@@ -8,10 +8,10 @@ inherit cargo
 # how to get icsdm-device-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/icsdm-device-service/0.6.0"
 SRC_URI += "git://git@github.com/JanZachmann/demo-portal-module.git;protocol=ssh;nobranch=1;branch=rename-crate"
-SRCREV = "1b960ad8224c58a91bfe56ba891e27f2e8dd7d07"
+SRCREV = "4de5c2d3815828db81722f9743413c260e69d3a6"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+1b960ad822"
+PV:append = ".AUTOINC+4de5c2d381"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
