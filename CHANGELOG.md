@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iot-client-template-rs: bumped to 0.4.9
 - factory-reset: fixed bug when setting reset type '0'
 
+## [kirkstone-0.5.7] Q3 2022
+- kas:
+  - updated poky to 4.0.4
+  - updated to latest meta-openembedded
+  - updated to latest meta-virtualization
+  - updated to latest meta-phytec
+
 ## [kirkstone-0.5.6] Q3 2022
 - azure-iot-sdk-c: updated to LTS_07_2022_Ref02
 
