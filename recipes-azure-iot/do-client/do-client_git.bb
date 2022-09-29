@@ -25,10 +25,16 @@ EXTRA_OECMAKE += "-DDO_INCLUDE_AGENT=ON"
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/do-client.service ${D}${systemd_system_unitdir}
+
+    install -d ${D}${libdir}/tmpfiles.d
+    echo "Z /var/log/deliveryoptimization-agent 0755 do do -" >> ${D}${libdir}/tmpfiles.d/do-client.conf
 }
 
 SYSTEMD_SERVICE:${PN} = "do-client.service"
-FILES:${PN} += "${systemd_system_unitdir}/do-client.service"
+FILES:${PN} += " \
+    ${libdir}/tmpfiles.d/do-client.conf \
+    ${systemd_system_unitdir}/do-client.service \
+"
 
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM:${PN} = "-r do;-r adu"
