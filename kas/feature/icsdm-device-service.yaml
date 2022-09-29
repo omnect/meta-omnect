@@ -4,7 +4,7 @@ header:
   version: 11
 
 local_conf_header:
-  meta-ics-dm_example_demo-portal-module: |
+  meta-ics-dm_feature_icsdm-device-service: |
     CORE_IMAGE_EXTRA_INSTALL += "\
-    demo-portal-module \
+    icsdm-device-service \
     "
