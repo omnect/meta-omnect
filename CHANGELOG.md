@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.6.1] Q3 2022
-- iot-hub-device-update: handle changed adu user/group id via systemd-tmpfiles
+- iot-hub-device-update: add creation of /var/lib/adu/extensions to systemd-tmpfiles
 
 ## [kirkstone-0.6.0] Q3 2022
 - demo-portal-module:
