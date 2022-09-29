@@ -1,6 +1,7 @@
 FILESEXTRAPATHS:prepend := "${LAYERDIR_ics_dm}/files:"
 
 SRC_URI += "\
+  file://iot-identity-service-certd.template.toml \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
 "
@@ -31,6 +32,9 @@ RDEPENDS:${PN} += "\
     ca-certificates\
     iot-identity-service\
 "
+
+CARGO_BUILD_FLAGS .= " --no-default-features --features="systemd, azure-iot-sdk/device_client""
+
 inherit aziot ics_dm_rust_azure-iot-sdk_deps systemd
 
 do_install:append() {
@@ -48,11 +52,21 @@ do_install:append() {
 
     # allow icsdm-device-service provisioning via module identity
     install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/icsdm-device-service.toml
+
+    # only for testing provisioning as device identity:
+    install -m 0600 -o aziotcs -g aziotcs ${WORKDIR}/iot-identity-service-certd.template.toml ${D}${sysconfdir}/aziot/certd/config.d/iot-hub-device-update.toml
+    sed -i "s/^\[Service\]/\[Service\]\nEnvironment=RUST_LOG=debug/" ${D}${systemd_system_unitdir}/icsdm-device-service.service
 }
 
 pkg_postinst:${PN}() {
-    sed -i "s/@@UID@@/$(id -u icsdm_device_service)/"                                           $D${sysconfdir}/aziot/keyd/config.d/icsdm-device-service.toml
-    sed -i -e "s/@@UID@@/$(id -u icsdm_device_service)/" -e "s/@@NAME@@/icsdm-device-service/"    $D${sysconfdir}/aziot/identityd/config.d/icsdm-device-service.toml
+    sed -i "s/@@UID@@/$(id -u icsdm_device_service)/" $D${sysconfdir}/aziot/keyd/config.d/icsdm-device-service.toml
+    sed -i -e "s/@@UID@@/$(id -u icsdm_device_service)/" \
+        -e "s/@@NAME@@/icsdm-device-service/" \
+        -e "s/@@IDENTITY@@/device/" \
+        $D${sysconfdir}/aziot/identityd/config.d/icsdm-device-service.toml
+
+    # only for testing provisioning as device identity:
+    sed -i "s/@@UID@@/$(id -u icsdm_device_service)/" $D${sysconfdir}/aziot/certd/config.d/iot-hub-device-update.toml
 }
 
 SYSTEMD_SERVICE:${PN} = " \

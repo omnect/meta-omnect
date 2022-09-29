@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.6.1] Q3 2022
+- refactored pkg_postinstall step in iot-identity-service clients
+- updated icsdm-device-service to 0.6.1
+- updated iot-dingsbums-module TODO
+
 ## [kirkstone-0.6.0] Q3 2022
 - demo-portal-module:
   - renamed to icsdm-device-service

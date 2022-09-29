@@ -39,7 +39,10 @@ do_install:append() {
 
 pkg_postinst:${PN}() {
   sed -i "s/@@UID@@/$(id -u iotmodule-c)/" $D${sysconfdir}/aziot/keyd/config.d/iot-module-template.toml
-  sed -i -e "s/@@UID@@/$(id -u iotmodule-c)/" -e "s/@@NAME@@/iot-module-template/" $D${sysconfdir}/aziot/identityd/config.d/iot-module-template.toml
+  sed -i -e "s/@@UID@@/$(id -u iotmodule-c)/" \
+    -e "s/@@NAME@@/iot-module-template/" \
+    -e "s/@@IDENTITY@@/module/" \
+    $D${sysconfdir}/aziot/identityd/config.d/iot-module-template.toml
 }
 
 SYSTEMD_SERVICE:${PN} = "iot-module-template.service iot-module-template.timer"

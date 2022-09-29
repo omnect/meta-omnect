@@ -17,6 +17,9 @@ ${marker}
 [patch.'ssh://git@github.com/ICS-DeviceManagement/azure-iot-sdk.git']
 azure-iot-sdk = { path = "${WORKDIR}/azure-iot-sdk" }
 
+[patch.'ssh://git@github.com/mlilien/azure-iot-sdk.git']
+azure-iot-sdk = { path = "${WORKDIR}/azure-iot-sdk" }
+
 [patch.'ssh://git@github.com/ICS-DeviceManagement/eis-utils.git']
 eis-utils = { path = "${WORKDIR}/eis-utils" }
 

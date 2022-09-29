@@ -46,8 +46,11 @@ do_install:append() {
 }
 
 pkg_postinst:${PN}() {
-    sed -i "s/@@UID@@/$(id -u iot-client-rs)/"                                           $D${sysconfdir}/aziot/keyd/config.d/iot-client-template-rs.toml
-    sed -i -e "s/@@UID@@/$(id -u iot-client-rs)/" -e "s/@@NAME@@/iot-client-template-rs/"  $D${sysconfdir}/aziot/identityd/config.d/iot-client-template-rs.toml
+    sed -i "s/@@UID@@/$(id -u iot-client-rs)/" $D${sysconfdir}/aziot/keyd/config.d/iot-client-template-rs.toml
+    sed -i -e "s/@@UID@@/$(id -u iot-client-rs)/" \
+        -e "s/@@NAME@@/iot-client-template-rs/" \
+        -e "s/@@IDENTITY@@/module/" \
+        $D${sysconfdir}/aziot/identityd/config.d/iot-client-template-rs.toml
 }
 
 SYSTEMD_SERVICE:${PN} = "iot-client-template-rs.service iot-client-template-rs.timer"
