@@ -203,7 +203,7 @@ factory_reset_run() {
     fi
 
     factory_reset_mode=$(get_bootloader_env_var "${FACTORY_RESET_VAR}")
-    if [ -z "${factory_reset_mode}" ] || [ ${factory_reset_mode} -eq 0 ]; then
+    if [ -z "${factory_reset_mode}" ]; then
         return  # no factory reset triggered; normal boot
     fi
 

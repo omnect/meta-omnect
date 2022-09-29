@@ -5,10 +5,10 @@ inherit cargo
 # If this is git based prefer versioned ones if they exist
 # DEFAULT_PREFERENCE = "-1"
 
-# how to get demo-portal-module could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/demo-portal-module/0.5.10"
-SRC_URI += "git://git@github.com/ICS-DeviceManagement/demo-portal-module.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "bc676f5ffad365dc25e3ff904dcf82809692e3d1"
+# how to get icsdm-device-service could be as easy as but default to a git checkout:
+# SRC_URI += "crate://crates.io/icsdm-device-service/0.6.0"
+SRC_URI += "git://git@github.com/ICS-DeviceManagement/icsdm-device-service.git;protocol=ssh;nobranch=1;branch=main"
+SRCREV = "e85da1af5a709a814de2aa03a7859e3e5b9553f0"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -266,12 +266,12 @@ LIC_FILES_CHKSUM = " \
     file://MIT OR Apache-2.0;md5=generateme \
 "
 
-SUMMARY = "demo-portal-module"
-HOMEPAGE = "git@github.com:ICS-DeviceManagement/demo-portal-module.git"
+SUMMARY = "icsdm-device-service"
+HOMEPAGE = "git@github.com:ICS-DeviceManagement/icsdm-device-service.git"
 LICENSE = "MIT OR Apache-2.0"
 
 # includes this file if it exists but does not fail
 # this is useful for anything you may want to override from
 # what cargo-bitbake generates.
-include demo-portal-module-${PV}.inc
-include demo-portal-module.inc
+include icsdm-device-service-${PV}.inc
+include icsdm-device-service.inc
