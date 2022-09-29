@@ -56,7 +56,7 @@ do_install() {
     echo "z /mnt/cert/priv 0755 root root -"    >> ${D}${libdir}/tmpfiles.d/ics-dm-base-files.conf
 }
 
-#  add factory_reset group
+#  add icsdm_device_service group
 inherit useradd
 USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM:${PN} = "-r factory_reset"
+GROUPADD_PARAM:${PN} = "-r icsdm_device_service"

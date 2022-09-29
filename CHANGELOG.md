@@ -5,8 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.6.0] Q3 2022
+## [kirkstone-0.7.0] Q3 2022
 - added pxe boot support for phytec boards
+
+## [kirkstone-0.6.0] Q3 2022
+- demo-portal-module:
+  - renamed to icsdm-device-service
+  - added direct method "reboot"
+  - merged existing demo-portal and factory_reset user to icsdm_device_service user
+  - kas: moved from example to default feature
+- iot-client-template-rs: bumped to 0.4.9
+- factory-reset: fixed bug when setting reset type '0'
 
 ## [kirkstone-0.5.7] Q3 2022
 - kas:
