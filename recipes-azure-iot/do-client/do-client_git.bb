@@ -8,6 +8,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=ee51f94efd0db5b258b5b1b8107fea02"
 
 SRC_URI = " \
     git://github.com/microsoft/do-client.git;protocol=https;tag=v0.8.2;nobranch=1; \
+    file://do-client.conf \
     file://do-client.service \
 "
 
@@ -25,10 +26,16 @@ EXTRA_OECMAKE += "-DDO_INCLUDE_AGENT=ON"
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/do-client.service ${D}${systemd_system_unitdir}
+
+    # create tmpfiles.d entry to (re)create dir + permissions
+    install -m 0644 -D ${WORKDIR}/do-client.conf ${D}${libdir}/tmpfiles.d/do-client.conf
 }
 
 SYSTEMD_SERVICE:${PN} = "do-client.service"
-FILES:${PN} += "${systemd_system_unitdir}/do-client.service"
+FILES:${PN} += " \
+    ${libdir}/tmpfiles.d/do-client.conf \
+    ${systemd_system_unitdir}/do-client.service \
+    "
 
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM:${PN} = "-r do;-r adu"
