@@ -201,13 +201,16 @@ run_flash_mode_2() {
         msg_fatal "clone MBR failed"
         return 1
     fi
-    run_cmd sync
+
+    # copy u-boot
+    run_cmd dd if=/dev/mmcblk1 iflag=skip_bytes skip=$((33*1024)) \
+               of=/dev/mmcblk2 oflag=seek_bytes seek=$((33*1024)) bs=1024 count=1226
 
     # copy partitions boot, factory, cert and etc
-    run_cmd dd if=/dev/ics_dm/boot    of="$(readlink -f ${blk_dev_dst}*1)" bs=10M || return 1
-    run_cmd dd if=/dev/ics_dm/factory of="$(readlink -f ${blk_dev_dst}*5)" bs=10M || return 1
-    run_cmd dd if=/dev/ics_dm/cert    of="$(readlink -f ${blk_dev_dst}*6)" bs=10M || return 1
-    run_cmd dd if=/dev/ics_dm/etc     of="$(readlink -f ${blk_dev_dst}*7)" bs=10M || return 1
+    run_cmd dd if=/dev/ics_dm/boot    of="$(readlink -f ${blk_dev_dst}p1)" bs=10M || return 1
+    run_cmd dd if=/dev/ics_dm/factory of="$(readlink -f ${blk_dev_dst}p5)" bs=10M || return 1
+    run_cmd dd if=/dev/ics_dm/cert    of="$(readlink -f ${blk_dev_dst}p6)" bs=10M || return 1
+    run_cmd dd if=/dev/ics_dm/etc     of="$(readlink -f ${blk_dev_dst}p7)" bs=10M || return 1
 
     # copy current rootfs to rootfsA
     run_cmd e2image -ra -p "${act_rootfs_partition}" "$(readlink -f ${blk_dev_dst}*2)" || return 1
@@ -217,6 +220,7 @@ run_flash_mode_2() {
     run_cmd dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=50331648 || return 1
     run_cmd dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=52428800 || return 1
 
+    run_cmd sync
     return 0
 }
 
@@ -231,7 +235,7 @@ flash_mode_run() {
            run_cmd cp /tmp/flash-mode-2.log ${ROOTFS_DIR}/boot/flash-mode-2.log
            run_cmd sync
            run_cmd umount "${ROOTFS_DIR}"
-           if [ $RET -eq 0 ]; then run_cmd poweroff -f; fi
+           if [ $RET -eq 0 ]; then run_cmd /bin/sh; fi
            ;;
         *) msg "flash mode \"${ICS_DM_FLASH_MODE}\" not supported; ignore...";;
     esac
