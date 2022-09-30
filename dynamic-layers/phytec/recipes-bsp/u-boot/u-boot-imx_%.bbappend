@@ -4,4 +4,5 @@ SRC_URI += "\
     file://add-reset-info.patch\
     file://enable_generic_console_fs_cmds.cfg\
     file://enable-reset-info-cmd-fragment.cfg\
+    file://enable-pxe-cmd.cfg\
 "
