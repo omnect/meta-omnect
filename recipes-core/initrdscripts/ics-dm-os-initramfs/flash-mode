@@ -18,8 +18,8 @@ ICS_DM_FLASH_MODE_BMAP_FILE="/home/ics-dm/wic.bmap"
 
 # variable templates
 ICS_DM_FLASH_MODE_ETH="eth0"
-ICS_DM_FLASH_MODE_BOOTLOADER_SEEK=""
-ICS_DM_FLASH_MODE_UBOOT_ENV1=""
+ICS_DM_FLASH_MODE_BOOTLOADER_START=""  # optionally, start of bootloader area
+ICS_DM_FLASH_MODE_UBOOT_ENV1_START=""  # start of first u-boot environment
 
 # called by generic INITRAMFS
 flash_mode_enabled() {
@@ -207,10 +207,10 @@ run_flash_mode_2() {
     fi
 
     # copy u-boot
-    if [ -n "${ICS_DM_FLASH_MODE_BOOTLOADER_SEEK}" ]; then
-        run_cmd dd if=/dev/mmcblk1 iflag=skip_bytes skip=$((${ICS_DM_FLASH_MODE_BOOTLOADER_SEEK}*1024)) \
-                   of=/dev/mmcblk2 oflag=seek_bytes seek=$((${ICS_DM_FLASH_MODE_BOOTLOADER_SEEK}*1024)) \
-                   bs=1024 count=1226
+    if [ -n "${ICS_DM_FLASH_MODE_BOOTLOADER_START}" ] && [ -n "${ICS_DM_FLASH_MODE_UBOOT_ENV1_START}" ]; then
+        run_cmd dd if=${blk_dev_src} iflag=skip_bytes skip=$((${ICS_DM_FLASH_MODE_BOOTLOADER_START}*1024)) \
+                   of=${blk_dev_dst} oflag=seek_bytes seek=$((${ICS_DM_FLASH_MODE_BOOTLOADER_START}*1024)) \
+                   bs=1024 count=$((ICS_DM_FLASH_MODE_UBOOT_ENV1_START - ICS_DM_FLASH_MODE_BOOTLOADER_START))
     fi
 
     # copy partitions boot, factory, cert and etc

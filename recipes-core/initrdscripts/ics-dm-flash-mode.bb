@@ -19,8 +19,8 @@ do_install() {
     install -m 0755 -D ${WORKDIR}/flash-mode ${D}/init.d/87-flash_mode
     # set variables templates
     sed -i 's/^ICS_DM_FLASH_MODE_ETH="eth0"/ICS_DM_FLASH_MODE_ETH="${ICS_DM_ETH0}"/' ${D}/init.d/87-flash_mode
-    sed -i 's/^ICS_DM_FLASH_MODE_BOOTLOADER_SEEK=""/ICS_DM_FLASH_MODE_BOOTLOADER_SEEK="${BOOTLOADER_SEEK}"/' ${D}/init.d/87-flash_mode
-    sed -i 's/^ICS_DM_FLASH_MODE_UBOOT_ENV1=""/ICS_DM_FLASH_MODE_UBOOT_ENV1="${ICS_DM_PART_OFFSET_UBOOT_ENV1}"/' ${D}/init.d/87-flash_mode
+    sed -i 's/^ICS_DM_FLASH_MODE_BOOTLOADER_START=""/ICS_DM_FLASH_MODE_BOOTLOADER_START="${BOOTLOADER_SEEK}"/' ${D}/init.d/87-flash_mode
+    sed -i 's/^ICS_DM_FLASH_MODE_UBOOT_ENV1_START=""/ICS_DM_FLASH_MODE_UBOOT_ENV1_START="${ICS_DM_PART_OFFSET_UBOOT_ENV1}"/' ${D}/init.d/87-flash_mode
 }
 
 FILES:${PN} = "\
