@@ -9,14 +9,15 @@ resize_data_run() {
 
     # data partition not yet resized
     if [ -z "${resized_data}" ]; then
-        msg "ics-dm-os resize data partition"
         data_part=$(get_block_device data)
-        [[ $(cat /proc/mounts | grep ${data_part} | wc -l) -ne 0 ]] && echo "error: \"${data_part}\" is mounted." && exit 1
+        [[ $(cat /proc/mounts | grep ${data_part} | wc -l) -ne 0 ]] && msg "error: resize_data: \"${data_part}\" is mounted." && return
 
         root_disk=${data_part%p*}
         data_part_nr=${data_part##*p}
-        [[ $(parted ${root_disk} print all | grep extended | wc -l) -ne 1 ]] && echo "error: couldn't determine extended partion" && exit 1
-        extended_part_nr=$(parted ${root_disk} print all | grep extended | awk '{print $1}')
+        [[ $(parted ${root_disk} print | grep extended | wc -l) -ne 1 ]] && msg "error: resize_data: couldn't determine extended partion" && return
+        extended_part_nr=$(parted ${root_disk} print | grep extended | awk '{print $1}')
+
+        msg "ics-dm-os resize data partition: ${root_disk}/${data_part_nr}"
 
         parted ${root_disk} resizepart ${extended_part_nr} 100%
         parted ${root_disk} resizepart ${data_part_nr} 100%
