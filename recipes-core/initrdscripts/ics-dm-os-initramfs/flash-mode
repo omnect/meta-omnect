@@ -13,9 +13,13 @@ ICS_DM_FLASH_MODE=""
 ICS_DM_FLASH_MODE_VAR="flash-mode"
 ICS_DM_FLASH_DEVPATH_VAR="flash-mode-devpath"
 ICS_DM_FLASH_MODE_FLAG_FILE="/etc/enforce_flash_mode"
-ICS_DM_FLASH_MODE_ETH="eth0"
 ICS_DM_FLASH_MODE_FIFO="/home/ics-dm/wic.xz"
 ICS_DM_FLASH_MODE_BMAP_FILE="/home/ics-dm/wic.bmap"
+
+# variable templates
+ICS_DM_FLASH_MODE_ETH="eth0"
+ICS_DM_FLASH_MODE_BOOTLOADER_SEEK=""
+ICS_DM_FLASH_MODE_UBOOT_ENV1=""
 
 # called by generic INITRAMFS
 flash_mode_enabled() {
@@ -203,8 +207,11 @@ run_flash_mode_2() {
     fi
 
     # copy u-boot
-    run_cmd dd if=/dev/mmcblk1 iflag=skip_bytes skip=$((33*1024)) \
-               of=/dev/mmcblk2 oflag=seek_bytes seek=$((33*1024)) bs=1024 count=1226
+    if [ -n "${ICS_DM_FLASH_MODE_BOOTLOADER_SEEK}" ]; then
+        run_cmd dd if=/dev/mmcblk1 iflag=skip_bytes skip=$((${ICS_DM_FLASH_MODE_BOOTLOADER_SEEK}*1024)) \
+                   of=/dev/mmcblk2 oflag=seek_bytes seek=$((${ICS_DM_FLASH_MODE_BOOTLOADER_SEEK}*1024)) \
+                   bs=1024 count=1226
+    fi
 
     # copy partitions boot, factory, cert and etc
     run_cmd dd if=/dev/ics_dm/boot    of="$(readlink -f ${blk_dev_dst}p1)" bs=10M || return 1
