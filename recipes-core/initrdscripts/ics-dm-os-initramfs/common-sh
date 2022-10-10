@@ -8,18 +8,24 @@ common_sh_enabled()
 }
 
 msg_fatal() {
-    local fatal_msg="FATAL ERROR: $1"
-    if [ ! -t 1 ]; then  # stdout redirected
-        echo "${fatal_msg}"
-    else
-        msg "${fatal_msg}"
-    fi
+    msg "FATAL ERROR: $1"
 }
 
 run_cmd() {
-    msg "$@"
-    eval "$@"
+    msg  "$@"
+    eval "$@" >/dev/console 2>&1
     if [ $? -ne 0 ]; then msg_fatal "command failed"; return 1; fi
+    return 0
+}
+
+stderr_fatal() {
+    echo "FATAL ERROR: $1" >&2
+}
+
+run_cmd_stdout() {
+    echo "$@"
+    eval "$@"
+    if [ $? -ne 0 ]; then stderr_fatal "command failed"; return 1; fi
     return 0
 }
 
