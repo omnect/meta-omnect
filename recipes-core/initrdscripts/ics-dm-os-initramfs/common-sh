@@ -17,11 +17,7 @@ msg_fatal() {
 }
 
 run_cmd() {
-    if [ ! -t 1 ]; then  # stdout redirected
-        echo "$@"
-    else
-        msg "$@"
-    fi
+    msg "$@"
     eval "$@"
     if [ $? -ne 0 ]; then msg_fatal "command failed"; return 1; fi
     return 0

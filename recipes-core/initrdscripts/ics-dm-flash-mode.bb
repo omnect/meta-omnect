@@ -18,9 +18,12 @@ SRC_URI = "\
 do_install() {
     install -m 0755 -D ${WORKDIR}/flash-mode ${D}/init.d/87-flash_mode
     # set variables templates
-    sed -i 's/^ICS_DM_FLASH_MODE_ETH="eth0"/ICS_DM_FLASH_MODE_ETH="${ICS_DM_ETH0}"/' ${D}/init.d/87-flash_mode
-    sed -i 's/^ICS_DM_FLASH_MODE_BOOTLOADER_START=""/ICS_DM_FLASH_MODE_BOOTLOADER_START="${BOOTLOADER_SEEK}"/' ${D}/init.d/87-flash_mode
-    sed -i 's/^ICS_DM_FLASH_MODE_UBOOT_ENV1_START=""/ICS_DM_FLASH_MODE_UBOOT_ENV1_START="${ICS_DM_PART_OFFSET_UBOOT_ENV1}"/' ${D}/init.d/87-flash_mode
+    sed -i -e 's|^ICS_DM_FLASH_MODE_ETH="eth0"|ICS_DM_FLASH_MODE_ETH="${ICS_DM_ETH0}"|' \
+           -e 's|^ICS_DM_FLASH_MODE_BOOTLOADER_START=""|ICS_DM_FLASH_MODE_BOOTLOADER_START="${BOOTLOADER_SEEK}"|' \
+           -e 's|^ICS_DM_FLASH_MODE_UBOOT_ENV1_START=""|ICS_DM_FLASH_MODE_UBOOT_ENV1_START="${ICS_DM_PART_OFFSET_UBOOT_ENV1}"|' \
+           -e 's|^ICS_DM_FLASH_MODE_UBOOT_ENV2_START=""|ICS_DM_FLASH_MODE_UBOOT_ENV2_START="${ICS_DM_PART_OFFSET_UBOOT_ENV2}"|' \
+           -e 's|^ICS_DM_FLASH_MODE_UBOOT_ENV_SIZE=""|ICS_DM_FLASH_MODE_UBOOT_ENV_SIZE="${ICS_DM_PART_SIZE_UBOOT_ENV}"|' \
+              ${D}/init.d/87-flash_mode
 }
 
 FILES:${PN} = "\
