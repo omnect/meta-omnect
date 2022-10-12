@@ -112,9 +112,18 @@ run_bmap_tool() {
     msg "please run  scp <your-wic-image> ics-dm@${ICS_DM_FLASH_MODE_IP_ADDR}:$(basename ${ICS_DM_FLASH_MODE_FIFO})"
     export PATH
     run_cmd bmaptool copy --bmap ${ICS_DM_FLASH_MODE_BMAP_FILE} \
-                                 ${ICS_DM_FLASH_MODE_FIFO} ${blk_dev} || return 1
+                                 ${ICS_DM_FLASH_MODE_FIFO} ${blk_dev}; RET=$?
+    if [ ${RET} -eq 0 ]; then return 0; fi  # success
 
-    return 0  # success
+    # bmaptool exited with error:
+    #     - mismatch between bmap file and wic image
+    #     - broken destination device
+    #     - broken network
+    #     - usually, there is no way to salvage
+    while true; do
+        msg_fatal "bmaptool(${blk_dev}) failed: ${RET}"
+        sleep 60
+    done
 }
 
 # deploy WIC image via network to (same) active block device
