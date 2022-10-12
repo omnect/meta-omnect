@@ -199,6 +199,13 @@ run_flash_mode_2() {
         return 1
     fi
 
+    # check for partition scheme
+    if [ ! -b "${blk_dev_dst}p1" ]; then stderr_fatal "\"${blk_dev_dst}p1\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}p5" ]; then stderr_fatal "\"${blk_dev_dst}p5\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}p6" ]; then stderr_fatal "\"${blk_dev_dst}p6\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}p7" ]; then stderr_fatal "\"${blk_dev_dst}p7\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}p8" ]; then stderr_fatal "\"${blk_dev_dst}p8\" is not a block device"; return 1; fi
+
     # detect source block device
     blk_dev_src=$(get_block_device boot)
     blk_dev_src=${blk_dev_src%p*}
@@ -232,8 +239,6 @@ run_flash_mode_2() {
         return 1
     fi
 
-    echo "######## cloning disk: ${blk_dev_src} -> ${blk_dev_dst} ########"
-
     # adapt size of data partition to initial value, before (optional) resize of data partition
     data_partition_size=$((ICS_DM_FLASH_MODE_DATA_SIZE * 2)) # 1024 (yocto) -> 512 (sfdisk)
     # calculate site of extended partition, not affected by (optional) resize of data partition
@@ -244,11 +249,16 @@ run_flash_mode_2() {
         stderr_fatal "cannot detect extended partition size"
         return 1
     fi
+
+    # -- all preconditions checked here --
+    echo "######## cloning disk: ${blk_dev_src} -> ${blk_dev_dst} ########"
+
     echo "CLONE MBR / partition table..."
     sfdisk --dump "${blk_dev_src}" | \
         sed "s|\(^${data_partition}.*size=[[:space:]]\+\)\([[:digit:]]\+,\)\(.*\)$|\1 ${data_partition_size}, \3|g" | \
         sed "s|\(^${extended_partition}.*size=[[:space:]]\+\)\([[:digit:]]\+,\)\(.*\)$|\1 ${extended_partition_size}, \3|g" >/tmp/sfdisk.txt
     run_cmd_stdout "sfdisk ${blk_dev_dst} </tmp/sfdisk.txt"
+    # -- after sfdisk, the new partitions are available --
 
     # handle hidden u-boot
     if [ "${ICS_DM_FLASH_MODE_BOOTLOADER_START}" != "UNDEFINED" ]; then
@@ -258,11 +268,15 @@ run_flash_mode_2() {
                           bs=1024 count=$((ICS_DM_FLASH_MODE_UBOOT_ENV1_START - ICS_DM_FLASH_MODE_BOOTLOADER_START)) || return 1
     fi
 
-    echo "COPY boot, factory, cert and etc..."
+    # enforce first boot condition
+    echo "MKFS etc and data..."
+    check_ext4_fs "etc"  "${blk_dev_dst}p7" 1
+    check_ext4_fs "data" "${blk_dev_dst}p8" 1
+
+    echo "COPY boot, factory and cert..."
     run_cmd_stdout dd if=/dev/ics_dm/boot    of="$(readlink -f ${blk_dev_dst}p1)" bs=10M || return 1
     run_cmd_stdout dd if=/dev/ics_dm/factory of="$(readlink -f ${blk_dev_dst}p5)" bs=10M || return 1
     run_cmd_stdout dd if=/dev/ics_dm/cert    of="$(readlink -f ${blk_dev_dst}p6)" bs=10M || return 1
-    run_cmd_stdout dd if=/dev/ics_dm/etc     of="$(readlink -f ${blk_dev_dst}p7)" bs=10M || return 1
 
     echo "COPY current rootfs to rootfsA..."
     run_cmd_stdout e2image -ra -p "${act_rootfs_partition}" "$(readlink -f ${blk_dev_dst}p2)" || return 1
@@ -273,6 +287,8 @@ run_flash_mode_2() {
     run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((ICS_DM_FLASH_MODE_UBOOT_ENV2_START*1024)) || return 1
 
     run_cmd_stdout sync
+
+    echo "flash mode 2 successfully finished"
     return 0
 }
 
