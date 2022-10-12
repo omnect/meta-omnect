@@ -15,7 +15,7 @@ repos:
     url: "https://github.com/Freescale/meta-freescale.git"
     refspec: 3915c0fe53c9e692b1dfd1bbdb6a5b922bf472af
   ext/meta-imx:
-    url: "https://source.codeaurora.org/external/imx/meta-imx"
+    url: "https://github.com/nxp-imx/meta-imx.git"
     refspec: 5bc708f56575a878da17f2148e959c95d06cf8db
     layers:
       meta-bsp:
