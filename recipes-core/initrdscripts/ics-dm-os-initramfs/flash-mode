@@ -63,7 +63,7 @@ setup_network() {
     while true; do
         msg "Waiting for IP address..."
         ip_addr=$(ip addr show dev ${if_name} | grep "inet " | awk '{print $2}')
-        if [ ! -z "${ip_addr}" ]; then break; fi
+        if [ -n "${ip_addr}" ]; then break; fi
         sleep 1
     done
     ICS_DM_FLASH_MODE_IP_ADDR="${ip_addr%/*}"
@@ -165,6 +165,7 @@ run_flash_mode_2() {
     local data_partition=""
     local data_partition_size=""
     local data_partition_start=""
+    local extended_partition=""
     local extended_partition_start=""
     local extended_partition_size=""
     local rootfs_bootpart=""
@@ -252,8 +253,8 @@ run_flash_mode_2() {
     # handle hidden u-boot
     if [ "${ICS_DM_FLASH_MODE_BOOTLOADER_START}" != "UNDEFINED" ]; then
         echo "COPY u-boot..."
-        run_cmd_stdout dd if=${blk_dev_src} iflag=skip_bytes skip=$((${ICS_DM_FLASH_MODE_BOOTLOADER_START}*1024)) \
-                          of=${blk_dev_dst} oflag=seek_bytes seek=$((${ICS_DM_FLASH_MODE_BOOTLOADER_START}*1024)) \
+        run_cmd_stdout dd if=${blk_dev_src} iflag=skip_bytes skip=$((ICS_DM_FLASH_MODE_BOOTLOADER_START*1024)) \
+                          of=${blk_dev_dst} oflag=seek_bytes seek=$((ICS_DM_FLASH_MODE_BOOTLOADER_START*1024)) \
                           bs=1024 count=$((ICS_DM_FLASH_MODE_UBOOT_ENV1_START - ICS_DM_FLASH_MODE_BOOTLOADER_START)) || return 1
     fi
 
@@ -264,12 +265,12 @@ run_flash_mode_2() {
     run_cmd_stdout dd if=/dev/ics_dm/etc     of="$(readlink -f ${blk_dev_dst}p7)" bs=10M || return 1
 
     echo "COPY current rootfs to rootfsA..."
-    run_cmd_stdout e2image -ra -p "${act_rootfs_partition}" "$(readlink -f ${blk_dev_dst}*2)" || return 1
+    run_cmd_stdout e2image -ra -p "${act_rootfs_partition}" "$(readlink -f ${blk_dev_dst}p2)" || return 1
 
     echo "ENFORCE default bootloader environment..."
     dd if=/dev/zero bs=1024 count=${ICS_DM_FLASH_MODE_UBOOT_ENV_SIZE} 2>/dev/null | tr "\000" "\377" >/tmp/uboot_env_ff.img
-    run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((${ICS_DM_FLASH_MODE_UBOOT_ENV1_START}*1024)) || return 1
-    run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((${ICS_DM_FLASH_MODE_UBOOT_ENV2_START}*1024)) || return 1
+    run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((ICS_DM_FLASH_MODE_UBOOT_ENV1_START*1024)) || return 1
+    run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((ICS_DM_FLASH_MODE_UBOOT_ENV2_START*1024)) || return 1
 
     run_cmd_stdout sync
     return 0
@@ -283,7 +284,7 @@ flash_mode_run() {
         2) set -o pipefail
            run_flash_mode_2 2>&1 | tee /tmp/flash-mode-2.log >/dev/console 2>&1; RET=$?
            setup_rootfs_partition "${ROOTFS_DIR}" "defaults,noatime,nodiratime,async,rw" 
-           run_cmd cp /tmp/flash-mode-2.log ${ROOTFS_DIR}/boot/
+           run_cmd cp /tmp/flash-mode-2.log "${ROOTFS_DIR}/boot/"
            run_cmd sync
            run_cmd umount "${ROOTFS_DIR}"
            if [ $RET -eq 0 ]; then poweroff -f; fi
