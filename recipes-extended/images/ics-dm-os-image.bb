@@ -16,6 +16,7 @@ do_rootfs[depends] += "ics-dm-os-initramfs:do_image_complete"
 # we add boot.scr to the image
 do_rootfs[depends] += "u-boot-scr:do_deploy"
 IMAGE_BOOT_FILES += "boot.scr"
+IMAGE_BOOT_FILES += "${@'fdt-load.scr' if d.getVar('UBOOT_FDT_LOAD') else ''}"
 
 # native openssl tool required
 do_rootfs[depends] += "openssl-native:do_populate_sysroot"
