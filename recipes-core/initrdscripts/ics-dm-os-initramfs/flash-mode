@@ -16,7 +16,7 @@ ICS_DM_FLASH_MODE_FLAG_FILE="/etc/enforce_flash_mode"
 ICS_DM_FLASH_MODE_FIFO="/home/ics-dm/wic.xz"
 ICS_DM_FLASH_MODE_BMAP_FILE="/home/ics-dm/wic.bmap"
 
-# variable templates
+# variable templates, which are replaced at build time
 ICS_DM_FLASH_MODE_ETH="UNDEFINED"
 ICS_DM_FLASH_MODE_BOOTLOADER_START="UNDEFINED"  # optionally, start of bootloader area
 ICS_DM_FLASH_MODE_UBOOT_ENV1_START="UNDEFINED"  # start of  first u-boot environment
@@ -26,7 +26,7 @@ ICS_DM_FLASH_MODE_DATA_SIZE="UNDEFINED"         # initial size of data partition
 
 # called by generic INITRAMFS
 flash_mode_enabled() {
-    # flash mode fixed part of the initramfs image
+    # flag file fixed part of the initramfs image, used by test variant of initramfs
     if [ -f ${ICS_DM_FLASH_MODE_FLAG_FILE} ]; then
         msg "enable flash mode: by ${ICS_DM_FLASH_MODE_FLAG_FILE}"
         ICS_DM_FLASH_MODE=1
@@ -173,8 +173,12 @@ run_flash_mode_2() {
 
     echo "Entering ICS DM flashing mode 2 ..."
 
+    # detect destination block device from device path
+    dev_path=$(get_bootloader_env_var ${ICS_DM_FLASH_DEVPATH_VAR} | cut -d= -f2)
+
     # disable flash mode for subsequent restarts
     set_bootloader_env_var ${ICS_DM_FLASH_MODE_VAR}
+    set_bootloader_env_var ${ICS_DM_FLASH_DEVPATH_VAR}
 
     # check for (mandatory) substitutions of variable templates
     if [ "${ICS_DM_FLASH_MODE_UBOOT_ENV1_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition ICS_DM_FLASH_MODE_UBOOT_ENV1_START"; return 1; fi
@@ -182,13 +186,10 @@ run_flash_mode_2() {
     if [ "${ICS_DM_FLASH_MODE_UBOOT_ENV_SIZE}"   == "UNDEFINED" ]; then stderr_fatal "missing definition ICS_DM_FLASH_MODE_UBOOT_ENV_SIZE"; return 1; fi
     if [ "${ICS_DM_FLASH_MODE_DATA_SIZE}"        == "UNDEFINED" ]; then stderr_fatal "missing definition ICS_DM_FLASH_MODE_DATA_SIZE"; return 1; fi
 
-    # detect destination block device from device path
-    dev_path=$(get_bootloader_env_var ${ICS_DM_FLASH_DEVPATH_VAR} | cut -d= -f2)
     if [ -z "${dev_path}" ]; then
         stderr_fatal "bootloader environment variable \"${ICS_DM_FLASH_DEVPATH_VAR}\" not set"
         return 1
     fi
-    set_bootloader_env_var ${ICS_DM_FLASH_DEVPATH_VAR}
     for i in $(seq 1 30); do
         blk_dev_dst=$(udevadm info --query=property --path="${dev_path}" | grep ^DEVNAME= | cut -d= -f2)
         if [ -n "${blk_dev_dst}" ]; then break; fi
@@ -260,7 +261,7 @@ run_flash_mode_2() {
     if [ ! -b "${blk_dev_dst}p7" ]; then stderr_fatal "\"${blk_dev_dst}p7\" is not a block device"; return 1; fi
     if [ ! -b "${blk_dev_dst}p8" ]; then stderr_fatal "\"${blk_dev_dst}p8\" is not a block device"; return 1; fi
 
-    # handle hidden u-boot
+    # handle u-boot not stored inside the boot partition
     if [ "${ICS_DM_FLASH_MODE_BOOTLOADER_START}" != "UNDEFINED" ]; then
         echo "COPY u-boot..."
         run_cmd_stdout dd if=${blk_dev_src} iflag=skip_bytes skip=$((ICS_DM_FLASH_MODE_BOOTLOADER_START*1024)) \

@@ -220,7 +220,7 @@ In this way, the system enters the normal mode, booting the new image.
 
 #### Flash Mode 2
 For the flash mode 2, it is required to specify the destination disk, the current disk image will be cloned to.
-For this purposed, the device path has to be used.
+For this purpose, the device path has to be used.
 
 The following example shows how to detect the desired device path on the target system:
 
