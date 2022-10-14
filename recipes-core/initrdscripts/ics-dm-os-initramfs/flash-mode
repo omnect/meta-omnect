@@ -295,15 +295,23 @@ run_flash_mode_2() {
 
 # main entry point
 flash_mode_run() {
+    local blk_dev_data=""
+
     case ${ICS_DM_FLASH_MODE} in
         1) run_flash_mode_1
            ;;
         2) set -o pipefail
            run_flash_mode_2 2>&1 | tee /tmp/flash-mode-2.log >/dev/console 2>&1; RET=$?
-           setup_rootfs_partition "${ROOTFS_DIR}" "defaults,noatime,nodiratime,async,rw" 
-           run_cmd cp /tmp/flash-mode-2.log "${ROOTFS_DIR}/boot/"
-           run_cmd sync
-           run_cmd umount "${ROOTFS_DIR}"
+           blk_dev_data=$(get_block_device data)
+           if [ -b "${blk_dev_data}" ]; then
+               # store log file
+               mkdir -p /tmp/mnt_data
+               check_ext4_fs "data" "${blk_dev_data}" 0
+               mount_partition "ext4" "${blk_dev_data}" "/tmp/mnt_data" "defaults,rw"
+               run_cmd cp /tmp/flash-mode-2.log "/tmp/mnt_data"
+               run_cmd sync
+               run_cmd umount "/tmp/mnt_data"
+           fi
            if [ $RET -eq 0 ]; then poweroff -f; fi
            ;;
         *) msg "flash mode \"${ICS_DM_FLASH_MODE}\" not supported; ignore...";;
