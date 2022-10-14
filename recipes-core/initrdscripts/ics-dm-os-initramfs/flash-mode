@@ -199,13 +199,6 @@ run_flash_mode_2() {
         return 1
     fi
 
-    # check for partition scheme
-    if [ ! -b "${blk_dev_dst}p1" ]; then stderr_fatal "\"${blk_dev_dst}p1\" is not a block device"; return 1; fi
-    if [ ! -b "${blk_dev_dst}p5" ]; then stderr_fatal "\"${blk_dev_dst}p5\" is not a block device"; return 1; fi
-    if [ ! -b "${blk_dev_dst}p6" ]; then stderr_fatal "\"${blk_dev_dst}p6\" is not a block device"; return 1; fi
-    if [ ! -b "${blk_dev_dst}p7" ]; then stderr_fatal "\"${blk_dev_dst}p7\" is not a block device"; return 1; fi
-    if [ ! -b "${blk_dev_dst}p8" ]; then stderr_fatal "\"${blk_dev_dst}p8\" is not a block device"; return 1; fi
-
     # detect source block device
     blk_dev_src=$(get_block_device boot)
     blk_dev_src=${blk_dev_src%p*}
@@ -259,6 +252,13 @@ run_flash_mode_2() {
         sed "s|\(^${extended_partition}.*size=[[:space:]]\+\)\([[:digit:]]\+,\)\(.*\)$|\1 ${extended_partition_size}, \3|g" >/tmp/sfdisk.txt
     run_cmd_stdout "sfdisk ${blk_dev_dst} </tmp/sfdisk.txt"
     # -- after sfdisk, the new partitions are available --
+
+    echo "CHECK for new partition scheme.."
+    if [ ! -b "${blk_dev_dst}p1" ]; then stderr_fatal "\"${blk_dev_dst}p1\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}p5" ]; then stderr_fatal "\"${blk_dev_dst}p5\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}p6" ]; then stderr_fatal "\"${blk_dev_dst}p6\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}p7" ]; then stderr_fatal "\"${blk_dev_dst}p7\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}p8" ]; then stderr_fatal "\"${blk_dev_dst}p8\" is not a block device"; return 1; fi
 
     # handle hidden u-boot
     if [ "${ICS_DM_FLASH_MODE_BOOTLOADER_START}" != "UNDEFINED" ]; then
