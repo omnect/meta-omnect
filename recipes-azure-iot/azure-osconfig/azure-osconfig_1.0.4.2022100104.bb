@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_ics_dm}/files/azure-iot-sdk-c-patches:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 DESCRIPTION = "A modular services stack that facilitates remote Linux IoT \
 device management over Azure"
@@ -8,7 +8,8 @@ LIC_FILES_CHKSUM = "file://${WORKDIR}/git/LICENSE.md;md5=c9ff3e29b88ec39933bbd58
 PKGPV := "${PV}"
 SRC_URI = " \
   gitsm://github.com/azure/azure-osconfig.git;protocol=https;tag=v${PKGPV};nobranch=1 \
-  file://0001-adapt-for-openssl-3.0.3.patch;patchdir=agents/pnp/azure-iot-sdk-c \
+  file://azure-iot-sdk-c-openssl3.patch;patchdir=agents/pnp/azure-iot-sdk-c/c-utility \
+  file://agents_pnp_postbuild.patch;patchdir=.. \
 "
 
 PV:append = "_${SRCPV}"
