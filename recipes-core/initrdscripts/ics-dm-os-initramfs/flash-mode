@@ -205,6 +205,11 @@ run_flash_mode_2() {
     blk_dev_src=${blk_dev_src%p*}
     if [ ! -b "${blk_dev_src}" ]; then stderr_fatal "${blk_dev_src} does not exist or not a block device"; return 1; fi
 
+    if [ "${blk_dev_dst}" == "${blk_dev_src}" ]; then
+        stderr_fatal "identical source and destination: \"${blk_dev_dst}\""
+        return 1
+    fi
+
     # detect current rootfs
     rootfs_bootpart=$(get_bootloader_env_var bootpart | cut -d= -f2)
     case "${rootfs_bootpart}" in
