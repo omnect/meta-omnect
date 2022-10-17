@@ -158,7 +158,6 @@ get_start_sector()
 
 # clone active disk image to other block device
 run_flash_mode_2() {
-    local dev_path=""
     local part_type=""
     local blk_dev_dst=""
     local blk_dev_src=""
@@ -173,8 +172,8 @@ run_flash_mode_2() {
 
     echo "Entering ICS DM flashing mode 2 ..."
 
-    # detect destination block device from device path
-    dev_path=$(get_bootloader_env_var ${ICS_DM_FLASH_DEVPATH_VAR} | cut -d= -f2)
+    # detect destination block device from environment variable
+    blk_dev_dst=$(get_bootloader_env_var ${ICS_DM_FLASH_DEVPATH_VAR} | cut -d= -f2)
 
     # disable flash mode for subsequent restarts
     set_bootloader_env_var ${ICS_DM_FLASH_MODE_VAR}
@@ -186,17 +185,17 @@ run_flash_mode_2() {
     if [ "${ICS_DM_FLASH_MODE_UBOOT_ENV_SIZE}"   == "UNDEFINED" ]; then stderr_fatal "missing definition ICS_DM_FLASH_MODE_UBOOT_ENV_SIZE"; return 1; fi
     if [ "${ICS_DM_FLASH_MODE_DATA_SIZE}"        == "UNDEFINED" ]; then stderr_fatal "missing definition ICS_DM_FLASH_MODE_DATA_SIZE"; return 1; fi
 
-    if [ -z "${dev_path}" ]; then
+    if [ -z "${blk_dev_dst}" ]; then
         stderr_fatal "bootloader environment variable \"${ICS_DM_FLASH_DEVPATH_VAR}\" not set"
         return 1
     fi
     for i in $(seq 1 30); do
-        blk_dev_dst=$(udevadm info --query=property --path="${dev_path}" | grep ^DEVNAME= | cut -d= -f2)
-        if [ -n "${blk_dev_dst}" ]; then break; fi
+        if [ -b "${blk_dev_dst}" ]; then break; fi
+        echo "WAITING FOR destination block device \"${blk_dev_dst}\"..."
         sleep 1
     done
     if [ ${i} -eq 30 ]; then
-        stderr_fatal "cannot detect block device from device path \"${dev_path}\""
+        stderr_fatal "cannot found destination block device \"${blk_dev_dst}\""
         return 1
     fi
 
