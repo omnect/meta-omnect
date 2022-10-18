@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.8.0] Q4 2022
 - added flash mode 2, see README.md for further information
 
+## [kirkstone-0.7.5] Q4 2022
+- kas:
+  - switched meta-imx url to nxp default repository
+  - updated meta-openembedded to latest kirkstone head
+  - updated meta-swupdate to latest kirkstone head
+
 ## [kirkstone-0.7.4] Q3 2022
 - initramfs: fixed kernel panic in resize data
 
