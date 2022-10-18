@@ -7,7 +7,7 @@ inherit cargo
 
 # how to get iot-client-template-rs could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/iot-client-template-rs/0.4.9"
-SRC_URI += "git://git@github.com/ICS-DeviceManagement/iot-client-template-rs.git;protocol=ssh;nobranch=1;branch=main"
+SRC_URI += "git://git@github.com/omnect/iot-client-template-rs.git;protocol=ssh;nobranch=1;branch=main"
 SRCREV = "56c8b3c4172c107851bbc21bc76cb126c193736d"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
@@ -187,9 +187,9 @@ SRC_URI += " \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-key-common;destsuffix=aziot-key-common \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-keyd-config;destsuffix=aziot-keyd-config \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=http-common;destsuffix=http-common \
-    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk-sys.git;protocol=ssh;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
-    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk.git;protocol=ssh;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
-    git://git@github.com/ICS-DeviceManagement/eis-utils.git;protocol=ssh;nobranch=1;name=eis-utils;destsuffix=eis-utils \
+    git://git@github.com/omnect/azure-iot-sdk-sys.git;protocol=ssh;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
+    git://git@github.com/omnect/azure-iot-sdk.git;protocol=ssh;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
+    git://git@github.com/omnect/eis-utils.git;protocol=ssh;nobranch=1;name=eis-utils;destsuffix=eis-utils \
 "
 
 SRCREV_FORMAT .= "_aziot-cert-client-async"
@@ -247,7 +247,7 @@ LIC_FILES_CHKSUM = " \
 "
 
 SUMMARY = "iot-client-template-rs"
-HOMEPAGE = "git@github.com:ICS-DeviceManagement/iot-client-template-rs.git"
+HOMEPAGE = "git@github.com:omnect/iot-client-template-rs.git"
 LICENSE = "MIT OR Apache-2.0"
 
 # includes this file if it exists but does not fail

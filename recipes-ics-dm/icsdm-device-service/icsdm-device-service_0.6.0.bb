@@ -7,7 +7,7 @@ inherit cargo
 
 # how to get icsdm-device-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/icsdm-device-service/0.6.0"
-SRC_URI += "git://git@github.com/ICS-DeviceManagement/icsdm-device-service.git;protocol=ssh;nobranch=1;branch=main"
+SRC_URI += "git://git@github.com/omnect/icsdm-device-service.git;protocol=ssh;nobranch=1;branch=main"
 SRCREV = "e85da1af5a709a814de2aa03a7859e3e5b9553f0"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
@@ -207,9 +207,9 @@ SRC_URI += " \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-key-common;destsuffix=aziot-key-common \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-keyd-config;destsuffix=aziot-keyd-config \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=http-common;destsuffix=http-common \
-    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk-sys.git;protocol=ssh;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
-    git://git@github.com/ICS-DeviceManagement/azure-iot-sdk.git;protocol=ssh;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
-    git://git@github.com/ICS-DeviceManagement/eis-utils.git;protocol=ssh;nobranch=1;name=eis-utils;destsuffix=eis-utils \
+    git://git@github.com/omnect/azure-iot-sdk-sys.git;protocol=ssh;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
+    git://git@github.com/omnect/azure-iot-sdk.git;protocol=ssh;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
+    git://git@github.com/omnect/eis-utils.git;protocol=ssh;nobranch=1;name=eis-utils;destsuffix=eis-utils \
 "
 
 SRCREV_FORMAT .= "_aziot-cert-client-async"
@@ -267,7 +267,7 @@ LIC_FILES_CHKSUM = " \
 "
 
 SUMMARY = "icsdm-device-service"
-HOMEPAGE = "git@github.com:ICS-DeviceManagement/icsdm-device-service.git"
+HOMEPAGE = "git@github.com:omnect/icsdm-device-service.git"
 LICENSE = "MIT OR Apache-2.0"
 
 # includes this file if it exists but does not fail
