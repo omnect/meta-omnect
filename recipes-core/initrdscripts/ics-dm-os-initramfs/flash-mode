@@ -195,7 +195,7 @@ run_flash_mode_2() {
         sleep 1
     done
     if [ ${i} -eq 30 ]; then
-        stderr_fatal "cannot found destination block device \"${blk_dev_dst}\""
+        stderr_fatal "cannot find destination block device \"${blk_dev_dst}\""
         return 1
     fi
 
