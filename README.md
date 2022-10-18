@@ -220,11 +220,14 @@ In this way, the system enters the normal mode, booting the new image.
 
 #### Flash Mode 2
 For the flash mode 2, it is required to specify the destination disk, the current disk image will be cloned to.
-For this purpose, the device path has to be used.
+For this purpose, the block device path has to be used.
 
-The following example shows how to detect the desired device path on the target system:
+The following example shows how to detect the desired block device path on the target system:
 
 ```sh
+cat /proc/partitions | grep mmcblk[1-9]$
+ 179        0    7438336 mmcblk2
+ 179       96   31178752 mmcblk1
 mount | grep 'on / type'
 /dev/mmcblk1p2 on / type ext4 (ro,noatime,nodiratime)
 udevadm info -e | grep -B4 /dev/mmcblk2$ | grep DEVPATH=
@@ -233,13 +236,13 @@ E: DEVPATH=/devices/platform/soc@0/30800000.bus/30b60000.mmc/mmc_host/mmc2/mmc2:
 
 - The system is running from *mmcblk1*.
 - Therefore, *mmcblk2* is a valid destination disk.
-- *DEVPATH=...* shows the device path for */dev/mmcblk2*
+- The block device path is */dev/mmcblk2*.
 
-The following example shows how to trigger the flash mode 2 using the found device path, on the target system:
+The following example shows how to trigger the flash mode 2 using the block device path, on the target system:
 ```sh
 sudo -s
 fw_setenv flash-mode 2
-fw_setenv flash-mode-devpath '/devices/platform/soc@0/30800000.bus/30b60000.mmc/mmc_host/mmc2/mmc2:0001/block/mmcblk2'
+fw_setenv flash-mode-devpath '/dev/mmcblk2'
 reboot
 ...
 Entering ICS DM flashing mode 2...
@@ -247,7 +250,7 @@ Entering ICS DM flashing mode 2...
 ```
 Note, the *fw_setenv* command requires root permissions.
 
-The platform specific device paths are defined in [README.device.md](./README.device.md).
+The platform specific block device paths are defined in [README.device.md](./README.device.md).
 
 After the flash mode 2 has been finished successfully, the target system will be switched-off.
 The u-boot environment variables *flash-mode* and *flash-mode-devpath* will be deleted automatically.

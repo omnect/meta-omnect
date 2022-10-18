@@ -18,4 +18,4 @@
 |-|-:|
 |¹| SLB9670 TPM2.0|
 |²| we don't use it, because the rpi3 doesn't support it. furthermore we would've effort to support both `gpt` and `mbr` in `ics-dm-cli` and `ics-dm-os-initramfs` |
-|³| device path: */devices/platform/soc@0/30800000.bus/30b60000.mmc/mmc_host/mmc2/mmc2:0001/block/mmcblk2* <br/> use DIP switch to select emmc as boot device |
+|³| device path emmc: */dev/mmcblk2* <br/> use DIP switch to select emmc as boot device |
