@@ -222,22 +222,6 @@ In this way, the system enters the normal mode, booting the new image.
 For the flash mode 2, it is required to specify the destination disk, the current disk image will be cloned to.
 For this purpose, the block device path has to be used.
 
-The following example shows how to detect the desired block device path on the target system:
-
-```sh
-cat /proc/partitions | grep mmcblk[1-9]$
- 179        0    7438336 mmcblk2
- 179       96   31178752 mmcblk1
-mount | grep 'on / type'
-/dev/mmcblk1p2 on / type ext4 (ro,noatime,nodiratime)
-udevadm info -e | grep -B4 /dev/mmcblk2$ | grep DEVPATH=
-E: DEVPATH=/devices/platform/soc@0/30800000.bus/30b60000.mmc/mmc_host/mmc2/mmc2:0001/block/mmcblk2
-```
-
-- The system is running from *mmcblk1*.
-- Therefore, *mmcblk2* is a valid destination disk.
-- The block device path is */dev/mmcblk2*.
-
 The following example shows how to trigger the flash mode 2 using the block device path, on the target system:
 ```sh
 sudo -s
