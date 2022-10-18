@@ -14,6 +14,9 @@ RESIZE_DATA_PACKAGES = "\
     parted \
 "
 
+# the e2image utility is part of the e2fsprogs package; there is no utility specific package like e2fsprogs-e2fsck
+E2IMAGE_PACKAGE = "e2fsprogs"
+
 PACKAGE_INSTALL = "\
     base-passwd \
     ics-dm-os-initramfs-scripts \
@@ -29,7 +32,7 @@ PACKAGE_INSTALL = "\
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'ics-dm-flash-mode dhcpcd dropbear bmap-tools xz util-linux-sfdisk e2fsprogs', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'ics-dm-flash-mode dhcpcd dropbear bmap-tools xz util-linux-sfdisk ${E2IMAGE_PACKAGE}', '', d)} \
 "
 
 inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'ics_dm_user', '', d)}
