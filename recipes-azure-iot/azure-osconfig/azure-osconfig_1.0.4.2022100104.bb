@@ -10,16 +10,15 @@ SRC_URI = " \
   gitsm://github.com/azure/azure-osconfig.git;protocol=https;tag=v${PKGPV};nobranch=1 \
   file://azure-iot-sdk-c-openssl3.patch;patchdir=agents/pnp/azure-iot-sdk-c/c-utility \
   file://agents_pnp_postbuild.patch;patchdir=.. \
+  file://disable_tests.patch;patchdir=.. \
 "
 
 PV:append = "_${SRCPV}"
 
 # util-linux: for uuid-dev
-# gmock: we build with tests off, but fail to compile when we leave it out
 DEPENDS = " \
   catch2 \
   curl \
-  gmock \
   lttng-ust \
   openssl \
   rapidjson \
@@ -40,6 +39,7 @@ EXTRA_OECMAKE += "-DBUILD_TESTS=OFF"
 do_install:append() {
   install -m 0600 -o aziotid -g aziotid -D ${D}${sysconfdir}/osconfig/osconfig.toml ${D}${sysconfdir}/aziot/identityd/config.d/osconfig.toml
   rm ${D}${sysconfdir}/osconfig/osconfig.toml
+  rm ${D}${sysconfdir}/osconfig/osconfig.conn
 
   install -d -m 0755 ${D}${systemd_system_unitdir}
   mv ${D}${sysconfdir}/systemd/system/osconfig.service          ${D}${systemd_system_unitdir}/

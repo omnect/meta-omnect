@@ -1,0 +1,22 @@
+diff --git a/src/modules/CMakeLists.txt b/src/modules/CMakeLists.txt
+index e2b4f7d..8ec4f1b 100644
+--- a/src/modules/CMakeLists.txt
++++ b/src/modules/CMakeLists.txt
+@@ -3,7 +3,9 @@
+ 
+ add_compile_options("$<$<COMPILE_LANGUAGE:C>:-Wall;-Wextra;-Wunused;-Werror;-Wformat;-Wformat-security;-Wno-nonnull;-Wno-unused-result;-Wunused-const-variable=2;-Wunused-macros>")
+ 
+-add_subdirectory(test)
++if (BUILD_TESTS)
++    add_subdirectory(test)
++endif()
+ 
+ find_program(JQ_EXEC jq)
+ find_program(JSONSCHEMA_EXEC jsonschema)
+@@ -65,4 +67,4 @@ add_module(Ztsi)
+ 
+ if (BUILD_SAMPLES)
+     add_module_custom_target(Samples cppsample Sample Sample)
+-endif()
+\ No newline at end of file
++endif()
