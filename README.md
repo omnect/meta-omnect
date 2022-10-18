@@ -263,12 +263,12 @@ This kind of factory reset does not ensure any data privacy.
 In order to provide higher level of privacy, the desired wipe mode can be selected.
 For this purpose, the u-boot environment variable `factory-reset` can be set to the following values:
 
-|   | Factory Reset Mode                                      | Remark                                     |
-|---|---------------------------------------------------------|--------------------------------------------|
-| 1 | no wipe; only filesystems re-created                    | no privacy, but fast                       |
-| 2 | use dd to write random data to etc and data partitions  | better privacy, but slow                   |
-| 3 | recursive remove files with rm; notify disk with fstrim | usability depends on use case and hardware |
-| 4 | custom wipe                                             |                                            |
+|     | Factory Reset Mode                                      | Remark                                     |
+| --- | ------------------------------------------------------- | ------------------------------------------ |
+| 1   | no wipe; only filesystems re-created                    | no privacy, but fast                       |
+| 2   | use dd to write random data to etc and data partitions  | better privacy, but slow                   |
+| 3   | recursive remove files with rm; notify disk with fstrim | usability depends on use case and hardware |
+| 4   | custom wipe                                             |                                            |
 
 **Note:** The provided wipe options don't guarantee total privacy. This is only possible using hardware features of the disk (e.g.; ATA secure erase).
 
