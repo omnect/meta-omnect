@@ -1,0 +1,3 @@
+# used to enable bash-completeion for non-login shells
+# e.g. when using `sudo su`
+[ -f /etc/profile.d/bash_completion.sh ] && . /etc/profile.d/bash_completion.sh

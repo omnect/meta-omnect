@@ -8,6 +8,9 @@ SRC_URI += "\
 
 RDEPENDS:${PN} += "bash"
 
+# enable bash-completion
+bashcompletiondir = "${datadir}/bash-completion/completions"
+
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}
 
