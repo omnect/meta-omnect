@@ -30,6 +30,7 @@ IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'enrollment', ' enrollment', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' iotedge-daemon iotedge-cli kernel-modules', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd-bash-completion', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
@@ -89,7 +90,7 @@ ics_dm_create_uboot_env_ff_img() {
 # need a preexisting empty '/etc/machine-id' and thus delete it as late
 # as possible:
 # also we delete fstab, since mounting filesystems is handled in initramfs
-IMAGE_PREPROCESS_COMMAND:append = " remove_unwanted_files; adapt_cert_store; reproducible_final_image_task;"
+IMAGE_PREPROCESS_COMMAND:append = " remove_unwanted_files; adapt_cert_store; default_shell_bash; reproducible_final_image_task;"
 remove_unwanted_files() {
     rm -f ${IMAGE_ROOTFS}${sysconfdir}/machine-id
     rm -f ${IMAGE_ROOTFS}${sysconfdir}/fstab
@@ -97,5 +98,10 @@ remove_unwanted_files() {
 adapt_cert_store() {
     sed -i 's#^LOCALCERTSDIR=\(.*\)$#LOCALCERTSDIR=/mnt/cert/ca#' ${IMAGE_ROOTFS}${sbindir}/update-ca-certificates
 }
+# to enable bash-completion when using `sudo su`
+default_shell_bash() {
+    sed -i 's#/bin/sh$#/bin/bash#g' ${IMAGE_ROOTFS}${sysconfdir}/passwd
+}
+
 
 inherit ics_dm_user

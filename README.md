@@ -20,7 +20,7 @@ This yocto meta layer provides the poky based ICS_DeviceManagement distribution 
 It is built with the default `poky` `DISTRO_FEATURES`.
 
 `meta-ics-dm` adds the following `DISTRO_FEATURES`:
-- [`enrollment`](https://github.com/ICS-DeviceManagement/enrollment.git)
+- [`enrollment`](https://github.com/omnect/enrollment.git)
     - adds an automatic device enrollment demo with provisioning via tpm
         - it creates a tpm enrollment in your [azure device provisioning service](https://docs.microsoft.com/en-us/azure/iot-dps/) for your device
         - it creates the provisioning configuration for `iot-identity-service`
@@ -37,7 +37,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - please see section *Flash Modes*, below
 - `resize-data`
     - expands the data partition to available space on first boot
-- [`wifi-commissioning`](https://github.com/ICS-DeviceManagement/wifi-commissioning-gatt-service.git)
+- [`wifi-commissioning`](https://github.com/omnect/wifi-commissioning-gatt-service.git)
     - adds a service which enables wifi commissioning via bluetooth
     - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
     - **note**: this is only intended for demo purposes; this is not a production ready service
@@ -125,7 +125,7 @@ This repository provides [`kas`](https://kas.readthedocs.io/en/latest/) configur
 E.g. if you want to build an `ics-dm-os` raspberrypi 4 image with `iotedge` support for the demo-portal (todo link to demo-portal doku) follow these steps:
 
 ```sh
-git clone https://github.com/ICS-DeviceManagement/meta-ics-dm.git
+git clone https://github.com/omnect/meta-ics-dm.git
 
 # Generate 'SWUPDATE_PASSWORD_FILE' and 'SWUPDATE_PRIVATE_KEY'
 echo "your password" > priv.pass
@@ -159,17 +159,17 @@ E.g. we reset the layer prioritization of `meta-phytec` to `9`, to ensure it is 
 
 ## Runtime configuration
 
-The `ics-dm-os-image` needs post processing via [`ics-dm-cli`](https://github.com/ICS-DeviceManagement/ics-dm-cli.git) to set a mandatory `iot-identity-service` configuration. Furthermore you need to set an `enrollment` configuration if `DISTRO_FEATURES` contains `enrollment`. You can optionally set an `iot-hub-device-update` configuration.
+The `ics-dm-os-image` needs post processing via [`ics-dm-cli`](https://github.com/omnect/ics-dm-cli.git) to set a mandatory `iot-identity-service` configuration. Furthermore you need to set an `enrollment` configuration if `DISTRO_FEATURES` contains `enrollment`. You can optionally set an `iot-hub-device-update` configuration.
 
 ### Set `enrollment` configuration
-See [ics-dm-cli enrollment configuration](https://github.com/ICS-DeviceManagement/ics-dm-cli/blob/main/README.md#enrollment-configuration).
+See [ics-dm-cli enrollment configuration](https://github.com/omnect/ics-dm-cli/blob/main/README.md#enrollment-configuration).
 
 ### Set `iot-hub-device-update` configuration
-See [ics-dm-cli iot-hub-device-update configuration](https://github.com/ICS-DeviceManagement/ics-dm-cli/blob/main/README.md#device-update-for-iot-hub-configuration).
+See [ics-dm-cli iot-hub-device-update configuration](https://github.com/omnect/ics-dm-cli/blob/main/README.md#device-update-for-iot-hub-configuration).
 
 
 ### Set `iot-identity-service` configuration
-See [ics-dm-cli iot-identity-service configuration](https://github.com/ICS-DeviceManagement/ics-dm-cli/blob/main/README.md#identity-configuration).
+See [ics-dm-cli iot-identity-service configuration](https://github.com/omnect/ics-dm-cli/blob/main/README.md#identity-configuration).
 
 
 ## Usage
@@ -263,12 +263,12 @@ This kind of factory reset does not ensure any data privacy.
 In order to provide higher level of privacy, the desired wipe mode can be selected.
 For this purpose, the u-boot environment variable `factory-reset` can be set to the following values:
 
-|  |Factory Reset Mode                                      |Remark                                    |
-|--|--------------------------------------------------------|------------------------------------------|
-|1 |no wipe; only filesystems re-created                    |no privacy, but fast                      |
-|2 |use dd to write random data to etc and data partitions  |better privacy, but slow                  |
-|3 |recursive remove files with rm; notify disk with fstrim |usability depends on use case and hardware|
-|4 |custom wipe                                             |                                          |
+|     | Factory Reset Mode                                      | Remark                                     |
+| --- | ------------------------------------------------------- | ------------------------------------------ |
+| 1   | no wipe; only filesystems re-created                    | no privacy, but fast                       |
+| 2   | use dd to write random data to etc and data partitions  | better privacy, but slow                   |
+| 3   | recursive remove files with rm; notify disk with fstrim | usability depends on use case and hardware |
+| 4   | custom wipe                                             |                                            |
 
 **Note:** The provided wipe options don't guarantee total privacy. This is only possible using hardware features of the disk (e.g.; ATA secure erase).
 

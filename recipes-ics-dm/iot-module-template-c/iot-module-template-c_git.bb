@@ -9,7 +9,7 @@ FILESEXTRAPATHS:prepend := "${LAYERDIR_ics_dm}/files:"
 
 
 # TODO change to https uri when public
-REPO_URI = "git://git@github.com/ICS-DeviceManagement/iot-module-template-c.git;protocol=ssh;nobranch=1;tag=0.2.3"
+REPO_URI = "git://git@github.com/omnect/iot-module-template-c.git;protocol=ssh;nobranch=1;tag=0.2.3"
 SRC_URI = " \
   ${REPO_URI} \
   file://iot-identity-service-keyd.template.toml \
