@@ -7,12 +7,12 @@ inherit cargo
 # If this is git based prefer versioned ones if they exist
 # DEFAULT_PREFERENCE = "-1"
 
-# how to get aziot-edged could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/aziot-edged/0.1.0"
+# how to get iotedge could be as easy as but default to a git checkout:
+# SRC_URI += "crate://crates.io/iotedge/0.1.0"
 SRC_URI += "git://github.com/Azure/iotedge.git;protocol=https;nobranch=1"
-SRCREV = "a61177b3edf3158b7b3e4c088d2e2126d2f5efe2"
+SRCREV = "bb9a26162c4c88b3ef9a50d33632ab78bd4247d6"
 S = "${WORKDIR}/git"
-CARGO_SRC_DIR = "aziot-edged"
+CARGO_SRC_DIR = "iotedge"
 
 
 # please note if you have entries that do not begin with crate://
@@ -318,12 +318,12 @@ EXTRA_OECARGO_PATHS += "${WORKDIR}/test-common"
 LIC_FILES_CHKSUM = " \
     "
 
-SUMMARY = "aziot-edged"
+SUMMARY = "The iotedge tool is used to manage the IoT Edge runtime."
 HOMEPAGE = "https://github.com/Azure/iotedge.git"
 LICENSE = "CLOSED"
 
 # includes this file if it exists but does not fail
 # this is useful for anything you may want to override from
 # what cargo-bitbake generates.
-include iotedge-daemon_${PV}.inc
-include iotedge-daemon.inc
+include iotedge-${PV}.inc
+include iotedge.inc
