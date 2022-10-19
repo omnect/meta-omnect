@@ -6,10 +6,11 @@ LIC_FILES_CHKSUM = "\
 "
 
 SRC_URI = "\
-    file://usr/bin/ics_dm_get_deviceid.sh \
-    file://etc/sudoers.d/001_ics-dm \
+    file://etc/bashrc \
     file://etc/profile.d/ics-dm_profile.sh \
     file://etc/profile.d/ics-dm_prompt.sh \
+    file://etc/sudoers.d/001_ics-dm \
+    file://usr/bin/ics_dm_get_deviceid.sh \
 "
 
 RDEPENDS:${PN} += "\
@@ -17,27 +18,26 @@ RDEPENDS:${PN} += "\
 "
 
 FILES:${PN} = "\
-    /usr/bin/ics_dm_get_deviceid.sh \
-    /etc/sudoers.d/001_ics-dm \
+    ${exec_prefix}/local \
+    ${libdir}/tmpfiles.d/ics-dm-base-files.conf \
+    /etc/bashrc \
     /etc/profile.d/ics-dm_profile.sh \
     /etc/profile.d/ics-dm_prompt.sh \
+    /etc/sudoers.d/001_ics-dm \
     /mnt/cert \
     /mnt/data \
     /mnt/etc \
     /mnt/factory \
-    ${libdir}/tmpfiles.d/ics-dm-base-files.conf \
+    /usr/bin/ics_dm_get_deviceid.sh \
     /var/lib \
-    ${exec_prefix}/local \
 "
 
 do_install() {
-    install -d ${D}/usr/bin/
-    install -d ${D}/etc/sudoers.d/
-    install -d ${D}/etc/profile.d/
-    install -m 0755 ${WORKDIR}/usr/bin/ics_dm_get_deviceid.sh ${D}/usr/bin/
-    install -m 0644 ${WORKDIR}/etc/sudoers.d/001_ics-dm ${D}/etc/sudoers.d/
-    install -m 0644 ${WORKDIR}/etc/profile.d/ics-dm_profile.sh ${D}/etc/profile.d/
-    install -m 0644 ${WORKDIR}/etc/profile.d/ics-dm_prompt.sh ${D}/etc/profile.d/
+    install -m 0644 -D ${WORKDIR}/etc/bashrc ${D}/etc/bashrc
+    install -m 0755 -D ${WORKDIR}/usr/bin/ics_dm_get_deviceid.sh ${D}/usr/bin/ics_dm_get_deviceid.sh
+    install -m 0644 -D ${WORKDIR}/etc/sudoers.d/001_ics-dm ${D}/etc/sudoers.d/001_ics-dm
+    install -m 0644 -D ${WORKDIR}/etc/profile.d/ics-dm_profile.sh ${D}/etc/profile.d/ics-dm_profile.sh
+    install -m 0644 -D ${WORKDIR}/etc/profile.d/ics-dm_prompt.sh ${D}/etc/profile.d/ics-dm_prompt.sh
 
     # install mountpoints
     install -d -D ${D}/mnt/cert \
