@@ -1,3 +1,6 @@
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+SRC_URI += "file://enable-poweroff.cfg"
+
 do_install:append() {
     # disable busybox syslog/klogd when using systemd
     if ${@bb.utils.contains('SRC_URI', 'file://syslog.cfg', 'false','true', d)} && \

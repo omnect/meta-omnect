@@ -13,8 +13,19 @@ msg_fatal() {
 
 run_cmd() {
     msg  "$@"
-    eval "$@"
+    eval "$@" >/dev/console 2>&1
     if [ $? -ne 0 ]; then msg_fatal "command failed"; return 1; fi
+    return 0
+}
+
+stderr_fatal() {
+    echo "FATAL ERROR: $1" >&2
+}
+
+run_cmd_stdout() {
+    echo "$@"
+    eval "$@"
+    if [ $? -ne 0 ]; then stderr_fatal "command failed"; return 1; fi
     return 0
 }
 
