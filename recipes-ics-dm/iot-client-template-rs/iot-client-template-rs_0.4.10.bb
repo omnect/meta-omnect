@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get iot-client-template-rs could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/iot-client-template-rs/0.4.9"
+# SRC_URI += "crate://crates.io/iot-client-template-rs/0.4.10"
 SRC_URI += "git://git@github.com/omnect/iot-client-template-rs.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "56c8b3c4172c107851bbc21bc76cb126c193736d"
+SRCREV = "62cbd783e69bb84e1dbb1a85f6b911beac7c79e9"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -19,13 +19,12 @@ SRC_URI += " \
     crate://crates.io/addr2line/0.17.0 \
     crate://crates.io/adler/1.0.2 \
     crate://crates.io/aho-corasick/0.7.19 \
-    crate://crates.io/ansi_term/0.12.1 \
     crate://crates.io/async-trait/0.1.57 \
     crate://crates.io/atty/0.2.14 \
     crate://crates.io/autocfg/1.1.0 \
     crate://crates.io/backtrace/0.3.66 \
     crate://crates.io/base64/0.13.0 \
-    crate://crates.io/bindgen/0.59.2 \
+    crate://crates.io/bindgen/0.60.1 \
     crate://crates.io/bitflags/1.3.2 \
     crate://crates.io/block-buffer/0.10.3 \
     crate://crates.io/bytes/1.2.1 \
@@ -33,7 +32,8 @@ SRC_URI += " \
     crate://crates.io/cexpr/0.6.0 \
     crate://crates.io/cfg-if/1.0.0 \
     crate://crates.io/clang-sys/1.3.3 \
-    crate://crates.io/clap/2.34.0 \
+    crate://crates.io/clap/3.2.22 \
+    crate://crates.io/clap_lex/0.2.4 \
     crate://crates.io/cpufeatures/0.2.5 \
     crate://crates.io/crypto-common/0.1.6 \
     crate://crates.io/darling/0.13.4 \
@@ -102,6 +102,7 @@ SRC_URI += " \
     crate://crates.io/openssl-macros/0.1.0 \
     crate://crates.io/openssl-sys/0.9.75 \
     crate://crates.io/openssl/0.10.41 \
+    crate://crates.io/os_str_bytes/6.3.0 \
     crate://crates.io/parking_lot/0.12.1 \
     crate://crates.io/parking_lot_core/0.9.3 \
     crate://crates.io/peeking_take_while/0.1.2 \
@@ -135,10 +136,9 @@ SRC_URI += " \
     crate://crates.io/smallvec/1.9.0 \
     crate://crates.io/socket2/0.4.7 \
     crate://crates.io/strsim/0.10.0 \
-    crate://crates.io/strsim/0.8.0 \
     crate://crates.io/syn/1.0.99 \
     crate://crates.io/termcolor/1.1.3 \
-    crate://crates.io/textwrap/0.11.0 \
+    crate://crates.io/textwrap/0.15.1 \
     crate://crates.io/tinyvec/1.6.0 \
     crate://crates.io/tinyvec_macros/0.1.0 \
     crate://crates.io/tokio-io-timeout/1.2.0 \
@@ -156,10 +156,8 @@ SRC_URI += " \
     crate://crates.io/unicode-bidi/0.3.8 \
     crate://crates.io/unicode-ident/1.0.4 \
     crate://crates.io/unicode-normalization/0.1.21 \
-    crate://crates.io/unicode-width/0.1.10 \
     crate://crates.io/url/2.3.1 \
     crate://crates.io/vcpkg/0.2.15 \
-    crate://crates.io/vec_map/0.8.2 \
     crate://crates.io/version_check/0.9.4 \
     crate://crates.io/want/0.3.0 \
     crate://crates.io/wasi/0.11.0+wasi-snapshot-preview1 \
@@ -229,10 +227,10 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "6af42eefc84351ec7af510213561a40948ed9045"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.8.4"
+SRCREV_azure-iot-sdk = "0.8.5"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
-SRCREV_azure-iot-sdk-sys = "0.5.2"
+SRCREV_azure-iot-sdk-sys = "0.5.5"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk-sys"
 SRCREV_FORMAT .= "_eis-utils"
 SRCREV_eis-utils = "0.2.2"
