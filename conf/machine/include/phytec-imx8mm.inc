@@ -10,8 +10,8 @@ IMAGE_BOOT_FILES:remove:pn-ics-dm-os-image = " \
     oftree \
     bootenv.txt \
 "
-IMAGE_INSTALL:append:pn-ics-dm-os-image = "kernel-devicetree"
-# Todo add 'oftree' to rootfs? 
+IMAGE_INSTALL:append:pn-ics-dm-os-image = " kernel-devicetree"
+# Todo add 'oftree' to rootfs?
 
 # u-boot boot.scr config
 KERNEL_BOOTCMD = "booti"
