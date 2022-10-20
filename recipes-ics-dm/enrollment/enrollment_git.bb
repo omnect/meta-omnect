@@ -14,7 +14,7 @@ S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c-prov"
 RDEPENDS:${PN} = " \
-  ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge-cli', '', d)} \
+  ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'iotedge', '', d)} \
   bash \
   toml-cli \
   ca-certificates \
