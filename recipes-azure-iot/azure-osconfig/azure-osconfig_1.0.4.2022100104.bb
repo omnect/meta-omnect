@@ -25,6 +25,13 @@ DEPENDS = " \
   util-linux \
 "
 
+# compilation fails if we add jq-native to DEPENDS so we explicitly only depend
+# in do_install step
+#
+# TODO cmake of azure-osconfig uses DEPENDS as build var which conflicts with
+# bitbake; maybe we should prevent that via patching
+do_install[depends] += "jq-native:do_populate_sysroot"
+
 RDEPENDS:${PN} = "iot-identity-service"
 
 S = "${WORKDIR}/git/src"
@@ -40,6 +47,10 @@ do_install:append() {
   install -m 0600 -o aziotid -g aziotid -D ${D}${sysconfdir}/osconfig/osconfig.toml ${D}${sysconfdir}/aziot/identityd/config.d/osconfig.toml
   rm ${D}${sysconfdir}/osconfig/osconfig.toml
   rm ${D}${sysconfdir}/osconfig/osconfig.conn
+
+  # disable package manager module
+  jq 'del ( .Reported[] | select (."ComponentName" == "PackageManagerConfiguration"))' ${D}${sysconfdir}/osconfig/osconfig.json > tmp.json
+  mv tmp.json ${D}${sysconfdir}/osconfig/osconfig.json
 
   install -d -m 0755 ${D}${systemd_system_unitdir}
   mv ${D}${sysconfdir}/systemd/system/osconfig.service          ${D}${systemd_system_unitdir}/
