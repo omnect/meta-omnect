@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.9.1] Q4 2022
+- iotedge:
+  - updated to 1.4.2
+  - renamed recipe iotedge-cli to iotedge
+  - renamed recipe iotedge-daemon to aziot-edged
+
+## [kirkstone-0.9.0] Q4 2022
+- phygate-tauri-l, phyboard-polis: enabled hardware watchdog
+
+## [kirkstone-0.8.4] Q4 2022
+- phytec u-boot: provide bootcmd_pxe
+
 ## [kirkstone-0.8.3] Q4 2022
 - systemd: enabled bash-completion
 

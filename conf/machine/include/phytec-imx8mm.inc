@@ -28,3 +28,8 @@ ICS_DM_PART_SIZE_UBOOT_ENV = "64"
 
 # mask fw_env.config configuration of meta-phytec, we generate that ourselves
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
+
+# configure hardware watchdog
+# the maximum watchdog deadline depends on the hardware capabilities
+SYSTEMD_RuntimeWatchdogSec  = "60"
+SYSTEMD_RebootWatchdogSec   = "60"

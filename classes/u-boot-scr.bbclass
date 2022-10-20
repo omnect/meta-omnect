@@ -4,22 +4,30 @@ COMPATIBLE = "rpi"
 python create_boot_cmd () {
     boot_cmd=d.getVar("KERNEL_BOOTCMD")
     boot_cmd_file=d.getVar("WORKDIR") + "/boot.cmd"
+    fdt_load_script_file=d.getVar("WORKDIR") + "/fdt-load.cmd"
     device_tree=d.getVar("KERNEL_DEVICETREE_FN")
     fdt_addr=d.getVar("UBOOT_FDT_ADDR")
     fdt_load=d.getVar("UBOOT_FDT_LOAD")
     kernel_imagetype=d.getVar("KERNEL_IMAGETYPE")
     ics_dm_initramfs_fs_type=d.getVar("ICS_DM_INITRAMFS_FSTYPE")
     ics_dm_boot_scr_test_cmds=d.getVar("ICS_DM_BOOT_SCR_TEST_CMDS")
+
+    # possibly load device tree from file
+    if fdt_load:
+        try:
+            with open(fdt_load_script_file, "w") as f:
+                f.write("\n")
+                f.write("echo \"Loading Device Tree: boot/%s\"\n" % (device_tree))
+                f.write("load ${devtype} ${devnum}:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
+        except OSError:
+            bb.fatal("Unable to open fdt-load.cmd")
+
     try:
         with open(boot_cmd_file, "w") as f:
             f.write("\n")
 
             # echo bootmedium and device
             f.write("echo \"Boot script loaded from ${devtype} ${devnum}\"\n")
-
-            # possibly load device tree from file
-            if fdt_load:
-                f.write("load ${devtype} ${devnum}:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
 
             # load device tree
             f.write("fdt addr ${%s}\n" % fdt_addr)
@@ -59,10 +67,16 @@ do_compile[prefuncs] += "create_boot_cmd"
 
 do_compile() {
     mkimage -A ${UBOOT_ARCH} -T script -C none -n "${DISTRO_NAME} (${DISTRO_VERSION}) u-boot:\n" -d "${WORKDIR}/boot.cmd" ${ICS_DM_BOOT_SCR_NAME}
+    if [ ${UBOOT_FDT_LOAD} -eq 1 ]; then
+        mkimage -A ${UBOOT_ARCH} -T script -C none -n "${DISTRO_NAME} (${DISTRO_VERSION}) u-boot:\n" -d "${WORKDIR}/fdt-load.cmd" ${ICS_DM_FDT_LOAD_NAME}
+    fi
 }
 
 do_deploy() {
     install -m 0644 -D ${ICS_DM_BOOT_SCR_NAME} ${DEPLOYDIR}
+    if [ ${UBOOT_FDT_LOAD} -eq 1 ]; then
+        install -m 0644 -D ${ICS_DM_FDT_LOAD_NAME} ${DEPLOYDIR}
+    fi
 }
 
 addtask do_deploy after do_compile before do_build

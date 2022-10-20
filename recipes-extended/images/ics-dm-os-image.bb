@@ -16,6 +16,7 @@ do_rootfs[depends] += "ics-dm-os-initramfs:do_image_complete"
 # we add boot.scr to the image
 do_rootfs[depends] += "u-boot-scr:do_deploy"
 IMAGE_BOOT_FILES += "boot.scr"
+IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
 
 # native openssl tool required
 do_rootfs[depends] += "openssl-native:do_populate_sysroot"
@@ -28,7 +29,7 @@ IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'enrollment', ' enrollment', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' iotedge-daemon iotedge-cli kernel-modules', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' aziot-edged iotedge kernel-modules', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd-bash-completion', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \

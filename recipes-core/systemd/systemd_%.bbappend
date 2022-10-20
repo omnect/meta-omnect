@@ -58,14 +58,24 @@ do_install:append() {
     ln -rs ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service ${D}${sysconfdir}/systemd/system/sysinit.target.wants/systemd-time-wait-sync.service
 }
 
-# for rpi3 and rpi4, use hardware watchdog (see MACHINEOVERRIDES)
-do_install:append:rpi() {
+enable_hardware_watchdog() {
     local cfg_file="${D}${sysconfdir}/systemd/system.conf"
 
     [ -n "${SYSTEMD_RuntimeWatchdogSec}"  ] && \
-        sed -i 's|^#RuntimeWatchdogSec=.*$|RuntimeWatchdogSec=${SYSTEMD_RuntimeWatchdogSec}|' ${cfg_file}
+        sed -i 's|^#\(RuntimeWatchdogSec\)=.*$|\1=${SYSTEMD_RuntimeWatchdogSec}|' ${cfg_file}
     [ -n "${SYSTEMD_RebootWatchdogSec}"   ] && \
-        sed -i 's|^#RebootWatchdogSec=.*$|RebootWatchdogSec=${SYSTEMD_RebootWatchdogSec}|' ${cfg_file}
+        sed -i 's|^#\(RebootWatchdogSec\)=.*$|\1=${SYSTEMD_RebootWatchdogSec}|' ${cfg_file}
+}
+
+# enable hardware watchdog for rpi3, rpi4, phygate tauri-l and phyboard polis (see MACHINEOVERRIDES)
+do_install:append:rpi() {
+    enable_hardware_watchdog
+}
+do_install:append:phygate-tauri-l-imx8mm-2() {
+    enable_hardware_watchdog
+}
+do_install:append:phyboard-polis-imx8mm-4() {
+    enable_hardware_watchdog
 }
 
 # adapt tauri-l systemd-networkd-wait-online.service state
