@@ -49,9 +49,9 @@ USERADD_PARAM:${PN} = "--no-create-home -r -s /bin/false -g enrollment -G aziot,
 inherit systemd
 
 do_install:append() {
-    install -d ${D}${sysconfdir}/ics_dm
-    chgrp enrollment ${D}${sysconfdir}/ics_dm
-    chmod g+rw ${D}${sysconfdir}/ics_dm
+    install -d ${D}${sysconfdir}/omnect
+    chgrp enrollment ${D}${sysconfdir}/omnect
+    chmod g+rw ${D}${sysconfdir}/omnect
 
     # create tmpfiles.d entry to (re)create permissions
     install -d ${D}${libdir}/tmpfiles.d
