@@ -31,7 +31,7 @@ index 60a09f5..773ede6 100644
  add_subdirectory (steps_handler)
  add_subdirectory (swupdate_handler)
 +add_subdirectory (swupdate_consent_handler)
- 
+
  #
  # Note: add more update content handler extensions here.
 diff --git a/src/content_handlers/swupdate_consent_handler/CMakeLists.txt b/src/content_handlers/swupdate_consent_handler/CMakeLists.txt
@@ -179,7 +179,7 @@ index 0000000..71366dc
 +
 +private:
 +    const std::string generalConsent = "swupdate";
-+    
++
 +    // Private constructor, must call CreateContentHandler factory method.
 +    SWUpdateConsentHandlerImpl()
 +    {
@@ -220,11 +220,11 @@ index 0000000..b53879c
 +#include <aduc/string_utils.hpp>
 +#include <azure_c_shared_utility/threadapi.h> // ThreadAPI_Sleep
 +
-+#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/etc/ics_dm/consent/consent_conf.json"
-+#define ADUC_SWUPDATE_CONSENT_USER_FILE "/etc/ics_dm/consent/swupdate/user_consent.json"
-+#define ADUC_SWUPDATE_CONSENT_INSTALLED_CRITERIA_FILE "/etc/ics_dm/consent/swupdate/installed_criteria"
-+#define ADUC_SWUPDATE_CONSENT_REQUEST_FILE "/etc/ics_dm/consent/request_consent.json"
-+#define ADUC_SWUPDATE_CONSENT_HISTORY_FILE "/etc/ics_dm/consent/history_consent.json"
++#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/consent/consent_conf.json"
++#define ADUC_SWUPDATE_CONSENT_USER_FILE "/consent/swupdate/user_consent.json"
++#define ADUC_SWUPDATE_CONSENT_INSTALLED_CRITERIA_FILE "/consent/swupdate/installed_criteria"
++#define ADUC_SWUPDATE_CONSENT_REQUEST_FILE "/consent/request_consent.json"
++#define ADUC_SWUPDATE_CONSENT_HISTORY_FILE "/consent/history_consent.json"
 +
 +EXTERN_C_BEGIN
 +
@@ -372,7 +372,7 @@ index 0000000..b53879c
 +            {
 +                std::string generalConsentStatus = ValueOrEmpty(json_array_get_string(array, i));
 +                Log_Info("parsing json array genenral_consent: %s \n", generalConsentStatus.c_str());
-+                
++
 +                if (generalConsent == generalConsentStatus)
 +                {
 +                    Log_Info("genenral_consent found for swupdate\n");
@@ -465,9 +465,9 @@ index 0000000..b53879c
 +        }
 +        else
 +        {
-+  
++
 +            JSON_Value* swupdateValue = json_value_init_object();
-+            JSON_Object* swupdateObject = json_value_get_object(swupdateValue);            
++            JSON_Object* swupdateObject = json_value_get_object(swupdateValue);
 +            json_object_set_string(swupdateObject, "swupdate", version.c_str());
 +            if(true == AppendArrayRecord(data, "user_consent_request", swupdateValue))
 +            {
@@ -479,7 +479,7 @@ index 0000000..b53879c
 +                Log_Error("append to user_consent_request in ADUC_SWUPDATE_CONSENT_REQUEST_FILE not working");
 +            }
 +        }
-+        json_value_free(rootValue);        
++        json_value_free(rootValue);
 +    }
 +
 +    return result;
@@ -504,7 +504,7 @@ index 0000000..b53879c
 +    else
 +    {
 +        JSON_Array* array = json_object_get_array(data, "user_consent_request");
-+        if (nullptr == array)        
++        if (nullptr == array)
 +        {
 +            Log_Error("No user_consent_request in ADUC_SWUPDATE_CONSENT_REQUEST_FILE data file provided");
 +        }
@@ -605,7 +605,7 @@ index 0000000..b53879c
 +
 +    // cleanup request JSON file to prevent duplicate information in array due to e.g. device reboot
 +    CleanConsentRequestJsonFile();
-+    
++
 +    // log message already present in function, return value currently not needed to evaluate
 +    UpdateConsentRequestJsonFile(version);
 +
@@ -636,7 +636,7 @@ index 0000000..b53879c
 +    // write data
 +    f << installedCriteria << std::endl;
 +    f.close();
-+    
++
 +    workflow_free_string(installedCriteria_workflow);
 +    return ADUC_Result{ ADUC_Result_Download_Success };
 +}
@@ -712,6 +712,6 @@ index 0000000..b53879c
 +    workflow_free_string(installedCriteria_workflow);
 +    return result;
 +}
--- 
+--
 2.25.1
 

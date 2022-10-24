@@ -4,7 +4,7 @@
 #  Setup files used to trigger factory reset and reboot
 #
 
-icsdm_device_service_setup_enabled() {
+omnect_device_service_setup_enabled() {
     return 0
 }
 
@@ -19,17 +19,17 @@ get_id() {
     echo $line | awk -F: '{print $3}'
 }
 
-icsdm_device_service_setup_run() {
-    local tmp_dir="${ROOTFS_DIR}/run/icsdm-device-service"  # /run is available in the INITRAMFS
+omnect_device_service_setup_run() {
+    local tmp_dir="${ROOTFS_DIR}/run/omnect-device-service"  # /run is available in the INITRAMFS
     local factory_reset_trigger_file="${tmp_dir}/factory-reset-trigger"
     local factory_reset_restore_list="${tmp_dir}/factory-reset-restore-list"
     local reboot_trigger_file="${tmp_dir}/reboot-trigger"
-    local icsdm_device_service_group=""
+    local omnect_device_service_group=""
 
     # get group ID
-    icsdm_device_service_group=$(get_id icsdm_device_service ${ROOTFS_DIR}/etc/group)
-    if [ -z "${icsdm_device_service_group}" ]; then
-        msg "ERROR: group icsdm_device_service not found in rootfs"
+    omnect_device_service_group=$(get_id omnect_device_service ${ROOTFS_DIR}/etc/group)
+    if [ -z "${omnect_device_service_group}" ]; then
+        msg "ERROR: group omnect_device_service not found in rootfs"
         return
     fi
 
@@ -38,9 +38,9 @@ icsdm_device_service_setup_run() {
     run_cmd touch ${factory_reset_trigger_file}
     run_cmd touch ${factory_reset_restore_list}
     run_cmd touch ${reboot_trigger_file}
-    run_cmd chown root:${icsdm_device_service_group} ${factory_reset_trigger_file}
-    run_cmd chown root:${icsdm_device_service_group} ${factory_reset_restore_list}
-    run_cmd chown root:${icsdm_device_service_group} ${reboot_trigger_file}
+    run_cmd chown root:${omnect_device_service_group} ${factory_reset_trigger_file}
+    run_cmd chown root:${omnect_device_service_group} ${factory_reset_restore_list}
+    run_cmd chown root:${omnect_device_service_group} ${reboot_trigger_file}
     run_cmd chmod 660 ${factory_reset_trigger_file}
     run_cmd chmod 660 ${factory_reset_restore_list}
     run_cmd chmod 660 ${reboot_trigger_file}

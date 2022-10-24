@@ -54,8 +54,8 @@ do_install:append() {
 
     # create tmpfiles.d entry to (re)create permissions
     install -d ${D}${libdir}/tmpfiles.d
-    echo "z /etc/ics_dm 0775 root enrollment -"                        >> ${D}${libdir}/tmpfiles.d/enrollment.conf
-    echo "z /etc/ics_dm/enrollment_static.json 0664 root enrollment -" >> ${D}${libdir}/tmpfiles.d/enrollment.conf
+    echo "z  0775 root enrollment -"                        >> ${D}${libdir}/tmpfiles.d/enrollment.conf
+    echo "z /enrollment_static.json 0664 root enrollment -" >> ${D}${libdir}/tmpfiles.d/enrollment.conf
 
     install -m 755 ${S}/scripts/patch_config_toml.sh ${D}${bindir}/
 
