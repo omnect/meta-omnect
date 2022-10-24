@@ -9,8 +9,8 @@ rootblk_dev_run() {
 
     [ -z "${bootparam_root}" ] && msg "no root device set" && return 1
 
-    mkdir -p /dev/ics_dm
-    cd /dev/ics_dm
+    mkdir -p /dev/omnect
+    cd /dev/omnect
 
     rootblk=${bootparam_root}
     rootblk=${rootblk##*/}

@@ -13,7 +13,7 @@ ics_dm_conv_size_param() {
 
 # generate fw_env.config based on on distro configuration
 ics_dm_generate_fw_env_config() {
-    local  blk_dev="/dev/ics_dm/rootblk"
+    local  blk_dev="/dev/omnect/rootblk"
     local env_size=$(ics_dm_conv_size_param "${ICS_DM_PART_SIZE_UBOOT_ENV}"    "u-boot env. size")
     local  offset1=$(ics_dm_conv_size_param "${ICS_DM_PART_OFFSET_UBOOT_ENV1}" "u-boot env. offset1")
     local  offset2=$(ics_dm_conv_size_param "${ICS_DM_PART_OFFSET_UBOOT_ENV2}" "u-boot env. offset2")

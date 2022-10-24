@@ -81,7 +81,7 @@ get_block_device()
     local label="$1"  # label designating block device
     local blk_dev=""
 
-    blk_dev=$(readlink -f /dev/ics_dm/${label})
+    blk_dev=$(readlink -f /dev/omnect/${label})
 
     if [ -z "${blk_dev}" ] || [ ! -b "${blk_dev}" ]; then
         msg_fatal "\"${blk_dev}\" not a valid block device [label=${label}]"  # output: /dev/console
