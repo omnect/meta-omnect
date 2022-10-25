@@ -6,7 +6,7 @@ header:
     - kas/distro/poky.yaml
 
 repos:
-  meta-ics-dm:
+  meta-omnect:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
     refspec: bd2d8fba766f912bd1bc5cde7d6f0e72152f1547
@@ -36,9 +36,9 @@ env:
   DISTRO_NAME_SUFFIX: ""
   # build number which is reflected in DISTRO_VERSION
   ICS_DM_BUILD_NUMBER: "0"
-  # changelog version and repo uri of meta-ics-dm
-  META_ICS_DM_VERSION: "META_ICS_DM_VERSION_NOT_SET"
-  META_ICS_DM_GIT_REPO: "META_ICS_DM_GIT_REPO_NOT_SET"
+  # changelog version and repo uri of meta-omnect
+  META_OMNECT_VERSION: "META_OMNECT_VERSION_NOT_SET"
+  META_OMNECT_GIT_REPO: "META_OMNECT_GIT_REPO_NOT_SET"
   # changelog version, revision, branch and repo uri of ics-dm-os
   ICS_DM_OS_VERSION: "ICS_DM_OS_VERSION_NOT_SET"
   ICS_DM_OS_GIT_SHA: "ICS_DM_OS_GIT_SHA_NOT_SET"
@@ -83,6 +83,6 @@ env:
   ICS_DM_USER_PASSWORD: ""
 
 local_conf_header:
-  meta-ics-dm_distro_ics-dm-os: |
+  meta-omnect_distro_ics-dm-os: |
     # For more options have a look into "poky/meta-poky/conf/local.conf.sample" resp.
     # "openebedded-core/meta/conf/local.conf.sample".

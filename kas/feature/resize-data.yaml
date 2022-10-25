@@ -4,5 +4,5 @@ header:
   version: 10
 
 local_conf_header:
-  meta-ics-dm_feature_resize-data: |
+  meta-omnect_feature_resize-data: |
     DISTRO_FEATURES:append = " resize-data"

@@ -4,5 +4,5 @@ header:
   version: 10
 
 local_conf_header:
-  meta-ics-dm_example_enrollment: |
+  meta-omnect_example_enrollment: |
     DISTRO_FEATURES:append = " enrollment"
