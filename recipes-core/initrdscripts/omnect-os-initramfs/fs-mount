@@ -11,7 +11,7 @@ fs_mount_run() {
         return 1
     fi
 
-    msg "ics-dm-os initramfs fs mount"
+    msg "omnect-os initramfs fs mount"
 
     # the comma separated option list is ordered; i.e., higher preference at the right hand side
     mnt_opts_default="defaults,noatime,nodiratime,async"

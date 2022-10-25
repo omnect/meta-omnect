@@ -16,7 +16,7 @@ RESIZE_DATA_PACKAGES = "\
 
 PACKAGE_INSTALL = "\
     base-passwd \
-    ics-dm-os-initramfs-scripts \
+    omnect-os-initramfs-scripts \
     initramfs-framework-base \
     initramfs-module-debug \
     libubootenv \

@@ -3,8 +3,8 @@
 header:
   version: 10
   includes:
-    - feature/ics-dm-os-common.yaml
+    - feature/omnect-os-common.yaml
     - feature/iotedge.yaml
     - feature/wifi-commissioning.yaml
     - machine/rpi/rpi4.yaml
-    - distro/ics-dm-os.yaml
+    - distro/omnect-os.yaml

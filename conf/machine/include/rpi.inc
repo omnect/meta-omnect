@@ -8,7 +8,7 @@ RPI_USE_U_BOOT = "1"
 ENABLE_UART = "1"
 
 # wic: how to partition
-WKS_FILE = "ics-dm-os.rpi.wks.in"
+WKS_FILE = "omnect-os.rpi.wks.in"
 
 # overwrite CMDLINE_ROOTFS from meta-raspberrypi, we set "root" in boot.scr
 CMDLINE_ROOTFS = ""

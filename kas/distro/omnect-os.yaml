@@ -26,9 +26,9 @@ repos:
     url: "https://github.com/sbabic/meta-swupdate.git"
     refspec: 4c6590a2c6dacbf1d232bfc98670cce2a1094a44
 
-distro: ics-dm-os
+distro: omnect-os
 
-target: ics-dm-os-update-image
+target: omnect-os-update-image
 
 env:
   # distro vars
@@ -39,11 +39,11 @@ env:
   # changelog version and repo uri of meta-omnect
   META_OMNECT_VERSION: "META_OMNECT_VERSION_NOT_SET"
   META_OMNECT_GIT_REPO: "META_OMNECT_GIT_REPO_NOT_SET"
-  # changelog version, revision, branch and repo uri of ics-dm-os
-  ICS_DM_OS_VERSION: "ICS_DM_OS_VERSION_NOT_SET"
-  ICS_DM_OS_GIT_SHA: "ICS_DM_OS_GIT_SHA_NOT_SET"
-  ICS_DM_OS_GIT_BRANCH: "ICS_DM_OS_GIT_BRANCH_NOT_SET"
-  ICS_DM_OS_GIT_REPO: "ICS_DM_OS_GIT_REPO_NOT_SET"
+  # changelog version, revision, branch and repo uri of omnect-os
+  OMNECT_OS_VERSION: "OMNECT_OS_VERSION_NOT_SET"
+  OMNECT_OS_GIT_SHA: "OMNECT_OS_GIT_SHA_NOT_SET"
+  OMNECT_OS_GIT_BRANCH: "OMNECT_OS_GIT_BRANCH_NOT_SET"
+  OMNECT_OS_GIT_REPO: "OMNECT_OS_GIT_REPO_NOT_SET"
 
   # partition configuration
   ICS_DM_PART_SIZE_BOOT: "40960"
@@ -83,6 +83,6 @@ env:
   ICS_DM_USER_PASSWORD: ""
 
 local_conf_header:
-  meta-omnect_distro_ics-dm-os: |
+  meta-omnect_distro_omnect-os: |
     # For more options have a look into "poky/meta-poky/conf/local.conf.sample" resp.
     # "openebedded-core/meta/conf/local.conf.sample".

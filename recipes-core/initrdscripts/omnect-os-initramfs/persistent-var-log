@@ -5,7 +5,7 @@ persistent_var_log_enabled() {
 }
 
 persistent_var_log_run() {
-    msg "ics-dm-os persistent var log"
+    msg "omnect-os persistent var log"
 
     if [ -z "${ROOTFS_DIR}" ]; then
         fatal "no ROOTFS_DIR"

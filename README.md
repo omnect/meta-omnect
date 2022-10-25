@@ -3,7 +3,7 @@
 What is omnect device management?: https://lp.conplement.de/ics-devicemanagement
 
 ## Features
-This yocto meta layer provides the poky based device management distribution `ics-dm-os`. It includes recipes for:
+This yocto meta layer provides the poky based device management distribution `omnect-os`. It includes recipes for:
 - [iot-hub-device-update](https://github.com/Azure/iot-hub-device-update)
 - [iot-identity-service](https://github.com/Azure/iot-identity-service)
 - [iotedge](https://github.com/Azure/iotedge)
@@ -16,7 +16,7 @@ This yocto meta layer provides the poky based device management distribution `ic
       - **note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset), below.
 
 ### `DISTRO_FEATURES`
-`ics-dm-os` depends on [poky](https://www.yoctoproject.org/software-item/poky/).
+`omnect-os` depends on [poky](https://www.yoctoproject.org/software-item/poky/).
 It is built with the default `poky` `DISTRO_FEATURES`.
 
 `meta-omnect` adds the following `DISTRO_FEATURES`:
@@ -49,7 +49,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     (**Currently you have to enable it explicitly for `enrollment`, since it depends hard on tpm.**)
 
 ### Partition Layout
-`ics-dm-os` uses an `A/B` update partition layout with two readonly rootfs partitions.
+`omnect-os` uses an `A/B` update partition layout with two readonly rootfs partitions.
 The partition layout is
 ```sh
 Device         Boot   Start      End  Sectors  Size Id Type
@@ -89,7 +89,7 @@ For this purpose, the following configuration variables are used:
 See [README.device.md](./README.device.md).
 
 ## Versioning
-We reflect the used poky version in our version schema. `ics-dm-os` is versioned via `POKY_VERSION.BUILD_NR`, `4.0.4.y` where `x` is poky kirkstone's patch version and `y` is the build number.
+We reflect the used poky version in our version schema. `omnect-os` is versioned via `POKY_VERSION.BUILD_NR`, `4.0.4.y` where `x` is poky kirkstone's patch version and `y` is the build number.
 
 ## Dependencies
 `meta-omnect` depends on:
@@ -107,7 +107,7 @@ We reflect the used poky version in our version schema. `ics-dm-os` is versioned
 
 ## Build
 
-For using `ics-dm-os-update-image` together with `iot-hub-device-update` you have to provide a rsa-key for signing/verifying the update image.
+For using `omnect-os-update-image` together with `iot-hub-device-update` you have to provide a rsa-key for signing/verifying the update image.
 Note: We currently only support `swupdate` RSA signing.
 Provide the environment variables `SWUPDATE_PASSWORD_FILE` and `SWUPDATE_PRIVATE_KEY`.
  - `SWUPDATE_PASSWORD_FILE` - full path to a file containing the keys password
@@ -121,8 +121,8 @@ There is the configuration variable `ICS_DM_VM_PANIC_ON_OOM` used to define the 
 
 ### Example build via `kas`
 
-This repository provides [`kas`](https://kas.readthedocs.io/en/latest/) configuration files to build `ics-dm-os`.
-E.g. if you want to build an `ics-dm-os` raspberrypi 4 image with `iotedge` support for the demo-portal (todo link to demo-portal doku) follow these steps:
+This repository provides [`kas`](https://kas.readthedocs.io/en/latest/) configuration files to build `omnect-os`.
+E.g. if you want to build an `omnect-os` raspberrypi 4 image with `iotedge` support for the demo-portal (todo link to demo-portal doku) follow these steps:
 
 ```sh
 git clone https://github.com/omnect/meta-omnect.git
@@ -131,7 +131,7 @@ git clone https://github.com/omnect/meta-omnect.git
 echo "your password" > priv.pass
 openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
 
-# Build 'ics-dm-os-image' and 'ics-dm-os-update-image' via:
+# Build 'omnect-os-image' and 'omnect-os-update-image' via:
 docker run --rm \
 -v $(pwd):/builder \
 -e USER_ID=$(id -u) \
@@ -142,7 +142,7 @@ docker run --rm \
 -e SWUPDATE_PRIVATE_KEY=/builder/priv.pem \
 ghcr.io/siemens/kas/kas \
 kas build \
-meta-omnect/kas/distro/ics-dm-os.yaml:\
+meta-omnect/kas/distro/omnect-os.yaml:\
 meta-omnect/kas/example/wifi-commissioning.yaml:\
 meta-omnect/kas/feature/iotedge.yaml:\
 meta-omnect/kas/feature/persistent-var-log.yaml:\
@@ -150,8 +150,8 @@ meta-omnect/kas/machine/rpi/rpi4.yaml
 
 ```
 The resulting image artifacts are located in `$(pwd)/build/deploy/images/raspberrypi4-64`.<br>
-The `ics-dm-os-image` artefact is named `ics-dm-os-raspberrypi4-64.wic.xz`.<br>
-The `ics-dm-os-update-image` artefact is named `ics-dm-os-update-image-raspberrypi4-64.swu`.<br>
+The `omnect-os-image` artefact is named `omnect-os-raspberrypi4-64.wic.xz`.<br>
+The `omnect-os-update-image` artefact is named `omnect-os-update-image-raspberrypi4-64.swu`.<br>
 
 ### Layer prioritization orchestration
 If you want to add additional yocto layers to your build, you can adapt layer priorities in `conf/layer.conf`. This layer is the last in the `BBLAYERS` yocto variable when you build with our `kas` configuration files. If not, you have to possibly adapt layer prioritization values in the last layer included in `BBLAYERS`.
@@ -159,7 +159,7 @@ E.g. we reset the layer prioritization of `meta-phytec` to `9`, to ensure it is 
 
 ## Runtime configuration
 
-The `ics-dm-os-image` needs post processing via [`ics-dm-cli`](https://github.com/omnect/ics-dm-cli.git) to set a mandatory `iot-identity-service` configuration. Furthermore you need to set an `enrollment` configuration if `DISTRO_FEATURES` contains `enrollment`. You can optionally set an `iot-hub-device-update` configuration.
+The `omnect-os-image` needs post processing via [`ics-dm-cli`](https://github.com/omnect/ics-dm-cli.git) to set a mandatory `iot-identity-service` configuration. Furthermore you need to set an `enrollment` configuration if `DISTRO_FEATURES` contains `enrollment`. You can optionally set an `iot-hub-device-update` configuration.
 
 ### Set `enrollment` configuration
 See [ics-dm-cli enrollment configuration](https://github.com/omnect/ics-dm-cli/blob/main/README.md#enrollment-configuration).
@@ -198,13 +198,13 @@ Note, the *fw_setenv* command requires root permissions.
 
 In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
 ```sh
-scp ics-dm-os-*.wic.bmap ics-dm@<target-ip>:wic.bmap
-scp ics-dm-os-*.wic.xz ics-dm@<target-ip>:wic.xz
+scp omnect-os-*.wic.bmap ics-dm@<target-ip>:wic.bmap
+scp omnect-os-*.wic.xz ics-dm@<target-ip>:wic.xz
 ```
 On systems with new openssh clients >= 9.0 you have to use the legacy option when using `scp`. (See [here](https://www.openssh.com/txt/release-9.0) for details.) :
 ```sh
-scp -O ics-dm-os-*.wic.bmap ics-dm@<target-ip>:wic.bmap
-scp -O ics-dm-os-*.wic.xz ics-dm@<target-ip>:wic.xz
+scp -O omnect-os-*.wic.bmap ics-dm@<target-ip>:wic.bmap
+scp -O omnect-os-*.wic.xz ics-dm@<target-ip>:wic.xz
 ```
 
 The password for the *ics-dm* user used by the rootfs has to be used.
@@ -274,7 +274,7 @@ For this purpose, the u-boot environment variable `factory-reset` can be set to 
 
 There is also the custom wipe mode. This mode provides the possibility to address customer requirements and hardware capabilities.
 In the case of custom wipe, the factory reset (initramfs context) calls `/opt/factory_reset/custom-wipe` before re-creating the filesystems inside the partitions `etc` and `data`.
-In order to establish the custom wipe mode, a Yocto recipe `ics-dm-os-initramfs-scripts.bbappend` has to be supplied, which has to install the required utilities.
+In order to establish the custom wipe mode, a Yocto recipe `omnect-os-initramfs-scripts.bbappend` has to be supplied, which has to install the required utilities.
 
 The factory reset provides the option to exclude particular files or directories.
 For example, it may make sense to keep the WIFI configuration, in order to prevent loosing the network connectivity.

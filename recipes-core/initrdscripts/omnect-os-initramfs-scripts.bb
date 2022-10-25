@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/ics-dm-os-initramfs:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/omnect-os-initramfs:"
 
 LICENSE = "MIT | Apache-2.0"
 

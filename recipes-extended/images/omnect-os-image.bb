@@ -1,4 +1,4 @@
-SUMMARY = "ics-dm-os image"
+SUMMARY = "omnect-os image"
 
 LICENSE = "MIT | Apache-2.0"
 
@@ -11,7 +11,7 @@ inherit core-image
 
 # we need the initramfs bundled kernel before rootfs postprocessing
 do_rootfs[depends] += "virtual/kernel:do_deploy"
-do_rootfs[depends] += "ics-dm-os-initramfs:do_image_complete"
+do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
 # we add boot.scr to the image
 do_rootfs[depends] += "u-boot-scr:do_deploy"
@@ -23,7 +23,7 @@ do_rootfs[depends] += "openssl-native:do_populate_sysroot"
 
 IMAGE_LINGUAS = "en-us"
 
-IMAGE_BASENAME = "ics-dm-os"
+IMAGE_BASENAME = "omnect-os"
 
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 

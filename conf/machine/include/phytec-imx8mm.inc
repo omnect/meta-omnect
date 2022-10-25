@@ -1,17 +1,17 @@
 # WIC config
-WKS_FILE = "ics-dm-os.phytec.wks.in"
+WKS_FILE = "omnect-os.phytec.wks.in"
 WKS_FILES:${MACHINE} = "${WKS_FILE}"
 # don't use class wic-helper from meta-phytec
 IMAGE_CLASSES:remove = " wic-helper"
 
 # install kernel-devicetree to 'root' partition instead of 'boot'
-IMAGE_BOOT_FILES:remove:pn-ics-dm-os-image = " \
+IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
     ${KERNEL_DEVICETREE_FN} \
     oftree \
     bootenv.txt \
 "
-IMAGE_INSTALL:append:pn-ics-dm-os-image = "kernel-devicetree"
-# Todo add 'oftree' to rootfs? 
+IMAGE_INSTALL:append:pn-omnect-os-image = "kernel-devicetree"
+# Todo add 'oftree' to rootfs?
 
 # u-boot boot.scr config
 KERNEL_BOOTCMD = "booti"

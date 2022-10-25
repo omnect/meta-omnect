@@ -1,6 +1,6 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/ics-dm-os:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/omnect-os:"
 
-DESCRIPTION = "ics-dm-os swupdate image"
+DESCRIPTION = "omnect-os swupdate image"
 
 LICENSE = "MIT | Apache-2.0"
 
@@ -14,14 +14,14 @@ SRC_URI = "file://sw-description"
 inherit swupdate
 
 # images to build before building swupdate image
-IMAGE_DEPENDS = "ics-dm-os-image virtual/kernel"
+IMAGE_DEPENDS = "omnect-os-image virtual/kernel"
 
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 # images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "ics-dm-os"
+SWUPDATE_IMAGES = "omnect-os"
 
-SWUPDATE_IMAGES_FSTYPES[ics-dm-os] = ".ext4.gz"
+SWUPDATE_IMAGES_FSTYPES[omnect-os] = ".ext4.gz"
 
 #sign image
 SWUPDATE_SIGNING = "RSA"
