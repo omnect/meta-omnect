@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM="\
   file://LICENSE-APACHE;md5=650e893673eb59696f3d4ee64f6d2357 \
 "
 
-FILESEXTRAPATHS:prepend := "${LAYERDIR_ics_dm}/files:"
+FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:"
 
 
 # TODO change to https uri when public

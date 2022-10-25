@@ -2,8 +2,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://80-wlan.network \
-    file://ics-dm-first-boot.service \
-    file://ics_dm_first_boot.sh \
+    file://omnect-first-boot.service \
+    file://omnect_first_boot.sh \
 "
 
 RDEPENDS:${PN} += "bash"
@@ -17,15 +17,15 @@ do_install:append() {
     # enable dhcp for wlan devices
     if ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'true', 'false', d)}; then
         install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network/
-        sed -i 's/^Name=wlan0/Name=${ICS_DM_WLAN0}/' ${D}${systemd_unitdir}/network/80-wlan.network
-        sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${ICS_DM_ETH0} --interface=${ICS_DM_WLAN0}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+        sed -i 's/^Name=wlan0/Name=${OMNECT_WLAN0}/' ${D}${systemd_unitdir}/network/80-wlan.network
+        sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_WLAN0}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
     fi
 
     # first boot handling
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    install -m 0644 ${WORKDIR}/ics-dm-first-boot.service ${D}${systemd_system_unitdir}/
-    ln -rs ${D}${systemd_system_unitdir}/ics-dm-first-boot.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/ics-dm-first-boot.service
-    install -m 0755 -D ${WORKDIR}/ics_dm_first_boot.sh ${D}${bindir}/
+    install -m 0644 ${WORKDIR}/omnect-first-boot.service ${D}${systemd_system_unitdir}/
+    ln -rs ${D}${systemd_system_unitdir}/omnect-first-boot.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/omnect-first-boot.service
+    install -m 0755 -D ${WORKDIR}/omnect_first_boot.sh ${D}${bindir}/
 
     # persistent /var/log
     if ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', 'true', 'false', d)}; then
@@ -80,10 +80,10 @@ do_install:append:phyboard-polis-imx8mm-4() {
 
 # adapt tauri-l systemd-networkd-wait-online.service state
 do_install:append:phygate-tauri-l-imx8mm-2() {
-    sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${ICS_DM_ETH0} --interface=${ICS_DM_ETH1}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+    sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_ETH1}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 
 FILES:${PN} += "\
-    /usr/bin/ics_dm_first_boot.sh \
+    /usr/bin/omnect_first_boot.sh \
     ${systemd_unitdir}/network/80-wlan.network \
 "

@@ -8,7 +8,7 @@ do_configure:prepend() {
     verify_frozen
 
     # patch
-    marker="# ics_dm_rust_azure-iot-sdk_deps.bbclass:"
+    marker="# omnect_rust_azure-iot-sdk_deps.bbclass:"
     if [ -z "$(grep "${marker}" "${S}/${CARGO_WORKSPACE_ROOT}/Cargo.toml")" ]; then
 
 cat <<EOF >> "${S}/${CARGO_WORKSPACE_ROOT}/Cargo.toml"

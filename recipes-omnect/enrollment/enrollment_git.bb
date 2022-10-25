@@ -48,19 +48,19 @@ USERADD_PARAM:${PN} = "--no-create-home -r -s /bin/false -g enrollment -G aziot,
 inherit systemd
 
 do_install:append() {
-    install -d ${D}${sysconfdir}/ics_dm
-    chgrp enrollment ${D}${sysconfdir}/ics_dm
-    chmod g+rw ${D}${sysconfdir}/ics_dm
+    install -d ${D}${sysconfdir}/omnect
+    chgrp enrollment ${D}${sysconfdir}/omnect
+    chmod g+rw ${D}${sysconfdir}/omnect
 
     # create tmpfiles.d entry to (re)create permissions
     install -d ${D}${libdir}/tmpfiles.d
-    echo "z /etc/ics_dm 0775 root enrollment -"                        >> ${D}${libdir}/tmpfiles.d/enrollment.conf
-    echo "z /etc/ics_dm/enrollment_static.json 0664 root enrollment -" >> ${D}${libdir}/tmpfiles.d/enrollment.conf
+    echo "z /etc/omnect 0775 root enrollment -"                        >> ${D}${libdir}/tmpfiles.d/enrollment.conf
+    echo "z /etc/omnect/enrollment_static.json 0664 root enrollment -" >> ${D}${libdir}/tmpfiles.d/enrollment.conf
 
     install -m 755 ${S}/scripts/patch_config_toml.sh ${D}${bindir}/
 
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    ln -rs ${D}${systemd_system_unitdir}/enrollment-patch-config-toml@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/enrollment-patch-config-toml@${ICS_DM_ETH0}.service
+    ln -rs ${D}${systemd_system_unitdir}/enrollment-patch-config-toml@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/enrollment-patch-config-toml@${OMNECT_ETH0}.service
 }
 
 SYSTEMD_SERVICE:${PN} = "enrollment-config-apply.path enrollment.service"

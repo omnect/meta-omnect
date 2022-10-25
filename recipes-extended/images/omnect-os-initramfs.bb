@@ -5,9 +5,9 @@ LIC_FILES_CHKSUM = "\
     file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10 \
 "
 
-inherit ics_dm_initramfs
+inherit omnect_initramfs
 
-IMAGE_NAME = "${ICS_DM_INITRAMFS_IMAGE_NAME}"
+IMAGE_NAME = "${OMNECT_INITRAMFS_IMAGE_NAME}"
 
 RESIZE_DATA_PACKAGES = "\
     e2fsprogs-resize2fs \
@@ -29,7 +29,7 @@ PACKAGE_INSTALL = "\
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'ics-dm-flash-mode dhcpcd dropbear bmap-tools xz util-linux-sfdisk e2fsprogs', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect-flash-mode dhcpcd dropbear bmap-tools xz util-linux-sfdisk e2fsprogs', '', d)} \
 "
 
-inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'ics_dm_user', '', d)}
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect_user', '', d)}

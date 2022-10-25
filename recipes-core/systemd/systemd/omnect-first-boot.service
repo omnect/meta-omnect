@@ -1,5 +1,5 @@
 [Unit]
-Description=ics-dm first boot
+Description=omnect first boot
 After=time-sync.target
 Before=first-boot-complete.target
 Wants=first-boot-complete.target
@@ -7,11 +7,11 @@ ConditionFirstBoot=yes
 
 # CAUTION!!!
 # Do not add service order dependencies in this service file.
-# ics_dm_first_boot.sh implicitly starts services and might cause a deadlock while starting services.
+# omnect_first_boot.sh implicitly starts services and might cause a deadlock while starting services.
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/ics_dm_first_boot.sh
+ExecStart=/usr/bin/omnect_first_boot.sh
 RemainAfterExit=true
 
 [Install]

@@ -34,7 +34,7 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
-    ics-dm-base-files \
+    omnect-base-files \
     iot-hub-device-update \
     packagegroup-core-ssh-dropbear \
     procps \
@@ -43,13 +43,13 @@ IMAGE_INSTALL = "\
     u-boot-fw-utils \
 "
 
-# check environment variable ICS_DM_DEVEL_TOOLS
+# check environment variable OMNECT_DEVEL_TOOLS
 def check_for_devel_tools(d):
     # use default list part of this recipe
-    if d.getVar('ICS_DM_DEVEL_TOOLS', True) in [None, ""] : return "${ICS_DM_DEVEL_TOOLS_DEFAULT}"
+    if d.getVar('OMNECT_DEVEL_TOOLS', True) in [None, ""] : return "${OMNECT_DEVEL_TOOLS_DEFAULT}"
 
     # use settings from environment
-    return "${ICS_DM_DEVEL_TOOLS}"
+    return "${OMNECT_DEVEL_TOOLS}"
 
 IMAGE_INSTALL += "${@check_for_devel_tools(d)}"
 
@@ -61,21 +61,21 @@ IMAGE_INSTALL += "${@check_for_devel_tools(d)}"
 # updatable via swupdate.
 ROOTFS_POSTPROCESS_COMMAND:append = " add_kernel_and_initramfs;"
 add_kernel_and_initramfs() {
-    initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${ICS_DM_INITRAMFS_IMAGE_NAME}.${ICS_DM_INITRAMFS_FSTYPE})
+    initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${OMNECT_INITRAMFS_IMAGE_NAME}.${OMNECT_INITRAMFS_FSTYPE})
     install -m 0644 ${initramfs} $D/boot/
     ln -sf ${KERNEL_IMAGETYPE} $D/boot/${KERNEL_IMAGETYPE}.bin
-    ln -sf $(basename ${initramfs}) $D/boot/initramfs.${ICS_DM_INITRAMFS_FSTYPE}
+    ln -sf $(basename ${initramfs}) $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}
 }
 
-# setup ics-dm specific sysctl configuration (see systemd-sysctl.service)
-ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_setup_sysctl_config;"
-ics_dm_setup_sysctl_config() {
-    echo "vm.panic_on_oom = ${ICS_DM_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/ics-dm.conf
+# setup omnect specific sysctl configuration (see systemd-sysctl.service)
+ROOTFS_POSTPROCESS_COMMAND:append = " omnect_setup_sysctl_config;"
+omnect_setup_sysctl_config() {
+    echo "vm.panic_on_oom = ${OMNECT_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/omnect.conf
 }
 
-ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_create_uboot_env_ff_img;"
-ics_dm_create_uboot_env_ff_img() {
-    dd if=/dev/zero bs=1024 count=${ICS_DM_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/ics-dm_uboot_env_ff.img
+ROOTFS_POSTPROCESS_COMMAND:append = " omnect_create_uboot_env_ff_img;"
+omnect_create_uboot_env_ff_img() {
+    dd if=/dev/zero bs=1024 count=${OMNECT_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/omnect_uboot_env_ff.img
 }
 
 # Poky checks at creation time of rootfs and even later when creating the
@@ -104,4 +104,4 @@ default_shell_bash() {
 }
 
 
-inherit ics_dm_user
+inherit omnect_user

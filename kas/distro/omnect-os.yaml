@@ -35,7 +35,7 @@ env:
   DISTRO_NAME_PREFIX: ""
   DISTRO_NAME_SUFFIX: ""
   # build number which is reflected in DISTRO_VERSION
-  ICS_DM_BUILD_NUMBER: "0"
+  OMNECT_BUILD_NUMBER: "0"
   # changelog version and repo uri of meta-omnect
   META_OMNECT_VERSION: "META_OMNECT_VERSION_NOT_SET"
   META_OMNECT_GIT_REPO: "META_OMNECT_GIT_REPO_NOT_SET"
@@ -46,16 +46,16 @@ env:
   OMNECT_OS_GIT_REPO: "OMNECT_OS_GIT_REPO_NOT_SET"
 
   # partition configuration
-  ICS_DM_PART_SIZE_BOOT: "40960"
-  ICS_DM_PART_SIZE_UBOOT_ENV: "64"
-  ICS_DM_PART_SIZE_ROOTFS: "760832"
-  ICS_DM_PART_SIZE_FACTORY: "40960"
-  ICS_DM_PART_SIZE_CERT: "40960"
-  ICS_DM_PART_SIZE_ETC: "40960"
-  ICS_DM_PART_SIZE_DATA: "524288"
+  OMNECT_PART_SIZE_BOOT: "40960"
+  OMNECT_PART_SIZE_UBOOT_ENV: "64"
+  OMNECT_PART_SIZE_ROOTFS: "760832"
+  OMNECT_PART_SIZE_FACTORY: "40960"
+  OMNECT_PART_SIZE_CERT: "40960"
+  OMNECT_PART_SIZE_ETC: "40960"
+  OMNECT_PART_SIZE_DATA: "524288"
 
   # OOM configuration
-  ICS_DM_VM_PANIC_ON_OOM: "0"
+  OMNECT_VM_PANIC_ON_OOM: "0"
 
   # yocto build vars
   DEPLOY_DIR: "${TOPDIR}/deploy"
@@ -76,11 +76,11 @@ env:
   SWUPDATE_PRIVATE_KEY: "SWUPDATE_PRIVATE_KEY_NOT_SET"
   SWUPDATE_PASSWORD_FILE: "SWUPDATE_PASSWORD_FILE_NOT_SET"
 
-  # ICS-DM development tools
-  ICS_DM_DEVEL_TOOLS: ""
+  # omnect development tools
+  OMNECT_DEVEL_TOOLS: ""
 
-  # (plain) password of ics-dm user
-  ICS_DM_USER_PASSWORD: ""
+  # (plain) password of omnect user
+  OMNECT_USER_PASSWORD: ""
 
 local_conf_header:
   meta-omnect_distro_omnect-os: |

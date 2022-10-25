@@ -22,9 +22,9 @@ UBOOT_FDT_LOAD = "1"
 # redundant u-boot env
 # This is currently preset by meta-phytec, because we use u-boot-imx instead
 # of our patched u-boot here.
-ICS_DM_PART_OFFSET_UBOOT_ENV1 = "3840"
-ICS_DM_PART_OFFSET_UBOOT_ENV2 = "3968"
-ICS_DM_PART_SIZE_UBOOT_ENV = "64"
+OMNECT_PART_OFFSET_UBOOT_ENV1 = "3840"
+OMNECT_PART_OFFSET_UBOOT_ENV2 = "3968"
+OMNECT_PART_SIZE_UBOOT_ENV = "64"
 
 # mask fw_env.config configuration of meta-phytec, we generate that ourselves
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"

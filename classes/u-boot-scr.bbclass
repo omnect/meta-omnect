@@ -9,8 +9,8 @@ python create_boot_cmd () {
     fdt_addr=d.getVar("UBOOT_FDT_ADDR")
     fdt_load=d.getVar("UBOOT_FDT_LOAD")
     kernel_imagetype=d.getVar("KERNEL_IMAGETYPE")
-    ics_dm_initramfs_fs_type=d.getVar("ICS_DM_INITRAMFS_FSTYPE")
-    ics_dm_boot_scr_test_cmds=d.getVar("ICS_DM_BOOT_SCR_TEST_CMDS")
+    omnect_initramfs_fs_type=d.getVar("OMNECT_INITRAMFS_FSTYPE")
+    omnect_boot_scr_test_cmds=d.getVar("OMNECT_BOOT_SCR_TEST_CMDS")
 
     # possibly load device tree from file
     if fdt_load:
@@ -33,8 +33,8 @@ python create_boot_cmd () {
             f.write("fdt addr ${%s}\n" % fdt_addr)
 
             # in the case of test boot script
-            if ics_dm_boot_scr_test_cmds:
-                f.write("%s\n" % (ics_dm_boot_scr_test_cmds))
+            if omnect_boot_scr_test_cmds:
+                f.write("%s\n" % (omnect_boot_scr_test_cmds))
 
             # possibly create "bootpart" env var
             f.write("if env exists bootpart;then echo Booting from bootpart=${bootpart};else setenv bootpart 2;saveenv;echo bootpart not set, default to bootpart=${bootpart};fi\n")
@@ -51,7 +51,7 @@ python create_boot_cmd () {
             f.write("load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)
 
             # load initrd
-            f.write("load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % ics_dm_initramfs_fs_type)
+            f.write("load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % omnect_initramfs_fs_type)
 
             # assemble bootargs: from device tree + extra-bootargs for debugging purpose
             f.write("fdt get value bootargs /chosen bootargs\n")
@@ -66,16 +66,16 @@ python create_boot_cmd () {
 do_compile[prefuncs] += "create_boot_cmd"
 
 do_compile() {
-    mkimage -A ${UBOOT_ARCH} -T script -C none -n "${DISTRO_NAME} (${DISTRO_VERSION}) u-boot:\n" -d "${WORKDIR}/boot.cmd" ${ICS_DM_BOOT_SCR_NAME}
+    mkimage -A ${UBOOT_ARCH} -T script -C none -n "${DISTRO_NAME} (${DISTRO_VERSION}) u-boot:\n" -d "${WORKDIR}/boot.cmd" ${OMNECT_BOOT_SCR_NAME}
     if [ ${UBOOT_FDT_LOAD} -eq 1 ]; then
-        mkimage -A ${UBOOT_ARCH} -T script -C none -n "${DISTRO_NAME} (${DISTRO_VERSION}) u-boot:\n" -d "${WORKDIR}/fdt-load.cmd" ${ICS_DM_FDT_LOAD_NAME}
+        mkimage -A ${UBOOT_ARCH} -T script -C none -n "${DISTRO_NAME} (${DISTRO_VERSION}) u-boot:\n" -d "${WORKDIR}/fdt-load.cmd" ${OMNECT_FDT_LOAD_NAME}
     fi
 }
 
 do_deploy() {
-    install -m 0644 -D ${ICS_DM_BOOT_SCR_NAME} ${DEPLOYDIR}
+    install -m 0644 -D ${OMNECT_BOOT_SCR_NAME} ${DEPLOYDIR}
     if [ ${UBOOT_FDT_LOAD} -eq 1 ]; then
-        install -m 0644 -D ${ICS_DM_FDT_LOAD_NAME} ${DEPLOYDIR}
+        install -m 0644 -D ${OMNECT_FDT_LOAD_NAME} ${DEPLOYDIR}
     fi
 }
 

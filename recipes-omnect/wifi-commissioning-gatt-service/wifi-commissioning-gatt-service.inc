@@ -19,7 +19,7 @@ do_install:append() {
     install -m 0644 ${S}/systemd/wifi-commissioning-gatt@.service ${D}${systemd_system_unitdir}/
     install -d ${D}${bindir}
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    ln -rs ${D}${systemd_system_unitdir}/wifi-commissioning-gatt@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wifi-commissioning-gatt@${ICS_DM_WLAN0}.service
+    ln -rs ${D}${systemd_system_unitdir}/wifi-commissioning-gatt@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wifi-commissioning-gatt@${OMNECT_WLAN0}.service
 }
 
 FILES:${PN} += "\

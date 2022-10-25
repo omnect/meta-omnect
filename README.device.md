@@ -17,5 +17,5 @@
 |     |                                                                                                                                                                |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | ¹   |                                                                                                                                                 SLB9670 TPM2.0 |
-| ²   | we don't use it, because the rpi3 doesn't support it. furthermore we would've effort to support both `gpt` and `mbr` in `ics-dm-cli` and `omnect-os-initramfs` |
+| ²   | we don't use it, because the rpi3 doesn't support it. furthermore we would've effort to support both `gpt` and `mbr` in `omnect-cli` and `omnect-os-initramfs` |
 | ³   |                                                                            device path emmc: */dev/mmcblk2* <br/> use DIP switch to select emmc as boot device |

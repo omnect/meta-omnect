@@ -1,10 +1,10 @@
 #
-#  ics-dm initramfs image
+#  omnect initramfs image
 #
 
 inherit image
 
-IMAGE_FSTYPES = "${ICS_DM_INITRAMFS_FSTYPE}"
+IMAGE_FSTYPES = "${OMNECT_INITRAMFS_FSTYPE}"
 
 # reset IMAGE_FEATURES var for initramfs
 IMAGE_FEATURES = ""
@@ -30,8 +30,8 @@ python sstate_report_unihash() {
 }
 
 # check consistency of script ordering
-ROOTFS_POSTPROCESS_COMMAND:append = " ics_dm_initramfs_check;"
-ics_dm_initramfs_check() {
+ROOTFS_POSTPROCESS_COMMAND:append = " omnect_initramfs_check;"
+omnect_initramfs_check() {
     file_numbers=$(ls -1 ${IMAGE_ROOTFS}/init.d/ | sed 's/^\([0-9]\+\)-.*$/\1/g')
     if [ "$(echo ${file_numbers})" != "$(echo ${file_numbers} | sort -u)" ]; then
         bbfatal "wrong script ordering in ${IMAGE_ROOTFS}/init.d/"

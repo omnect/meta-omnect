@@ -19,7 +19,7 @@ ExecStartPre=-/usr/bin/AducIotAgent -l 2 --update-type "microsoft/script:1"     
 ExecStartPre=-/usr/bin/AducIotAgent -l 2 --update-type "microsoft/steps:1"              -C /usr/lib/adu/extensions/libmicrosoft_steps_1.so
 ExecStartPre=-/usr/bin/AducIotAgent -l 2 --update-type "microsoft/swupdate:1"           -C /usr/lib/adu/extensions/libmicrosoft_swupdate_1.so
 ExecStartPre=-/usr/bin/AducIotAgent -l 2 --update-type "microsoft/update-manifest:4"    -C /usr/lib/adu/extensions/libmicrosoft_steps_1.so
-ExecStartPre=-/usr/bin/AducIotAgent -l 2 --update-type "icsdm/swupdate_consent:1"       -C /usr/lib/adu/extensions/libicsdm_swupdate_consent_1.so
+ExecStartPre=-/usr/bin/AducIotAgent -l 2 --update-type "omnect/swupdate_consent:1"       -C /usr/lib/adu/extensions/libomnect_swupdate_consent_1.so
 ExecStartPre=-/usr/bin/AducIotAgent -l 2 -D /usr/lib/adu/extensions/libdeliveryoptimization-content-downloader.so
 ExecStart=/usr/bin/AducIotAgent -l 0 -e
 

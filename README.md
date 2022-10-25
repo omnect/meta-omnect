@@ -1,17 +1,17 @@
 # omnect device management - meta-omnect yocto layer
 
-What is omnect device management?: https://lp.conplement.de/ics-devicemanagement
+What is omnect device management?: https://lp.conplement.de/omnect-devicemanagement
 
 ## Features
 This yocto meta layer provides the poky based device management distribution `omnect-os`. It includes recipes for:
 - [iot-hub-device-update](https://github.com/Azure/iot-hub-device-update)
 - [iot-identity-service](https://github.com/Azure/iot-identity-service)
 - [iotedge](https://github.com/Azure/iotedge)
-- `ics-os-dm-image` - an updatable device image with A/B rootfs update support; respectively `ics-os-dm-update-image` - the corresponding [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image<br>
+- `omnect-os image` - an updatable device image with A/B rootfs update support; respectively `omnect-os update image` - the corresponding [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image<br>
   implicit features:
     - `iot-hub-device-update` and `iot-identity-service` are installed
     - `iot-hub-device-update` is provisioned as module identity via `iot-identity-service`
-    - first boot script `/usr/bin/ics_dm_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-omnect/recipes-core/systemd/systemd/ics_dm_first_boot.sh`
+    - first boot script `/usr/bin/omnect_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-omnect/recipes-core/systemd/systemd/omnect_first_boot.sh`
     - factory reset via `u-boot` environment variable `factory-reset`
       - **note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset), below.
 
@@ -75,11 +75,11 @@ The size of `mmcblkXp8` depends on your sdcard/emmc size. Per default it has a s
 There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks.
 For this purpose, the following configuration variables are used:
 
-- `ICS_DM_PART_OFFSET_UBOOT_ENV1`
+- `OMNECT_PART_OFFSET_UBOOT_ENV1`
     - offset of 1st u-boot environment bank (in KiB, decimal)
-- `ICS_DM_PART_OFFSET_UBOOT_ENV2`
+- `OMNECT_PART_OFFSET_UBOOT_ENV2`
     - offset of 2nd u-boot environment bank (in KiB, decimal)
-- `ICS_DM_PART_SIZE_UBOOT_ENV`
+- `OMNECT_PART_SIZE_UBOOT_ENV`
     - size of one u-boot environment bank (in KiB, decimal)
 
 ## Compatibility
@@ -113,11 +113,11 @@ Provide the environment variables `SWUPDATE_PASSWORD_FILE` and `SWUPDATE_PRIVATE
  - `SWUPDATE_PASSWORD_FILE` - full path to a file containing the keys password
  - `SWUPDATE_PRIVATE_KEY` - full path of private key file
 
-Furthermore you have to provide the environment variable `ICS_DM_USER_PASSWORD` which sets the password of the default user `ics-dm`.
+Furthermore you have to provide the environment variable `OMNECT_USER_PASSWORD` which sets the password of the default user `omnect`.
 
-Optionally set `ICS_DM_BUILD_NUMBER` to set a meaningful build number in the distro version. The default is `0`.
+Optionally set `OMNECT_BUILD_NUMBER` to set a meaningful build number in the distro version. The default is `0`.
 
-There is the configuration variable `ICS_DM_VM_PANIC_ON_OOM` used to define the out-of-memory (OOM) handling.
+There is the configuration variable `OMNECT_VM_PANIC_ON_OOM` used to define the out-of-memory (OOM) handling.
 
 ### Example build via `kas`
 
@@ -136,8 +136,8 @@ docker run --rm \
 -v $(pwd):/builder \
 -e USER_ID=$(id -u) \
 -e GROUP_ID=$(id -g) \
--e ICS_DM_BUILD_NUMBER=1 \
--e ICS_DM_USER_PASSWORD="<your password>" \
+-e OMNECT_BUILD_NUMBER=1 \
+-e OMNECT_USER_PASSWORD="<your password>" \
 -e SWUPDATE_PASSWORD_FILE=/builder/priv.pass \
 -e SWUPDATE_PRIVATE_KEY=/builder/priv.pem \
 ghcr.io/siemens/kas/kas \
@@ -159,17 +159,17 @@ E.g. we reset the layer prioritization of `meta-phytec` to `9`, to ensure it is 
 
 ## Runtime configuration
 
-The `omnect-os-image` needs post processing via [`ics-dm-cli`](https://github.com/omnect/ics-dm-cli.git) to set a mandatory `iot-identity-service` configuration. Furthermore you need to set an `enrollment` configuration if `DISTRO_FEATURES` contains `enrollment`. You can optionally set an `iot-hub-device-update` configuration.
+The `omnect-os-image` needs post processing via [`omnect-cli`](https://github.com/omnect/omnect-cli.git) to set a mandatory `iot-identity-service` configuration. Furthermore you need to set an `enrollment` configuration if `DISTRO_FEATURES` contains `enrollment`. You can optionally set an `iot-hub-device-update` configuration.
 
 ### Set `enrollment` configuration
-See [ics-dm-cli enrollment configuration](https://github.com/omnect/ics-dm-cli/blob/main/README.md#enrollment-configuration).
+See [omnect-cli enrollment configuration](https://github.com/omnect/omnect-cli/blob/main/README.md#enrollment-configuration).
 
 ### Set `iot-hub-device-update` configuration
-See [ics-dm-cli iot-hub-device-update configuration](https://github.com/omnect/ics-dm-cli/blob/main/README.md#device-update-for-iot-hub-configuration).
+See [omnect-cli iot-hub-device-update configuration](https://github.com/omnect/omnect-cli/blob/main/README.md#device-update-for-iot-hub-configuration).
 
 
 ### Set `iot-identity-service` configuration
-See [ics-dm-cli iot-identity-service configuration](https://github.com/omnect/ics-dm-cli/blob/main/README.md#identity-configuration).
+See [omnect-cli iot-identity-service configuration](https://github.com/omnect/omnect-cli/blob/main/README.md#identity-configuration).
 
 
 ## Usage
@@ -191,25 +191,25 @@ sudo -s
 fw_setenv flash-mode 1
 reboot
 ...
-Entering ICS DM flashing mode 1...
+Entering omnect flashing mode 1...
 ...
 ```
 Note, the *fw_setenv* command requires root permissions.
 
 In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
 ```sh
-scp omnect-os-*.wic.bmap ics-dm@<target-ip>:wic.bmap
-scp omnect-os-*.wic.xz ics-dm@<target-ip>:wic.xz
+scp omnect-os-*.wic.bmap omnect@<target-ip>:wic.bmap
+scp omnect-os-*.wic.xz omnect@<target-ip>:wic.xz
 ```
 On systems with new openssh clients >= 9.0 you have to use the legacy option when using `scp`. (See [here](https://www.openssh.com/txt/release-9.0) for details.) :
 ```sh
-scp -O omnect-os-*.wic.bmap ics-dm@<target-ip>:wic.bmap
-scp -O omnect-os-*.wic.xz ics-dm@<target-ip>:wic.xz
+scp -O omnect-os-*.wic.bmap omnect@<target-ip>:wic.bmap
+scp -O omnect-os-*.wic.xz omnect@<target-ip>:wic.xz
 ```
 
-The password for the *ics-dm* user used by the rootfs has to be used.
-The *ics-dm* user used by the initramfs is independent from the *ics-dm* user used by the rootfs.
-At build time, the configuration (ICS_DM_USER_PASSWORD) is applied for both. The passwords are identical.
+The password for the *omnect* user used by the rootfs has to be used.
+The *omnect* user used by the initramfs is independent from the *omnect* user used by the rootfs.
+At build time, the configuration (OMNECT_USER_PASSWORD) is applied for both. The passwords are identical.
 Later during runtime, changing the password in the rootfs is not synchronized to the initramfs.
 
 The destination file names have to be *wic.bmap* and *wic.xz*.
@@ -229,7 +229,7 @@ fw_setenv flash-mode 2
 fw_setenv flash-mode-devpath '/dev/mmcblk2'
 reboot
 ...
-Entering ICS DM flashing mode 2...
+Entering omnect flashing mode 2...
 ...
 ```
 Note, the *fw_setenv* command requires root permissions.

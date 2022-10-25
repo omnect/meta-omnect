@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${LAYERDIR_ics_dm}/files:"
+FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:"
 
 SRC_URI += "\
   file://iot-identity-service-keyd.template.toml \
@@ -31,7 +31,7 @@ RDEPENDS:${PN} += "\
     ca-certificates\
     iot-identity-service\
 "
-inherit aziot ics_dm_rust_azure-iot-sdk_deps systemd
+inherit aziot omnect_rust_azure-iot-sdk_deps systemd
 
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}

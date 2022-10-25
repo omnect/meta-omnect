@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_ics_dm}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_omnect}/files:"
 
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
@@ -7,7 +7,7 @@ SRC_URI = " \
   git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=0.8.2;nobranch=1 \
   file://adu-swupdate-key.patch \
   file://eis-utils-cert-chain-buffer.patch \
-  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'ics-dm-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
+  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
   file://linux_platform_layer.patch \
   file://rpipart_to_bootpart.patch \
   file://sd_notify.patch \
@@ -57,7 +57,7 @@ EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MODEL='${ADU_MODEL}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MANUFACTURER='${ADU_DEVICEPROPERTIES_MANUFACTURER}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${ADU_DEVICEPROPERTIES_MODEL}'"
 
-#ics-dm adaptions (linux_platform_layer.patch)
+#omnect adaptions (linux_platform_layer.patch)
 EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
 
 do_install:append() {

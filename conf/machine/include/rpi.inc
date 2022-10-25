@@ -17,10 +17,10 @@ CMDLINE_ROOTFS = ""
 UBOOT_FDT_ADDR = "fdt_addr"
 
 # ethernet device name
-ICS_DM_ETH0 = "eth0"
+OMNECT_ETH0 = "eth0"
 
 # wlan device name
-ICS_DM_WLAN0 = "wlan0"
+OMNECT_WLAN0 = "wlan0"
 
 # configure hardware watchdog
 # the maximum watchdog deadline depends on the hardware capabilities

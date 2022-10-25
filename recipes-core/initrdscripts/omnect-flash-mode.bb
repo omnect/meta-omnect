@@ -18,14 +18,14 @@ SRC_URI = "\
 do_install() {
     install -m 0755 -D ${WORKDIR}/flash-mode ${D}/init.d/87-flash_mode
     # set variables templates
-    sed -i -e 's|^\(ICS_DM_FLASH_MODE_ETH\)="UNDEFINED"|\1="${ICS_DM_ETH0}"|' \
-           -e 's|^\(ICS_DM_FLASH_MODE_UBOOT_ENV1_START\)="UNDEFINED"|\1="${ICS_DM_PART_OFFSET_UBOOT_ENV1}"|' \
-           -e 's|^\(ICS_DM_FLASH_MODE_UBOOT_ENV2_START\)="UNDEFINED"|\1="${ICS_DM_PART_OFFSET_UBOOT_ENV2}"|' \
-           -e 's|^\(ICS_DM_FLASH_MODE_UBOOT_ENV_SIZE\)="UNDEFINED"|\1="${ICS_DM_PART_SIZE_UBOOT_ENV}"|' \
-           -e 's|^\(ICS_DM_FLASH_MODE_DATA_SIZE\)="UNDEFINED"|\1="${ICS_DM_PART_SIZE_DATA}"|' \
+    sed -i -e 's|^\(OMNECT_FLASH_MODE_ETH\)="UNDEFINED"|\1="${OMNECT_ETH0}"|' \
+           -e 's|^\(OMNECT_FLASH_MODE_UBOOT_ENV1_START\)="UNDEFINED"|\1="${OMNECT_PART_OFFSET_UBOOT_ENV1}"|' \
+           -e 's|^\(OMNECT_FLASH_MODE_UBOOT_ENV2_START\)="UNDEFINED"|\1="${OMNECT_PART_OFFSET_UBOOT_ENV2}"|' \
+           -e 's|^\(OMNECT_FLASH_MODE_UBOOT_ENV_SIZE\)="UNDEFINED"|\1="${OMNECT_PART_SIZE_UBOOT_ENV}"|' \
+           -e 's|^\(OMNECT_FLASH_MODE_DATA_SIZE\)="UNDEFINED"|\1="${OMNECT_PART_SIZE_DATA}"|' \
               ${D}/init.d/87-flash_mode
     if [ -n "${BOOTLOADER_SEEK}" ]; then
-        sed -i -e 's|^\(ICS_DM_FLASH_MODE_BOOTLOADER_START\)="UNDEFINED"|\1="${BOOTLOADER_SEEK}"|' ${D}/init.d/87-flash_mode
+        sed -i -e 's|^\(OMNECT_FLASH_MODE_BOOTLOADER_START\)="UNDEFINED"|\1="${BOOTLOADER_SEEK}"|' ${D}/init.d/87-flash_mode
     fi
 }
 

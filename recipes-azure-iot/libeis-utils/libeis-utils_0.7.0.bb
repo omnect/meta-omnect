@@ -7,7 +7,7 @@ SRC_URI = " \
   file://mindep.patch;patchdir=${WORKDIR}/git \
   file://eis-utils-cert-chain-buffer.patch;patchdir=${WORKDIR}/git \
   file://eis-utils-set-GatewayHostName.patch;patchdir=${WORKDIR}/git \
-  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'ics-dm-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
+  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
 "
 
 S = "${WORKDIR}/git/src/utils/eis_utils"
