@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM="\
 
 # TODO change to https uri when public
 SRCREV = "eb0fec1b641f05fe3b7acc03f70725fe70bb9ece"
-REPO_URI = "git://git@github.com/JanZachmann/enrollment.git;protocol=ssh;branch=main;"
+REPO_URI = "git://git@github.com/JanZachmann/enrollment.git;protocol=ssh;branch=rename-to-omnect;"
 SRC_URI = "${REPO_URI}"
 PV = "${SRCPV}"
 
