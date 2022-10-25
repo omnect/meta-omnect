@@ -5,10 +5,10 @@ inherit cargo
 # If this is git based prefer versioned ones if they exist
 # DEFAULT_PREFERENCE = "-1"
 
-# how to get icsdm-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/icsdm-device-service/0.6.1"
-SRC_URI += "git://git@github.com/omnect/icsdm-device-service.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "2cec95e1b43c5c4429fd25c5aa4ee83d5de5eea4"
+# how to get omnect-device-service could be as easy as but default to a git checkout:
+# SRC_URI += "crate://crates.io/omnect-device-service/0.6.2"
+SRC_URI += "git://git@github.com/omnect/omnect-device-service.git;protocol=ssh;nobranch=1;branch=main"
+SRCREV = "c0f69bfa92226fe24ce13a4c64aeb7e51f223868"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -264,12 +264,12 @@ LIC_FILES_CHKSUM = " \
     file://MIT OR Apache-2.0;md5=generateme \
 "
 
-SUMMARY = "icsdm-device-service"
-HOMEPAGE = "git@github.com:omnect/icsdm-device-service.git"
+SUMMARY = "This service allows remote features like user fw update consent, factory reset and reboot."
+HOMEPAGE = "git@github.com:omnect/omnect-device-service.git"
 LICENSE = "MIT OR Apache-2.0"
 
 # includes this file if it exists but does not fail
 # this is useful for anything you may want to override from
 # what cargo-bitbake generates.
-include icsdm-device-service-${PV}.inc
-include icsdm-device-service.inc
+include omnect-device-service-${PV}.inc
+include omnect-device-service.inc

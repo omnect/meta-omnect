@@ -11,7 +11,7 @@ SRC_URI = "\
     file://common-sh \
     file://factory-reset \
     file://fs-mount \
-    file://icsdm-device-service-setup \
+    file://omnect-device-service-setup \
 "
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ' file://resize-data', '', d)}"
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ' file://persistent-var-log', '', d)}"
@@ -27,7 +27,7 @@ do_install() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', 'true', 'false', d)}; then
         install -m 0755 -D ${WORKDIR}/persistent-var-log ${D}/init.d/90-persistent_var_log
     fi
-    install -m 0755 -D ${WORKDIR}/icsdm-device-service-setup    ${D}/init.d/95-icsdm_device_service_setup
+    install -m 0755 -D ${WORKDIR}/omnect-device-service-setup    ${D}/init.d/95-omnect_device_service_setup
 }
 
 FILES:${PN} = "\
@@ -35,7 +35,7 @@ FILES:${PN} = "\
     /init.d/85-common_sh \
     /init.d/86-factory_reset \
     /init.d/89-fs_mount \
-    /init.d/95-icsdm_device_service_setup \
+    /init.d/95-omnect_device_service_setup \
 "
 FILES:${PN}:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ' /init.d/88-resize_data', '', d)}"
 FILES:${PN}:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ' /init.d/90-persistent_var_log', '', d)}"

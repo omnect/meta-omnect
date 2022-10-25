@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.9.3] Q4 2022
+- renamed to omnect:
+  - renamed module icsdm-device-service to omnect-device-service
+  - renamed user and group icsdm-device-service to omnect-device-service
+  - renamed /etc/ics_dm to /etc/omnect
+  - renamed /dev/ics_dm to /dev/omnect
+
 ## [kirkstone-0.9.2] Q4 2022
 - renamed distro from ICS-DM-OS to omnect
 

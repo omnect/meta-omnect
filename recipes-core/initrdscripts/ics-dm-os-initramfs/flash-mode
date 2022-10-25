@@ -212,8 +212,8 @@ run_flash_mode_2() {
     # detect current rootfs
     rootfs_bootpart=$(get_bootloader_env_var bootpart | cut -d= -f2)
     case "${rootfs_bootpart}" in
-      2) act_rootfs_partition="/dev/ics_dm/rootA";;
-      3) act_rootfs_partition="/dev/ics_dm/rootB";;
+      2) act_rootfs_partition="/dev/omnect/rootA";;
+      3) act_rootfs_partition="/dev/omnect/rootB";;
       *) stderr_fatal "cannot detect rootfs bootpart"; return 1;;
     esac
 
@@ -225,13 +225,13 @@ run_flash_mode_2() {
         return 1
     fi
 
-    data_partition=$(readlink -f /dev/ics_dm/data)
+    data_partition=$(readlink -f /dev/omnect/data)
     if [ -z "${data_partition}" ]; then
         stderr_fatal "cannot detect data partition"
         return 1
     fi
 
-    extended_partition=$(readlink -f /dev/ics_dm/extended)
+    extended_partition=$(readlink -f /dev/omnect/extended)
     if [ -z "${extended_partition}" ]; then
         stderr_fatal "cannot detect extended partition"
         return 1
@@ -279,9 +279,9 @@ run_flash_mode_2() {
     check_ext4_fs "data" "${blk_dev_dst}p8" 1
 
     echo "COPY boot, factory and cert..."
-    run_cmd_stdout dd if=/dev/ics_dm/boot    of="$(readlink -f ${blk_dev_dst}p1)" bs=10M || return 1
-    run_cmd_stdout dd if=/dev/ics_dm/factory of="$(readlink -f ${blk_dev_dst}p5)" bs=10M || return 1
-    run_cmd_stdout dd if=/dev/ics_dm/cert    of="$(readlink -f ${blk_dev_dst}p6)" bs=10M || return 1
+    run_cmd_stdout dd if=/dev/omnect/boot    of="$(readlink -f ${blk_dev_dst}p1)" bs=10M || return 1
+    run_cmd_stdout dd if=/dev/omnect/factory of="$(readlink -f ${blk_dev_dst}p5)" bs=10M || return 1
+    run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}p6)" bs=10M || return 1
 
     echo "COPY current rootfs to rootfsA..."
     run_cmd_stdout e2image -ra -p "${act_rootfs_partition}" "$(readlink -f ${blk_dev_dst}p2)" || return 1
