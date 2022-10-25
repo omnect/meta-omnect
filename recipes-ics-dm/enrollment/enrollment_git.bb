@@ -6,8 +6,7 @@ LIC_FILES_CHKSUM="\
 "
 
 # TODO change to https uri when public
-SRCREV = "0a83cfee14d7fc214a89fb0bcebb086870246702"
-REPO_URI = "git://git@github.com/JanZachmann/enrollment.git;protocol=ssh;branch=rename-to-omnect;"
+REPO_URI = "git://git@github.com/omnect/enrollment.git;protocol=ssh;branch=main;tag=0.8.4;"
 SRC_URI = "${REPO_URI}"
 PV = "${SRCPV}"
 
@@ -49,14 +48,14 @@ USERADD_PARAM:${PN} = "--no-create-home -r -s /bin/false -g enrollment -G aziot,
 inherit systemd
 
 do_install:append() {
-    install -d ${D}${sysconfdir}/omnect
-    chgrp enrollment ${D}${sysconfdir}/omnect
-    chmod g+rw ${D}${sysconfdir}/omnect
+    install -d ${D}${sysconfdir}/ics_dm
+    chgrp enrollment ${D}${sysconfdir}/ics_dm
+    chmod g+rw ${D}${sysconfdir}/ics_dm
 
     # create tmpfiles.d entry to (re)create permissions
     install -d ${D}${libdir}/tmpfiles.d
-    echo "z  0775 root enrollment -"                        >> ${D}${libdir}/tmpfiles.d/enrollment.conf
-    echo "z /enrollment_static.json 0664 root enrollment -" >> ${D}${libdir}/tmpfiles.d/enrollment.conf
+    echo "z /etc/ics_dm 0775 root enrollment -"                        >> ${D}${libdir}/tmpfiles.d/enrollment.conf
+    echo "z /etc/ics_dm/enrollment_static.json 0664 root enrollment -" >> ${D}${libdir}/tmpfiles.d/enrollment.conf
 
     install -m 755 ${S}/scripts/patch_config_toml.sh ${D}${bindir}/
 
