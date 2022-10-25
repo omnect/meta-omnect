@@ -4,7 +4,7 @@ header:
   version: 11
 
 local_conf_header:
-  meta-ics-dm_feature_omnect-device-service: |
+  meta-omnect_feature_omnect-device-service: |
     CORE_IMAGE_EXTRA_INSTALL += "\
     omnect-device-service \
     "

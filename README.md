@@ -1,9 +1,9 @@
-# ICS_DeviceManagement - meta-ics-dm yocto layer
+# omnect device management - meta-omnect yocto layer
 
-What is ICS_DeviceManagement?: https://lp.conplement.de/ics-devicemanagement
+What is omnect device management?: https://lp.conplement.de/ics-devicemanagement
 
 ## Features
-This yocto meta layer provides the poky based ICS_DeviceManagement distribution `ics-dm-os`. It includes recipes for:
+This yocto meta layer provides the poky based device management distribution `ics-dm-os`. It includes recipes for:
 - [iot-hub-device-update](https://github.com/Azure/iot-hub-device-update)
 - [iot-identity-service](https://github.com/Azure/iot-identity-service)
 - [iotedge](https://github.com/Azure/iotedge)
@@ -11,7 +11,7 @@ This yocto meta layer provides the poky based ICS_DeviceManagement distribution 
   implicit features:
     - `iot-hub-device-update` and `iot-identity-service` are installed
     - `iot-hub-device-update` is provisioned as module identity via `iot-identity-service`
-    - first boot script `/usr/bin/ics_dm_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-ics-dm/recipes-core/systemd/systemd/ics_dm_first_boot.sh`
+    - first boot script `/usr/bin/ics_dm_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-omnect/recipes-core/systemd/systemd/ics_dm_first_boot.sh`
     - factory reset via `u-boot` environment variable `factory-reset`
       - **note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset), below.
 
@@ -19,7 +19,7 @@ This yocto meta layer provides the poky based ICS_DeviceManagement distribution 
 `ics-dm-os` depends on [poky](https://www.yoctoproject.org/software-item/poky/).
 It is built with the default `poky` `DISTRO_FEATURES`.
 
-`meta-ics-dm` adds the following `DISTRO_FEATURES`:
+`meta-omnect` adds the following `DISTRO_FEATURES`:
 - [`enrollment`](https://github.com/omnect/enrollment.git)
     - adds an automatic device enrollment demo with provisioning via tpm
         - it creates a tpm enrollment in your [azure device provisioning service](https://docs.microsoft.com/en-us/azure/iot-dps/) for your device
@@ -43,7 +43,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - **note**: this is only intended for demo purposes; this is not a production ready service
 
 ### `MACHINE_FEATURES`
-`meta-ics-dm` extends the following `MACHINE_FEATURES`:
+`meta-omnect` extends the following `MACHINE_FEATURES`:
 - `tpm2`
     - adds tpm kernel overlay, driver and auto modprobe for raspberry pi
     (**Currently you have to enable it explicitly for `enrollment`, since it depends hard on tpm.**)
@@ -83,7 +83,7 @@ For this purpose, the following configuration variables are used:
     - size of one u-boot environment bank (in KiB, decimal)
 
 ## Compatibility
-`meta-ics-dm` is compatible with the current yocto LTS release branch `dunfell`.
+`meta-omnect` is compatible with the current yocto LTS release branch `dunfell`.
 
 ## Supported Devices
 See [README.device.md](./README.device.md).
@@ -92,7 +92,7 @@ See [README.device.md](./README.device.md).
 We reflect the used poky version in our version schema. `ics-dm-os` is versioned via `POKY_VERSION.BUILD_NR`, `3.1.x.y` where `x` is poky dunfell's patch version and `y` is the build number.
 
 ## Dependencies
-`meta-ics-dm` depends on:
+`meta-omnect` depends on:
 - mandatory:
     - [meta-openembedded](https://github.com/openembedded/meta-openembedded.git): `meta-filesystems`, `meta-networking`, `meta-oe` and `meta-python`
     - [meta-rust](https://github.com/meta-rust/meta-rust.git)
@@ -125,7 +125,7 @@ This repository provides [`kas`](https://kas.readthedocs.io/en/latest/) configur
 E.g. if you want to build an `ics-dm-os` raspberrypi 4 image with `iotedge` support for the demo-portal (todo link to demo-portal doku) follow these steps:
 
 ```sh
-git clone https://github.com/omnect/meta-ics-dm.git
+git clone https://github.com/omnect/meta-omnect.git
 
 # Generate 'SWUPDATE_PASSWORD_FILE' and 'SWUPDATE_PRIVATE_KEY'
 echo "your password" > priv.pass
@@ -142,11 +142,11 @@ docker run --rm \
 -e SWUPDATE_PRIVATE_KEY=/builder/priv.pem \
 ghcr.io/siemens/kas/kas \
 kas build \
-meta-ics-dm/kas/distro/ics-dm-os.yaml:\
-meta-ics-dm/kas/example/wifi-commissioning.yaml:\
-meta-ics-dm/kas/feature/iotedge.yaml:\
-meta-ics-dm/kas/feature/persistent-var-log.yaml:\
-meta-ics-dm/kas/machine/rpi/rpi4.yaml
+meta-omnect/kas/distro/ics-dm-os.yaml:\
+meta-omnect/kas/example/wifi-commissioning.yaml:\
+meta-omnect/kas/feature/iotedge.yaml:\
+meta-omnect/kas/feature/persistent-var-log.yaml:\
+meta-omnect/kas/machine/rpi/rpi4.yaml
 
 ```
 The resulting image artifacts are located in `$(pwd)/build/deploy/images/raspberrypi4-64`.<br>
@@ -155,7 +155,7 @@ The `ics-dm-os-update-image` artefact is named `ics-dm-os-update-image-raspberry
 
 ### Layer prioritization orchestration
 If you want to add additional yocto layers to your build, you can adapt layer priorities in `conf/layer.conf`. This layer is the last in the `BBLAYERS` yocto variable when you build with our `kas` configuration files. If not, you have to possibly adapt layer prioritization values in the last layer included in `BBLAYERS`.
-E.g. we reset the layer prioritization of `meta-phytec` to `9`, to ensure it is less than the prioritization of `meta-ics-dm`.
+E.g. we reset the layer prioritization of `meta-phytec` to `9`, to ensure it is less than the prioritization of `meta-omnect`.
 
 ## Runtime configuration
 

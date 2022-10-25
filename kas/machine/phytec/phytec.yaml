@@ -9,7 +9,7 @@ repos:
     refspec: 456776f109d78f84f78d17c92bbb0fe63a62f583
     patches:
       p001:
-        repo: "meta-ics-dm"
+        repo: "meta-omnect"
         path: "kas/patches/meta-phytec_do_not_overwrite_BBMASK.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"

@@ -1,10 +1,10 @@
 inherit metadata_scm
 
-OS_RELEASE_FIELDS += "META_ICS_DM_GIT_SHA META_ICS_DM_GIT_BRANCH"
-META_ICS_DM_GIT_SHA = "${@base_get_metadata_git_revision('${LAYERDIR_ics_dm}', d)}"
-META_ICS_DM_GIT_BRANCH = "${@base_get_metadata_git_branch('${LAYERDIR_ics_dm}', d)}"
-OS_RELEASE_FIELDS += "META_ICS_DM_GIT_REPO"
-OS_RELEASE_FIELDS += "META_ICS_DM_VERSION"
+OS_RELEASE_FIELDS += "META_OMNECT_GIT_SHA META_OMNECT_GIT_BRANCH"
+META_OMNECT_GIT_SHA = "${@base_get_metadata_git_revision('${LAYERDIR_ics_dm}', d)}"
+META_OMNECT_GIT_BRANCH = "${@base_get_metadata_git_branch('${LAYERDIR_ics_dm}', d)}"
+OS_RELEASE_FIELDS += "META_OMNECT_GIT_REPO"
+OS_RELEASE_FIELDS += "META_OMNECT_VERSION"
 
 OS_RELEASE_FIELDS += "ICS_DM_OS_GIT_SHA"
 OS_RELEASE_FIELDS += "ICS_DM_OS_GIT_BRANCH"
