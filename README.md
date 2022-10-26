@@ -122,7 +122,7 @@ There is the configuration variable `OMNECT_VM_PANIC_ON_OOM` used to define the 
 ### Example build via `kas`
 
 This repository provides [`kas`](https://kas.readthedocs.io/en/latest/) configuration files to build `omnect-os`.
-E.g. if you want to build an `omnect-os` raspberrypi 4 image with `iotedge` support for the demo-portal (todo link to demo-portal doku) follow these steps:
+E.g. if you want to build an `omnect-os` raspberrypi 4 image with `iotedge` support for the omnect-portal (todo link to omnect-portal doku) follow these steps:
 
 ```sh
 git clone https://github.com/omnect/meta-omnect.git
