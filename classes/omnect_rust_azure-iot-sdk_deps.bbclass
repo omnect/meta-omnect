@@ -1,0 +1,52 @@
+CARGO_NET_OFFLINE ?= "true"
+
+verify_frozen() {
+    cd ${S}/${CARGO_WORKSPACE_ROOT}; cargo verify-project --frozen || bberror "Cargo.lock not uptodate"
+}
+
+do_configure:prepend() {
+    verify_frozen
+
+    # patch
+    marker="# omnect_rust_azure-iot-sdk_deps.bbclass:"
+    if [ -z "$(grep "${marker}" "${S}/${CARGO_WORKSPACE_ROOT}/Cargo.toml")" ]; then
+
+cat <<EOF >> "${S}/${CARGO_WORKSPACE_ROOT}/Cargo.toml"
+
+${marker}
+[patch.'ssh://git@github.com/omnect/azure-iot-sdk.git']
+azure-iot-sdk = { path = "${WORKDIR}/azure-iot-sdk" }
+
+[patch.'ssh://git@github.com/omnect/eis-utils.git']
+eis-utils = { path = "${WORKDIR}/eis-utils" }
+
+[patch.'ssh://git@github.com/omnect/azure-iot-sdk-sys.git']
+azure-iot-sdk-sys = { path = "${WORKDIR}/azure-iot-sdk-sys" }
+
+[patch.'https://git@github.com/Azure/iot-identity-service.git']
+aziot-cert-client-async = { path = "${WORKDIR}/aziot-cert-client-async/cert/aziot-cert-client-async" }
+aziot-cert-common = { path = "${WORKDIR}/aziot-cert-client-async/cert/aziot-cert-common" }
+aziot-cert-common-http = { path = "${WORKDIR}/aziot-cert-client-async/cert/aziot-cert-common-http" }
+aziot-certd-config = { path = "${WORKDIR}/aziot-cert-client-async/cert/aziot-certd-config" }
+aziot-identity-client-async = { path = "${WORKDIR}/aziot-cert-client-async/identity/aziot-identity-client-async" }
+aziot-identity-common = { path = "${WORKDIR}/aziot-cert-client-async/identity/aziot-identity-common" }
+aziot-identity-common-http = { path = "${WORKDIR}/aziot-cert-client-async/identity/aziot-identity-common-http" }
+aziot-identityd-config = { path = "${WORKDIR}/aziot-cert-client-async/identity/aziot-identityd-config" }
+aziot-key-client-async = { path = "${WORKDIR}/aziot-cert-client-async/key/aziot-key-client-async" }
+aziot-key-common = { path = "${WORKDIR}/aziot-cert-client-async/key/aziot-key-common" }
+aziot-key-common-http = { path = "${WORKDIR}/aziot-cert-client-async/key/aziot-key-common-http" }
+aziot-keyd-config = { path = "${WORKDIR}/aziot-cert-client-async/key/aziot-keyd-config" }
+http-common = { path = "${WORKDIR}/aziot-cert-client-async/http-common" }
+EOF
+    fi
+}
+
+do_compile:prepend() {
+    export LLVM_CONFIG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/bin/llvm-config"
+    export BINDGEN_EXTRA_CLANG_ARGS="${TUNE_CCARGS}"
+
+    export AZURESDK_PATH=${STAGING_DIR_TARGET}/usr/
+    export UUID_PATH=${STAGING_DIR_TARGET}/usr/
+    export OPENSSL_PATH=${STAGING_DIR_TARGET}/usr/
+    export CURL_PATH=${STAGING_DIR_TARGET}/usr/
+}

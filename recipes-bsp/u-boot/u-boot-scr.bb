@@ -8,6 +8,6 @@ LIC_FILES_CHKSUM="\
 PROVIDES = "u-boot-default-script"
 DEPENDS = "u-boot-mkimage-native"
 
-ICS_DM_BOOT_SCR_NAME = "boot.scr"
-ICS_DM_FDT_LOAD_NAME = "fdt-load.scr"
+OMNECT_BOOT_SCR_NAME = "boot.scr"
+OMNECT_FDT_LOAD_NAME = "fdt-load.scr"
 inherit deploy nopackages u-boot-scr

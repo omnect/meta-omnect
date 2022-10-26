@@ -1,0 +1,10 @@
+# kas config file
+
+header:
+  version: 10
+  includes:
+    - feature/omnect-os-common.yaml
+    - feature/iot.yaml
+    - feature/wifi-commissioning.yaml
+    - machine/rpi/rpi3.yaml
+    - distro/omnect-os.yaml

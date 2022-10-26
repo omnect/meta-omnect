@@ -1,21 +1,21 @@
 # BSP Features
-| device                                                                                             | wifi | bluetooth | rtc | tpm | gpt partition | pxe boot | sdcard boot | emmc boot | uart (uboot + linux) | PoR detect | Hardware Watchdog |
-|-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| [raspberrypi4-64](https://www.raspberrypi.org/)                                                    | x    | x         | o?  | o¹  | x²            | x        | x           | -         | x                    | x          | x                 |
-| [raspberrypi3](https://www.raspberrypi.org/)                                                       | x    | x         | o?  | o¹  | -             | todo     | x           | -         | x                    | ?          | ?                 |
-| [phyboard-polis-imx8mm-4](https://www.phytec.eu/product-eu/single-board-computer/phyboard-polis/)  | x    | x         | x   | x   | x²            | todo     | x           | ?         | x                    | x          | ?                 |
-| [phygate-tauri-l-imx8mm-2](https://www.phytec.eu/en/produkte/fertige-geraete-oem/phygate-tauri-l/) | ?    | ?         | ?   | ?   | ?             | todo     | x           | x³        | x                    | x          | x                 |
+| device                                                                                             | wifi  | bluetooth |  rtc  |  tpm  | gpt partition | pxe boot | sdcard boot | emmc boot | uart (uboot + linux) | PoR detect | Hardware Watchdog |
+| -------------------------------------------------------------------------------------------------- | :---: | :-------: | :---: | :---: | :-----------: | :------: | :---------: | :-------: | :------------------: | :--------: | :---------------: |
+| [raspberrypi4-64](https://www.raspberrypi.org/)                                                    |   x   |     x     |  o?   |  o¹   |      x²       |    x     |      x      |     -     |          x           |     x      |         x         |
+| [raspberrypi3](https://www.raspberrypi.org/)                                                       |   x   |     x     |  o?   |  o¹   |       -       |   todo   |      x      |     -     |          x           |     ?      |         ?         |
+| [phyboard-polis-imx8mm-4](https://www.phytec.eu/product-eu/single-board-computer/phyboard-polis/)  |   x   |     x     |   x   |   x   |      x²       |   todo   |      x      |     ?     |          x           |     x      |         ?         |
+| [phygate-tauri-l-imx8mm-2](https://www.phytec.eu/en/produkte/fertige-geraete-oem/phygate-tauri-l/) |   ?   |     ?     |   ?   |   ?   |       ?       |   todo   |      x      |    x³     |          x           |     x      |         x         |
 
-| |  |
-|-|-:|
-|x| supported |
-|o| optional with extra hardware |
-|?| untested |
-|-| no |
-|todo| we have to implement it |
+|      |                              |
+| ---- | ---------------------------: |
+| x    |                    supported |
+| o    | optional with extra hardware |
+| ?    |                     untested |
+| -    |                           no |
+| todo |      we have to implement it |
 
-| |  |
-|-|-:|
-|¹| SLB9670 TPM2.0|
-|²| we don't use it, because the rpi3 doesn't support it. furthermore we would've effort to support both `gpt` and `mbr` in `ics-dm-cli` and `ics-dm-os-initramfs` |
-|³| device path emmc: */dev/mmcblk2* <br/> use DIP switch to select emmc as boot device |
+|     |                                                                                                                                                                |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| ¹   |                                                                                                                                                 SLB9670 TPM2.0 |
+| ²   | we don't use it, because the rpi3 doesn't support it. furthermore we would've effort to support both `gpt` and `mbr` in `omnect-cli` and `omnect-os-initramfs` |
+| ³   |                                                                            device path emmc: */dev/mmcblk2* <br/> use DIP switch to select emmc as boot device |

@@ -8,7 +8,7 @@ RPI_USE_U_BOOT = "1"
 ENABLE_UART = "1"
 
 # wic: how to partition
-WKS_FILE = "ics-dm-os.rpi.wks.in"
+WKS_FILE = "omnect-os.rpi.wks.in"
 
 # overwrite CMDLINE_ROOTFS from meta-raspberrypi, we set "root" in boot.scr
 CMDLINE_ROOTFS = ""
@@ -17,10 +17,10 @@ CMDLINE_ROOTFS = ""
 UBOOT_FDT_ADDR = "fdt_addr"
 
 # ethernet device name
-ICS_DM_ETH0 = "eth0"
+OMNECT_ETH0 = "eth0"
 
 # wlan device name
-ICS_DM_WLAN0 = "wlan0"
+OMNECT_WLAN0 = "wlan0"
 
 # configure hardware watchdog
 # the maximum watchdog deadline depends on the hardware capabilities

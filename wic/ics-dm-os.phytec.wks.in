@@ -1,6 +1,0 @@
-part U-BOOT --no-table --offset ${BOOTLOADER_SEEK} --source rawcopy --sourceparams="file=imx-boot"
-part --fixed-size ${ICS_DM_PART_SIZE_UBOOT_ENV}K --no-table --offset ${ICS_DM_PART_OFFSET_UBOOT_ENV1} --source rawcopy --sourceparams="file=ics-dm_uboot_env_ff.img"
-part --fixed-size ${ICS_DM_PART_SIZE_UBOOT_ENV}K --no-table --offset ${ICS_DM_PART_OFFSET_UBOOT_ENV2} --source rawcopy --sourceparams="file=ics-dm_uboot_env_ff.img"
-part --fixed-size ${ICS_DM_PART_SIZE_BOOT}K      --fstype=vfat --align 4096 --label boot   --source bootimg-partition --active
-
-include ics-dm-os.common.wks.inc

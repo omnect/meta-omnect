@@ -1,0 +1,33 @@
+#!/bin/sh
+
+rootblk_dev_enabled() {
+    return 0
+}
+
+rootblk_dev_run() {
+    msg "omnect-os initramfs rootblk-dev"
+
+    [ -z "${bootparam_root}" ] && msg "no root device set" && return 1
+
+    mkdir -p /dev/omnect
+    cd /dev/omnect
+
+    rootblk=${bootparam_root}
+    rootblk=${rootblk##*/}
+    rootblk=${rootblk%p*}
+    debug rootblk=${rootblk}
+
+    ln -sf /dev/${rootblk} rootblk
+    for i in /dev/${rootblk}p*; do
+        ln -sf ${i} rootblkp${i##*p}
+    done
+    ln -sf /dev/${rootblk}p1 boot
+    ln -sf /dev/${rootblk}p2 rootA
+    ln -sf /dev/${rootblk}p3 rootB
+    ln -sf /dev/${rootblk}p4 extended
+    # todo gpt vs mbr
+    ln -sf /dev/${rootblk}p5 factory
+    ln -sf /dev/${rootblk}p6 cert
+    ln -sf /dev/${rootblk}p7 etc
+    ln -sf /dev/${rootblk}p8 data
+}
