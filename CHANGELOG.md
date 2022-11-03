@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.11.0] Q4 2022
 - introduced azure-osconfig (https://github.com/Azure/azure-osconfig)
+- disabled syslog/klog in busybox (os-config complained and we don't use it anyway)
+- added var `IMAGE_INSTALL` to /etc/os-release (for smoke-test)
 
 ## [kirkstone-0.10.1] Q4 2022
 - wifi-commissioning-gatt-service: updated to version 0.3.0
