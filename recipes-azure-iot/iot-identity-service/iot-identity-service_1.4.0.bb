@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_ics_dm}/files:${LAYERDIR_ics_dm}/files/iotedge-patches:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_omnect}/files:${LAYERDIR_omnect}/files/iotedge-patches:"
 inherit aziot cargo systemd
 
 LICENSE = "MIT"

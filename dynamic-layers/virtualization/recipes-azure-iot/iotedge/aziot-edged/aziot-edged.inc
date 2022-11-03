@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 CARGO_SRC_DIR = "edgelet/aziot-edged"
 CARGO_WORKSPACE_ROOT = "edgelet"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/../:${LAYERDIR_ics_dm}/files/iotedge-patches:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/../:${LAYERDIR_omnect}/files/iotedge-patches:"
 
 DEPENDS += "openssl virtual/docker"
 RDEPENDS:${PN} += "docker iot-identity-service"
@@ -17,7 +17,7 @@ export IOTEDGE_CONNECT_WORKLOAD_URI = "unix:///var/run/iotedge/workload.sock"
 export IOTEDGE_LISTEN_MANAGEMENT_URI = "fd://aziot-edged.mgmt.socket"
 export IOTEDGE_LISTEN_WORKLOAD_URI = "fd://aziot-edged.workload.socket"
 
-inherit aziot features_check ics_dm_rust_iot-identity-service_deps systemd
+inherit aziot features_check omnect_rust_iot-identity-service_deps systemd
 
 do_install () {
     # binaries

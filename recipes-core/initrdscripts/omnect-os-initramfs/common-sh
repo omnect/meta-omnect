@@ -1,0 +1,282 @@
+#
+# common helper functions
+#
+
+common_sh_enabled()
+{
+    return 1  # there is no entry point in this library
+}
+
+msg_fatal() {
+    msg "FATAL ERROR: $1"
+}
+
+run_cmd() {
+    msg  "$@"
+    eval "$@" >/dev/console 2>&1
+    if [ $? -ne 0 ]; then msg_fatal "command failed"; return 1; fi
+    return 0
+}
+
+stderr_fatal() {
+    echo "FATAL ERROR: $1" >&2
+}
+
+run_cmd_stdout() {
+    echo "$@"
+    eval "$@"
+    if [ $? -ne 0 ]; then stderr_fatal "command failed"; return 1; fi
+    return 0
+}
+
+# check ext4 filesystem
+# re-format partition in the case of uncorrectable fsck errors or enforced flag
+check_ext4_fs()
+{
+    local   ext4_label=$1  # filesystem label
+    local block_device=$2  # block device name
+    local enforce_mkfs=$3  # enforce reformatting: 0|1
+    local fsck_res=0
+
+    msg "check_ext4_fs ${ext4_label} ${block_device}"
+
+    if [ -z "${block_device}" ] || [ ! -b "${block_device}" ]; then
+        msg_fatal "\"${block_device}\" not a valid block device"
+        return 1
+    fi
+
+    if [ ${enforce_mkfs} -eq 0 ]; then
+        # regular boot; fsck handles unclean state (i.e.; not unmounted)
+        fsck.ext4 -y ${block_device}
+        fsck_res=$?
+    fi
+
+    if [ ${enforce_mkfs} -eq 1 ] || [ ${fsck_res} -gt 2 ]; then
+        # -- mkfs enforced OR uncorrectable fsck errors --
+        msg "reformatting ${block_device} [fsck_res=${fsck_res}, enforce_mkfs=${enforce_mkfs}] ..."
+        run_cmd mkfs.ext4 -F -q ${block_device} || return 1
+
+        # set ext4 label; disable enforced fsck
+        run_cmd tune2fs ${block_device} -c -1 -i 0 -L ${ext4_label} || return 1
+        run_cmd sync
+
+        # check filesystem again with forced mode
+        run_cmd fsck.ext4  ${block_device} -f -y || return 1
+
+    else
+        if [ ${fsck_res} -eq 2 ]; then
+            # -- corrected by fsck, but reboot required --
+            msg "reboot indicated by fsck"
+            reboot -f
+        fi
+    fi
+
+    return 0
+}
+
+# get block device name from label
+#     using this functions guarantees consistent /proc/mounts
+get_block_device()
+{
+    local label="$1"  # label designating block device
+    local blk_dev=""
+
+    blk_dev=$(readlink -f /dev/omnect/${label})
+
+    if [ -z "${blk_dev}" ] || [ ! -b "${blk_dev}" ]; then
+        msg_fatal "\"${blk_dev}\" not a valid block device [label=${label}]"  # output: /dev/console
+        echo ""
+        return 1
+    fi
+
+    echo ${blk_dev}
+    return 0
+}
+
+# mount filesystem of partition
+mount_partition()
+{
+    local  fs_type="$1"  # filesystem type
+    local  blk_dev="$2"  # block device name
+    local  mnt_dir="$3"  # mount point
+    local mnt_opts="$4"  # mount options
+
+    if [ -z "${blk_dev}" ] || [ ! -b "${blk_dev}" ]; then
+        msg_fatal "\"${blk_dev}\" not a valid block device"
+        return 1
+    fi
+
+    run_cmd mount -t "${fs_type}" -o "${mnt_opts}" "${blk_dev} " "${mnt_dir}"
+    return $?
+}
+
+# mount overlay filesystem
+mount_overlayfs()
+{
+    local lowerdir="$1"
+    local upperdir="$2"
+    local  workdir="$3"
+    local mnt_opts="$4"  # mount options
+    local  mnt_dir="$5"  # mount point
+
+    run_cmd mount -t overlay \
+                  -o ${mnt_opts},lowerdir=${lowerdir},upperdir=${upperdir},workdir=${workdir} \
+                  overlay ${mnt_dir}
+}
+
+# get value of bootloader environment variable
+get_bootloader_env_var()
+{
+    local var_name="$1"
+    local value=$(fw_printenv ${var_name} | cut -d'=' -f2)
+    debug "get_bootloader_env_var ${var_name}=${value}"
+    echo ${value}
+}
+
+# set/delete bootloader environment variable
+set_bootloader_env_var()
+{
+    local  var_name="$1"
+    local var_value="$2"  # empty string to delete variable
+    fw_setenv ${var_name} ${var_value}
+}
+
+# if etc partition is empty, copy the etc dir from factory partition
+setup_etc_from_factory()
+{
+    local rootfs_dir="$1"
+
+    if [ ! -d "${rootfs_dir}/mnt/etc/upper" ]; then
+        mkdir -p "${rootfs_dir}/mnt/etc/upper"
+        mkdir -p "${rootfs_dir}/mnt/etc/work"
+        if [ -d "${rootfs_dir}/mnt/factory/etc" ]; then
+            msg "setup etc from factory partition"
+            cp -av "${rootfs_dir}/mnt/factory/etc/." "${rootfs_dir}/mnt/etc/upper"
+        fi
+    fi
+}
+
+setup_rootfs_partition()
+{
+    local rootfs_dir="$1"
+    local   mnt_opts="$2"
+    local bootpart=""
+    local boot_blk=""
+    local mmcblk=""
+
+    bootpart=$(get_bootloader_env_var "bootpart")
+    msg "setup rootfs partition [bootpart=${bootpart}]"
+
+    # currently we can not boot root via label and have to get the root dev
+    # ourselves.
+    # reason: on first boot you have the labels: rootA, rootB where rootB is an
+    # empty partition. on the boot after the first update, you have only
+    # label rootA, the label rootB disappeared, because adu-swupdate.sh doesnt
+    # set a e2fs label. After a second update you don't have a root partition
+    # with a label anymore.
+
+    # get mmcblk at runtime, so we can boot devices which can switch between
+    # emmc and sdcard with the same image.
+    boot_blk=$(get_block_device boot)
+    mmcblk=${boot_blk##*/}
+    mmcblk=${mmcblk%p*};
+
+    # mount rootfs
+    mount_partition "ext4" "/dev/${mmcblk}p${bootpart}" "${rootfs_dir}" "${mnt_opts}"
+}
+
+umount_rootfs_partition()
+{
+    local rootfs_dir="$1"
+    run_cmd umount "${rootfs_dir}"
+}
+
+setup_etc_partition()
+{
+    local     rootfs_dir="$1"
+    local        etc_blk="$2"
+    local       mnt_opts="$3"
+
+    msg "setup etc partition"
+
+    # check etc partition to handle unclean (not unmounted) state
+    check_ext4_fs "etc" "${etc_blk}" 0
+
+    # mount etc partition
+    mount_partition "ext4" "${etc_blk}" "${rootfs_dir}/mnt/etc" "${mnt_opts}"
+
+    setup_etc_from_factory "${rootfs_dir}"
+
+    # mount etc overlay
+    mount_overlayfs "${rootfs_dir}/etc" "${rootfs_dir}/mnt/etc/upper" "${rootfs_dir}/mnt/etc/work" \
+                    "${mnt_opts}" "${rootfs_dir}/etc"
+}
+
+umount_etc_partition()
+{
+    local rootfs_dir="$1"
+
+    run_cmd umount "${rootfs_dir}/etc"
+    run_cmd umount "${rootfs_dir}/mnt/etc"
+}
+
+setup_data_partition()
+{
+    local rootfs_dir="$1"
+    local   data_blk="$2"
+    local   mnt_opts="$3"
+
+    msg "setup data partition"
+
+    # check data partition to handle unclean (not unmounted) state
+    check_ext4_fs "data" "${data_blk}" 0
+
+    # mount data partition
+    mount_partition "ext4" "${data_blk}" "${rootfs_dir}/mnt/data" "${mnt_opts}"
+
+    # mount home overlay
+    mkdir -p "${rootfs_dir}/mnt/data/home/work"
+    mkdir -p "${rootfs_dir}/mnt/data/home/upper"
+    mkdir -p "${rootfs_dir}/mnt/data/var/lib"
+    mkdir -p "${rootfs_dir}/mnt/data/local"
+    mount_overlayfs "${rootfs_dir}/home" "${rootfs_dir}/mnt/data/home/upper" "${rootfs_dir}/mnt/data/home/work" \
+                    "${mnt_opts}" "${rootfs_dir}/home"
+
+    # bind mount /var/lib
+    mkdir -p "${rootfs_dir}/mnt/data/var/lib"
+    run_cmd mount -o bind "${rootfs_dir}/mnt/data/var/lib" "${rootfs_dir}/var/lib"
+
+    # bind mount /usr/local
+    mkdir -p "${rootfs_dir}/mnt/data/local"
+    run_cmd mount -o bind "${rootfs_dir}/mnt/data/local" "${rootfs_dir}/usr/local"
+}
+
+umount_data_partition()
+{
+    local rootfs_dir="$1"
+
+    run_cmd umount "${rootfs_dir}/usr/local"
+    run_cmd umount "${rootfs_dir}/var/lib"
+    run_cmd umount "${rootfs_dir}/home"
+    run_cmd umount "${rootfs_dir}/mnt/data"
+}
+
+setup_persistent_var_log()
+{
+    local rootfs_dir="$1"
+
+    if grep ^DISTRO_FEATURES ${rootfs_dir}/etc/os-release | grep -q '[" ]persistent-var-log[ "]'; then
+        msg "setup persistent var log"
+        mkdir -p ${rootfs_dir}/mnt/data/log
+        run_cmd mount -o bind ${rootfs_dir}/mnt/data/log ${rootfs_dir}/var/log
+    fi
+}
+
+umount_persistent_var_log()
+{
+    local rootfs_dir="$1"
+
+    if grep ^DISTRO_FEATURES ${rootfs_dir}/etc/os-release | grep -q '[" ]persistent-var-log[ "]'; then
+        run_cmd umount ${rootfs_dir}/var/log
+    fi
+}

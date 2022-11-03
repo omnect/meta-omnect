@@ -4,5 +4,5 @@ header:
   version: 10
 
 local_conf_header:
-  meta-ics-dm_feature_flash-mode: |
+  meta-omnect_feature_flash-mode: |
     DISTRO_FEATURES:append = " flash-mode"

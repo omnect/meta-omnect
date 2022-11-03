@@ -1,0 +1,15 @@
+#!/bin/sh
+
+persistent_var_log_enabled() {
+    return 0
+}
+
+persistent_var_log_run() {
+    msg "omnect-os persistent var log"
+
+    if [ -z "${ROOTFS_DIR}" ]; then
+        fatal "no ROOTFS_DIR"
+        return 1
+    fi
+    setup_persistent_var_log "${ROOTFS_DIR}"
+}

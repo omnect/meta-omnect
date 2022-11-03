@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_ics_dm}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_omnect}/files:"
 
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
@@ -7,7 +7,7 @@ SRC_URI = " \
   git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=0.8.2;nobranch=1 \
   file://adu-swupdate-key.patch \
   file://eis-utils-cert-chain-buffer.patch \
-  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'ics-dm-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
+  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
   file://linux_platform_layer.patch \
   file://rpipart_to_bootpart.patch \
   file://sd_notify.patch \
@@ -57,7 +57,7 @@ EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MODEL='${ADU_MODEL}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MANUFACTURER='${ADU_DEVICEPROPERTIES_MANUFACTURER}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${ADU_DEVICEPROPERTIES_MODEL}'"
 
-#ics-dm adaptions (linux_platform_layer.patch)
+#omnect adaptions (linux_platform_layer.patch)
 EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
 
 do_install:append() {
@@ -98,13 +98,13 @@ do_install:append() {
   install -m 0644 ${WORKDIR}/adu-agent.timer    ${D}${systemd_system_unitdir}/
 
   # user_consent
-  install -d ${D}${sysconfdir}/ics_dm/consent
-  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/consent_conf.json ${D}${sysconfdir}/ics_dm/consent/
-  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/history_consent.json ${D}${sysconfdir}/ics_dm/consent/
-  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/request_consent.json ${D}${sysconfdir}/ics_dm/consent/
-  install -d ${D}${sysconfdir}/ics_dm/consent/swupdate
-  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/ics_dm/consent/swupdate/
-  install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/ics_dm/consent/swupdate/installed_criteria
+  install -d ${D}${sysconfdir}/omnect/consent
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/consent_conf.json ${D}${sysconfdir}/omnect/consent/
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/history_consent.json ${D}${sysconfdir}/omnect/consent/
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/request_consent.json ${D}${sysconfdir}/omnect/consent/
+  install -d ${D}${sysconfdir}/omnect/consent/swupdate
+  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
+  install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
 }
 
 pkg_postinst:${PN}() {
@@ -120,11 +120,11 @@ FILES:${PN} += " \
   ${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml \
   ${systemd_system_unitdir}/adu-agent.service \
   ${systemd_system_unitdir}/adu-agent.timer \
-  ${sysconfdir}/ics_dm/consent/consent_conf.json \
-  ${sysconfdir}/ics_dm/consent/history_consent.json \
-  ${sysconfdir}/ics_dm/consent/request_consent.json \
-  ${sysconfdir}/ics_dm/consent/swupdate/user_consent.json \
-  ${sysconfdir}/ics_dm/consent/swupdate/installed_criteria \
+  ${sysconfdir}/omnect/consent/consent_conf.json \
+  ${sysconfdir}/omnect/consent/history_consent.json \
+  ${sysconfdir}/omnect/consent/request_consent.json \
+  ${sysconfdir}/omnect/consent/swupdate/user_consent.json \
+  ${sysconfdir}/omnect/consent/swupdate/installed_criteria \
   "
 
 GROUPADD_PARAM:${PN} += "-r adu;-r do;"

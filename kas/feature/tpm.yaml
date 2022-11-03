@@ -4,9 +4,9 @@ header:
   version: 11
 
 local_conf_header:
-  meta-ics-dm_feature_tpm: |
+  meta-omnect_feature_tpm: |
     DISTRO_FEATURES:append = " tpm2"
     MACHINE_FEATURES:append = " tpm2"
 
     EXTRA_OECONF:append:pn-tpm2-tss = " --disable-weakcrypto --enable-debug=info"
-    ICS_DM_DEVEL_TOOLS_DEFAULT:append = " tpm2-tools"
+    OMNECT_DEVEL_TOOLS_DEFAULT:append = " tpm2-tools"

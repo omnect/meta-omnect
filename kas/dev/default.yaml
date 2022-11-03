@@ -4,7 +4,7 @@ header:
   version: 10
 
 local_conf_header:
-  meta-ics-dm_dev_default: |
+  meta-omnect_dev_default: |
     # For more options have a look into "poky/meta-poky/conf/local.conf.sample" resp.
     # "openebedded-core/meta/conf/local.conf.sample".
 
