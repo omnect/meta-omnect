@@ -9,7 +9,7 @@ repos:
   meta-omnect:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: bd2d8fba766f912bd1bc5cde7d6f0e72152f1547
+    refspec: 50d4a8d2a983a68383ef1ffec2c8e21adf0c1a79
     layers:
       meta-filesystems:
       meta-networking:
@@ -24,7 +24,7 @@ repos:
       meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    refspec: 4c6590a2c6dacbf1d232bfc98670cce2a1094a44
+    refspec: 76ceada1d1510b2e7dacad888ae2b8b463c92219
 
 distro: omnect-os
 
