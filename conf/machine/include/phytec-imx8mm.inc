@@ -10,7 +10,7 @@ IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
     oftree \
     bootenv.txt \
 "
-IMAGE_INSTALL:append:pn-omnect-os-image = "kernel-devicetree"
+IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
 # Todo add 'oftree' to rootfs?
 
 # u-boot boot.scr config
