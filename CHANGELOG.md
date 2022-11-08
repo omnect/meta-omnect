@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fixed omnect_first_boot.sh when using devel images without tpm enrollment
   config
 - moved omnect-base-files to recipes-omnect
+- fixed random azure-osconfig build runtime error
 
 ## [kirkstone-0.11.1] Q4 2022
 - fixed busybox build
