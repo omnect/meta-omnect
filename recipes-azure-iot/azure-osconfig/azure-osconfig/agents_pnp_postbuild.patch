@@ -1,0 +1,19 @@
+diff --git a/src/agents/pnp/CMakeLists.txt b/src/agents/pnp/CMakeLists.txt
+index 9e64d733..e1be28e6 100644
+--- a/src/agents/pnp/CMakeLists.txt
++++ b/src/agents/pnp/CMakeLists.txt
+@@ -113,8 +113,8 @@ install(FILES daemon/${target_name}.toml DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}
+ install(FILES daemon/${target_name}.service DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/systemd/system)
+ install(FILES telemetryevents/OsConfigAgentTelemetry.conf DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/azure-device-telemetryd)
+ 
+-add_custom_command(
+-    TARGET ${target_name}
+-    POST_BUILD
+-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/daemon/${target_name}.toml /etc/aziot/identityd/config.d/${target_name}.toml
+-)
+\ No newline at end of file
++#add_custom_command(
++#    TARGET ${target_name}
++#    POST_BUILD
++#    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/daemon/${target_name}.toml /etc/aziot/identityd/config.d/${target_name}.toml
++#)
