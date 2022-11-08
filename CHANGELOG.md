@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   config
 - moved omnect-base-files to recipes-omnect
 - fixed random azure-osconfig build runtime error
+- phytec devices: load imx_sdma in initramfs to prevent race conditions with
+  drivers using sdma
 
 ## [kirkstone-0.11.1] Q4 2022
 - fixed busybox build
