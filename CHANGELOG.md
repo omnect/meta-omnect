@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.11.2] Q4 2022
 - distro conf:
   - added generic lxc + docker kernel config for iot and iotedge image
-  - removed kvm kernel support from images with linux-imx kernel
+  - disabled kvm kernel support (was set in linux-imx kernel)
 - kas:
   - updated meta-openembedded to latest HEAD
   - updated meta-swupdate to latest HEAD
