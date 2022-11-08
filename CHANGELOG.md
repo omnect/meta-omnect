@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.11.2] Q4 2022
+- distro conf:
+  - added generic lxc + docker kernel config for iot and iotedge image,
+    independent if we really use meta-virtualization features
+  - removed kvm kernel support from images with linux-imx kernel
+- kas:
+  - updated meta-openembedded to latest HEAD
+  - updated meta-swupdate to latest HEAD
+  - updated meta-virtualization to latest HEAD
+  - updated poky to 4.0.5
+  - meta-virtualization is now part of the distro kas config
+    (means we also include the layer when building iot images)
+- fixed omnect_first_boot.sh when using devel images without tpm enrollment
+  config
+- moved omnect-base-files to recipes-omnect
+
 ## [kirkstone-0.11.1] Q4 2022
 - fixed busybox build
 

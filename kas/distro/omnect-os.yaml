@@ -25,6 +25,9 @@ repos:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     refspec: 76ceada1d1510b2e7dacad888ae2b8b463c92219
+  ext/meta-virtualization:
+    url: "https://git.yoctoproject.org/git/meta-virtualization"
+    refspec: 9a487c1851aa2021cf24f951957e22fd429c8025
 
 distro: omnect-os
 

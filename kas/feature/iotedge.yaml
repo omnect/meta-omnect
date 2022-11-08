@@ -3,11 +3,6 @@
 header:
   version: 10
 
-repos:
-  ext/meta-virtualization:
-    url: "https://git.yoctoproject.org/git/meta-virtualization"
-    refspec: 9482648daf0bb42ff3475e7892542cf99f3b8d48
-
 local_conf_header:
   meta-omnect_feature_iotedge: |
     # enable iotedge
