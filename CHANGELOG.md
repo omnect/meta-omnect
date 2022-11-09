@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.11.4] Q4 2022
 - fixed rpi kernel build
 - kas:
-  - patched meta-virtualization layer.conf to get location of its layerdir
+  - patched meta-virtualization layer.conf to get the location of its layerdir
   - deleted unused meta-rust related patch
 
 ## [kirkstone-0.11.3] Q4 2022
