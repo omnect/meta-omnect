@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.11.4] Q4 2022
+- fixed rpi kernel build
+- kas:
+  - patched meta-virtualization layer.conf to get the location of its layerdir
+  - deleted unused meta-rust related patch
+
 ## [kirkstone-0.11.3] Q4 2022
 - fixed rpi kernel (rpi kernel was missing overlayfs)
 

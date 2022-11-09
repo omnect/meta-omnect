@@ -28,6 +28,10 @@ repos:
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/git/meta-virtualization"
     refspec: 9a487c1851aa2021cf24f951957e22fd429c8025
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/meta-virtualization_layerdir.patch"
 
 distro: omnect-os
 
