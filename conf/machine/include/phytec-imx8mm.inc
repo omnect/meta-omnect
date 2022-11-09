@@ -42,7 +42,7 @@ SYSTEMD_RebootWatchdogSec   = "60"
 # the moment and tee-supplicant will fail, because we don't boot with the
 # appropriate device-tree.
 # Furthermore we remove feature nxp8987 (set by meta-imx), because
-# tauri-l and polis don't have these chips.
+# tauri-l and polis don't have this chip.
 MACHINE_FEATURES:remove = " \
     nxp8987 \
     optee \
