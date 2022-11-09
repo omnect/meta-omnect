@@ -1,0 +1,10 @@
+diff --git a/conf/layer.conf b/conf/layer.conf
+index 7f4c6e0..516b537 100644
+--- a/conf/layer.conf
++++ b/conf/layer.conf
+@@ -60,3 +60,5 @@ USER_CLASSES:append = " meta-virt-xen-cfg"
+ USER_CLASSES:append = " meta-virt-hosts"
+ 
+ HOSTTOOLS_NONFATAL += "getent"
++
++LAYERDIR_virtualization-layer = "${LAYERDIR}"
