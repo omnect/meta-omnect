@@ -15,6 +15,7 @@ SRC_URI = "\
 "
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ' file://resize-data', '', d)}"
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ' file://persistent-var-log', '', d)}"
+SRC_URI:append:mx8mm-nxp-bsp = " file://imx-sdma"
 
 do_install() {
     install -m 0755 -D ${WORKDIR}/rootblk-dev            ${D}/init.d/10-rootblk_dev
@@ -30,6 +31,10 @@ do_install() {
     install -m 0755 -D ${WORKDIR}/omnect-device-service-setup    ${D}/init.d/95-omnect_device_service_setup
 }
 
+do_install:append:mx8mm-nxp-bsp () {
+    install -m 0755 -D ${WORKDIR}/imx-sdma               ${D}/init.d/90-imx_sdma
+}
+
 FILES:${PN} = "\
     /init.d/10-rootblk_dev \
     /init.d/85-common_sh \
@@ -39,3 +44,4 @@ FILES:${PN} = "\
 "
 FILES:${PN}:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ' /init.d/88-resize_data', '', d)}"
 FILES:${PN}:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ' /init.d/90-persistent_var_log', '', d)}"
+FILES:${PN}:append:mx8mm-nxp-bsp = " /init.d/90-imx_sdma"

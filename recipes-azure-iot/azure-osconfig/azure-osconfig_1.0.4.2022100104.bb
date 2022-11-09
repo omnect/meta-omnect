@@ -50,7 +50,8 @@ do_install:append() {
 
   # disable package manager module
   jq 'del ( .Reported[] | select (."ComponentName" == "PackageManagerConfiguration"))' ${D}${sysconfdir}/osconfig/osconfig.json > tmp.json
-  mv tmp.json ${D}${sysconfdir}/osconfig/osconfig.json
+  # explicitly reuse inode instead of using mv (prevent pseudo abort error)
+  cat tmp.json > ${D}${sysconfdir}/osconfig/osconfig.json
 
   install -d -m 0755 ${D}${systemd_system_unitdir}
   mv ${D}${sysconfdir}/systemd/system/osconfig.service          ${D}${systemd_system_unitdir}/

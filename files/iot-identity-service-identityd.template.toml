@@ -1,4 +1,4 @@
-  [[principal]]
-  uid = @@UID@@
-  name = "@@NAME@@"
-  idtype = ["module"]
+[[principal]]
+uid = @@UID@@
+name = "@@NAME@@"
+idtype = ["module"]
