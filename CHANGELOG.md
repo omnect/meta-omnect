@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.11.5] Q4 2022
+- kernel: linux-imx is now 5.15.52
+- kas:
+  - updated meta-imx to nxp release rel_imx_5.15.52_2.1.0 (kirkstone)
+  - updated meta-phytec to latest HEAD
+  - updated meta-freescale to latest HEAD
+  - introduced meta-freescale-distro (dependency of meta-imx)
+- README: fixed Versioning chapter
+
 ## [kirkstone-0.11.4] Q4 2022
 - fixed rpi kernel build
 - kas:

@@ -6,19 +6,23 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    refspec: 456776f109d78f84f78d17c92bbb0fe63a62f583
+    refspec: 1233291145da138cd77b81ec200521c63305a485
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-phytec_do_not_overwrite_BBMASK.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
-    refspec: 3915c0fe53c9e692b1dfd1bbdb6a5b922bf472af
+    refspec: 86be577d69e78eb6476a14f1946374b82686edd4
+  ext/meta-freescale-distro:
+    url: "https://github.com/Freescale/meta-freescale-distro.git"
+    refspec: d5bbb487b2816dfc74984a78b67f7361ce404253
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
-    refspec: 5bc708f56575a878da17f2148e959c95d06cf8db
+    refspec: rel_imx_5.15.52_2.1.0
     layers:
       meta-bsp:
+      meta-sdk:
 
 env:
   ACCEPT_FSL_EULA: "0"
