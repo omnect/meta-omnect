@@ -13,7 +13,7 @@ repos:
         path: "kas/patches/meta-phytec_do_not_overwrite_BBMASK.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
-    refspec: 86be577d69e78eb6476a14f1946374b82686edd4
+    refspec: 2fae71ac344964d1d8dbfc93ec558be3d4eee5c8
   ext/meta-freescale-distro:
     url: "https://github.com/Freescale/meta-freescale-distro.git"
     refspec: d5bbb487b2816dfc74984a78b67f7361ce404253
