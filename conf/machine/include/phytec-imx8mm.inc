@@ -29,7 +29,21 @@ OMNECT_PART_SIZE_UBOOT_ENV = "64"
 # mask fw_env.config configuration of meta-phytec, we generate that ourselves
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
 
+# mask otherwise we can not use the latest meta-freescale/meta-imx commits
+BBMASK:append = " meta-phytec/dynamic-layers/fsl-bsp-release/recipes-bsp/isp-imx/isp-imx-phycam_4.2.2.16.0.bb"
+BBMASK:append = " meta-imx/meta-sdk/dynamic-layers/openembedded-layer/recipes-multimedia/dvb-apps/dvb-apps_%.bbappend"
+
 # configure hardware watchdog
 # the maximum watchdog deadline depends on the hardware capabilities
 SYSTEMD_RuntimeWatchdogSec  = "60"
 SYSTEMD_RebootWatchdogSec   = "60"
+
+# For now remove optee from MACHINE_FEATURES. We don't support secure boot at
+# the moment and tee-supplicant will fail, because we don't boot with the
+# appropriate device-tree.
+# Furthermore we remove feature nxp8987 (set by meta-imx), because
+# tauri-l and polis don't have this chip.
+MACHINE_FEATURES:remove = " \
+    nxp8987 \
+    optee \
+"

@@ -89,7 +89,7 @@ For this purpose, the following configuration variables are used:
 See [README.device.md](./README.device.md).
 
 ## Versioning
-We reflect the used poky version in our version schema. `omnect-os` is versioned via `POKY_VERSION.BUILD_NR`, `4.0.4.y` where `x` is poky kirkstone's patch version and `y` is the build number.
+We reflect the used poky version in our version schema. `omnect-os` is versioned via `POKY_VERSION.BUILD_NR`, `4.0.x.y` where `x` is poky kirkstone's patch version and `y` is the build number.
 
 ## Dependencies
 `meta-omnect` depends on:
