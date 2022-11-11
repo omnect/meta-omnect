@@ -4,15 +4,15 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
 SRC_URI = " \
-  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=0.8.2;nobranch=1 \
+  git://github.com/azure/iot-hub-device-update.git;protocol=https;nobranch=1;rev=33554d29476eab2447234528c8aed186e2b6423d \
   file://adu-swupdate-key.patch \
   file://eis-utils-cert-chain-buffer.patch \
   ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
   file://linux_platform_layer.patch \
   file://rpipart_to_bootpart.patch \
   file://sd_notify.patch \
-  file://adu-agent.service \
-  file://adu-agent.timer \
+  file://deviceupdate-agent.service \
+  file://deviceupdate-agent.timer \
   file://du-config.json \
   file://du-diagnostics-config.json \
   file://iot-hub-device-update.conf \
@@ -20,6 +20,7 @@ SRC_URI = " \
   file://iot-identity-service-identityd.template.toml \
   file://0001-add-swupdate-user-consent-handler.patch \
   file://workaround-deprecated-declarations-openssl3.patch \
+  file://fix-issue-in-restart-reboot-flow-of-adu-1.0.0.patch \
 "
 PV = "${SRCPV}"
 
@@ -60,6 +61,8 @@ EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${ADU_DEVICEPROPERTIES_MODEL}'"
 #omnect adaptions (linux_platform_layer.patch)
 EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
 
+EXTRA_OECMAKE += "-DADUC_WARNINGS_AS_ERRORS=OFF"
+
 do_install:append() {
   # adu configuration
   install -d ${D}${sysconfdir}/adu
@@ -94,16 +97,16 @@ do_install:append() {
 
   # systemd
   install -d ${D}${systemd_system_unitdir}
-  install -m 0644 ${WORKDIR}/adu-agent.service  ${D}${systemd_system_unitdir}/
-  install -m 0644 ${WORKDIR}/adu-agent.timer    ${D}${systemd_system_unitdir}/
+  install -m 0644 ${WORKDIR}/deviceupdate-agent.service  ${D}${systemd_system_unitdir}/
+  install -m 0644 ${WORKDIR}/deviceupdate-agent.timer    ${D}${systemd_system_unitdir}/
 
   # user_consent
   install -d ${D}${sysconfdir}/omnect/consent
-  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/consent_conf.json ${D}${sysconfdir}/omnect/consent/
-  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/history_consent.json ${D}${sysconfdir}/omnect/consent/
-  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/request_consent.json ${D}${sysconfdir}/omnect/consent/
+  install -m 0770 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json ${D}${sysconfdir}/omnect/consent/
+  install -m 0770 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json ${D}${sysconfdir}/omnect/consent/
+  install -m 0770 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json ${D}${sysconfdir}/omnect/consent/
   install -d ${D}${sysconfdir}/omnect/consent/swupdate
-  install -m 0770 -o adu -g adu ${S}/src/content_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
+  install -m 0770 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
   install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
 }
 
@@ -112,14 +115,14 @@ pkg_postinst:${PN}() {
   sed -i -e "s/@@UID@@/$(id -u adu)/" -e "s/@@NAME@@/AducIotAgent/" $D${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
 }
 
-SYSTEMD_SERVICE:${PN} = "adu-agent.service adu-agent.timer"
+SYSTEMD_SERVICE:${PN} = "deviceupdate-agent.service deviceupdate-agent.timer"
 FILES:${PN} += " \
   ${libdir}/adu \
   ${libdir}/tmpfiles.d/iot-hub-device-update.conf \
   ${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml \
   ${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml \
-  ${systemd_system_unitdir}/adu-agent.service \
-  ${systemd_system_unitdir}/adu-agent.timer \
+  ${systemd_system_unitdir}/deviceupdate-agent.service \
+  ${systemd_system_unitdir}/deviceupdate-agent.timer \
   ${sysconfdir}/omnect/consent/consent_conf.json \
   ${sysconfdir}/omnect/consent/history_consent.json \
   ${sysconfdir}/omnect/consent/request_consent.json \

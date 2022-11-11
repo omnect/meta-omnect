@@ -1,8 +1,18 @@
+From 0fdd671ac15c3a51e0d9aa32b8288e35b2b9bc6c Mon Sep 17 00:00:00 2001
+From: Joerg Zeidler <joerg.zeidler@conplement.de>
+Date: Fri, 11 Nov 2022 11:28:00 +0100
+Subject: [PATCH] add sd notify
+
+---
+ src/agent/CMakeLists.txt |  3 ++-
+ src/agent/src/main.c     | 10 ++++++++++
+ 2 files changed, 12 insertions(+), 1 deletion(-)
+
 diff --git a/src/agent/CMakeLists.txt b/src/agent/CMakeLists.txt
-index a663e88..4f2965e 100644
+index ff66816c..41396d87 100644
 --- a/src/agent/CMakeLists.txt
 +++ b/src/agent/CMakeLists.txt
-@@ -85,7 +85,8 @@ target_link_libraries (
+@@ -95,7 +95,8 @@ target_link_libraries (
              aduc::pnp_helper
              aduc::system_utils
              diagnostics_component::diagnostics_interface
@@ -10,13 +20,13 @@ index a663e88..4f2965e 100644
 +            diagnostics_component::diagnostics_devicename
 +            systemd)
  
- get_filename_component (
-     ADUC_INSTALLEDCRITERIA_FILE_PATH
+ if (ADUC_IOT_HUB_PROTOCOL STREQUAL "MQTT")
+     target_compile_definitions (${target_name} PRIVATE ADUC_ALLOW_MQTT=1)
 diff --git a/src/agent/src/main.c b/src/agent/src/main.c
-index a46fa05..7b22260 100644
+index 9d434c3d..53d32ad8 100644
 --- a/src/agent/src/main.c
 +++ b/src/agent/src/main.c
-@@ -45,6 +45,8 @@
+@@ -58,6 +58,8 @@
  
  #include "eis_utils.h"
  
@@ -25,7 +35,7 @@ index a46fa05..7b22260 100644
  /**
   * @brief The timeout for the Edge Identity Service HTTP requests
   */
-@@ -1133,6 +1135,7 @@ int main(int argc, char** argv)
+@@ -1504,6 +1506,7 @@ int main(int argc, char** argv)
      int dir_result = ADUC_SystemUtils_MkDirRecursiveDefault(ADUC_DATA_FOLDER);
      if (dir_result != 0)
      {
@@ -33,7 +43,7 @@ index a46fa05..7b22260 100644
          Log_Error("Cannot create data folder.");
          goto done;
      }
-@@ -1150,6 +1153,13 @@ int main(int argc, char** argv)
+@@ -1521,6 +1524,13 @@ int main(int argc, char** argv)
  
      if (!StartupAgent(&launchArgs))
      {
@@ -47,3 +57,6 @@ index a46fa05..7b22260 100644
          goto done;
      }
  
+-- 
+2.34.1
+

@@ -4,6 +4,8 @@
       "adu",
       "do"
     ],
+    "iotHubProtocol": "mqtt",
+    "compatPropertyNames":"manufacturer,model",
     "manufacturer": "",
     "model": "",
     "agents": [

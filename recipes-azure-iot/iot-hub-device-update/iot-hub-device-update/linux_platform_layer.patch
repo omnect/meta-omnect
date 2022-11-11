@@ -1,8 +1,19 @@
+From 0050c72e39d1a0bbb1195ee914eb3ccf62df95ab Mon Sep 17 00:00:00 2001
+From: Joerg Zeidler <joerg.zeidler@conplement.de>
+Date: Fri, 11 Nov 2022 11:43:48 +0100
+Subject: [PATCH] use ADUC_STORAGE_PATH for DeviceInfo_GetTotalStorage
+
+---
+ CMakeLists.txt                                              | 6 ++++++
+ src/platform_layers/linux_platform_layer/CMakeLists.txt     | 3 ++-
+ .../linux_platform_layer/src/linux_device_info_exports.cpp  | 2 +-
+ 3 files changed, 9 insertions(+), 2 deletions(-)
+
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5beb6fc..17012a8 100644
+index 7eafac67..0a2f8e20 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -324,6 +324,12 @@ set (
+@@ -353,6 +353,12 @@ set (
      "syslog"
      CACHE STRING "The syslog group.")
  
@@ -12,132 +23,28 @@ index 5beb6fc..17012a8 100644
 +    CACHE STRING "Path to mounted storage which will be considered to compute total storage"
 +)
 +
- option (ADUC_WARNINGS_AS_ERRORS "Treat warnings as errors (-Werror)" ON)
- option (ADUC_BUILD_UNIT_TESTS "Build unit tests and mock some functionality" OFF)
- option (ADUC_BUILD_DOCUMENTATION "Build documentation files" OFF)
+ set (
+     ADUC_IOT_HUB_PROTOCOL
+     "IotHub_Protocol_from_Config"
 diff --git a/src/platform_layers/linux_platform_layer/CMakeLists.txt b/src/platform_layers/linux_platform_layer/CMakeLists.txt
-index 3180584..4112567 100644
+index 99536dda..6c6a5d38 100644
 --- a/src/platform_layers/linux_platform_layer/CMakeLists.txt
 +++ b/src/platform_layers/linux_platform_layer/CMakeLists.txt
-@@ -63,7 +63,8 @@ target_compile_definitions (
+@@ -48,7 +48,8 @@ target_compile_definitions (
+             ADUC_FILE_GROUP="${ADUC_FILE_GROUP}"
              ADUC_FILE_USER="${ADUC_FILE_USER}"
              ADUC_DEVICEINFO_MODEL="${ADUC_DEVICEINFO_MODEL}"
-             ADUC_VERSION_FILE="${ADUC_VERSION_FILE}"
--            ADUC_BUILD_UNIT_TESTS="${ADUC_BUILD_UNIT_TESTS}")
-+            ADUC_BUILD_UNIT_TESTS="${ADUC_BUILD_UNIT_TESTS}"
+-            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}")
++            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}"
 +            ADUC_STORAGE_PATH="${ADUC_STORAGE_PATH}")
  
  if (ADUC_BUILD_UNIT_TESTS)
      add_subdirectory (tests)
 diff --git a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
-index 3db41a1..7c5962f 100644
+index 5d308964..8ba756c5 100644
 --- a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
 +++ b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
-@@ -107,16 +107,43 @@ static char* DeviceInfo_GetOsName()
-         return nullptr;
-     }
- 
--    utsname uts{};
-+    FILE* fp = fopen(ADUC_VERSION_FILE, "r");
- 
--    if (uname(&uts) < 0)
-+    if (NULL != fp)
-     {
--        Log_Error("uname failed, error: %d", errno);
--        return nullptr;
-+        const unsigned int bufferLen = 1024;
-+        char buffer[bufferLen];
-+        char* osName = NULL;
-+        if (NULL != fgets(buffer, bufferLen, fp))
-+        {
-+            osName = strtok(buffer, " ");
-+        }
-+
-+        if (NULL == osName)
-+        {
-+            Log_Error("couldn't read os name from %s", ADUC_VERSION_FILE);
-+        }
-+        else
-+        {
-+            Log_Info("read os name \"%s\" from %s", osName, ADUC_VERSION_FILE);
-+        }
-+
-+        valueIsDirty = false;
-+        return strdup(ADUC_StringUtils_Trim(osName));
-     }
-+    else
-+    {
-+        utsname uts{};
- 
--    valueIsDirty = false;
--    return strdup(ADUC_StringUtils_Trim(uts.sysname /*Operating system name*/));
-+        if (uname(&uts) < 0)
-+        {
-+            Log_Error("uname failed, error: %d", errno);
-+            return nullptr;
-+        }
-+
-+        valueIsDirty = false;
-+        return strdup(ADUC_StringUtils_Trim(uts.sysname /*Operating system name*/));
-+    }
- }
- 
- /**
-@@ -135,18 +162,45 @@ static char* DeviceInfo_GetSwVersion()
-         return nullptr;
-     }
- 
--    // Note: In the V2 interface, we will implement swVersion in a more "standard" way
--    // by querying the OS for version rather than reading the custom version file.
--    utsname uts{};
-+    FILE* fp = fopen(ADUC_VERSION_FILE, "r");
- 
--    if (uname(&uts) < 0)
-+    if (NULL != fp)
-     {
--        Log_Error("uname failed, error: %d", errno);
--        return nullptr;
-+        const unsigned int bufferLen = 1024;
-+        char buffer[bufferLen];
-+        char* osVersion;
-+        if (NULL != fgets(buffer, bufferLen, fp))
-+        {
-+            osVersion = strchr(buffer, ' ');
-+        }
-+
-+        if (NULL == osVersion)
-+        {
-+            Log_Error("couldn't read os version from %s", ADUC_VERSION_FILE);
-+        }
-+        else
-+        {
-+            Log_Info("read os version \"%s\" from %s", osVersion, ADUC_VERSION_FILE);
-+        }
-+
-+        valueIsDirty = false;
-+        return strdup(ADUC_StringUtils_Trim(osVersion));
-     }
-+    else
-+    {
-+        // Note: In the V2 interface, we will implement swVersion in a more "standard" way
-+        // by querying the OS for version rather than reading the custom version file.
-+        utsname uts{};
- 
--    valueIsDirty = false;
--    return strdup(uts.release /*Operating system release*/);
-+        if (uname(&uts) < 0)
-+        {
-+            Log_Error("uname failed, error: %d", errno);
-+            return nullptr;
-+        }
-+
-+        valueIsDirty = false;
-+        return strdup(uts.release /*Operating system release*/);
-+    }
- }
- 
- /**
-@@ -282,7 +336,7 @@ static char* DeviceInfo_GetTotalStorage()
+@@ -403,7 +403,7 @@ static char* DeviceInfo_GetTotalStorage()
      {
      };
  
@@ -146,3 +53,6 @@ index 3db41a1..7c5962f 100644
      {
          Log_Error("statvfs failed, error: %d", errno);
          return nullptr;
+-- 
+2.34.1
+
