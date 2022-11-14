@@ -58,9 +58,10 @@ EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MODEL='${ADU_MODEL}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MANUFACTURER='${ADU_DEVICEPROPERTIES_MANUFACTURER}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${ADU_DEVICEPROPERTIES_MODEL}'"
 
-#omnect adaptions (linux_platform_layer.patch)
+# omnect adaptions (linux_platform_layer.patch)
 EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
 
+# temporary fix to compile iot-hub-device-update, should be removed if iot-hub-device-update adapts to new gcc version
 EXTRA_OECMAKE += "-DADUC_WARNINGS_AS_ERRORS=OFF"
 
 do_install:append() {
