@@ -14,6 +14,10 @@ repos:
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     refspec: 2fae71ac344964d1d8dbfc93ec558be3d4eee5c8
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/meta-freescale_layerdir.patch"
   ext/meta-freescale-distro:
     url: "https://github.com/Freescale/meta-freescale-distro.git"
     refspec: d5bbb487b2816dfc74984a78b67f7361ce404253

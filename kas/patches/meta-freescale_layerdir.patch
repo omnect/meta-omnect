@@ -1,0 +1,10 @@
+diff --git a/conf/layer.conf b/conf/layer.conf
+index a3c8af2c..903a96bb 100644
+--- a/conf/layer.conf
++++ b/conf/layer.conf
+@@ -54,3 +54,5 @@ BBFILES_DYNAMIC += " \
+     virtualization-layer:${LAYERDIR}/dynamic-layers/virtualization-layer/*/*/*.bb \
+     virtualization-layer:${LAYERDIR}/dynamic-layers/virtualization-layer/*/*/*.bbappend \
+ "
++
++LAYERDIR_freescale-layer = "${LAYERDIR}"
