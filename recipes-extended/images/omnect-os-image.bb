@@ -103,5 +103,11 @@ default_shell_bash() {
     sed -i 's#/bin/sh$#/bin/bash#g' ${IMAGE_ROOTFS}${sysconfdir}/passwd
 }
 
+# warn if debugfs gets generated and IMAGE_INSTALL doesn't include gdbserver
+python () {
+    debugfs = d.getVar('IMAGE_GEN_DEBUGFS') == "1"
+    if debugfs and 'gdbserver' not in d.getVar('IMAGE_INSTALL').split():
+        bb.warn("debugfs gets generated but the image doesn't contain the gdb server")
+}
 
 inherit omnect_user
