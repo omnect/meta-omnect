@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.11.12] Q4 2022
+- fixed `lshw` segfault on tauri-l devices
+
 ## [kirkstone-0.11.11] Q4 2022
 - systemd: enabled coredump handling distro-wide
   (we currently use the default settings, which can be adapted or disabled in
