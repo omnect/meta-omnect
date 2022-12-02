@@ -4,10 +4,7 @@ inherit aziot cargo systemd
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
-# attention iot-identity-service 1.4 used by iotedge 1.4 is not officially tagged yet. so we use
-# the srcrev of latest release/1.4 HEAD
-# SRC_URI = "git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;tag=1.4.0"
-SRC_URI = "git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;rev=c281b76772f16d7389fd6b25872c2119e539eab8"
+SRC_URI = "git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;tag=1.4.1"
 
 SRC_URI += " \
     file://iot-identity-service-certd.template.toml \
@@ -15,8 +12,6 @@ SRC_URI += " \
     file://ossl300_default_provider.patch \
     file://ossl300_openssl-errors.patch \
     file://ossl300_Cargo.lock.patch \
-    file://iot-identity-service_PR_451.patch \
-    file://iot-identity-service_PR_454.patch \
 "
 
 CARGO_BUILD_FLAGS += "--offline"
