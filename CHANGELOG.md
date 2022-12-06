@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.12.0] Q4 2022
 - enabled `wireguard` kernel module for all devices
 
+## [kirkstone-0.11.13] Q4 2022
+- updated iotedge to 1.4.4
+- updated iot-identity-service to 1.4.1
+
 ## [kirkstone-0.11.12] Q4 2022
 - fixed `lshw` segfault on tauri-l devices
 
