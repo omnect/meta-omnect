@@ -19,8 +19,6 @@ PACKAGE_INSTALL = "\
     omnect-os-initramfs-scripts \
     initramfs-framework-base \
     initramfs-module-debug \
-    libubootenv \
-    libubootenv-bin \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
@@ -31,5 +29,7 @@ PACKAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect-flash-mode dhcpcd dropbear bmap-tools xz util-linux-sfdisk e2fsprogs', '', d)} \
 "
+
+PACKAGE_INSTALL += "${@ 'libubootenv libubootenv-bin' if bb.utils.to_boolean(d.getVar('UBOOT_MACHINE')) else '' }"
 
 inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect_user', '', d)}

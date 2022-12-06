@@ -13,9 +13,10 @@ inherit core-image
 do_rootfs[depends] += "virtual/kernel:do_deploy"
 do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
-# we add boot.scr to the image
-do_rootfs[depends] += "u-boot-scr:do_deploy"
-IMAGE_BOOT_FILES += "boot.scr"
+
+# we add boot.scr to the image on condition
+do_rootfs[depends] += "${@ 'u-boot-scr:do_deploy' if bb.utils.to_boolean(d.getVar('UBOOT_MACHINE')) else '' }"
+IMAGE_BOOT_FILES += "${@ 'boot.scr' if bb.utils.to_boolean(d.getVar('UBOOT_MACHINE')) else '' }"
 IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
 
 # native openssl tool required
@@ -40,8 +41,8 @@ IMAGE_INSTALL = "\
     procps \
     sudo \
     kmod \
-    u-boot-fw-utils \
 "
+IMAGE_INSTALL += "${@ 'u-boot-fw-utils' if bb.utils.to_boolean(d.getVar('UBOOT_MACHINE')) else '' }"
 
 # check environment variable OMNECT_DEVEL_TOOLS
 def check_for_devel_tools(d):
@@ -73,7 +74,7 @@ omnect_setup_sysctl_config() {
     echo "vm.panic_on_oom = ${OMNECT_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/omnect.conf
 }
 
-ROOTFS_POSTPROCESS_COMMAND:append = " omnect_create_uboot_env_ff_img;"
+ROOTFS_POSTPROCESS_COMMAND:append = "${@ ' omnect_create_uboot_env_ff_img;' if bb.utils.to_boolean(d.getVar('UBOOT_MACHINE')) else '' }"
 omnect_create_uboot_env_ff_img() {
     dd if=/dev/zero bs=1024 count=${OMNECT_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/omnect_uboot_env_ff.img
 }

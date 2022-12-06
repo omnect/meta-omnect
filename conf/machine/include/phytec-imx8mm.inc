@@ -13,6 +13,9 @@ IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
 IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
 # Todo add 'oftree' to rootfs?
 
+# initramfs type
+OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
+
 # u-boot boot.scr config
 KERNEL_BOOTCMD = "booti"
 UBOOT_ARCH = "arm64"
