@@ -33,7 +33,7 @@ rootblk_dev_run() {
         ln -sf /dev/${rootblk}p5 cert
         ln -sf /dev/${rootblk}p6 etc
         ln -sf /dev/${rootblk}p7 data
-    elif [ "${ptype}" = "dos" ]
+    elif [ "${ptype}" = "dos" ]; then
         ln -sf /dev/${rootblk}p4 extended
         ln -sf /dev/${rootblk}p5 factory
         ln -sf /dev/${rootblk}p6 cert

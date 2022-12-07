@@ -283,7 +283,7 @@ umount_persistent_var_log()
 
 get_partition_type()
 {
-    local value=$(fdisk -l /dev/${rootblk}p1 | grep "^Disklabel type:" | awk '{print $NF}')
+    local value=$(fdisk -l /dev/omnect/boot | grep "^Disklabel type:" | awk '{print $NF}')
     debug "get_partition_type: ${value}"
     echo ${value}
 }
