@@ -21,13 +21,25 @@ rootblk_dev_run() {
     for i in /dev/${rootblk}p*; do
         ln -sf ${i} rootblkp${i##*p}
     done
+
     ln -sf /dev/${rootblk}p1 boot
     ln -sf /dev/${rootblk}p2 rootA
     ln -sf /dev/${rootblk}p3 rootB
-    ln -sf /dev/${rootblk}p4 extended
-    # todo gpt vs mbr
-    ln -sf /dev/${rootblk}p5 factory
-    ln -sf /dev/${rootblk}p6 cert
-    ln -sf /dev/${rootblk}p7 etc
-    ln -sf /dev/${rootblk}p8 data
+
+    #gpt vs mbr
+    ptype=$(get_partition_type)
+    if [ "${ptype}" = "gpt" ]; then
+        ln -sf /dev/${rootblk}p4 factory
+        ln -sf /dev/${rootblk}p5 cert
+        ln -sf /dev/${rootblk}p6 etc
+        ln -sf /dev/${rootblk}p7 data
+    elif [ "${ptype}" = "dos" ]
+        ln -sf /dev/${rootblk}p4 extended
+        ln -sf /dev/${rootblk}p5 factory
+        ln -sf /dev/${rootblk}p6 cert
+        ln -sf /dev/${rootblk}p7 etc
+        ln -sf /dev/${rootblk}p8 data
+    else
+        msg "unhandled partition type" && return 1
+    fi
 }

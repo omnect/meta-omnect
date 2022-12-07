@@ -4,3 +4,5 @@ part --fixed-size ${OMNECT_PART_SIZE_UBOOT_ENV}K --no-table --offset ${OMNECT_PA
 part --fixed-size ${OMNECT_PART_SIZE_BOOT}K      --fstype=vfat --align 4096 --label boot   --source bootimg-partition --active
 
 include omnect-os.common.wks.inc
+
+bootloader --ptable gpt
