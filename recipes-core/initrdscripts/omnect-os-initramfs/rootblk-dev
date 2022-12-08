@@ -27,7 +27,7 @@ rootblk_dev_run() {
     ln -sf /dev/${rootblk}p3 rootB
 
     #gpt vs mbr
-    ptype=$(get_partition_type)
+    local ptype=$(get_partition_type)
     if [ "${ptype}" = "gpt" ]; then
         ln -sf /dev/${rootblk}p4 factory
         ln -sf /dev/${rootblk}p5 cert
@@ -40,6 +40,6 @@ rootblk_dev_run() {
         ln -sf /dev/${rootblk}p7 etc
         ln -sf /dev/${rootblk}p8 data
     else
-        msg "unhandled partition type" && return 1
+        msg_fatal "unhandled partition type: \"${ptype}\"" && return 1
     fi
 }
