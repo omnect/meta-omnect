@@ -23,6 +23,8 @@ resize_data_run() {
             [[ $(parted ${root_disk} print | grep extended | wc -l) -ne 1 ]] && msg "error: resize_data: couldn't determine extended partion" && return
             extended_part_nr=$(parted ${root_disk} print | grep extended | awk '{print $1}')
             parted ${root_disk} resizepart ${extended_part_nr} 100%
+        else
+            msg_fatal "unhandled partition type: \"${ptype}\"" && return 1
         fi
 
         parted ${root_disk} resizepart ${data_part_nr} 100%
