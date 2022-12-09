@@ -20,13 +20,6 @@ This yocto meta layer provides the poky based device management distribution `om
 It is built with the default `poky` `DISTRO_FEATURES`.
 
 `meta-omnect` adds the following `DISTRO_FEATURES`:
-- [`enrollment`](https://github.com/omnect/enrollment.git)
-    - adds an automatic device enrollment demo with provisioning via tpm
-        - it creates a tpm enrollment in your [azure device provisioning service](https://docs.microsoft.com/en-us/azure/iot-dps/) for your device
-        - it creates the provisioning configuration for `iot-identity-service`
-    - synchronizes startup of `iot-identity-service` with the enrollment demo
-    - depends on `MACHINE_FEATURES` including `tpm2` which is not added automatically!
-    - **note**: this is only intended for demo purposes; this is not a production ready service
 - `iotedge`
     - adds the `iotedge` service with its dependencies
     - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedge` runtime dependency `moby`
