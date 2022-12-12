@@ -24,6 +24,7 @@ PACKAGE_INSTALL = "\
     e2fsprogs-tune2fs \
     coreutils \
     kmod \
+    util-linux-fdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \

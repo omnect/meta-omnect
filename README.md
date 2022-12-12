@@ -50,7 +50,27 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 
 ### Partition Layout
 `omnect-os` uses an `A/B` update partition layout with two readonly rootfs partitions.
-The partition layout is
+The partition layout for devices supporting gpt:
+```sh
+Device           Start      End  Sectors  Size Type
+/dev/mmcblkXp1    8192    90111    81920   40M Microsoft basic data
+/dev/mmcblkXp2  106496  1628159  1521664  743M Linux filesystem
+/dev/mmcblkXp3 1630208  3151871  1521664  743M Linux filesystem
+/dev/mmcblkXp4 3153920  3235839    81920   40M Linux filesystem
+/dev/mmcblkXp5 3235840  3317759    81920   40M Linux filesystem
+/dev/mmcblkXp6 3317760  3399679    81920   40M Linux filesystem
+/dev/mmcblkXp7 3399680 62333918 58934239 28.1G Linux filesystem
+
+```
+- `mmcblkXp1` is the `boot` partition with vfat filesystem
+- `mmcblkXp2` is the readonly `rootA` partition with ext4 filesystem
+- `mmcblkXp3` is the readonly `rootB` partition with ext4 filesystem
+- `mmcblkXp4` is the writable `factory` partition with ext4 filesystem
+- `mmcblkXp5` is the writable `certificate` partition with ext4 filesystem
+- `mmcblkXp6` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
+- `mmcblkXp7` is the writable `data` partition with ext4 filesystem
+
+The partition layout for devices supporting mbr:
 ```sh
 Device         Boot   Start      End  Sectors  Size Id Type
 /dev/mmcblkXp1 *       8192    90111    81920   40M  c W95 FAT32 (LBA)
@@ -70,7 +90,7 @@ Device         Boot   Start      End  Sectors  Size Id Type
 - `mmcblkXp7` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
 - `mmcblkXp8` is the writable `data` partition with ext4 filesystem
 
-The size of `mmcblkXp8` depends on your sdcard/emmc size. Per default it has a size of 512M and is resized on the first boot to the max available size.
+The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M and is resized on the first boot to the max available size.
 
 There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks.
 For this purpose, the following configuration variables are used:

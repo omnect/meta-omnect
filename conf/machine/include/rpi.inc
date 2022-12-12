@@ -7,9 +7,6 @@ RPI_USE_U_BOOT = "1"
 # enable serial interface
 ENABLE_UART = "1"
 
-# wic: how to partition
-WKS_FILE = "omnect-os.rpi.wks.in"
-
 # initramfs type
 OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 
