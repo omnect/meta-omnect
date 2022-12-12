@@ -74,7 +74,7 @@ omnect_setup_sysctl_config() {
     echo "vm.panic_on_oom = ${OMNECT_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/omnect.conf
 }
 
-ROOTFS_POSTPROCESS_COMMAND:append = "${@ ' omnect_create_uboot_env_ff_img;' if bb.utils.to_boolean(d.getVar('UBOOT_MACHINE')) else '' }"
+ROOTFS_POSTPROCESS_COMMAND:append = " omnect_create_uboot_env_ff_img;"
 omnect_create_uboot_env_ff_img() {
     dd if=/dev/zero bs=1024 count=${OMNECT_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/omnect_uboot_env_ff.img
 }
