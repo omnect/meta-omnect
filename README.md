@@ -39,7 +39,6 @@ It is built with the default `poky` `DISTRO_FEATURES`.
 `meta-omnect` extends the following `MACHINE_FEATURES`:
 - `tpm2`
     - adds tpm kernel overlay, driver and auto modprobe for raspberry pi
-    (**Currently you have to enable it explicitly for `enrollment`, since it depends hard on tpm.**)
 
 ### Partition Layout
 `omnect-os` uses an `A/B` update partition layout with two readonly rootfs partitions.
@@ -152,10 +151,7 @@ E.g. we reset the layer prioritization of `meta-phytec` to `9`, to ensure it is 
 
 ## Runtime configuration
 
-The `omnect-os-image` needs post processing via [`omnect-cli`](https://github.com/omnect/omnect-cli.git) to set a mandatory `iot-identity-service` configuration. Furthermore you need to set an `enrollment` configuration if `DISTRO_FEATURES` contains `enrollment`. You can optionally set an `iot-hub-device-update` configuration.
-
-### Set `enrollment` configuration
-See [omnect-cli enrollment configuration](https://github.com/omnect/omnect-cli/blob/main/README.md#enrollment-configuration).
+The `omnect-os-image` needs post processing via [`omnect-cli`](https://github.com/omnect/omnect-cli.git) to set a mandatory `iot-identity-service` configuration. You can optionally set an `iot-hub-device-update` configuration.
 
 ### Set `iot-hub-device-update` configuration
 See [omnect-cli iot-hub-device-update configuration](https://github.com/omnect/omnect-cli/blob/main/README.md#device-update-for-iot-hub-configuration).
