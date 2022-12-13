@@ -11,6 +11,7 @@ IMAGE_NAME = "${OMNECT_INITRAMFS_IMAGE_NAME}"
 
 RESIZE_DATA_PACKAGES = "\
     e2fsprogs-resize2fs \
+    gptfdisk \
     parted \
 "
 
@@ -26,6 +27,7 @@ PACKAGE_INSTALL = "\
     e2fsprogs-tune2fs \
     coreutils \
     kmod \
+    util-linux-fdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \

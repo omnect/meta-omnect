@@ -18,8 +18,8 @@ SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', 
 SRC_URI:append:mx8mm-nxp-bsp = " file://imx-sdma"
 
 do_install() {
+    install -m 0755 -D ${WORKDIR}/common-sh              ${D}/init.d/05-common_sh
     install -m 0755 -D ${WORKDIR}/rootblk-dev            ${D}/init.d/10-rootblk_dev
-    install -m 0755 -D ${WORKDIR}/common-sh              ${D}/init.d/85-common_sh
     install -m 0755 -D ${WORKDIR}/factory-reset          ${D}/init.d/86-factory_reset
     if ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', 'true', 'false', d)}; then
         install -m 0755 -D ${WORKDIR}/resize-data        ${D}/init.d/88-resize_data
@@ -36,8 +36,8 @@ do_install:append:mx8mm-nxp-bsp () {
 }
 
 FILES:${PN} = "\
+    /init.d/05-common_sh \
     /init.d/10-rootblk_dev \
-    /init.d/85-common_sh \
     /init.d/86-factory_reset \
     /init.d/89-fs_mount \
     /init.d/95-omnect_device_service_setup \
