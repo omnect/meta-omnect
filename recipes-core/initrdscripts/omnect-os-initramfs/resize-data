@@ -15,10 +15,10 @@ resize_data_run() {
 
         root_disk=${data_part%p*}
         data_part_nr=${data_part##*p}
-        msg "omnect-os resize data partition: ${root_disk}/${data_part_nr}"
+        msg "omnect-os resize data partition: ${root_disk}p${data_part_nr}"
 
         if [ "${ptype}" = "gpt" ]; then
-            echo "Fix" | parted ---pretend-input-tty /dev/omnect/rootblk print
+            sgdisk ${root_disk} -e
         elif [ "${ptype}" = "dos" ]; then
             [[ $(parted ${root_disk} print | grep extended | wc -l) -ne 1 ]] && msg "error: resize_data: couldn't determine extended partion" && return
             extended_part_nr=$(parted ${root_disk} print | grep extended | awk '{print $1}')
