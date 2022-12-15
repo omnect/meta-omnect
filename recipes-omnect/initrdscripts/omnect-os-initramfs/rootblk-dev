@@ -37,6 +37,12 @@ rootblk_dev_run() {
     debug part=${part}
     debug rootblk=${rootblk}
 
+    # needed for current adu-swupdate.sh script
+    # @todo still needed when using adu swupdate handler v2?
+    for i in /dev/${rootblk}${part}*; do
+        ln -sf ${i} rootblkp${i:0-1}
+    done
+
     ln -sf /dev/${rootblk} rootblk
     ln -sf /dev/${rootblk}${part}1 boot
     ln -sf /dev/${rootblk}${part}2 rootA
