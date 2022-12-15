@@ -11,6 +11,7 @@ SRC_URI = "\
     file://etc/profile.d/omnect_prompt.sh \
     file://etc/sudoers.d/001_omnect \
     file://usr/bin/omnect_get_deviceid.sh \
+    file://usr/bin/omnect_get_tpm_reg_info.sh \
 "
 
 RDEPENDS:${PN} += "\
@@ -29,12 +30,14 @@ FILES:${PN} = "\
     /mnt/etc \
     /mnt/factory \
     /usr/bin/omnect_get_deviceid.sh \
+    /usr/bin/omnect_get_tpm_reg_info.sh \
     /var/lib \
 "
 
 do_install() {
     install -m 0644 -D ${WORKDIR}/etc/bashrc ${D}/etc/bashrc
     install -m 0755 -D ${WORKDIR}/usr/bin/omnect_get_deviceid.sh ${D}/usr/bin/omnect_get_deviceid.sh
+    install -m 0755 -D ${WORKDIR}/usr/bin/omnect_get_tpm_reg_info.sh ${D}/usr/bin/omnect_get_tpm_reg_info.sh
     install -m 0644 -D ${WORKDIR}/etc/sudoers.d/001_omnect ${D}/etc/sudoers.d/001_omnect
     install -m 0644 -D ${WORKDIR}/etc/profile.d/omnect_profile.sh ${D}/etc/profile.d/omnect_profile.sh
     install -m 0644 -D ${WORKDIR}/etc/profile.d/omnect_prompt.sh ${D}/etc/profile.d/omnect_prompt.sh
