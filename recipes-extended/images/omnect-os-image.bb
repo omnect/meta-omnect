@@ -15,8 +15,8 @@ do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
 
 # we add boot.scr to the image on condition
-do_rootfs[depends] += "${@ 'u-boot-scr:do_deploy' if bb.utils.to_boolean(d.getVar('UBOOT_MACHINE')) else '' }"
-IMAGE_BOOT_FILES += "${@ 'boot.scr' if bb.utils.to_boolean(d.getVar('UBOOT_MACHINE')) else '' }"
+do_rootfs[depends] += "${@ 'u-boot-scr:do_deploy' if d.getVar('UBOOT_MACHINE', True) else '' }"
+IMAGE_BOOT_FILES += "${@ 'boot.scr' if d.getVar('UBOOT_MACHINE', True) else '' }"
 IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
 
 # native openssl tool required
@@ -35,14 +35,14 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
-    omnect-base-files \
     iot-hub-device-update \
+    kmod \
+    omnect-base-files \
     packagegroup-core-ssh-dropbear \
     procps \
     sudo \
-    kmod \
+    u-boot-fw-utils \
 "
-IMAGE_INSTALL += "${@ 'u-boot-fw-utils' if bb.utils.to_boolean(d.getVar('UBOOT_MACHINE')) else '' }"
 
 # check environment variable OMNECT_DEVEL_TOOLS
 def check_for_devel_tools(d):
