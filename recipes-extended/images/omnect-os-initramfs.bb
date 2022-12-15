@@ -17,21 +17,21 @@ RESIZE_DATA_PACKAGES = "\
 
 PACKAGE_INSTALL = "\
     base-passwd \
-    omnect-os-initramfs-scripts \
+    coreutils \
     initramfs-framework-base \
     initramfs-module-debug \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
-    coreutils \
     kmod \
+    libubootenv \
+    libubootenv-bin \
+    omnect-os-initramfs-scripts \
     util-linux-fdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect-flash-mode dhcpcd dropbear bmap-tools xz util-linux-sfdisk e2fsprogs', '', d)} \
 "
-
-PACKAGE_INSTALL += "${@ 'libubootenv libubootenv-bin' if bb.utils.to_boolean(d.getVar('UBOOT_MACHINE')) else '' }"
 
 inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect_user', '', d)}
