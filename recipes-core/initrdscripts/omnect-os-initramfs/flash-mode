@@ -301,8 +301,8 @@ run_flash_mode_2() {
         run_cmd_stdout dd if=/dev/omnect/factory of="$(readlink -f ${blk_dev_dst}p4)" bs=10M || return 1
         run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}p5)" bs=10M || return 1
     elif [ "${part_type}" = "dos" ]; then
-        run_cmd_stdout dd if=/dev/omnect/factory of="$(readlink -f ${blk_dev_dst}p6)" bs=10M || return 1
-        run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}p7)" bs=10M || return 1
+        run_cmd_stdout dd if=/dev/omnect/factory of="$(readlink -f ${blk_dev_dst}p5)" bs=10M || return 1
+        run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}p6)" bs=10M || return 1
     fi
 
     echo "COPY current rootfs to rootfsA..."
