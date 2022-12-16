@@ -169,6 +169,7 @@ run_flash_mode_2() {
     local extended_partition_size=""
     local rootfs_bootpart=""
     local act_rootfs_partition=""
+    local last_lba=""
 
     echo "Entering omnect flashing mode 2 ..."
 
@@ -230,7 +231,9 @@ run_flash_mode_2() {
     if [ "${part_type}" = "gpt" ]; then
         echo "DUMP gpt / partition table..."
         data_partition_start=$(get_start_sector "${blk_dev_src}" p7)
+        last_lba=$((data_partition_start+data_partition_size-1))
         sfdisk --dump "${blk_dev_src}" | \
+        sed "s|^last-lba: \(.*\)$|last-lba: ${last_lba}|g" | \
         sed "s|\(^${data_partition}.*size=[[:space:]]\+\)\([[:digit:]]\+,\)\(.*\)$|\1 ${data_partition_size}, \3|g" >/tmp/sfdisk.txt
     elif [ "${part_type}" = "dos" ]; then
         echo "DUMP mbr / partition table..."
@@ -257,6 +260,7 @@ run_flash_mode_2() {
     fi
 
     echo "######## cloning disk: ${blk_dev_src} -> ${blk_dev_dst} ########"
+    cat /tmp/sfdisk.txt
     run_cmd_stdout "sfdisk ${blk_dev_dst} </tmp/sfdisk.txt"
     # -- after sfdisk, the new partitions are available --
 
