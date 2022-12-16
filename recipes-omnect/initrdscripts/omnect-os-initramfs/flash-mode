@@ -142,6 +142,15 @@ run_flash_mode_1() {
     run_bmap_tool || return
 
     sync
+
+    if [ -f /etc/omnect/grub.cfg.in ]; then
+        mkdir -p /tmp/boot
+        mount /dev/omnect/boot /tmp/boot
+        rootblk=$(readlink -f /dev/omnect/rootblk)
+        sed "s#@@ROOT_DEVICE@@#${rootblk}#g" /etc/omnect/grub.cfg.in > /tmp/boot/grub.cfg
+        umount /tmp/boot
+    fi
+
     msg "Rebooting system..."
     reboot -f
     # -- never reached --
@@ -210,12 +219,19 @@ run_flash_mode_2() {
     fi
 
     # detect current rootfs
-    rootfs_bootpart=$(get_bootloader_env_var bootpart | cut -d= -f2)
-    case "${rootfs_bootpart}" in
-      2) act_rootfs_partition="/dev/omnect/rootA";;
-      3) act_rootfs_partition="/dev/omnect/rootB";;
-      *) stderr_fatal "cannot detect rootfs bootpart"; return 1;;
-    esac
+
+    if [ ! -f /etc/omnect/grub.cfg.in ]; then
+        rootfs_bootpart=$(get_bootloader_env_var bootpart | cut -d= -f2)
+        case "${rootfs_bootpart}" in
+        2) act_rootfs_partition="/dev/omnect/rootA";;
+        3) act_rootfs_partition="/dev/omnect/rootB";;
+        *) stderr_fatal "cannot detect rootfs bootpart"; return 1;;
+        esac
+    else
+        # @todo fix grub case
+        rootfs_bootpart=2
+        act_rootfs_partition="/dev/omnect/rootA"
+    fi
 
     # check for MBR partition type
     part_type=$(parted ${blk_dev_src} print | grep '^Partition Table:' | awk -F: '{print $2}')
@@ -293,6 +309,21 @@ run_flash_mode_2() {
 
     run_cmd_stdout sync
 
+    if [ -f /etc/omnect/grub.cfg.in ]; then
+        mkdir -p /tmp/boot
+        if [ -b ${blk_dev_dst}p1 ]; then
+            mount ${blk_dev_dst}p1 /tmp/boot
+        elif [ -b ${blk_dev_dst}1 ]; then
+            mount ${blk_dev_dst}1 /tmp/boot
+        else
+            stderr_fatal "couldn't find boot device for ${blk_dev_dst}"
+            rum_cmd_stdout ls -l ${blk_dev_dst}*
+            return 1
+        fi
+        sed "s#@@ROOT_DEVICE@@#${blk_dev_dst}#g" /etc/omnect/grub.cfg.in > /tmp/boot/grub.cfg
+        umount /tmp/boot
+    fi
+
     echo "flash mode 2 successfully finished"
     return 0
 }
@@ -300,25 +331,24 @@ run_flash_mode_2() {
 # main entry point
 flash_mode_run() {
     local blk_dev_data=""
-
     case ${OMNECT_FLASH_MODE} in
-        1) run_flash_mode_1
-           ;;
-        2) set -o pipefail
-           run_flash_mode_2 2>&1 | tee /tmp/flash-mode-2.log >/dev/console 2>&1; RET=$?
-           blk_dev_data=$(get_block_device data)
-           if [ -b "${blk_dev_data}" ]; then
-               # store log file
-               mkdir -p /tmp/mnt_data
-               check_ext4_fs "data" "${blk_dev_data}" 0
-               mount_partition "ext4" "${blk_dev_data}" "/tmp/mnt_data" "defaults,rw"
-               run_cmd cp /tmp/flash-mode-2.log "/tmp/mnt_data"
-               run_cmd sync
-               run_cmd umount "/tmp/mnt_data"
-           fi
-           if [ $RET -eq 0 ]; then poweroff -f; fi
-           ;;
-        *) msg "flash mode \"${OMNECT_FLASH_MODE}\" not supported; ignore...";;
+        1)  run_flash_mode_1
+            ;;
+        2)  set -o pipefail
+            run_flash_mode_2 2>&1 | tee /tmp/flash-mode-2.log >/dev/console 2>&1; RET=$?
+            blk_dev_data=$(get_block_device data)
+            if [ -b "${blk_dev_data}" ]; then
+                # store log file
+                mkdir -p /tmp/mnt_data
+                check_ext4_fs "data" "${blk_dev_data}" 0
+                mount_partition "ext4" "${blk_dev_data}" "/tmp/mnt_data" "defaults,rw"
+                run_cmd cp /tmp/flash-mode-2.log "/tmp/mnt_data"
+                run_cmd sync
+                run_cmd umount "/tmp/mnt_data"
+            fi
+            if [ $RET -eq 0 ]; then poweroff -f; fi
+            ;;
+        *)  msg "flash mode \"${OMNECT_FLASH_MODE}\" not supported; ignore...";;
     esac
 
     # continue startup in case of errors
