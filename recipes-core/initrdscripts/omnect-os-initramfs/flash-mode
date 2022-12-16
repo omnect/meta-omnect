@@ -288,6 +288,7 @@ run_flash_mode_2() {
     # enforce first boot condition
     echo "MKFS etc and data..."
     if [ "${part_type}" = "gpt" ]; then
+        check_ext4_fs "etc"  "${blk_dev_dst}p6" 1
         check_ext4_fs "data" "${blk_dev_dst}p7" 1
     elif [ "${part_type}" = "dos" ]; then
         check_ext4_fs "etc"  "${blk_dev_dst}p7" 1
