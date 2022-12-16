@@ -217,55 +217,63 @@ run_flash_mode_2() {
       *) stderr_fatal "cannot detect rootfs bootpart"; return 1;;
     esac
 
-    # check for MBR partition type
-    part_type=$(parted ${blk_dev_src} print | grep '^Partition Table:' | awk -F: '{print $2}')
-    part_type="${part_type// /}"
-    if [ ! "${part_type}" == 'msdos' ]; then
-        stderr_fatal "partition type \"${part_type}\" not supported"
-        return 1
-    fi
-
     data_partition=$(readlink -f /dev/omnect/data)
     if [ -z "${data_partition}" ]; then
         stderr_fatal "cannot detect data partition"
         return 1
     fi
-
-    extended_partition=$(readlink -f /dev/omnect/extended)
-    if [ -z "${extended_partition}" ]; then
-        stderr_fatal "cannot detect extended partition"
-        return 1
-    fi
-
     # adapt size of data partition to initial value, before (optional) resize of data partition
     data_partition_size=$((OMNECT_FLASH_MODE_DATA_SIZE * 2)) # 1024 (yocto) -> 512 (sfdisk)
-    # calculate site of extended partition, not affected by (optional) resize of data partition
-    extended_partition_start=$(get_start_sector "${blk_dev_src}" p4)
-    data_partition_start=$(get_start_sector "${blk_dev_src}" p8)
-    extended_partition_size=$((data_partition_start - extended_partition_start + data_partition_size))
-    if [ -z "${extended_partition_size}" ]; then
-        stderr_fatal "cannot detect extended partition size"
+
+    # check for partition type
+    part_type=$(get_partition_type)
+    if [ "${part_type}" = "gpt" ]; then
+        echo "DUMP gpt / partition table..."
+        data_partition_start=$(get_start_sector "${blk_dev_src}" p7)
+        sfdisk --dump "${blk_dev_src}" | \
+        sed "s|\(^${data_partition}.*size=[[:space:]]\+\)\([[:digit:]]\+,\)\(.*\)$|\1 ${data_partition_size}, \3|g" >/tmp/sfdisk.txt
+    elif [ "${part_type}" = "dos" ]; then
+        echo "DUMP mbr / partition table..."
+        extended_partition=$(readlink -f /dev/omnect/extended)
+        if [ -z "${extended_partition}" ]; then
+            stderr_fatal "cannot detect extended partition"
+            return 1
+        fi
+        # calculate site of extended partition, not affected by (optional) resize of data partition
+        extended_partition_start=$(get_start_sector "${blk_dev_src}" p4)
+        data_partition_start=$(get_start_sector "${blk_dev_src}" p8)
+        extended_partition_size=$((data_partition_start - extended_partition_start + data_partition_size))
+        if [ -z "${extended_partition_size}" ]; then
+            stderr_fatal "cannot detect extended partition size"
+            return 1
+        fi
+
+        sfdisk --dump "${blk_dev_src}" | \
+        sed "s|\(^${data_partition}.*size=[[:space:]]\+\)\([[:digit:]]\+,\)\(.*\)$|\1 ${data_partition_size}, \3|g" | \
+        sed "s|\(^${extended_partition}.*size=[[:space:]]\+\)\([[:digit:]]\+,\)\(.*\)$|\1 ${extended_partition_size}, \3|g" >/tmp/sfdisk.txt
+    else
+        stderr_fatal "unhandled partition type: \"${part_type}\""
         return 1
     fi
 
-    # -- all preconditions checked here --
     echo "######## cloning disk: ${blk_dev_src} -> ${blk_dev_dst} ########"
-
-    echo "CLONE MBR / partition table..."
-    sfdisk --dump "${blk_dev_src}" | \
-        sed "s|\(^${data_partition}.*size=[[:space:]]\+\)\([[:digit:]]\+,\)\(.*\)$|\1 ${data_partition_size}, \3|g" | \
-        sed "s|\(^${extended_partition}.*size=[[:space:]]\+\)\([[:digit:]]\+,\)\(.*\)$|\1 ${extended_partition_size}, \3|g" >/tmp/sfdisk.txt
     run_cmd_stdout "sfdisk ${blk_dev_dst} </tmp/sfdisk.txt"
     # -- after sfdisk, the new partitions are available --
 
     echo "CHECK for new partition scheme.."
     if [ ! -b "${blk_dev_dst}p1" ]; then stderr_fatal "\"${blk_dev_dst}p1\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}p2" ]; then stderr_fatal "\"${blk_dev_dst}p2\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}p3" ]; then stderr_fatal "\"${blk_dev_dst}p3\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}p4" ]; then stderr_fatal "\"${blk_dev_dst}p4\" is not a block device"; return 1; fi
     if [ ! -b "${blk_dev_dst}p5" ]; then stderr_fatal "\"${blk_dev_dst}p5\" is not a block device"; return 1; fi
     if [ ! -b "${blk_dev_dst}p6" ]; then stderr_fatal "\"${blk_dev_dst}p6\" is not a block device"; return 1; fi
     if [ ! -b "${blk_dev_dst}p7" ]; then stderr_fatal "\"${blk_dev_dst}p7\" is not a block device"; return 1; fi
-    if [ ! -b "${blk_dev_dst}p8" ]; then stderr_fatal "\"${blk_dev_dst}p8\" is not a block device"; return 1; fi
+    if [ "${part_type}" = "dos" ]; then
+        if [ ! -b "${blk_dev_dst}p8" ]; then stderr_fatal "\"${blk_dev_dst}p8\" is not a block device"; return 1; fi
+    fi
 
-    # handle u-boot not stored inside the boot partition
+    # handle u-boot env not stored inside the boot partition
+    # e.g. not UNDEFINED if BOOTLOADER_SEEK is set (phytec boards)
     if [ "${OMNECT_FLASH_MODE_BOOTLOADER_START}" != "UNDEFINED" ]; then
         echo "COPY u-boot..."
         run_cmd_stdout dd if=${blk_dev_src} iflag=skip_bytes skip=$((OMNECT_FLASH_MODE_BOOTLOADER_START*1024)) \
@@ -275,18 +283,28 @@ run_flash_mode_2() {
 
     # enforce first boot condition
     echo "MKFS etc and data..."
-    check_ext4_fs "etc"  "${blk_dev_dst}p7" 1
-    check_ext4_fs "data" "${blk_dev_dst}p8" 1
+    if [ "${part_type}" = "gpt" ]; then
+        check_ext4_fs "data" "${blk_dev_dst}p7" 1
+    elif [ "${part_type}" = "dos" ]; then
+        check_ext4_fs "etc"  "${blk_dev_dst}p7" 1
+        check_ext4_fs "data" "${blk_dev_dst}p8" 1
+    fi
 
     echo "COPY boot, factory and cert..."
     run_cmd_stdout dd if=/dev/omnect/boot    of="$(readlink -f ${blk_dev_dst}p1)" bs=10M || return 1
-    run_cmd_stdout dd if=/dev/omnect/factory of="$(readlink -f ${blk_dev_dst}p5)" bs=10M || return 1
-    run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}p6)" bs=10M || return 1
+    if [ "${part_type}" = "gpt" ]; then
+        run_cmd_stdout dd if=/dev/omnect/factory of="$(readlink -f ${blk_dev_dst}p4)" bs=10M || return 1
+        run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}p5)" bs=10M || return 1
+    elif [ "${part_type}" = "dos" ]; then
+        run_cmd_stdout dd if=/dev/omnect/factory of="$(readlink -f ${blk_dev_dst}p6)" bs=10M || return 1
+        run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}p7)" bs=10M || return 1
+    fi
 
     echo "COPY current rootfs to rootfsA..."
     run_cmd_stdout e2image -ra -p "${act_rootfs_partition}" "$(readlink -f ${blk_dev_dst}p2)" || return 1
 
     echo "ENFORCE default bootloader environment..."
+    # Warning: we enforce  here that there is a redundant uboot env available, even if the initial wic did'nt have one
     dd if=/dev/zero bs=1024 count=${OMNECT_FLASH_MODE_UBOOT_ENV_SIZE} 2>/dev/null | tr "\000" "\377" >/tmp/uboot_env_ff.img
     run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV1_START*1024)) || return 1
     run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV2_START*1024)) || return 1
