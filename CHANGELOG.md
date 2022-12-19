@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.13.2] Q4 2022
 - removed device enrollment demo with provisioning via tpm
-- added tpm as DISTRO_FEATURE instead of as kas feature
+- added tpm handling and tpm2-tools if MACHINE_FEATURES includes tpm
 - added script to get registration informations from a TPM device
 
 ## [kirkstone-0.13.1] Q4 2022
