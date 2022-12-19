@@ -40,6 +40,9 @@ rootblk_dev_run() {
     # needed for current adu-swupdate.sh script
     # @todo still needed when using adu swupdate handler v2?
     for i in /dev/${rootblk}${part}*; do
+        if [ "${i}" = "/dev/${rootblk}" ]; then
+            continue
+        fi
         ln -sf ${i} rootblkp${i:0-1}
     done
 
@@ -47,6 +50,7 @@ rootblk_dev_run() {
     ln -sf /dev/${rootblk}${part}1 boot
     ln -sf /dev/${rootblk}${part}2 rootA
     ln -sf /dev/${rootblk}${part}3 rootB
+    ln -sf ${bootparam_root} rootCurrent
 
     #gpt vs mbr
     local ptype=$(get_partition_type)
