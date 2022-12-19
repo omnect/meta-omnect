@@ -276,7 +276,7 @@ run_flash_mode_2() {
         if [ ! -b "${blk_dev_dst}p8" ]; then stderr_fatal "\"${blk_dev_dst}p8\" is not a block device"; return 1; fi
     fi
 
-    # handle u-boot env not stored inside the boot partition
+    # handle u-boot not stored inside the boot partition
     # e.g. not UNDEFINED if BOOTLOADER_SEEK is set (phytec boards)
     if [ "${OMNECT_FLASH_MODE_BOOTLOADER_START}" != "UNDEFINED" ]; then
         echo "COPY u-boot..."
