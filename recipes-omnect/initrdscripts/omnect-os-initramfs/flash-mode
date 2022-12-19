@@ -258,7 +258,7 @@ run_flash_mode_2() {
             stderr_fatal "cannot detect extended partition"
             return 1
         fi
-        # calculate site of extended partition, not affected by (optional) resize of data partition
+        # calculate size of extended partition, not affected by (optional) resize of data partition
         extended_partition_start=$(get_start_sector "${blk_dev_src}" p4)
         data_partition_start=$(get_start_sector "${blk_dev_src}" p8)
         extended_partition_size=$((data_partition_start - extended_partition_start + data_partition_size))
