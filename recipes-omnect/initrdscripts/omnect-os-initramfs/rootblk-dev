@@ -5,8 +5,7 @@ rootblk_dev_enabled() {
 }
 
 rootblk_dev_run() {
-    # @todo use distro name and version from distro conf
-    msg "@@DISTRO@@ @@DISTRO_VERSION@@ initramfs rootblk-dev ROOTFS_DIR=${ROOTFS_DIR}"
+    msg "$(grep ^PRETTY_NAME= /etc/os-release) initramfs"
 
     [ -z "${bootparam_root}" ] && msg "no root device set" && return 1
 

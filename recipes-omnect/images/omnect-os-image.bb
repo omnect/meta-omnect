@@ -44,9 +44,6 @@ IMAGE_INSTALL = "\
     u-boot-fw-utils \
 "
 
-# @todo remove me
-IMAGE_INSTALL += "util-linux-sfdisk"
-
 # check environment variable OMNECT_DEVEL_TOOLS
 def check_for_devel_tools(d):
     # use default list part of this recipe

@@ -27,11 +27,15 @@ PACKAGE_INSTALL = "\
     libubootenv \
     libubootenv-bin \
     omnect-os-initramfs-scripts \
+    os-release \
     util-linux-fdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect-flash-mode dhcpcd dropbear bmap-tools xz util-linux-sfdisk e2fsprogs', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'grub-cfg', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'efi', 'efibootmgr', '', d)} \
 "
 
 inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect_user', '', d)}
