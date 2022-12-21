@@ -5,10 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.13.2] Q4 2022
+## [kirkstone-0.13.3] Q4 2022
 - removed device enrollment demo with provisioning via tpm
 - added tpm handling and tpm2-tools if MACHINE_FEATURES includes tpm
 - added script to get registration information from a tpm device
+
+## [kirkstone-0.13.2] Q4 2022
+- initramfs flash-mode 2: added gpt partition table support
 
 ## [kirkstone-0.13.1] Q4 2022
 - initramfs resize-data: use `sgdisk` instead of `parted` to fix gpt partition backup table
