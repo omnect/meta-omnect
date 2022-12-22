@@ -180,7 +180,7 @@ setup_etc_partition()
 
     # mount etc overlay
     mount_overlayfs "${rootfs_dir}/etc" "${rootfs_dir}/mnt/etc/upper" "${rootfs_dir}/mnt/etc/work" \
-                    "${mnt_opts}" "${rootfs_dir}/etc"
+                    "${mnt_opts}",index=off "${rootfs_dir}/etc"
 }
 
 umount_etc_partition()
@@ -211,7 +211,7 @@ setup_data_partition()
     mkdir -p "${rootfs_dir}/mnt/data/var/lib"
     mkdir -p "${rootfs_dir}/mnt/data/local"
     mount_overlayfs "${rootfs_dir}/home" "${rootfs_dir}/mnt/data/home/upper" "${rootfs_dir}/mnt/data/home/work" \
-                    "${mnt_opts}" "${rootfs_dir}/home"
+                    "${mnt_opts}",index=off "${rootfs_dir}/home"
 
     # bind mount /var/lib
     mkdir -p "${rootfs_dir}/mnt/data/var/lib"
