@@ -13,7 +13,7 @@ software =
 						sha256 = "$swupdate_get_sha256(@@DISTRO@@-@@MACHINE@@.ext4.gz)";
 						type = "raw";
 						compressed = true;
-						device = "/dev/omnect/rootblkp2";
+						device = "/dev/omnect/rootA";
 					}
 				);
 				uboot: (
@@ -31,7 +31,7 @@ software =
 						sha256 = "$swupdate_get_sha256(@@DISTRO@@-@@MACHINE@@.ext4.gz)";
 						type = "raw";
 						compressed = true
-						device = "/dev/omnect/rootblkp3";
+						device = "/dev/omnect/rootB";
 					}
 				);
 				uboot: (
