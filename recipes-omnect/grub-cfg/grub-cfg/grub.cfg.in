@@ -1,6 +1,12 @@
 serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
-default=omnect-os-rootA
 timeout=2
+
+load_env
+
+if [ "x${omnect_os_boot}" = "x" ]; then
+  set omnect_os_boot="omnect-os-rootA"
+fi
+set default="${omnect_os_boot}"
 
 menuentry 'omnect-os-rootA'{
     set root=(hd0,gpt2)
