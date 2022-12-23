@@ -341,7 +341,7 @@ run_flash_mode_2() {
 
     if [[ " ${machine_features} " =~ " efi " ]]; then
         echo "Configuring efi"
-        run_cmd_stdout efibootmgr --create --disk ${blk_dev_dst} --part 1 --label "omnect os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi || return 1
+        run_cmd_stdout efibootmgr --create --disk ${blk_dev_dst} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi || return 1
         # delete all efi entries but last
         efi_entries=$(efibootmgr | grep ^Boot[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]\* | awk '{print $1}'| sed  '$ d')
         for i in ${efi_entries}; do
