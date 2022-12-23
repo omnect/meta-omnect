@@ -96,20 +96,12 @@ else
 fi
 
 if [[ $action == "apply" ]]; then
-    # Set the bootloader environment variable
-    # to tell the bootloader to boot into the current partition
-    # instead of the one that was updated.
-    # bootpart variable is specific to our boot.scr script.
     echo "Applying update." >> "${log_dir}/swupdate.log"
     mount_boot && grub-editenv /boot/EFI/BOOT/grubenv set omnect_os_boot=${update_part} && umount /boot
     $ret $?
 fi
 
 if [[ $action == "revert" ]]; then
-    # Set the bootloader environment variable
-    # to tell the bootloader to boot into the current partition
-    # instead of the one that was updated.
-    # bootpart variable is specific to our boot.scr script.
     echo "Reverting update." >> "${log_dir}/swupdate.log"
     mount_boot; grub-editenv /boot/EFI/BOOT/grubenv set omnect_os_boot=${current_part} && umount /boot
     $ret $?
