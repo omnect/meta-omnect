@@ -314,14 +314,17 @@ do_install() {
     # default configs and config directories
     echo "z ${sysconfdir}/aziot 0775 root aziot -" >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "z ${sysconfdir}/aziot/config.toml 0664 root aziot -" >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
+    echo "z ${sysconfdir}/aziot/certd 0750 root aziotcs -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "z ${sysconfdir}/aziot/certd/config.d 0700 aziotcs aziotcs -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "Z ${sysconfdir}/aziot/certd/config.d/\*.toml 0600 aziotcs aziotcs -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0640     ${S}/cert/aziot-certd/config/unix/default.toml ${D}${sysconfdir}/aziot/certd/config.toml.default
 
+    echo "z ${sysconfdir}/aziot/identityd 0750 root aziotid -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "z ${sysconfdir}/aziot/identityd/config.d 0700 aziotid aziotid -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "Z ${sysconfdir}/aziot/identityd/config.d/\*.toml 0600 aziotid aziotid -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0640     ${S}/identity/aziot-identityd/config/unix/default.toml ${D}${sysconfdir}/aziot/identityd/config.toml.default
 
+    echo "z ${sysconfdir}/aziot/keyd 0750 root aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "z ${sysconfdir}/aziot/keyd/config.d 0700 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "Z ${sysconfdir}/aziot/keyd/config.d/\*.toml 0600 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0644     ${S}/key/aziot-keyd/config/unix/default.toml ${D}${sysconfdir}/aziot/keyd/config.toml.default
@@ -331,6 +334,7 @@ do_install() {
 
     install -d -m 0750 -g aziottpm ${D}${sysconfdir}/aziot/tpmd
     install -d -m 0700 -o aziottpm -g aziottpm ${D}${sysconfdir}/aziot/tpmd/config.d
+    echo "z ${sysconfdir}/aziot/tpmd 0750 root aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "z ${sysconfdir}/aziot/tpmd/config.d 0700 aziottpm aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     echo "Z ${sysconfdir}/aziot/tpmd/config.d/\*.toml 0600 aziottpm aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0640     ${S}/tpm/aziot-tpmd/config/unix/default.toml ${D}${sysconfdir}/aziot/tpmd/config.toml.default
