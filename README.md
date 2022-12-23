@@ -203,7 +203,8 @@ reboot
 Entering omnect flashing mode 1...
 ...
 ```
-Note, the *fw_setenv* command requires root permissions.
+**Note 1: *fw_setenv* command requires root permissions.**<br>
+**Note 2: `flash-mode 1` is restricted to eth0.**
 
 In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
 ```sh
