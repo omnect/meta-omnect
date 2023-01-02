@@ -7,6 +7,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 SRC_URI = "git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;tag=1.4.1"
 
 SRC_URI += " \
+    file://iot-identity-service.conf \
     file://iot-identity-service-certd.template.toml \
     file://ossl300_fix_incompatible_pointer_types.patch \
     file://ossl300_default_provider.patch \
@@ -312,44 +313,22 @@ do_install() {
     install -m 0644 -D  ${B}/target/${TARGET_SYS}/release/libaziot_keys.so ${D}${libdir}
 
     # default configs and config directories
-    echo "z ${sysconfdir}/aziot 0775 root aziot -" >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    echo "z ${sysconfdir}/aziot/config.toml 0664 root aziot -" >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    echo "z ${sysconfdir}/aziot/certd 0750 root aziotcs -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    echo "z ${sysconfdir}/aziot/certd/config.d 0700 aziotcs aziotcs -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    echo "Z ${sysconfdir}/aziot/certd/config.d/\*.toml 0600 aziotcs aziotcs -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
+    install -m 0644 -D  ${WORKDIR}/iot-identity-service.conf ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0640     ${S}/cert/aziot-certd/config/unix/default.toml ${D}${sysconfdir}/aziot/certd/config.toml.default
-
-    echo "z ${sysconfdir}/aziot/identityd 0750 root aziotid -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    echo "z ${sysconfdir}/aziot/identityd/config.d 0700 aziotid aziotid -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    echo "Z ${sysconfdir}/aziot/identityd/config.d/\*.toml 0600 aziotid aziotid -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0640     ${S}/identity/aziot-identityd/config/unix/default.toml ${D}${sysconfdir}/aziot/identityd/config.toml.default
-
-    echo "z ${sysconfdir}/aziot/keyd 0750 root aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    echo "z ${sysconfdir}/aziot/keyd/config.d 0700 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    echo "Z ${sysconfdir}/aziot/keyd/config.d/\*.toml 0600 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0644     ${S}/key/aziot-keyd/config/unix/default.toml ${D}${sysconfdir}/aziot/keyd/config.toml.default
-    echo "d /mnt/data/var/secrets/aziot/keyd 0700 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    install -d ${D}/var
+    install -d          ${D}/var
     ln -rs ${D}/mnt/data/var/secrets ${D}/var/secrets
-
     install -d -m 0750 -g aziottpm ${D}${sysconfdir}/aziot/tpmd
     install -d -m 0700 -o aziottpm -g aziottpm ${D}${sysconfdir}/aziot/tpmd/config.d
-    echo "z ${sysconfdir}/aziot/tpmd 0750 root aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    echo "z ${sysconfdir}/aziot/tpmd/config.d 0700 aziottpm aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
-    echo "Z ${sysconfdir}/aziot/tpmd/config.d/\*.toml 0600 aziottpm aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0640     ${S}/tpm/aziot-tpmd/config/unix/default.toml ${D}${sysconfdir}/aziot/tpmd/config.toml.default
-
     install -m 0640     ${S}/aziotctl/config/unix/template.toml ${D}${sysconfdir}/aziot/config.toml.template
 
     # home directories
     install -d -m 0700  ${D}${localstatedir}/lib/aziot/certd
-    echo "d ${localstatedir}/lib/aziot/certd 0700 aziotcs aziotcs -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -d -m 0700  ${D}${localstatedir}/lib/aziot/identityd
-    echo "d ${localstatedir}/lib/aziot/identityd 0700 aziotid aziotid -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -d -m 0700  ${D}${localstatedir}/lib/aziot/keyd
-    echo "d ${localstatedir}/lib/aziot/keyd 0700 aziotks aziotks -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -d -m 0700  ${D}${localstatedir}/lib/aziot/tpmd
-    echo "d ${localstatedir}/lib/aziot/tpmd 0700 aziottpm aziottpm -"  >> ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
 
     # systemd services and sockets
     install -d -m 0755  ${D}${systemd_system_unitdir}
