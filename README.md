@@ -131,6 +131,15 @@ Optionally set `OMNECT_BUILD_NUMBER` to set a meaningful build number in the dis
 
 There is the configuration variable `OMNECT_VM_PANIC_ON_OOM` used to define the out-of-memory (OOM) handling.
 
+### Release vs Developer build
+Set the enviroment variable `OMNECT_RELEASE_IMAGE` to `1` for release builds. The default is `0` which means it is a developer build.
+
+Differences:
+- Release build
+  - default firewall config which allows input for established connections only
+- Developer build
+  - default firewall config as in Release build, additionally allow ssh connections
+
 ### Example build via `kas`
 
 This repository provides [`kas`](https://kas.readthedocs.io/en/latest/) configuration files to build `omnect-os`.
