@@ -5,17 +5,8 @@ Before=first-boot-complete.target
 Wants=first-boot-complete.target
 ConditionFirstBoot=yes
 
-# CAUTION!!!
-# Do not add service order dependencies in this service file.
-# omnect_first_boot.sh implicitly starts services and might cause a deadlock while starting services.
-
 [Service]
-# Type may not be "oneshot", this can result in a deadlock because the started
-# script has to return before other service, depending on it, can start.
-# Since the script itself (re)starts services via systemd this would result in
-# a deadlock.
-# (Seen when time-sync.target takes longer due to network problems.)
-Type=simple
+Type=oneshot
 ExecStart=/usr/bin/omnect_first_boot.sh
 RemainAfterExit=true
 
