@@ -1,0 +1,11 @@
+[Unit]
+Description=iot identity precondition
+Before=aziot-identityd.service
+
+[Service]
+Type=simple
+ExecStart=@@AZIOTCLI@@ config apply
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
