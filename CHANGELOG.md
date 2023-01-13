@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.14.1] Q1 2023
 - kernel/iptables: added common kernel nftables confguration fragment
-  (fixed iptables apply on tauri)
+  (fixes iptables restore on tauri)
+- added iptables to omnect-os-image (before iptables was only a runtime dependency of docker)
 
 ## [kirkstone-0.14.0] Q1 2023
 - iptables: added default firewall configuration depending on Developer/Release build

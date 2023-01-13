@@ -35,6 +35,7 @@ IMAGE_INSTALL = "\
     coreutils \
     omnect-base-files \
     iot-hub-device-update \
+    iptables \
     packagegroup-core-ssh-dropbear \
     procps \
     sudo \
