@@ -43,6 +43,10 @@ env:
   DISTRO_NAME_SUFFIX: ""
   # build number which is reflected in DISTRO_VERSION
   OMNECT_BUILD_NUMBER: "0"
+
+  # is image of type release?
+  OMNECT_RELEASE_IMAGE: "0"
+
   # changelog version and repo uri of meta-omnect
   META_OMNECT_VERSION: "META_OMNECT_VERSION_NOT_SET"
   META_OMNECT_GIT_REPO: "META_OMNECT_GIT_REPO_NOT_SET"
