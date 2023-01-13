@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.14.1] Q1 2023
-- kernel/iptables: added common kernel nftables confguration fragment
+- kernel/iptables: added common kernel netfilter configuration fragment
   (fixes iptables restore on tauri)
 - added iptables to omnect-os-image (before iptables was only a runtime dependency of docker)
 
