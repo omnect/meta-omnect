@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.14.0] Q1 2023
 - iptables: added default firewall configuration depending on Developer/Release build
+- kas: enabled configuration of a release build (`OMNECT_RELEASE_IMAGE=1`)
 
 ## [kirkstone-0.13.8] Q1 2023
 - iot-identity-service: fixed systemd-tmpfiles permission handling

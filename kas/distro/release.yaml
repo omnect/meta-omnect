@@ -1,0 +1,7 @@
+# kas config file
+
+header:
+  version: 11
+
+env:
+  OMNECT_RELEASE_IMAGE: "1"
