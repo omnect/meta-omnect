@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iptables: added default firewall configuration depending on Developer/Release build
 - kas: enabled configuration of a release build (`OMNECT_RELEASE_IMAGE=1`)
 
+## [kirkstone-0.13.11] Q1 2023
+- iot-hub-device-update/swupdate: don't handle u-boot bootparam via swupdate
+
+## [kirkstone-0.13.10] Q1 2023
+- iot-identity-service: fixed systemd-tmpfiles
+
+## [kirkstone-0.13.9] Q1 2023
+- iot-identity-service:
+  - fixed systemd-tmpfiles permission handling
+  - call iotedge/aziotctl config apply on every boot
+
 ## [kirkstone-0.13.8] Q1 2023
 - iot-identity-service: fixed systemd-tmpfiles permission handling
 
