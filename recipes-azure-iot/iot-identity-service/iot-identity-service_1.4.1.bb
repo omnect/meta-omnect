@@ -9,6 +9,7 @@ SRC_URI = "git://git@github.com/Azure/iot-identity-service.git;protocol=https;no
 SRC_URI += " \
     file://iot-identity-service.conf \
     file://iot-identity-service-certd.template.toml \
+    file://iot-identity-service-precondition.service \
     file://ossl300_fix_incompatible_pointer_types.patch \
     file://ossl300_default_provider.patch \
     file://ossl300_openssl-errors.patch \
@@ -382,10 +383,19 @@ do_install() {
 
     # run after time-sync.target
     sed -i 's/^After=\(.*\)$/After=\1 time-sync.target/' ${D}${systemd_system_unitdir}/aziot-identityd.service
+
+    # iot-identity-service-precondition handling
+    install -d ${D}${systemd_system_unitdir}
+    install -m 0644 ${WORKDIR}/iot-identity-service-precondition.service ${D}${systemd_system_unitdir}/iot-identity-service-precondition.service
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'true', 'false', d)}; then
+        sed -i "s/@@AZIOTCLI@@/iotedge/" ${D}${systemd_system_unitdir}/iot-identity-service-precondition.service
+    else
+        sed -i "s/@@AZIOTCLI@@/aziotctl/" ${D}${systemd_system_unitdir}/iot-identity-service-precondition.service
+    fi
 }
 
 pkg_postinst:${PN}() {
-  sed -i "s/@@UID@@/$(id -u aziotid)/" $D${sysconfdir}/aziot/certd/config.d/aziotid.toml
+    sed -i "s/@@UID@@/$(id -u aziotid)/" $D${sysconfdir}/aziot/certd/config.d/aziotid.toml
 }
 
 FILES:${PN} += " \
@@ -403,5 +413,6 @@ SYSTEMD_SERVICE:${PN} = " \
     aziot-identityd.socket \
     aziot-keyd.service \
     aziot-keyd.socket \
+    iot-identity-service-precondition.service \
 "
 SYSTEMD_SERVICE:${PN}:append = "${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', ' aziot-tpmd.service aziot-tpmd.socket', '', d)}"

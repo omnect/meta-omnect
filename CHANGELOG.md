@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.13.9] Q1 2023
+## [kirkstone-0.14.4] Q1 2023
 - kas:
   - updated poky to 4.0.6
   - updated meta-openembedded to latest kirkstone HEAD
@@ -15,6 +15,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - updated meta-freescale to latest kirkstone HEAD
   - updated meta-imx to rel_imx_5.15.71_2.2.0
 - u-boot-imx: adapted enable_boot_script.patch for phytec devices
+
+## [kirkstone-0.14.3] Q1 2023
+- omnect-device-service: bumped to 0.6.3
+- iot-client-template-rs: bumped to 0.4.12
+
+## [kirkstone-0.14.2] Q1 2023
+- do-client/systemd-tmpfiles.d: adapted rule to ensure group do (iot-hub-device-client) can write connection string
+
+## [kirkstone-0.14.1] Q1 2023
+- kernel/iptables: added common kernel netfilter configuration fragment
+  (fixes iptables restore on tauri)
+- added iptables to omnect-os-image (before iptables was only a runtime dependency of docker)
+
+## [kirkstone-0.14.0] Q1 2023
+- iptables: added default firewall configuration depending on Developer/Release build
+- kas: enabled configuration of a release build (`OMNECT_RELEASE_IMAGE=1`)
+
+## [kirkstone-0.13.11] Q1 2023
+- iot-hub-device-update/swupdate: don't handle u-boot bootparam via swupdate
+
+## [kirkstone-0.13.10] Q1 2023
+- iot-identity-service: fixed systemd-tmpfiles
+
+## [kirkstone-0.13.9] Q1 2023
+- iot-identity-service:
+  - fixed systemd-tmpfiles permission handling
+  - call iotedge/aziotctl config apply on every boot
 
 ## [kirkstone-0.13.8] Q1 2023
 - iot-identity-service: fixed systemd-tmpfiles permission handling
