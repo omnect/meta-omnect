@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # optionally provide flashing whole disk image in INITRAMFS context
@@ -128,6 +128,8 @@ run_bmap_tool() {
 
 # deploy WIC image via network to (same) active block device
 run_flash_mode_1() {
+    local root_a_p=""
+    local machine_features=""
     msg "Entering omnect flashing mode 1 ..."
 
     # disable flash mode for subsequent restarts
@@ -141,40 +143,52 @@ run_flash_mode_1() {
     setup_network ${OMNECT_FLASH_MODE_ETH} || return
     run_bmap_tool || return
 
-    sync
+    machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
+    if [[ " ${machine_features} " =~ " grub " ]]; then
+        mkdir -p /tmp/boot
+        mount /dev/omnect/boot /tmp/boot
+        root_a_p=$(readlink -f /dev/omnect/rootA)
+        root_a_p=${root_a_p::-1}
+        sed "s#@@ROOT_DEVICE@@#${root_a_p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
+        umount /tmp/boot
+    fi
+
     msg "Rebooting system..."
+    sync
     reboot -f
     # -- never reached --
 }
 
 get_start_sector()
 {
-    local blk_dev="$1"
-    local part_name="$2"
+    local part_dev="$(readlink -f $1)"
 
-    sfdisk -d "${blk_dev}" | \
-        sed -n "s|^.*${part_name}.*start=[[:space:]]\+\([[:digit:]]\+\),.*$|\1|p"
+    sfdisk -d $(readlink -f /dev/omnect/rootblk) | \
+        sed -n "s|^${part_dev}.*start=[[:space:]]\+\([[:digit:]]\+\),.*$|\1|p"
 }
 
 # clone active disk image to other block device
 run_flash_mode_2() {
-    local part_type=""
     local blk_dev_dst=""
     local blk_dev_src=""
     local data_partition=""
     local data_partition_size=""
     local data_partition_start=""
+    local efi_entries=""
     local extended_partition=""
-    local extended_partition_start=""
     local extended_partition_size=""
-    local rootfs_bootpart=""
-    local act_rootfs_partition=""
+    local extended_partition_start=""
     local last_lba=""
+    local machine_features=""
+    local p=""
+    local part_type=""
+    local rootfs_bootpart=""
 
     echo "Entering omnect flashing mode 2 ..."
 
     # detect destination block device from environment variable
     blk_dev_dst=$(get_bootloader_env_var ${OMNECT_FLASH_DEVPATH_VAR} | cut -d= -f2)
+    blk_dev_dst=$(readlink -f ${blk_dev_dst})
 
     # disable flash mode for subsequent restarts
     set_bootloader_env_var ${OMNECT_FLASH_MODE_VAR}
@@ -201,8 +215,8 @@ run_flash_mode_2() {
     fi
 
     # detect source block device
-    blk_dev_src=$(get_block_device boot)
-    blk_dev_src=${blk_dev_src%p*}
+    blk_dev_src=$(readlink -f /dev/omnect/rootblk)
+
     if [ ! -b "${blk_dev_src}" ]; then stderr_fatal "${blk_dev_src} does not exist or not a block device"; return 1; fi
 
     if [ "${blk_dev_dst}" == "${blk_dev_src}" ]; then
@@ -210,15 +224,7 @@ run_flash_mode_2() {
         return 1
     fi
 
-    # detect current rootfs
-    rootfs_bootpart=$(get_bootloader_env_var bootpart | cut -d= -f2)
-    case "${rootfs_bootpart}" in
-      2) act_rootfs_partition="/dev/omnect/rootA";;
-      3) act_rootfs_partition="/dev/omnect/rootB";;
-      *) stderr_fatal "cannot detect rootfs bootpart"; return 1;;
-    esac
-
-    data_partition=$(readlink -f /dev/omnect/data)
+    data_partition=$(get_block_device data)
     if [ -z "${data_partition}" ]; then
         stderr_fatal "cannot detect data partition"
         return 1
@@ -230,7 +236,7 @@ run_flash_mode_2() {
     part_type=$(get_partition_type)
     if [ "${part_type}" = "gpt" ]; then
         echo "DUMP gpt / partition table..."
-        data_partition_start=$(get_start_sector "${blk_dev_src}" p7)
+        data_partition_start=$(get_start_sector ${data_partition})
         last_lba=$((data_partition_start+data_partition_size-1))
         sfdisk --dump "${blk_dev_src}" | \
         sed "s|^last-lba: \(.*\)$|last-lba: ${last_lba}|g" | \
@@ -243,8 +249,8 @@ run_flash_mode_2() {
             return 1
         fi
         # calculate size of extended partition, not affected by (optional) resize of data partition
-        extended_partition_start=$(get_start_sector "${blk_dev_src}" p4)
-        data_partition_start=$(get_start_sector "${blk_dev_src}" p8)
+        extended_partition_start=$(get_start_sector $(get_block_device extended))
+        data_partition_start=$(get_start_sector ${data_partition})
         extended_partition_size=$((data_partition_start - extended_partition_start + data_partition_size))
         if [ -z "${extended_partition_size}" ]; then
             stderr_fatal "cannot detect extended partition size"
@@ -264,16 +270,22 @@ run_flash_mode_2() {
     run_cmd_stdout "sfdisk ${blk_dev_dst} </tmp/sfdisk.txt"
     # -- after sfdisk, the new partitions are available --
 
+    # do we need partition handling?
+    # eg root=/dev/sda2 -> rootblk=/dev/sda vs root=/dev/mmcblk1p2 -> rootblk=/dev/mmcblk1
+    if [ ! -b "${blk_dev_dst}1" ]; then
+        p="p"
+    fi
+
     echo "CHECK for new partition scheme.."
-    if [ ! -b "${blk_dev_dst}p1" ]; then stderr_fatal "\"${blk_dev_dst}p1\" is not a block device"; return 1; fi
-    if [ ! -b "${blk_dev_dst}p2" ]; then stderr_fatal "\"${blk_dev_dst}p2\" is not a block device"; return 1; fi
-    if [ ! -b "${blk_dev_dst}p3" ]; then stderr_fatal "\"${blk_dev_dst}p3\" is not a block device"; return 1; fi
-    if [ ! -b "${blk_dev_dst}p4" ]; then stderr_fatal "\"${blk_dev_dst}p4\" is not a block device"; return 1; fi
-    if [ ! -b "${blk_dev_dst}p5" ]; then stderr_fatal "\"${blk_dev_dst}p5\" is not a block device"; return 1; fi
-    if [ ! -b "${blk_dev_dst}p6" ]; then stderr_fatal "\"${blk_dev_dst}p6\" is not a block device"; return 1; fi
-    if [ ! -b "${blk_dev_dst}p7" ]; then stderr_fatal "\"${blk_dev_dst}p7\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}${p}1" ]; then stderr_fatal "\"${blk_dev_dst}${p}1\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}${p}2" ]; then stderr_fatal "\"${blk_dev_dst}${p}2\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}${p}3" ]; then stderr_fatal "\"${blk_dev_dst}${p}3\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}${p}4" ]; then stderr_fatal "\"${blk_dev_dst}${p}4\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}${p}5" ]; then stderr_fatal "\"${blk_dev_dst}${p}5\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}${p}6" ]; then stderr_fatal "\"${blk_dev_dst}${p}6\" is not a block device"; return 1; fi
+    if [ ! -b "${blk_dev_dst}${p}7" ]; then stderr_fatal "\"${blk_dev_dst}${p}7\" is not a block device"; return 1; fi
     if [ "${part_type}" = "dos" ]; then
-        if [ ! -b "${blk_dev_dst}p8" ]; then stderr_fatal "\"${blk_dev_dst}p8\" is not a block device"; return 1; fi
+        if [ ! -b "${blk_dev_dst}${p}8" ]; then stderr_fatal "\"${blk_dev_dst}${p}8\" is not a block device"; return 1; fi
     fi
 
     # handle u-boot not stored inside the boot partition
@@ -288,25 +300,25 @@ run_flash_mode_2() {
     # enforce first boot condition
     echo "MKFS etc and data..."
     if [ "${part_type}" = "gpt" ]; then
-        check_ext4_fs "etc"  "${blk_dev_dst}p6" 1
-        check_ext4_fs "data" "${blk_dev_dst}p7" 1
+        check_ext4_fs "etc"  "${blk_dev_dst}${p}6" 1
+        check_ext4_fs "data" "${blk_dev_dst}${p}7" 1
     elif [ "${part_type}" = "dos" ]; then
-        check_ext4_fs "etc"  "${blk_dev_dst}p7" 1
-        check_ext4_fs "data" "${blk_dev_dst}p8" 1
+        check_ext4_fs "etc"  "${blk_dev_dst}${p}7" 1
+        check_ext4_fs "data" "${blk_dev_dst}${p}8" 1
     fi
 
     echo "COPY boot, factory and cert..."
-    run_cmd_stdout dd if=/dev/omnect/boot    of="$(readlink -f ${blk_dev_dst}p1)" bs=10M || return 1
+    run_cmd_stdout dd if=/dev/omnect/boot    of="$(readlink -f ${blk_dev_dst}${p}1)" bs=10M || return 1
     if [ "${part_type}" = "gpt" ]; then
-        run_cmd_stdout dd if=/dev/omnect/factory of="$(readlink -f ${blk_dev_dst}p4)" bs=10M || return 1
-        run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}p5)" bs=10M || return 1
+        run_cmd_stdout dd if=/dev/omnect/factory of="$(readlink -f ${blk_dev_dst}${p}4)" bs=10M || return 1
+        run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}${p}5)" bs=10M || return 1
     elif [ "${part_type}" = "dos" ]; then
-        run_cmd_stdout dd if=/dev/omnect/factory of="$(readlink -f ${blk_dev_dst}p5)" bs=10M || return 1
-        run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}p6)" bs=10M || return 1
+        run_cmd_stdout dd if=/dev/omnect/factory of="$(readlink -f ${blk_dev_dst}${p}5)" bs=10M || return 1
+        run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}${p}6)" bs=10M || return 1
     fi
 
     echo "COPY current rootfs to rootfsA..."
-    run_cmd_stdout e2image -ra -p "${act_rootfs_partition}" "$(readlink -f ${blk_dev_dst}p2)" || return 1
+    run_cmd_stdout e2image -ra -p "/dev/omnect/rootCurrent" "$(readlink -f ${blk_dev_dst}${p}2)" || return 1
 
     echo "ENFORCE default bootloader environment..."
     # Warning: we enforce  here that there is a redundant uboot env available, even if the initial wic did'nt have one
@@ -314,34 +326,57 @@ run_flash_mode_2() {
     run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV1_START*1024)) || return 1
     run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV2_START*1024)) || return 1
 
-    run_cmd_stdout sync
+    machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
+    if [[ " ${machine_features} " =~ " grub " ]]; then
+        echo "Configuring grub"
+        mkdir -p /tmp/boot
+        mount ${blk_dev_dst}${p}1 /tmp/boot
+        sed "s#@@ROOT_DEVICE@@#${blk_dev_dst}${p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
+        umount /tmp/boot
+    else
+        echo "REMOVE ME grub.cfg.in expected but not found"
+        run_cmd_stdout ls -l /etc/omnect
+    fi
+
+
+    if [[ " ${machine_features} " =~ " efi " ]]; then
+        echo "Configuring efi"
+        run_cmd_stdout efibootmgr --create --disk ${blk_dev_dst} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi || return 1
+        # delete all efi entries but last
+        efi_entries=$(efibootmgr | grep ^Boot[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]\* | awk '{print $1}'| sed  '$ d')
+        for i in ${efi_entries}; do
+            i=${i#Boot}
+            i=${i%\*}
+            run_cmd_stdout efibootmgr --bootnum ${i} --delete-bootnum || return 1
+        done
+    fi
 
     echo "flash mode 2 successfully finished"
+    run_cmd_stdout sync
     return 0
 }
 
 # main entry point
 flash_mode_run() {
     local blk_dev_data=""
-
     case ${OMNECT_FLASH_MODE} in
-        1) run_flash_mode_1
-           ;;
-        2) set -o pipefail
-           run_flash_mode_2 2>&1 | tee /tmp/flash-mode-2.log >/dev/console 2>&1; RET=$?
-           blk_dev_data=$(get_block_device data)
-           if [ -b "${blk_dev_data}" ]; then
-               # store log file
-               mkdir -p /tmp/mnt_data
-               check_ext4_fs "data" "${blk_dev_data}" 0
-               mount_partition "ext4" "${blk_dev_data}" "/tmp/mnt_data" "defaults,rw"
-               run_cmd cp /tmp/flash-mode-2.log "/tmp/mnt_data"
-               run_cmd sync
-               run_cmd umount "/tmp/mnt_data"
-           fi
-           if [ $RET -eq 0 ]; then poweroff -f; fi
-           ;;
-        *) msg "flash mode \"${OMNECT_FLASH_MODE}\" not supported; ignore...";;
+        1)  run_flash_mode_1
+            ;;
+        2)  set -o pipefail
+            run_flash_mode_2 2>&1 | tee /tmp/flash-mode-2.log >/dev/console 2>&1; RET=$?
+            blk_dev_data=$(get_block_device data)
+            if [ -b "${blk_dev_data}" ]; then
+                # store log file
+                mkdir -p /tmp/mnt_data
+                check_ext4_fs "data" "${blk_dev_data}" 0
+                mount_partition "ext4" "${blk_dev_data}" "/tmp/mnt_data" "defaults,rw"
+                run_cmd cp /tmp/flash-mode-2.log "/tmp/mnt_data"
+                run_cmd sync
+                run_cmd umount "/tmp/mnt_data"
+            fi
+            if [ $RET -eq 0 ]; then poweroff -f; fi
+            ;;
+        *)  msg "flash mode \"${OMNECT_FLASH_MODE}\" not supported; ignore...";;
     esac
 
     # continue startup in case of errors

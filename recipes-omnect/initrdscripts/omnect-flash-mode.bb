@@ -15,6 +15,8 @@ SRC_URI = "\
     file://flash-mode \
 "
 
+RDEPENDS:${PN} = "bash"
+
 do_install() {
     install -m 0755 -D ${WORKDIR}/flash-mode ${D}/init.d/87-flash_mode
     # set variables templates

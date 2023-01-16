@@ -16,7 +16,8 @@ fs_mount_run() {
     # the comma separated option list is ordered; i.e., higher preference at the right hand side
     mnt_opts_default="defaults,noatime,nodiratime,async"
 
-    setup_rootfs_partition "${ROOTFS_DIR}" "${mnt_opts_default},ro"
+    # mount rootfs
+    mount_partition "ext4" "${bootparam_root}" "${ROOTFS_DIR}" "${mnt_opts_default},ro"
 
     # mount cert
     cert_blk=$(get_block_device cert)
