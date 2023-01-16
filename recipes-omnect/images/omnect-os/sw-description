@@ -16,12 +16,6 @@ software =
 						device = "/dev/omnect/rootA";
 					}
 				);
-				uboot: (
-					{
-						name = "bootpart";
-						value = "2";
-					}
-				);
 			};
 			copy2 : {
 				images: (
@@ -32,12 +26,6 @@ software =
 						type = "raw";
 						compressed = true
 						device = "/dev/omnect/rootB";
-					}
-				);
-				uboot: (
-					{
-						name = "bootpart";
-						value = "3";
 					}
 				);
 			};

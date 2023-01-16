@@ -38,6 +38,7 @@ IMAGE_INSTALL = "\
     iot-hub-device-update \
     kmod \
     omnect-base-files \
+    iptables \
     packagegroup-core-ssh-dropbear \
     procps \
     sudo \

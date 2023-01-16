@@ -131,6 +131,15 @@ Optionally set `OMNECT_BUILD_NUMBER` to set a meaningful build number in the dis
 
 There is the configuration variable `OMNECT_VM_PANIC_ON_OOM` used to define the out-of-memory (OOM) handling.
 
+### Release vs Developer build
+Set the enviroment variable `OMNECT_RELEASE_IMAGE` to `1` for release builds. The default is `0` which means it is a developer build.
+
+Differences:
+- Release build
+  - default firewall config which allows input for established connections only
+- Developer build
+  - default firewall config as in Release build, additionally allow ssh connections
+
 ### Example build via `kas`
 
 This repository provides [`kas`](https://kas.readthedocs.io/en/latest/) configuration files to build `omnect-os`.
@@ -203,7 +212,8 @@ reboot
 Entering omnect flashing mode 1...
 ...
 ```
-Note, the *fw_setenv* command requires root permissions.
+**Note 1: *fw_setenv* command requires root permissions.**<br>
+**Note 2: `flash-mode 1` is restricted to eth0.**
 
 In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
 ```sh

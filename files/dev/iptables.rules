@@ -1,0 +1,9 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -p icmp --icmp-type echo-request -j ACCEPT --match limit --limit 60/minute
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -j ACCEPT
+COMMIT
