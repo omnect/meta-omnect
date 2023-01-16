@@ -196,24 +196,53 @@ See [omnect-cli iot-identity-service configuration](https://github.com/omnect/om
 The flash modes are used to flash the complete disk image including all partitions to the target system.
 It uses the initramfs context, because in this mode the block device is free for writing images.
 Also, no filesystem is mounted in this state.
-Enable the distribution feature `flash-mode` at build time, if you want to use it.
 
 There are the following two flash modes:
-- 1: flash disk image from network to same disk the system is currently running
-- 2: clone disk image from the disk the system is currently running to another disk part of the system
+- 1: clone disk image from the disk the system is currently running to another disk of the system
+- 2: flash disk image from network to same disk the system is currently running
 
 #### Flash Mode 1
-In order to trigger the flash mode 1, use the following commands on the target system:
+For the flash mode 1, it is required to specify the destination disk, the current disk image will be cloned to.
+For this purpose, the block device path has to be used.
+
+The following example shows how to trigger the flash mode 2 using the block device path, on the target system:
 ```sh
 sudo -s
 fw_setenv flash-mode 1
+fw_setenv flash-mode-devpath '/dev/mmcblk2'
 reboot
 ...
 Entering omnect flashing mode 1...
 ...
 ```
+Note, the *fw_setenv* command requires root permissions.
+
+The platform specific block device paths are defined in [README.device.md](./README.device.md).
+
+After the flash mode 1 has been finished successfully, the target system will be switched-off.
+The u-boot environment variables *flash-mode* and *flash-mode-devpath* will be deleted automatically.
+
+The next step is to select the prepared device as new boot device, which is platform depended (see [README.device.md](./README.device.md)).
+
+The flash mode 1 behaves like a factory reset, related to the new boot device:
+- reset to default u-boot environment
+- enforce first boot condition
+- reset *etc* partition
+- reset *data* partition; optionally resize
+
+#### Flash Mode 2
+Enable the distribution feature `flash-mode-2` at build time, if you want to use it.
+In order to trigger the flash mode 2, use the following commands on the target system:
+```sh
+sudo -s
+fw_setenv flash-mode 2
+reboot
+...
+Entering omnect flashing mode 2...
+...
+```
 **Note 1: *fw_setenv* command requires root permissions.**<br>
-**Note 2: `flash-mode 1` is restricted to eth0.**
+**Note 2: `flash-mode 2` is restricted to eth0.**
 
 In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
 ```sh
@@ -236,35 +265,6 @@ The destination file names have to be *wic.bmap* and *wic.xz*.
 After finishing the flash procedure, the system reboots automatically.
 The u-boot environment variable *flash-mode* will be deleted automatically.
 In this way, the system enters the normal mode, booting the new image.
-
-#### Flash Mode 2
-For the flash mode 2, it is required to specify the destination disk, the current disk image will be cloned to.
-For this purpose, the block device path has to be used.
-
-The following example shows how to trigger the flash mode 2 using the block device path, on the target system:
-```sh
-sudo -s
-fw_setenv flash-mode 2
-fw_setenv flash-mode-devpath '/dev/mmcblk2'
-reboot
-...
-Entering omnect flashing mode 2...
-...
-```
-Note, the *fw_setenv* command requires root permissions.
-
-The platform specific block device paths are defined in [README.device.md](./README.device.md).
-
-After the flash mode 2 has been finished successfully, the target system will be switched-off.
-The u-boot environment variables *flash-mode* and *flash-mode-devpath* will be deleted automatically.
-
-The next step is to select the prepared device as new boot device, which is platform depended (see [README.device.md](./README.device.md)).
-
-The flash mode 2 behaves like a factory reset, related to the new boot device:
-- reset to default u-boot environment
-- enforce first boot condition
-- reset *etc* partition
-- reset *data* partition; optionally resize
 
 ### Factory Reset
 Set the u-boot environment variable `factory-reset`, in order to reset `data` and `etc` partitions:
