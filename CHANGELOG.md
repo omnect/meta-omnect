@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.14.4] Q1 2023
+- kas:
+  - updated poky to 4.0.6
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-swupdate to latest kirkstone HEAD
+  - updated meta-virtualization to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+  - updated meta-imx to rel_imx_5.15.71_2.2.0
+- u-boot-imx: adapted enable_boot_script.patch for phytec devices
+
 ## [kirkstone-0.14.3] Q1 2023
 - omnect-device-service: bumped to 0.6.3
 - iot-client-template-rs: bumped to 0.4.12
