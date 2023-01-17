@@ -24,7 +24,7 @@ flash_mode_2_enabled() {
     # flag file (part of "omnect-os-initramfs-test")
     if [ -f ${OMNECT_FLASH_MODE_FLAG_FILE} ]; then
         msg "enable flash mode: by ${OMNECT_FLASH_MODE_FLAG_FILE}"
-        OMNECT_FLASH_MODE=1
+        OMNECT_FLASH_MODE=2
         return 0  # enable flash mode; call main entry point
     fi
 
