@@ -36,4 +36,4 @@ PACKAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'dhcpcd dropbear bmap-tools xz', '', d)} \
 "
 
-inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect_user', '', d)}
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'omnect_user', '', d)}
