@@ -15,8 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - flash-mode-2 is installed if `DISTRO_FEATURES` includes `flash-mode-2`
    - both flash-modes support grub
    - added handling of sdX partitions (e.g. os on usb-stick)
-   - rootblkdev additionally creates /dev/omnect/rootCurrent
+   - rootblk-dev
+     - additionally creates /dev/omnect/rootCurrent
+     - writes initramfs version as banner
    - omnect-os-image: moved from recipes-extended -> recipes-omnect
+   - removed sstate handling for initramfs do_image_complete
+     (doesn't work anymore because we add os-release to initramfs)
  - kas: moved flash-mode -> flash-mode-2
  - tpm-udev: moved from recipes-core -> recipes-omnect
 
