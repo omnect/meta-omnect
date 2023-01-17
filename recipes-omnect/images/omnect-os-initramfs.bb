@@ -10,6 +10,7 @@ inherit omnect_initramfs
 IMAGE_NAME = "${OMNECT_INITRAMFS_IMAGE_NAME}"
 
 RESIZE_DATA_PACKAGES = "\
+    e2fsprogs-resize2fs \
     gptfdisk \
     parted \
 "
