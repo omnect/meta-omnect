@@ -5,7 +5,7 @@ rootblk_dev_enabled() {
 }
 
 rootblk_dev_run() {
-    msg "$(grep ^PRETTY_NAME= /etc/os-release) initramfs"
+    msg "$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2) initramfs"
 
     [ -z "${bootparam_root}" ] && msg "no root device set" && return 1
 
