@@ -1,16 +1,8 @@
 diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
-index 8a9111f14f..a47cf27118 100644
+index 83acf79a8c..57f467b15d 100644
 --- a/include/configs/phycore_imx8mm.h
 +++ b/include/configs/phycore_imx8mm.h
-@@ -11,7 +11,6 @@
- #include <linux/stringify.h>
- #include <asm/arch/imx-regs.h>
- 
--#include "phycore_rauc_env.h"
- #include "phycore_fitimage_env.h"
- 
- #define CONFIG_SYS_BOOTM_LEN		SZ_64M
-@@ -39,108 +38,21 @@
+@@ -39,112 +39,21 @@
  #endif
  
  #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -67,8 +59,10 @@ index 8a9111f14f..a47cf27118 100644
 -		"fi;\0 " \
 -	"mmcboot=echo Booting from mmc ...; " \
 -		"run spiprobe; " \
--		"if run mmc_load_bootenv; then " \
--			"env import -t ${bootenv_addr} ${filesize}; " \
+-		"if test ${no_bootenv} = 0; then " \
+-			"if run mmc_load_bootenv; then " \
+-				"env import -t ${bootenv_addr} ${filesize}; " \
+-			"fi; " \
 -		"fi; " \
 -		"run mmcargs; " \
 -		"run fit_test_and_run_boot; " \
@@ -109,8 +103,10 @@ index 8a9111f14f..a47cf27118 100644
 -			"setenv nfsip ${ipaddr}:${serverip}::${netmask}::eth0:on; " \
 -			"setenv get_cmd tftp; " \
 -		"fi; " \
--		"if run net_load_bootenv; then " \
--			"env import -t ${bootenv_addr} ${filesize}; " \
+-		"if test ${no_bootenv} = 0; then " \
+-			"if run net_load_bootenv; then " \
+-				"env import -t ${bootenv_addr} ${filesize}; " \
+-			"fi; " \
 -		"fi; " \
 -		"run netargs; " \
 -		"${get_cmd} ${loadaddr} ${image}; " \
@@ -130,7 +126,7 @@ index 8a9111f14f..a47cf27118 100644
  
  #ifdef CONFIG_IMX_HAB
  #define BOOTCOMMAND_APPEND "reset;"
-@@ -149,15 +61,10 @@
+@@ -153,15 +62,10 @@
  #endif
  
  #define CONFIG_BOOTCOMMAND \
