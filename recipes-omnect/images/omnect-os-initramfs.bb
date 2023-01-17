@@ -27,6 +27,7 @@ PACKAGE_INSTALL = "\
     e2fsprogs-tune2fs \
     coreutils \
     kmod \
+    os-release \
     util-linux-sfdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
