@@ -205,7 +205,7 @@ There are the following two flash modes:
 For the flash mode 1, it is required to specify the destination disk, the current disk image will be cloned to.
 For this purpose, the block device path has to be used.
 
-The following example shows how to trigger the flash mode 2 using the block device path, on the target system:
+The following example shows how to trigger the flash mode 1 using the block device path, on the target system:
 ```sh
 sudo -s
 fw_setenv flash-mode 1
