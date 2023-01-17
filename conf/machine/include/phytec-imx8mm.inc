@@ -30,7 +30,7 @@ OMNECT_PART_SIZE_UBOOT_ENV = "64"
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
 
 # mask otherwise we can not use the latest meta-freescale/meta-imx commits
-BBMASK:append = " meta-phytec/dynamic-layers/fsl-bsp-release/recipes-bsp/isp-imx/isp-imx-phycam_4.2.2.16.0.bb"
+BBMASK:append = " meta-imx/meta-bsp/recipes-support/opencv/opencv_4.6.0.imx.bb"
 BBMASK:append = " meta-imx/meta-sdk/dynamic-layers/openembedded-layer/recipes-multimedia/dvb-apps/dvb-apps_%.bbappend"
 
 # fix search path
