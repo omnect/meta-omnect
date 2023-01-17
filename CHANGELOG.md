@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [kirkstone-0.15.0] Q1 2023
+ - initramfs:
+   - moved from recipes-core -> recipes-omnect
+   - splited flash-mode script into explicit flash-mode-1 and flash-mode-2
+   - reversed meaning of `flash-mode` `1` resp. `2`
+   - flash-mode-1 (installing to other disk) is installed per default
+   - flash-mode-2 is installed if `DISTRO_FEATURES` includes `flash-mode-2`
+   - both flash-modes support grub
+   - added handling of sdX partitions (e.g. os on usb-stick)
+   - rootblkdev additionally creates /dev/omnect/rootCurrent
+   - omnect-os-image: moved from recipes-extended -> recipes-omnect
+ - kas: moved flash-mode -> flash-mode-2
+ - tpm-udev: moved from recipes-core -> recipes-omnect
+
 ## [kirkstone-0.14.4] Q1 2023
 - kas:
   - updated poky to 4.0.6
