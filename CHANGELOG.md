@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - reversed meaning of `flash-mode` `1` resp. `2`
    - flash-mode-1 (installing to other disk) is installed per default
    - flash-mode-2 is installed if `DISTRO_FEATURES` includes `flash-mode-2`
+   - flash-mode-1 supports uefi handling
    - both flash-modes support grub
    - added handling of sdX partitions (e.g. os on usb-stick)
    - rootblk-dev
