@@ -29,7 +29,7 @@ rootblk_dev_run() {
         part="p"
         rootblk=${rootblk%p*}
         if [ ! -b /dev/${rootblk} ]; then
-            msg_fatal "failed to detect root blk device"
+            msg_fatal "failed to detect root blk device" && return 1
         fi
     fi
 
