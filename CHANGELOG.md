@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.15.1] Q1 2023
-- updated deviceupdate-agent to 1.0.1
+- updated iot-hub-device-update to 1.0.1
 
 ## [kirkstone-0.15.0] Q1 2023
 - initramfs:
