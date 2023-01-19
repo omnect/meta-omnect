@@ -5,24 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.15.1] Q1 2023
+- updated deviceupdate-agent to 1.0.1
+
 ## [kirkstone-0.15.0] Q1 2023
- - initramfs:
-   - moved from recipes-core -> recipes-omnect
-   - split flash-mode script into explicit flash-mode-1 and flash-mode-2
-   - reversed meaning of `flash-mode` `1` resp. `2`
-   - flash-mode-1 (installing to other disk) is installed per default
-   - flash-mode-2 is installed if `DISTRO_FEATURES` includes `flash-mode-2`
-   - flash-mode-1 supports uefi handling
-   - both flash-modes support grub
-   - added handling of sdX partitions (e.g. os on usb-stick)
-   - rootblk-dev
-     - additionally creates /dev/omnect/rootCurrent
-     - writes initramfs version as banner
-   - omnect-os-image: moved from recipes-extended -> recipes-omnect
-   - removed sstate handling for initramfs do_image_complete
-     (doesn't work anymore because we add os-release to initramfs)
- - kas: moved flash-mode -> flash-mode-2
- - tpm-udev: moved from recipes-core -> recipes-omnect
+- initramfs:
+  - moved from recipes-core -> recipes-omnect
+  - split flash-mode script into explicit flash-mode-1 and flash-mode-2
+  - reversed meaning of `flash-mode` `1` resp. `2`
+  - flash-mode-1 (installing to other disk) is installed per default
+  - flash-mode-2 is installed if `DISTRO_FEATURES` includes `flash-mode-2`
+  - flash-mode-1 supports uefi handling
+  - both flash-modes support grub
+  - added handling of sdX partitions (e.g. os on usb-stick)
+  - rootblk-dev
+    - additionally creates /dev/omnect/rootCurrent
+    - writes initramfs version as banner
+  - omnect-os-image: moved from recipes-extended -> recipes-omnect
+  - removed sstate handling for initramfs do_image_complete
+    (doesn't work anymore because we add os-release to initramfs)
+- kas: moved flash-mode -> flash-mode-2
+- tpm-udev: moved from recipes-core -> recipes-omnect
 
 ## [kirkstone-0.14.4] Q1 2023
 - kas:
