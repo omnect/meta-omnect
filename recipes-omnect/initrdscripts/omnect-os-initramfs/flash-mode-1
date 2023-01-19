@@ -232,23 +232,19 @@ run_flash_mode_1() {
 # main entry point
 flash_mode_1_run() {
     local blk_dev_data=""
-    case ${OMNECT_FLASH_MODE} in
-        1)  set -o pipefail
-            run_flash_mode_1 2>&1 | tee /tmp/flash-mode-1.log >/dev/console 2>&1; RET=$?
-            blk_dev_data=$(get_block_device data)
-            if [ -b "${blk_dev_data}" ]; then
-                # store log file
-                mkdir -p /tmp/mnt_data
-                check_ext4_fs "data" "${blk_dev_data}" 0
-                mount_partition "ext4" "${blk_dev_data}" "/tmp/mnt_data" "defaults,rw"
-                run_cmd cp /tmp/flash-mode-1.log "/tmp/mnt_data"
-                run_cmd sync
-                run_cmd umount "/tmp/mnt_data"
-            fi
-            if [ $RET -eq 0 ]; then poweroff -f; fi
-            ;;
-        *)  msg "flash mode 1: \"${OMNECT_FLASH_MODE}\" not supported; ignore...";;
-    esac
+    set -o pipefail
+    run_flash_mode_1 2>&1 | tee /tmp/flash-mode-1.log >/dev/console 2>&1; RET=$?
+    blk_dev_data=$(get_block_device data)
+    if [ -b "${blk_dev_data}" ]; then
+        # store log file
+        mkdir -p /tmp/mnt_data
+        check_ext4_fs "data" "${blk_dev_data}" 0
+        mount_partition "ext4" "${blk_dev_data}" "/tmp/mnt_data" "defaults,rw"
+        run_cmd cp /tmp/flash-mode-1.log "/tmp/mnt_data"
+        run_cmd sync
+        run_cmd umount "/tmp/mnt_data"
+    fi
+    if [ $RET -eq 0 ]; then poweroff -f; fi
 
     # continue startup in case of errors
     return 0
