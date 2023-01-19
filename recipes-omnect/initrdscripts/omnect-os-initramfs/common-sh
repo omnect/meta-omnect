@@ -156,35 +156,6 @@ setup_etc_from_factory()
     fi
 }
 
-setup_rootfs_partition()
-{
-    local rootfs_dir="$1"
-    local   mnt_opts="$2"
-    local bootpart=""
-    local boot_blk=""
-    local mmcblk=""
-
-    bootpart=$(get_bootloader_env_var "bootpart")
-    msg "setup rootfs partition [bootpart=${bootpart}]"
-
-    # currently we can not boot root via label and have to get the root dev
-    # ourselves.
-    # reason: on first boot you have the labels: rootA, rootB where rootB is an
-    # empty partition. on the boot after the first update, you have only
-    # label rootA, the label rootB disappeared, because adu-swupdate.sh doesnt
-    # set a e2fs label. After a second update you don't have a root partition
-    # with a label anymore.
-
-    # get mmcblk at runtime, so we can boot devices which can switch between
-    # emmc and sdcard with the same image.
-    boot_blk=$(get_block_device boot)
-    mmcblk=${boot_blk##*/}
-    mmcblk=${mmcblk%p*};
-
-    # mount rootfs
-    mount_partition "ext4" "/dev/${mmcblk}p${bootpart}" "${rootfs_dir}" "${mnt_opts}"
-}
-
 umount_rootfs_partition()
 {
     local rootfs_dir="$1"
@@ -209,7 +180,7 @@ setup_etc_partition()
 
     # mount etc overlay
     mount_overlayfs "${rootfs_dir}/etc" "${rootfs_dir}/mnt/etc/upper" "${rootfs_dir}/mnt/etc/work" \
-                    "${mnt_opts}" "${rootfs_dir}/etc"
+                    "${mnt_opts}",index=off "${rootfs_dir}/etc"
 }
 
 umount_etc_partition()
@@ -240,7 +211,7 @@ setup_data_partition()
     mkdir -p "${rootfs_dir}/mnt/data/var/lib"
     mkdir -p "${rootfs_dir}/mnt/data/local"
     mount_overlayfs "${rootfs_dir}/home" "${rootfs_dir}/mnt/data/home/upper" "${rootfs_dir}/mnt/data/home/work" \
-                    "${mnt_opts}" "${rootfs_dir}/home"
+                    "${mnt_opts}",index=off "${rootfs_dir}/home"
 
     # bind mount /var/lib
     mkdir -p "${rootfs_dir}/mnt/data/var/lib"
@@ -283,7 +254,7 @@ umount_persistent_var_log()
 
 get_partition_type()
 {
-    local value=$(fdisk -l /dev/omnect/rootblk | grep "^Disklabel type:" | awk '{print $NF}')
+    local value=$(sfdisk -l /dev/omnect/rootblk | grep "^Disklabel type:" | awk '{print $NF}')
     debug "get_partition_type: ${value}"
     echo ${value}
 }

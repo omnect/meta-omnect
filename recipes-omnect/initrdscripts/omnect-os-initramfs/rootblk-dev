@@ -1,0 +1,61 @@
+#!/bin/sh
+
+rootblk_dev_enabled() {
+    return 0
+}
+
+rootblk_dev_run() {
+    msg "$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2) initramfs"
+
+    [ -z "${bootparam_root}" ] && msg "no root device set" && return 1
+
+    # waiting for root device to show up, e.g. needed by welotec boot from usb
+    while [ ! -b "${bootparam_root}" ]; do
+        debug "waiting for root=${bootparam_root}"
+        sleep 0.1
+    done
+
+    mkdir -p /dev/omnect
+    cd /dev/omnect
+
+    rootblk=${bootparam_root}
+    rootblk=${rootblk##*/}
+    rootblk=${rootblk%[0-9]*}
+
+    # do we need partition handling?
+    # eg root=/dev/sda2 -> rootblk=/dev/sda vs root=/dev/mmcblk1p2 -> rootblk=/dev/mmcblk1
+    part=""
+    if [ ! -b /dev/${rootblk} ]; then
+        part="p"
+        rootblk=${rootblk%p*}
+        if [ ! -b /dev/${rootblk} ]; then
+            msg_fatal "failed to detect root blk device" && return 1
+        fi
+    fi
+
+    debug part=${part}
+    debug rootblk=${rootblk}
+
+    ln -sf /dev/${rootblk} rootblk
+    ln -sf /dev/${rootblk}${part}1 boot
+    ln -sf /dev/${rootblk}${part}2 rootA
+    ln -sf /dev/${rootblk}${part}3 rootB
+    ln -sf ${bootparam_root} rootCurrent
+
+    #gpt vs mbr
+    local ptype=$(get_partition_type)
+    if [ "${ptype}" = "gpt" ]; then
+        ln -sf /dev/${rootblk}${part}4 factory
+        ln -sf /dev/${rootblk}${part}5 cert
+        ln -sf /dev/${rootblk}${part}6 etc
+        ln -sf /dev/${rootblk}${part}7 data
+    elif [ "${ptype}" = "dos" ]; then
+        ln -sf /dev/${rootblk}${part}4 extended
+        ln -sf /dev/${rootblk}${part}5 factory
+        ln -sf /dev/${rootblk}${part}6 cert
+        ln -sf /dev/${rootblk}${part}7 etc
+        ln -sf /dev/${rootblk}${part}8 data
+    else
+        msg_fatal "unhandled partition type: \"${ptype}\"" && return 1
+    fi
+}
