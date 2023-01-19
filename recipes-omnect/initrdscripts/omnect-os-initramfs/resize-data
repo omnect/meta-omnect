@@ -13,9 +13,9 @@ resize_data_run() {
         data_part=$(get_block_device data)
         [[ $(cat /proc/mounts | grep ${data_part} | wc -l) -ne 0 ]] && msg "error: resize_data: \"${data_part}\" is mounted." && return
 
-        root_disk=${data_part%p*}
-        data_part_nr=${data_part##*p}
-        msg "omnect-os resize data partition: ${root_disk}p${data_part_nr}"
+        root_disk=$(readlink -f /dev/omnect/rootblk)
+        data_part_nr=${data_part:0-1}
+        msg "omnect-os resize data partition: ${root_disk} partition ${data_part_nr}"
 
         if [ "${ptype}" = "gpt" ]; then
             sgdisk ${root_disk} -e

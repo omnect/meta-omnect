@@ -17,6 +17,7 @@ RESIZE_DATA_PACKAGES = "\
 
 PACKAGE_INSTALL = "\
     base-passwd \
+    e2fsprogs \
     omnect-os-initramfs-scripts \
     initramfs-framework-base \
     initramfs-module-debug \
@@ -27,11 +28,12 @@ PACKAGE_INSTALL = "\
     e2fsprogs-tune2fs \
     coreutils \
     kmod \
-    util-linux-fdisk \
+    os-release \
+    util-linux-sfdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect-flash-mode dhcpcd dropbear bmap-tools xz util-linux-sfdisk e2fsprogs', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'dhcpcd dropbear bmap-tools xz', '', d)} \
 "
 
-inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect_user', '', d)}
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'omnect_user', '', d)}
