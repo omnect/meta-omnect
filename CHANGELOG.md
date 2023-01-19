@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.15.0] Q1 2023
  - initramfs:
    - moved from recipes-core -> recipes-omnect
-   - splited flash-mode script into explicit flash-mode-1 and flash-mode-2
+   - split flash-mode script into explicit flash-mode-1 and flash-mode-2
    - reversed meaning of `flash-mode` `1` resp. `2`
    - flash-mode-1 (installing to other disk) is installed per default
    - flash-mode-2 is installed if `DISTRO_FEATURES` includes `flash-mode-2`
