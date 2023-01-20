@@ -1,7 +1,7 @@
-From 0fdd671ac15c3a51e0d9aa32b8288e35b2b9bc6c Mon Sep 17 00:00:00 2001
-From: Joerg Zeidler <joerg.zeidler@conplement.de>
-Date: Fri, 11 Nov 2022 11:28:00 +0100
-Subject: [PATCH] add sd notify
+From 36d8feec267c76df3749ed2023f1d2456f19c3e2 Mon Sep 17 00:00:00 2001
+From: JoergZeidler <62105035+JoergZeidler@users.noreply.github.com>
+Date: Thu, 19 Jan 2023 16:38:09 +0100
+Subject: [PATCH] sd notify (#16)
 
 ---
  src/agent/CMakeLists.txt |  3 ++-
@@ -9,10 +9,10 @@ Subject: [PATCH] add sd notify
  2 files changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/src/agent/CMakeLists.txt b/src/agent/CMakeLists.txt
-index ff66816c..41396d87 100644
+index de23518a..74f3c628 100644
 --- a/src/agent/CMakeLists.txt
 +++ b/src/agent/CMakeLists.txt
-@@ -95,7 +95,8 @@ target_link_libraries (
+@@ -96,7 +96,8 @@ target_link_libraries (
              aduc::pnp_helper
              aduc::system_utils
              diagnostics_component::diagnostics_interface
@@ -23,19 +23,19 @@ index ff66816c..41396d87 100644
  if (ADUC_IOT_HUB_PROTOCOL STREQUAL "MQTT")
      target_compile_definitions (${target_name} PRIVATE ADUC_ALLOW_MQTT=1)
 diff --git a/src/agent/src/main.c b/src/agent/src/main.c
-index 9d434c3d..53d32ad8 100644
+index bd35a67f..b6c39ff9 100644
 --- a/src/agent/src/main.c
 +++ b/src/agent/src/main.c
-@@ -58,6 +58,8 @@
+@@ -59,6 +59,8 @@
  
  #include "eis_utils.h"
  
 +#include <systemd/sd-daemon.h>
 +
  /**
-  * @brief The timeout for the Edge Identity Service HTTP requests
-  */
-@@ -1504,6 +1506,7 @@ int main(int argc, char** argv)
+  * @brief Make getopt* stop parsing as soon as non-option argument is encountered.
+  * @remark See GETOPT.3 man page for more details.
+@@ -1229,6 +1231,7 @@ int main(int argc, char** argv)
      int dir_result = ADUC_SystemUtils_MkDirRecursiveDefault(ADUC_DATA_FOLDER);
      if (dir_result != 0)
      {
@@ -43,7 +43,7 @@ index 9d434c3d..53d32ad8 100644
          Log_Error("Cannot create data folder.");
          goto done;
      }
-@@ -1521,6 +1524,13 @@ int main(int argc, char** argv)
+@@ -1246,6 +1249,13 @@ int main(int argc, char** argv)
  
      if (!StartupAgent(&launchArgs))
      {
