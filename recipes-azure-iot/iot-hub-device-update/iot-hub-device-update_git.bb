@@ -4,7 +4,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
 SRC_URI = " \
-  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.0.0;nobranch=1 \
+  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.0.1;nobranch=1 \
   file://adu-swupdate-key.patch \
   file://eis-utils-cert-chain-buffer.patch \
   ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
@@ -20,7 +20,7 @@ SRC_URI = " \
   file://iot-identity-service-identityd.template.toml \
   file://0001-add-swupdate-user-consent-handler.patch \
   file://workaround-deprecated-declarations-openssl3.patch \
-  file://fix-issue-in-restart-reboot-flow-of-adu-1.0.0_PR_243.patch \
+  file://fix-communication-manager.patch \
 "
 PV = "${SRCPV}"
 

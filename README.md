@@ -215,8 +215,7 @@ reboot
 Entering omnect flashing mode 1...
 ...
 ```
-**Note 1: *fw_setenv* command requires root permissions.**<br>
-**Note 2: `flash-mode 1` is restricted to eth0.**
+Note, the *fw_setenv* command requires root permissions.
 
 The platform specific block device paths are defined in [README.device.md](./README.device.md).
 
