@@ -18,24 +18,24 @@ RESIZE_DATA_PACKAGES = "\
 PACKAGE_INSTALL = "\
     base-passwd \
     coreutils \
-    initramfs-framework-base \
-    initramfs-module-debug \
+    e2fsprogs \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
+    initramfs-framework-base \
+    initramfs-module-debug \
     kmod \
     libubootenv \
     libubootenv-bin \
     omnect-os-initramfs-scripts \
     os-release \
-    util-linux-fdisk \
+    util-linux-sfdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect-flash-mode dhcpcd dropbear bmap-tools xz util-linux-sfdisk e2fsprogs', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'dhcpcd dropbear bmap-tools xz', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'grub-cfg', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'efi', 'efibootmgr', '', d)} \
 "
 
-inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode', 'omnect_user', '', d)}
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'omnect_user', '', d)}

@@ -84,7 +84,6 @@ mkdir -p "$log_dir"
 # SWUpdate doesn't support everything necessary for the dual-copy or A/B update strategy.
 # Here we figure out the current OS partition and then set some environment variables
 # that we use to tell swupdate which partition to target.
-rootfs_dev=${rootfs_dev##*p}
 if [[ $(readlink -f /dev/omnect/rootCurrent) == $(readlink -f /dev/omnect/rootA) ]]; then
     selection="stable,copy2"
     current_part=omnect-os-rootA

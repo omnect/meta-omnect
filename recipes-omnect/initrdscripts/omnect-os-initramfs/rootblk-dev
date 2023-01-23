@@ -5,7 +5,7 @@ rootblk_dev_enabled() {
 }
 
 rootblk_dev_run() {
-    msg "$(grep ^PRETTY_NAME= /etc/os-release) initramfs"
+    msg "$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2) initramfs"
 
     [ -z "${bootparam_root}" ] && msg "no root device set" && return 1
 
@@ -29,21 +29,12 @@ rootblk_dev_run() {
         part="p"
         rootblk=${rootblk%p*}
         if [ ! -b /dev/${rootblk} ]; then
-            msg_fatal "failed to detect root blk device"
+            msg_fatal "failed to detect root blk device" && return 1
         fi
     fi
 
     debug part=${part}
     debug rootblk=${rootblk}
-
-    # needed for current adu-swupdate.sh script
-    # @todo still needed when using adu swupdate handler v2?
-    for i in /dev/${rootblk}${part}*; do
-        if [ "${i}" = "/dev/${rootblk}" ]; then
-            continue
-        fi
-        ln -sf ${i} rootblkp${i:0-1}
-    done
 
     ln -sf /dev/${rootblk} rootblk
     ln -sf /dev/${rootblk}${part}1 boot
