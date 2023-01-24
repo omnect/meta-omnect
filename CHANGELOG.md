@@ -6,9 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.15.TODO] Q1 2023
-- dropbear: disabled password login for release builds (`OMNECT_RELEASE_IMAGE == 1`)
-- u-boot-imx/phytec: silent console for release builds (`OMNECT_RELEASE_IMAGE == 1`)
-- u-boot/rpi: silent console for release builds (`OMNECT_RELEASE_IMAGE == 1`)
+- dropbear: disabled password login for release builds
+- u-boot-imx/phytec: silent console for release builds
+- u-boot/rpi: silent console for release builds
+- systemd-serialgetty: disabled for release builds
 
 ## [kirkstone-0.15.1] Q1 2023
 - updated iot-hub-device-update to 1.0.1
