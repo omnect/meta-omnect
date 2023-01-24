@@ -15,6 +15,11 @@ SRC_URI += "file://bootm_len_check.patch"
 SRC_URI += "\
     file://redundant-env-fragment.cfg \
 "
+
+# silent console output?
+
+#SRC_URI += "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'file://silent_console.cfg', '', d)}"
+SRC_URI += "file://silent_console.cfg"
 # copy configuration fragment from template, before SRC_URI is checked
 do_fetch:prepend() {
     import os
