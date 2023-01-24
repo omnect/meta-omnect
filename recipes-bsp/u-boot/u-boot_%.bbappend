@@ -11,15 +11,11 @@ OMNECT_THISDIR_SAVED := "${THISDIR}/"
 # setting is still not honored.
 SRC_URI += "file://bootm_len_check.patch"
 
-# enable redundant u-boot environment
 SRC_URI += "\
     file://redundant-env-fragment.cfg \
+    file://silent_console.cfg \
 "
 
-# silent console output?
-
-#SRC_URI += "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'file://silent_console.cfg', '', d)}"
-SRC_URI += "file://silent_console.cfg"
 # copy configuration fragment from template, before SRC_URI is checked
 do_fetch:prepend() {
     import os

@@ -1,0 +1,13 @@
+diff --git a/include/configs/rpi.h b/include/configs/rpi.h
+index 9bbb7f40..b3987650 100644
+--- a/include/configs/rpi.h
++++ b/include/configs/rpi.h
+@@ -175,6 +175,8 @@
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"dhcpuboot=usb start; dhcp u-boot.uimg; bootm\0" \
++	"bootdelay=-2\0" \
++	"silent=1\0" \
+ 	ENV_DEVICE_SETTINGS \
+ 	ENV_DFU_SETTINGS \
+ 	ENV_MEM_LAYOUT_SETTINGS \
