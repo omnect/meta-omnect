@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - u-boot/rpi: silent console for release builds
 - systemd-serialgetty: disabled for release builds
 - u-boot/kernel: kernel boot is quiet on consoles for release builds
+- initramfs: install debug module for non-release builds
 
 ## [kirkstone-0.15.3] Q1 2023
 - install omnect_get_dps_tpm_enrollment.sh only if MACHINE_FEATURES includes tpm2
