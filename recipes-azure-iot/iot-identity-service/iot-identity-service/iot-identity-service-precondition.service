@@ -3,7 +3,7 @@ Description=iot identity precondition
 Before=aziot-identityd.service
 
 [Service]
-Type=simple
+Type=exec
 ExecStart=@@AZIOTCLI@@ config apply
 RemainAfterExit=true
 
