@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - u-boot/rpi: silent console for release builds
 - systemd-serialgetty: disabled for release builds
 
+## [kirkstone-0.15.3] Q1 2023
+- install omnect_get_dps_tpm_enrollment.sh only if MACHINE_FEATURES includes tpm2
+
+## [kirkstone-0.15.2] Q1 2023
+- iot-identity-service-precondition: set service type to "exec"
+  (prevents race condition with the system start of aziot-identityd)
+
 ## [kirkstone-0.15.1] Q1 2023
 - updated iot-hub-device-update to 1.0.1
 
