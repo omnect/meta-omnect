@@ -7,25 +7,40 @@ common_sh_enabled()
     return 1  # there is no entry point in this library
 }
 
-msg_fatal() {
-    msg "FATAL ERROR: $1"
+# - overwrites msg from initramfs-framework
+# - we write to kmsg, so we can respect the kernel cmdline "quiet" argument
+#   and we're able to find the initramfs output in the journal
+msg() {
+    echo "<6> $@" >/dev/kmsg
 }
 
-run_cmd() {
-    msg  "$@"
-    eval "$@" >/dev/console 2>&1
-    if [ $? -ne 0 ]; then msg_fatal "command failed"; return 1; fi
-    return 0
+msg_fatal() {
+    msg "<2> FATAL ERROR: $1"
+}
+
+msg_error() {
+    msg "<3> ERROR: $1"
+}
+
+stderr_error() {
+    echo "ERROR: $1" >&2
 }
 
 stderr_fatal() {
     echo "FATAL ERROR: $1" >&2
 }
 
+run_cmd() {
+    msg  "$@"
+    eval "$@" &>/dev/kmsg 2>&1
+    if [ $? -ne 0 ]; then msg_error "command failed"; return 1; fi
+    return 0
+}
+
 run_cmd_stdout() {
     echo "$@"
     eval "$@"
-    if [ $? -ne 0 ]; then stderr_fatal "command failed"; return 1; fi
+    if [ $? -ne 0 ]; then stderr_error "command failed"; return 1; fi
     return 0
 }
 

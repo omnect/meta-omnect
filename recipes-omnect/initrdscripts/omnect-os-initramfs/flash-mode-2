@@ -105,7 +105,7 @@ run_bmap_tool() {
 
     msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:$(basename ${OMNECT_FLASH_MODE_FIFO})"
     export PATH
-    run_cmd bmaptool copy --bmap ${OMNECT_FLASH_MODE_BMAP_FILE} \
+    run_cmd_stdout bmaptool copy --bmap ${OMNECT_FLASH_MODE_BMAP_FILE} \
                                  ${OMNECT_FLASH_MODE_FIFO} ${blk_dev}; RET=$?
     if [ ${RET} -eq 0 ]; then return 0; fi  # success
 
