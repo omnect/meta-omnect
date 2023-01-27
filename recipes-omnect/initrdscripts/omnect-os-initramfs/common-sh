@@ -33,14 +33,16 @@ stderr_fatal() {
 run_cmd() {
     msg  "$@"
     eval "$@" &>/dev/kmsg 2>&1
-    if [ $? -ne 0 ]; then msg_error "command failed"; return 1; fi
+    local result=$?
+    if [ ${result} -ne 0 ]; then msg_error "command \"$@\" failed: ${result}"; return ${result}; fi
     return 0
 }
 
 run_cmd_stdout() {
     echo "$@"
     eval "$@"
-    if [ $? -ne 0 ]; then stderr_error "command failed"; return 1; fi
+    local result=$?
+    if [ ${result} -ne 0 ]; then stderr_error "command \"$@\" failed: ${result}"; return ${result}; fi
     return 0
 }
 
@@ -62,7 +64,7 @@ check_ext4_fs()
 
     if [ ${enforce_mkfs} -eq 0 ]; then
         # regular boot; fsck handles unclean state (i.e.; not unmounted)
-        fsck.ext4 -y ${block_device}
+        run_cmd fsck.ext4 -y ${block_device}
         fsck_res=$?
     fi
 

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - write messages and errors to /dev/kmsg
     to respect kernel cmdline arg "quiet" and to push initramfs
     output to the journal
+  - bind mount / without overlayfs to /mnt/rootCurrent
 
 ## [kirkstone-0.15.3] Q1 2023
 - install omnect_get_dps_tpm_enrollment.sh only if MACHINE_FEATURES includes tpm2

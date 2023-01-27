@@ -18,6 +18,9 @@ fs_mount_run() {
 
     # mount rootfs
     mount_partition "ext4" "${bootparam_root}" "${ROOTFS_DIR}" "${mnt_opts_default},ro"
+    # bind mount rootfs without overlay under /mnt/rootCurrent
+    mount --bind ${ROOTFS_DIR} ${ROOTFS_DIR}/mnt/rootCurrent
+    mount --make-private ${ROOTFS_DIR}/mnt/rootCurrent
 
     # mount cert
     cert_blk=$(get_block_device cert)

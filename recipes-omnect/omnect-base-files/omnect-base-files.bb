@@ -29,6 +29,7 @@ FILES:${PN} = "\
     /mnt/data \
     /mnt/etc \
     /mnt/factory \
+    /mnt/rootCurrent \
     /usr/bin/omnect_get_deviceid.sh \
     /usr/bin/omnect_get_dps_tpm_enrollment.sh \
     /var/lib \
@@ -49,6 +50,7 @@ do_install() {
     install -d -D ${D}/mnt/data \
     install -d -D ${D}/mnt/etc \
     install -d -D ${D}/mnt/factory \
+    install -d -D ${D}/mnt/rootCurrent \
     install -d -D ${D}/var/lib \
     install -d -D ${D}${exec_prefix}/local
 
