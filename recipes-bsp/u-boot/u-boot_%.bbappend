@@ -14,6 +14,7 @@ SRC_URI += "file://bootm_len_check.patch"
 SRC_URI += "\
     file://redundant-env-fragment.cfg \
     file://silent_console.cfg \
+    file://omnect_env.h \
 "
 
 # copy configuration fragment from template, before SRC_URI is checked
@@ -26,8 +27,9 @@ do_fetch:prepend() {
 
 inherit omnect_fw_env_config
 
-# incorporate distro configuration in redundant-env-fragment.cfg
+
 do_configure:prepend() {
+    # incorporate distro configuration in redundant-env-fragment.cfg
     local cfg_frag=${OMNECT_THISDIR_SAVED}${PN}/redundant-env-fragment.cfg
     local env_size=$(omnect_conv_size_param "${OMNECT_PART_SIZE_UBOOT_ENV}"    "u-boot env. size")
     local  offset1=$(omnect_conv_size_param "${OMNECT_PART_OFFSET_UBOOT_ENV1}" "u-boot env. offset1")
@@ -39,4 +41,16 @@ do_configure:prepend() {
 
     # for devtool
     if [ -d "${S}/oe-local-files/" ]; then cp ${cfg_frag} ${S}/oe-local-files/; fi
+
+    # configure omnect u-boot env
+    if [ -n "${APPEND}" ]; then
+      sed -i -e "s|^#define OMNECT_ENV_SETTINGS \(.*\)$|#define OMNECT_ENV_SETTINGS \\\ \n\"extra-bootargs=${APPEND}\\\0\" \\\|g" ${WORKDIR}/omnect_env.h
+    fi
+
+    if [ "${OMNECT_RELEASE_IMAGE}" = "1" ]; then
+        sed -i -e "s|^#define OMNECT_ENV_SETTINGS \(.*\)$|#define OMNECT_ENV_SETTINGS \\\ \n\"bootdelay=-2\\\0\" \\\ \n\"silent=1\\\0\" \\\|g" ${WORKDIR}/omnect_env.h
+        # sed -i -e "s|^#define OMNECT_ENV_SETTINGS \(.*\)$|#define OMNECT_ENV_SETTINGS \\\ \n2|g" ${WORKDIR}/omnect_env.h
+    fi
+
+    mv ${WORKDIR}/omnect_env.h ${S}/include/configs/
 }
