@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     output to the journal
   - bind mount / without overlayfs to /mnt/rootCurrent
 
+## [kirkstone-0.15.5] Q1 2023
+- iot-identity-service-precondition: synchronized startup with iotedge
+  (fixes race with aziot-edged reading the configuration via aziot-identityd)
+
+## [kirkstone-0.15.4] Q1 2023
+- azure-iot-sdk-c: updated to LTS_01_2023_Ref01
+
 ## [kirkstone-0.15.3] Q1 2023
 - install omnect_get_dps_tpm_enrollment.sh only if MACHINE_FEATURES includes tpm2
 

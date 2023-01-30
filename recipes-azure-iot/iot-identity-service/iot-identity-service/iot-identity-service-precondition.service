@@ -1,6 +1,6 @@
 [Unit]
 Description=iot identity precondition
-Before=aziot-identityd.service
+Before=aziot-identityd.service aziot-edged.service aziot-keyd.service aziot-certd.service
 
 [Service]
 Type=exec
