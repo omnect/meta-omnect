@@ -2,7 +2,6 @@ DEPENDS = "u-boot-mkimage-native"
 COMPATIBLE = "rpi"
 
 python create_boot_cmd () {
-    append=d.getVar("APPEND")
     boot_cmd=d.getVar("KERNEL_BOOTCMD")
     boot_cmd_file=d.getVar("WORKDIR") + "/boot.cmd"
     fdt_load_script_file=d.getVar("WORKDIR") + "/fdt-load.cmd"
@@ -54,9 +53,9 @@ python create_boot_cmd () {
             # load initrd
             f.write("load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % omnect_initramfs_fs_type)
 
-            # assemble bootargs: from device tree + extra-bootargs for debugging purpose
+            # assemble bootargs: from device tree + extra-bootargs
             f.write("fdt get value bootargs /chosen bootargs\n")
-            f.write("setenv bootargs \"root=/dev/${devtype}blk${devnum}p${bootpart} ${bootargs} %s ${extra-bootargs}\"\n" % append)
+            f.write("setenv bootargs \"root=/dev/${devtype}blk${devnum}p${bootpart} ${bootargs} ${extra-bootargs}\"\n")
 
             # boot
             f.write("%s ${kernel_addr_r} ${ramdisk_addr_r} ${%s}\n" % (boot_cmd, fdt_addr))
