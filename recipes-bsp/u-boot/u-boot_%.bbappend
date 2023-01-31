@@ -49,7 +49,6 @@ do_configure:prepend() {
 
     if [ "${OMNECT_RELEASE_IMAGE}" = "1" ]; then
         sed -i -e "s|^#define OMNECT_ENV_SETTINGS \(.*\)$|#define OMNECT_ENV_SETTINGS \\\ \n\"bootdelay=-2\\\0\" \\\ \n\"silent=1\\\0\" \\\|g" ${WORKDIR}/omnect_env.h
-        # sed -i -e "s|^#define OMNECT_ENV_SETTINGS \(.*\)$|#define OMNECT_ENV_SETTINGS \\\ \n2|g" ${WORKDIR}/omnect_env.h
     fi
 
     mv ${WORKDIR}/omnect_env.h ${S}/include/configs/
