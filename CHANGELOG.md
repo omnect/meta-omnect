@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     to respect kernel cmdline arg "quiet" and to push initramfs
     output to the journal
   - bind mount / without overlayfs to /mnt/rootCurrent
+  - fixed imx-sdma handling for images where "persistent-var-log" is disabled
 
 ## [kirkstone-0.15.5] Q1 2023
 - iot-identity-service-precondition: synchronized startup with iotedge

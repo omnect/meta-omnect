@@ -7,6 +7,7 @@ imx_sdma_enabled() {
 imx_sdma_run() {
     # load imx_sdma as early as possible with firmware available
     mkdir -p /lib/firmware
+    mkdir -p /lib/modules
     mount -o bind /rootfs/lib/modules /lib/modules
     mount -o bind /rootfs/lib/firmware /lib/firmware
     modprobe imx_sdma
