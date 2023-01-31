@@ -1,13 +1,15 @@
 diff --git a/Makefile b/Makefile
-index dccf0121d..77509ecf6 100644
+index dccf0121d..626ccc5f1 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -316,7 +316,7 @@ ifneq (${DEBUG}, 0)
-         endif
- 
-         # Use LOG_LEVEL_INFO by default for debug builds
--        LOG_LEVEL	:=	40
-+        LOG_LEVEL	:=	20
+@@ -319,8 +319,8 @@ ifneq (${DEBUG}, 0)
+         LOG_LEVEL	:=	40
  else
          BUILD_TYPE	:=	release
-         # Use LOG_LEVEL_NOTICE by default for release builds
+-        # Use LOG_LEVEL_NOTICE by default for release builds
+-        LOG_LEVEL	:=	20
++        # Use LOG_LEVEL_ERROR by default for release builds
++        LOG_LEVEL	:=	10
+ endif
+ 
+ # Default build string (git branch and commit)
