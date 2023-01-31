@@ -11,6 +11,8 @@ imx_sdma_run() {
     mount -o bind /rootfs/lib/modules /lib/modules
     mount -o bind /rootfs/lib/firmware /lib/firmware
     modprobe imx_sdma
-    umount /lib/firmware
-    umount /lib/modules
+    # umount deactivated on purpose: umount: can't unmount /lib/firmware: Device or resource busy
+    # it isn't mounted in omnect-os anyway
+    #umount /lib/firmware
+    #umount /lib/modules
 }
