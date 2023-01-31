@@ -168,7 +168,7 @@ setup_etc_from_factory()
         mkdir -p "${rootfs_dir}/mnt/etc/work"
         if [ -d "${rootfs_dir}/mnt/factory/etc" ]; then
             msg "setup etc from factory partition"
-            cp -av "${rootfs_dir}/mnt/factory/etc/." "${rootfs_dir}/mnt/etc/upper"
+            run_cmd cp -av "${rootfs_dir}/mnt/factory/etc/." "${rootfs_dir}/mnt/etc/upper"
         fi
     fi
 }
@@ -271,7 +271,7 @@ umount_persistent_var_log()
 
 get_partition_type()
 {
-    local value=$(sfdisk -l /dev/omnect/rootblk | grep "^Disklabel type:" | awk '{print $NF}')
+    local value=$(sfdisk -l /dev/omnect/rootblk 2>&1 | grep "^Disklabel type:" | awk '{print $NF}')
     debug "get_partition_type: ${value}"
     echo ${value}
 }
