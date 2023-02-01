@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-next-0.0.1] Q1 2023
+- azure-osconfig: updated to 1.0.5.2023013001
+
 ## [kirkstone-0.15.5] Q1 2023
 - iot-identity-service-precondition: synchronized startup with iotedge
   (fixes race with aziot-edged reading the configuration via aziot-identityd)
