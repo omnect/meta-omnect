@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.15.7] Q1 2023
+- iot-identity-service-precondition: added handling to restart on failure
+
 ## [kirkstone-0.15.6] Q1 2023
 - iot-identity-service: updated to 1.4.2
 - iotedge: updated to 1.4.8
