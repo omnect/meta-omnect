@@ -6,7 +6,7 @@ Before=aziot-identityd.service aziot-edged.service aziot-keyd.service aziot-cert
 Type=exec
 ExecStart=@@AZIOTCLI@@ config apply
 Restart=on-failure
-RestartSec=5
+RestartSec=60
 RemainAfterExit=true
 
 [Install]
