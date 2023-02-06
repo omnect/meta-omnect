@@ -10,7 +10,7 @@ Before=aziot-identityd.service \
 Type=exec
 ExecStart=@@AZIOTCLI@@ config apply
 Restart=on-failure
-RestartSec=60
+RestartSec=5
 RemainAfterExit=true
 
 [Install]
