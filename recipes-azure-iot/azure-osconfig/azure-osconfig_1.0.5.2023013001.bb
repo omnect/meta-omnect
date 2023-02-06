@@ -10,7 +10,6 @@ SRC_URI = " \
   gitsm://github.com/azure/azure-osconfig.git;protocol=https;tag=v${PKGPV};nobranch=1 \
   file://azure-iot-sdk-c-openssl3.patch;patchdir=agents/pnp/azure-iot-sdk-c/c-utility \
   file://agents_pnp_postbuild.patch;patchdir=.. \
-  file://disable_tests.patch;patchdir=.. \
 "
 
 PV:append = "_${SRCPV}"
