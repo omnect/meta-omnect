@@ -84,7 +84,7 @@ check_ext4_fs()
         if [ ${fsck_res} -eq 2 ]; then
             # -- corrected by fsck, but reboot required --
             msg "reboot indicated by fsck"
-            reboot -f
+            run_cmd reboot -f
         fi
     fi
 
@@ -155,7 +155,7 @@ set_bootloader_env_var()
 {
     local  var_name="$1"
     local var_value="$2"  # empty string to delete variable
-    fw_setenv ${var_name} ${var_value}
+    run_cmd fw_setenv ${var_name} ${var_value}
 }
 
 # if etc partition is empty, copy the etc dir from factory partition
@@ -164,8 +164,8 @@ setup_etc_from_factory()
     local rootfs_dir="$1"
 
     if [ ! -d "${rootfs_dir}/mnt/etc/upper" ]; then
-        mkdir -p "${rootfs_dir}/mnt/etc/upper"
-        mkdir -p "${rootfs_dir}/mnt/etc/work"
+        run_cmd mkdir -p "${rootfs_dir}/mnt/etc/upper"
+        run_cmd mkdir -p "${rootfs_dir}/mnt/etc/work"
         if [ -d "${rootfs_dir}/mnt/factory/etc" ]; then
             msg "setup etc from factory partition"
             run_cmd cp -av "${rootfs_dir}/mnt/factory/etc/." "${rootfs_dir}/mnt/etc/upper"
@@ -223,19 +223,19 @@ setup_data_partition()
     mount_partition "ext4" "${data_blk}" "${rootfs_dir}/mnt/data" "${mnt_opts}"
 
     # mount home overlay
-    mkdir -p "${rootfs_dir}/mnt/data/home/work"
-    mkdir -p "${rootfs_dir}/mnt/data/home/upper"
-    mkdir -p "${rootfs_dir}/mnt/data/var/lib"
-    mkdir -p "${rootfs_dir}/mnt/data/local"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/home/work"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/home/upper"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/var/lib"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/local"
     mount_overlayfs "${rootfs_dir}/home" "${rootfs_dir}/mnt/data/home/upper" "${rootfs_dir}/mnt/data/home/work" \
                     "${mnt_opts}",index=off "${rootfs_dir}/home"
 
     # bind mount /var/lib
-    mkdir -p "${rootfs_dir}/mnt/data/var/lib"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/var/lib"
     run_cmd mount -o bind "${rootfs_dir}/mnt/data/var/lib" "${rootfs_dir}/var/lib"
 
     # bind mount /usr/local
-    mkdir -p "${rootfs_dir}/mnt/data/local"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/local"
     run_cmd mount -o bind "${rootfs_dir}/mnt/data/local" "${rootfs_dir}/usr/local"
 }
 
@@ -255,7 +255,7 @@ setup_persistent_var_log()
 
     if grep ^DISTRO_FEATURES ${rootfs_dir}/etc/os-release | grep -q '[" ]persistent-var-log[ "]'; then
         msg "setup persistent var log"
-        mkdir -p ${rootfs_dir}/mnt/data/log
+        run_cmd mkdir -p ${rootfs_dir}/mnt/data/log
         run_cmd mount -o bind ${rootfs_dir}/mnt/data/log ${rootfs_dir}/var/log
     fi
 }

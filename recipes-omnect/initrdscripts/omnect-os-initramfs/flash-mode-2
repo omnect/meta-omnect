@@ -50,13 +50,13 @@ setup_network() {
     done
 
     # start dhcp client; it is backgrounding in the case the IP address was assigned or timeout
-    mkdir -p /tmp
+    run_cmd mkdir -p /tmp
     run_cmd dhcpcd ${if_name} || return 1
 
     # wait for IPv4 address
     while true; do
         msg "Waiting for IP address..."
-        ip_addr=$(ip addr show dev ${if_name} | grep "inet " | awk '{print $2}')
+        ip_addr=$(ip addr show dev ${if_name} >/dev/kmsg 2>&1 | grep "inet " | awk '{print $2}')
         if [ -n "${ip_addr}" ]; then break; fi
         sleep 1
     done
@@ -139,17 +139,17 @@ run_flash_mode_2() {
 
     machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
     if [[ " ${machine_features} " =~ " grub " ]]; then
-        mkdir -p /tmp/boot
-        mount /dev/omnect/boot /tmp/boot
+        run_cmd mkdir -p /tmp/boot
+        run_cmd mount /dev/omnect/boot /tmp/boot
         root_a_p=$(readlink -f /dev/omnect/rootA)
         root_a_p=${root_a_p::-1}
-        sed "s#@@ROOT_DEVICE@@#${root_a_p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
-        umount /tmp/boot
+        run_cmd sed "s#@@ROOT_DEVICE@@#${root_a_p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
+        run_cmd umount /tmp/boot
     fi
 
     msg "Rebooting system..."
     sync
-    reboot -f
+    run_cmd reboot -f
     # -- never reached --
 }
 
