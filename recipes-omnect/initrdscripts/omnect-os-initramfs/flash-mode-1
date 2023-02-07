@@ -202,15 +202,11 @@ run_flash_mode_1() {
     machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
     if [[ " ${machine_features} " =~ " grub " ]]; then
         echo "Configuring grub"
-        mkdir -p /tmp/boot
-        mount ${blk_dev_dst}${p}1 /tmp/boot
+        run_cmd_stdout mkdir -p /tmp/boot
+        run_cmd_stdout mount ${blk_dev_dst}${p}1 /tmp/boot
         sed "s#@@ROOT_DEVICE@@#${blk_dev_dst}${p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
-        umount /tmp/boot
-    else
-        echo "REMOVE ME grub.cfg.in expected but not found"
-        run_cmd_stdout ls -l /etc/omnect
+        run_cmd_stdout umount /tmp/boot
     fi
-
 
     if [[ " ${machine_features} " =~ " efi " ]]; then
         echo "Configuring efi"
