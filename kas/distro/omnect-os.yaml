@@ -9,7 +9,7 @@ repos:
   meta-omnect:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: 1f31570d0795da90083d1dbf28127c90908e30ee
+    refspec: 278ec081a64e6a7679d6def550101158126cd935
     layers:
       meta-filesystems:
       meta-networking:
