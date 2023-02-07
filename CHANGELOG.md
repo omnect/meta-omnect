@@ -20,6 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - fixed imx-sdma handling for images where "persistent-var-log" is disabled
 - imx-atf: default log level error for release builds
 
+## [kirkstone-0.15.7] Q1 2023
+- iot-identity-service-precondition: added handling to restart on failure
+
+## [kirkstone-0.15.6] Q1 2023
+- iot-identity-service: updated to 1.4.2
+- iotedge: updated to 1.4.8
+
 ## [kirkstone-0.15.5] Q1 2023
 - iot-identity-service-precondition: synchronized startup with iotedge
   (fixes race with aziot-edged reading the configuration via aziot-identityd)
