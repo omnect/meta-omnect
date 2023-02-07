@@ -288,6 +288,8 @@ on_exit_debug_image()
 
 on_exit_release_image()
 {
+    # todo: as soon we have failure handling in the boot process, we should reboot here.
+    # for now, it would probably result in a reboot loop. so we don't.
     if [ "${return}" != "0" ]; then
         while true; do
             msg_fatal "iniramfs failed: ${1}"
