@@ -196,6 +196,7 @@ factory_reset_umount() {
 
 # main entry point
 factory_reset_run() {
+    # explictly no exit hook handling here
 
     if [ -z "${ROOTFS_DIR}" ]; then
         fatal "no ROOTFS_DIR"

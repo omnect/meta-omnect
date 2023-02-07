@@ -4,7 +4,7 @@ resize_data_enabled() {
     return 0
 }
 
-resize_data_run() {
+run_resize_data() {
     local resized_data=$(get_bootloader_env_var "resized-data")
     local ptype=$(get_partition_type)
 
@@ -20,21 +20,28 @@ resize_data_run() {
         if [ "${ptype}" = "gpt" ]; then
             run_cmd sgdisk ${root_disk} -e
         elif [ "${ptype}" = "dos" ]; then
-            [[ $(parted ${root_disk} print | grep extended | wc -l) -ne 1 ]] && msg "error: resize_data: couldn't determine extended partion" && return
+            [[ $(parted ${root_disk} print | grep extended | wc -l) -ne 1 ]] && msg_error "resize_data: couldn't determine extended partion" && return 1
             extended_part_nr=$(parted ${root_disk} print | grep extended | awk '{print $1}')
-            run_cmd parted ${root_disk} resizepart ${extended_part_nr} 100%
+            run_cmd parted ${root_disk} resizepart ${extended_part_nr} 100% || return 1
         else
             msg_fatal "unhandled partition type: \"${ptype}\"" && return 1
         fi
 
-        run_cmd parted ${root_disk} resizepart ${data_part_nr} 100%
+        run_cmd parted ${root_disk} resizepart ${data_part_nr} 100% || return 1
 
-        run_cmd ln -sf /proc/self/mounts /etc/mtab
-        run_cmd e2fsck -y ${data_part}
-        run_cmd resize2fs -f ${data_part}
+        run_cmd ln -sf /proc/self/mounts /etc/mtab || return 1
+        run_cmd e2fsck -y ${data_part} || return 1
+        run_cmd resize2fs -f ${data_part} || return 1
         run_cmd sync
 
         # set resized_data in u-boot env
         set_bootloader_env_var resized-data 1
     fi
+    return 0
+}
+
+resize_data_run() {
+    add_module_post_hook on_exit
+    run_resize_data
+    return=${?}
 }

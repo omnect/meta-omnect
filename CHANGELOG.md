@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     output to the journal
   - bind mount / without overlayfs to /mnt/rootCurrent
   - fixed imx-sdma handling for images where "persistent-var-log" is disabled
+  - exit handler starts bash on fail for most initramfs scripts in non-release builds
 - imx-atf: default log level error for release builds
 
 ## [kirkstone-0.15.7] Q1 2023

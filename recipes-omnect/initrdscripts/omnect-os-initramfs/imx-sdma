@@ -5,6 +5,8 @@ imx_sdma_enabled() {
 }
 
 imx_sdma_run() {
+    # explictly no exit hook handling here
+
     # load imx_sdma as early as possible with firmware available
     mkdir -p /lib/firmware
     mkdir -p /lib/modules

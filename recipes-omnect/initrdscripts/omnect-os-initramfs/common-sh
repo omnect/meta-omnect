@@ -255,9 +255,10 @@ setup_persistent_var_log()
 
     if grep ^DISTRO_FEATURES ${rootfs_dir}/etc/os-release | grep -q '[" ]persistent-var-log[ "]'; then
         msg "setup persistent var log"
-        run_cmd mkdir -p ${rootfs_dir}/mnt/data/log
-        run_cmd mount -o bind ${rootfs_dir}/mnt/data/log ${rootfs_dir}/var/log
+        run_cmd mkdir -p ${rootfs_dir}/mnt/data/log || return 1
+        run_cmd mount -o bind ${rootfs_dir}/mnt/data/log ${rootfs_dir}/var/log || return 1
     fi
+    return $?
 }
 
 umount_persistent_var_log()
@@ -274,4 +275,33 @@ get_partition_type()
     local value=$(sfdisk -l /dev/omnect/rootblk 2>&1 | grep "^Disklabel type:" | awk '{print $NF}')
     debug "get_partition_type: ${value}"
     echo ${value}
+}
+
+on_exit_debug_image()
+{
+    if [ "${return}" != "0" ]; then
+        echo "clear" >> /tmp/debug_init
+        echo "echo \"initramfs failed: ${1}\"" >> /tmp/debug_init
+        /bin/bash --init-file /tmp/debug_init
+    fi
+}
+
+on_exit_release_image()
+{
+    if [ "${return}" != "0" ]; then
+        while true; do
+            msg_fatal "iniramfs failed: ${1}"
+            sleep 60
+        done
+    fi
+}
+
+on_exit()
+{
+    local release=$(grep ^OMNECT_RELEASE_IMAGE= /etc/os-release | awk -F'"' '{print $2}')
+    if [ "${release}" = "1" ]; then
+        on_exit_release_image ${2}
+    else
+        on_exit_debug_image ${2}
+    fi
 }
