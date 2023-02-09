@@ -83,7 +83,8 @@ omnect_create_uboot_env_ff_img() {
 IMAGE_PREPROCESS_COMMAND:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'disable_getty;', '', d)}"
 disable_getty() {
     for i in ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/getty.target.wants/getty@*.service; do
-        ln -sf /dev/null ${i}
+        rm ${i}
+        ln -sf /dev/null ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/$(basename ${i})
     done
 }
 
