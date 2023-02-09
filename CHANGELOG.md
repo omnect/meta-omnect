@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - fixed imx-sdma handling for images where "persistent-var-log" is disabled
   - exit handler starts bash on fail for most initramfs scripts in non-release builds
 - imx-atf: default log level error for release builds
+- omnect user: enabled sudo without password
+
 
 ## [kirkstone-0.15.7] Q1 2023
 - iot-identity-service-precondition: added handling to restart on failure
