@@ -5,7 +5,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 CARGO_SRC_DIR = "edgelet/iotedge"
 CARGO_WORKSPACE_ROOT = "edgelet"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/../:${LAYERDIR_omnect}/files/iotedge-patches:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:${LAYERDIR_omnect}/files/iotedge-patches:"
+
+SRC_URI += "file://apply_doesnt_restart_services.patch"
 
 DEPENDS += "openssl"
 RDEPENDS:${PN} += "iot-identity-service"
