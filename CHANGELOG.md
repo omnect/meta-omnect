@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.15.10] Q1 2023
+- iot-hub-device-update: updated to 1.0.2
+
 ## [kirkstone-0.15.9] Q1 2023
 - iot-identity-service/iotedge: don't restart services when calling `config apply`
 - iot-identity-service-precondition: start before aziot-tpmd as well
