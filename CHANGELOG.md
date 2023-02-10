@@ -24,6 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - u-boot/rpi: silent console for release builds
 - u-boot/kernel: kernel boot is quiet on consoles for release builds
 
+## [kirkstone-0.15.10] Q1 2023
+- iot-hub-device-update: updated to 1.0.2
+
+## [kirkstone-0.15.9] Q1 2023
+- iot-identity-service/iotedge: don't restart services when calling `config apply`
+- iot-identity-service-precondition: start before aziot-tpmd as well
+
 ## [kirkstone-0.15.8] Q1 2023
 - kas:
   - updated poky to 4.0.7

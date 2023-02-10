@@ -1,12 +1,16 @@
 [Unit]
 Description=iot identity precondition
-Before=aziot-identityd.service aziot-edged.service aziot-keyd.service aziot-certd.service
+Before=aziot-identityd.service \
+    aziot-edged.service \
+    aziot-keyd.service \
+    aziot-certd.service \
+    aziot-tpmd.service
 
 [Service]
 Type=exec
 ExecStart=@@AZIOTCLI@@ config apply
 Restart=on-failure
-RestartSec=60
+RestartSec=5
 RemainAfterExit=true
 
 [Install]
