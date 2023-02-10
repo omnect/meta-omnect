@@ -1,0 +1,15 @@
+diff --git a/aziotctl/src/config/apply.rs b/aziotctl/src/config/apply.rs
+index d15410a..cc9bdd8 100644
+--- a/aziotctl/src/config/apply.rs
++++ b/aziotctl/src/config/apply.rs
+@@ -122,9 +122,7 @@ pub(crate) fn run(options: Options) -> anyhow::Result<()> {
+ 
+     println!("Azure IoT Identity Service has been configured successfully!");
+     println!();
+-    println!("Restarting service for configuration to take effect...");
+-    aziotctl_common::system::restart(aziotctl_common::system::SERVICE_DEFINITIONS)?;
+-    println!("Done.");
++    println!("Please restart aziot-identityd manually: \"aziotctl system restart\".");
+ 
+     Ok(())
+ }

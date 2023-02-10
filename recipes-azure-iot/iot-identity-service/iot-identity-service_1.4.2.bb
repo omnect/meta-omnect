@@ -10,6 +10,7 @@ SRC_URI += " \
     file://iot-identity-service.conf \
     file://iot-identity-service-certd.template.toml \
     file://iot-identity-service-precondition.service \
+    file://apply_doesnt_restart_services.patch \
     file://ossl300_fix_incompatible_pointer_types.patch \
     file://ossl300_default_provider.patch \
     file://ossl300_openssl-errors.patch \
