@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 
 rootblk_dev_enabled() {
     return 0
