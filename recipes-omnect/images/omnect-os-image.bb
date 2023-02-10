@@ -78,8 +78,8 @@ omnect_create_uboot_env_ff_img() {
     dd if=/dev/zero bs=1024 count=${OMNECT_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/omnect_uboot_env_ff.img
 }
 
-# systemd getty terminals get enabled after do_rootfs and/or at runtime if not configured;
-# for a release image we explicitly disables them
+# systemd getty terminals get enabled after do_rootfs and/or at runtime if not explicitly masked;
+# for a release image we explicitly disable them by masking
 IMAGE_PREPROCESS_COMMAND:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'disable_getty;', '', d)}"
 disable_getty() {
     for i in ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/getty.target.wants/getty@*.service; do
