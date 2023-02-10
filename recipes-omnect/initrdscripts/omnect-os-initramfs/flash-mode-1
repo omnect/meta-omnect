@@ -231,7 +231,8 @@ flash_mode_1_run() {
     set -o pipefail
     local blk_dev_data=""
 
-    run_flash_mode_1 2>&1 | tee /tmp/flash-mode-1.log >/dev/console 2>&1; return=${?}
+    run_flash_mode_1 2>&1 | tee /tmp/flash-mode-1.log >/dev/console 2>&1;
+    return=${?}
     blk_dev_data=$(get_block_device data)
     if [ -b "${blk_dev_data}" ]; then
         # store log file
