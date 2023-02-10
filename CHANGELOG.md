@@ -7,10 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.15.TODO] Q1 2023
 - dropbear: disabled password login for release builds
-- u-boot-imx/phytec: silent console for release builds
-- u-boot/rpi: silent console for release builds
-- systemd-serialgetty: disabled for release builds
-- u-boot/kernel: kernel boot is quiet on consoles for release builds
+- imx-atf: default log level error for release builds
 - initramfs:
   - install debug module only for non-release builds
   - write messages and errors to /dev/kmsg
@@ -19,9 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - bind mount / without overlayfs to /mnt/rootCurrent
   - fixed imx-sdma handling for images where "persistent-var-log" is disabled
   - exit handler starts bash on fail for most initramfs scripts in non-release builds
-- imx-atf: default log level error for release builds
-- omnect user: enabled sudo without password
 - omnect-os-image: disabled getty for release builds
+- omnect user: enabled sudo without password
+- systemd: disabled auto and reserved virtual terminals for release builds
+- systemd-serialgetty: disabled for release builds (at buildtime)
+- u-boot-imx/phytec: silent console for release builds
+- u-boot/rpi: silent console for release builds
+- u-boot/kernel: kernel boot is quiet on consoles for release builds
 
 ## [kirkstone-0.15.7] Q1 2023
 - iot-identity-service-precondition: added handling to restart on failure
