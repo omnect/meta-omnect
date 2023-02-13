@@ -1,0 +1,15 @@
+diff --git a/edgelet/iotedge/src/config/apply.rs b/edgelet/iotedge/src/config/apply.rs
+index d1fe04493..dca5b5047 100644
+--- a/edgelet/iotedge/src/config/apply.rs
++++ b/edgelet/iotedge/src/config/apply.rs
+@@ -149,9 +149,7 @@ pub async fn execute(config: &Path) -> Result<(), std::borrow::Cow<'static, str>
+ 
+     println!("Azure IoT Edge has been configured successfully!");
+     println!();
+-    println!("Restarting service for configuration to take effect...");
+-    crate::System::system_restart().map_err(|err| format!("{}", err))?;
+-    println!("Done.");
++    println!("Please restart iotedge manually: \"iotedge system restart.\"");
+ 
+     Ok(())
+ }
