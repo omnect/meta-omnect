@@ -1,0 +1,7 @@
+part --fixed-size ${OMNECT_PART_SIZE_UBOOT_ENV}K --no-table --offset ${OMNECT_PART_OFFSET_UBOOT_ENV1} --source rawcopy --sourceparams="file=omnect_uboot_env_ff.img"
+part --fixed-size ${OMNECT_PART_SIZE_UBOOT_ENV}K --no-table --offset ${OMNECT_PART_OFFSET_UBOOT_ENV2} --source rawcopy --sourceparams="file=omnect_uboot_env_ff.img"
+part --fixed-size ${OMNECT_PART_SIZE_BOOT}K --source bootimg-efi --sourceparams="loader=grub-efi" --fstype=vfat --align 4096 --label boot --active
+
+include omnect-os.common.wks.inc
+
+bootloader --ptable gpt --configfile ${LAYERDIR_omnect}/recipes-omnect/grub-cfg/grub-cfg/grub-usb.cfg

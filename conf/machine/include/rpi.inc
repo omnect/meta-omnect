@@ -7,6 +7,9 @@ RPI_USE_U_BOOT = "1"
 # enable serial interface
 ENABLE_UART = "1"
 
+# initramfs type
+OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
+
 # overwrite CMDLINE_ROOTFS from meta-raspberrypi, we set "root" in boot.scr
 CMDLINE_ROOTFS = ""
 
