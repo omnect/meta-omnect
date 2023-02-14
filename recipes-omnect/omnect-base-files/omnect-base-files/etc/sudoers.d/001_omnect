@@ -1,2 +1,2 @@
 # allow user omnect to run sudo (with password)
-omnect ALL=(ALL:ALL) ALL
+omnect ALL=(ALL:ALL) NOPASSWD:ALL

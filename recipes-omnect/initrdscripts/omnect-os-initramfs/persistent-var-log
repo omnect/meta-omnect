@@ -5,11 +5,11 @@ persistent_var_log_enabled() {
 }
 
 persistent_var_log_run() {
-    msg "omnect-os persistent var log"
-
+    add_module_post_hook on_exit
     if [ -z "${ROOTFS_DIR}" ]; then
         fatal "no ROOTFS_DIR"
         return 1
     fi
     setup_persistent_var_log "${ROOTFS_DIR}"
+    return=${?}
 }
