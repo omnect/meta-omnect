@@ -7,11 +7,11 @@ Before=aziot-identityd.service \
     aziot-tpmd.service
 
 [Service]
-Type=exec
+Type=oneshot
 ExecStart=@@AZIOTCLI@@ config apply
 Restart=on-failure
 RestartSec=5
 RemainAfterExit=true
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=basic.target
