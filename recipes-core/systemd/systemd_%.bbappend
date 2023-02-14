@@ -56,6 +56,15 @@ do_install:append() {
     # sync time on sysinit
     install -d ${D}${sysconfdir}/systemd/system/sysinit.target.wants
     ln -rs ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service ${D}${sysconfdir}/systemd/system/sysinit.target.wants/systemd-time-wait-sync.service
+
+    # configure logind
+    # https://www.freedesktop.org/software/systemd/man/logind.conf.html
+    if ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'true', 'false', d)}; then
+        sed -i \
+            -e 's/^#NAutoVTs=\(.*\)$/NAutoVTs=0 /' \
+            -e 's/^#ReserveVT=\(.*\)$/ReserveVT=0 /' \
+            ${D}${sysconfdir}/systemd/logind.conf
+    fi
 }
 
 enable_hardware_watchdog() {

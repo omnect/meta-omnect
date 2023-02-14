@@ -50,12 +50,12 @@ setup_network() {
     done
 
     # start dhcp client; it is backgrounding in the case the IP address was assigned or timeout
-    mkdir -p /tmp
+    run_cmd mkdir -p /tmp || return 1
     run_cmd dhcpcd ${if_name} || return 1
 
     # wait for IPv4 address
     while true; do
-        msg "Waiting for IP address..."
+        msg "Waiting for IP address... on ${if_name}"
         ip_addr=$(ip addr show dev ${if_name} | grep "inet " | awk '{print $2}')
         if [ -n "${ip_addr}" ]; then break; fi
         sleep 1
@@ -74,6 +74,7 @@ setup_network() {
 run_bmap_tool() {
     local umount_dev=""
     local blk_dev=""
+    local bmap_ret=""
 
     # detect block device
     blk_dev=$(get_block_device boot)
@@ -105,19 +106,16 @@ run_bmap_tool() {
 
     msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:$(basename ${OMNECT_FLASH_MODE_FIFO})"
     export PATH
-    run_cmd bmaptool copy --bmap ${OMNECT_FLASH_MODE_BMAP_FILE} \
-                                 ${OMNECT_FLASH_MODE_FIFO} ${blk_dev}; RET=$?
-    if [ ${RET} -eq 0 ]; then return 0; fi  # success
+    run_cmd_stdout bmaptool copy --bmap ${OMNECT_FLASH_MODE_BMAP_FILE} \
+                                 ${OMNECT_FLASH_MODE_FIFO} ${blk_dev}; bmap_ret=$?
+    if [ ${bmap_ret} -eq 0 ]; then return 0; fi  # success
 
     # bmaptool exited with error:
     #     - mismatch between bmap file and wic image
     #     - broken destination device
     #     - broken network
     #     - usually, there is no way to salvage
-    while true; do
-        msg_fatal "bmaptool(${blk_dev}) failed: ${RET}"
-        sleep 60
-    done
+    msg_fatal "bmaptool(${blk_dev}) failed: ${bmap_ret}" && return 1
 }
 
 # deploy WIC image via network to (same) active block device
@@ -131,32 +129,31 @@ run_flash_mode_2() {
 
     if [ "${OMNECT_FLASH_MODE_ETH}" == "UNDEFINED" ]; then
         msg_fatal "missing definition OMNECT_FLASH_MODE_ETH"
-        return
+        return 1
     fi
 
-    setup_network ${OMNECT_FLASH_MODE_ETH} || return
-    run_bmap_tool || return
+    setup_network ${OMNECT_FLASH_MODE_ETH} || return 1
+    run_bmap_tool || return 1
 
     machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
     if [[ " ${machine_features} " =~ " grub " ]]; then
-        mkdir -p /tmp/boot
-        mount /dev/omnect/boot /tmp/boot
+        run_cmd mkdir -p /tmp/boot
+        run_cmd mount /dev/omnect/boot /tmp/boot
         root_a_p=$(readlink -f /dev/omnect/rootA)
         root_a_p=${root_a_p::-1}
-        sed "s#@@ROOT_DEVICE@@#${root_a_p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
-        umount /tmp/boot
+        run_cmd sed "s#@@ROOT_DEVICE@@#${root_a_p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
+        run_cmd umount /tmp/boot
     fi
 
     msg "Rebooting system..."
     sync
-    reboot -f
+    run_cmd reboot -f
     # -- never reached --
 }
 
 # main entry point
 flash_mode_2_run() {
+    add_module_post_hook on_exit
     run_flash_mode_2
-
-    # continue startup in case of errors
-    return 0
+    return=${?}
 }

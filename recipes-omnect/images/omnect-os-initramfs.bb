@@ -20,7 +20,6 @@ PACKAGE_INSTALL = "\
     e2fsprogs \
     omnect-os-initramfs-scripts \
     initramfs-framework-base \
-    initramfs-module-debug \
     libubootenv \
     libubootenv-bin \
     e2fsprogs-e2fsck \
@@ -34,6 +33,7 @@ PACKAGE_INSTALL = "\
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'dhcpcd dropbear bmap-tools xz', '', d)} \
+    ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', 'initramfs-module-debug', d)} \
 "
 
 inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'omnect_user', '', d)}
