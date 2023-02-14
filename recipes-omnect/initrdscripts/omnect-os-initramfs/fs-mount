@@ -4,10 +4,10 @@ fs_mount_enabled() {
     return 0
 }
 
-fs_mount_run() {
-
+run_fs_mount()
+{
     if [ -z "${ROOTFS_DIR}" ]; then
-        fatal "no ROOTFS_DIR"
+        msg_fatal "no ROOTFS_DIR"
         return 1
     fi
 
@@ -17,20 +17,23 @@ fs_mount_run() {
     mnt_opts_default="defaults,noatime,nodiratime,async"
 
     # mount rootfs
-    mount_partition "ext4" "${bootparam_root}" "${ROOTFS_DIR}" "${mnt_opts_default},ro"
+    mount_partition "ext4" "${bootparam_root}" "${ROOTFS_DIR}" "${mnt_opts_default},ro" || return 1
+    # bind mount rootfs without overlay under /mnt/rootCurrent
+    run_cmd mount --bind ${ROOTFS_DIR} ${ROOTFS_DIR}/mnt/rootCurrent
+    run_cmd mount --make-private ${ROOTFS_DIR}/mnt/rootCurrent
 
     # mount cert
     cert_blk=$(get_block_device cert)
     check_ext4_fs "cert" "${cert_blk}" 0
-    mount_partition "ext4" "${cert_blk}" "${ROOTFS_DIR}/mnt/cert" "${mnt_opts_default},rw"
-    mkdir -p ${ROOTFS_DIR}/mnt/cert/ca
-    mkdir -p ${ROOTFS_DIR}/mnt/cert/priv
+    mount_partition "ext4" "${cert_blk}" "${ROOTFS_DIR}/mnt/cert" "${mnt_opts_default},rw" || return 1
+    run_cmd mkdir -p ${ROOTFS_DIR}/mnt/cert/ca
+    run_cmd mkdir -p ${ROOTFS_DIR}/mnt/cert/priv
 
     # mount factory
     factory_blk=$(get_block_device factory)
-    mount_partition "ext4" "${factory_blk}" "${ROOTFS_DIR}/mnt/factory" "${mnt_opts_default},ro"
+    mount_partition "ext4" "${factory_blk}" "${ROOTFS_DIR}/mnt/factory" "${mnt_opts_default},ro" || return 1
 
-    setup_etc_partition "${ROOTFS_DIR}" "$(get_block_device etc)" "${mnt_opts_default},rw"
+    setup_etc_partition "${ROOTFS_DIR}" "$(get_block_device etc)" "${mnt_opts_default},rw" || return 1
 
     # mount data partition
     #     mount flags can be optionally set via u-boot environment
@@ -40,9 +43,17 @@ fs_mount_run() {
     else
         data_opts="${mnt_opts_default},rw"
     fi
-    setup_data_partition "${ROOTFS_DIR}" "$(get_block_device data)" "${data_opts}"
+    setup_data_partition "${ROOTFS_DIR}" "$(get_block_device data)" "${data_opts}" || return 1
 
     # mount tmpfs
-    mount -t tmpfs -o mode=0755,nodev,nosuid,strictatime tmpfs  ${ROOTFS_DIR}/run
-    mount -t tmpfs -o defaults tmpfs  ${ROOTFS_DIR}/var/volatile
+    mount -t tmpfs -o mode=0755,nodev,nosuid,strictatime tmpfs  ${ROOTFS_DIR}/run || return 1
+    mount -t tmpfs -o defaults tmpfs  ${ROOTFS_DIR}/var/volatile || return 1
+
+    return 0
+}
+
+fs_mount_run() {
+    add_module_post_hook on_exit
+    run_fs_mount
+    return=${?}
 }

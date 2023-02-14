@@ -1,0 +1,23 @@
+diff --git a/include/configs/rpi.h b/include/configs/rpi.h
+index 9bbb7f40..0ae6e5b3 100644
+--- a/include/configs/rpi.h
++++ b/include/configs/rpi.h
+@@ -13,6 +13,8 @@
+ #include <asm/arch/base.h>
+ #endif
+
++#include <configs/omnect_env.h>
++
+ /* Architecture, CPU, etc.*/
+
+ /* Use SoC timer for AArch32, but architected timer for AArch64 */
+@@ -178,7 +180,8 @@
+ 	ENV_DEVICE_SETTINGS \
+ 	ENV_DFU_SETTINGS \
+ 	ENV_MEM_LAYOUT_SETTINGS \
+-	BOOTENV
++	BOOTENV \
++	OMNECT_ENV_SETTINGS \
+
+
+ #endif
