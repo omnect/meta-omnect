@@ -5,8 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.15.9] Q1 2023
+## [kirkstone-0.16.2] Q1 2023
 - iot-hub-device-update: fix jq call in recipe (do_install:append)
+
+## [kirkstone-0.16.1] Q1 2023
+- iot-identity-precondition-service:
+  - changed type to "oneshot" to ensure follow up units
+    get startet after the process exits and not as soon `execve` is started
+  - changed wantedby dependency to basic.target
+
+## [kirkstone-0.16.0] Q1 2023
+- dropbear: disabled password login for release builds
+- imx-atf: default log level error for release builds
+- initramfs:
+  - install debug module only for non-release builds
+  - write messages and errors to /dev/kmsg
+    to respect kernel cmdline arg "quiet" and to push initramfs
+    output to the journal
+  - bind mount / without overlayfs to /mnt/rootCurrent
+  - fixed imx-sdma handling for images where "persistent-var-log" is disabled
+  - exit handler starts bash on fail for most initramfs scripts in non-release builds
+- omnect-os-image: disabled getty for release builds
+- omnect user: enabled sudo without password
+- systemd: disabled auto and reserved virtual terminals for release builds
+- systemd-serialgetty: disabled for release builds (at buildtime)
+- u-boot-imx/phytec: silent console for release builds
+- u-boot/rpi: silent console for release builds
+- u-boot/kernel: kernel boot is quiet on consoles for release builds
+
+## [kirkstone-0.15.10] Q1 2023
+- iot-hub-device-update: updated to 1.0.2
+
+## [kirkstone-0.15.9] Q1 2023
+- iot-identity-service/iotedge: don't restart services when calling `config apply`
+- iot-identity-service-precondition: start before aziot-tpmd as well
 
 ## [kirkstone-0.15.8] Q1 2023
 - kas:

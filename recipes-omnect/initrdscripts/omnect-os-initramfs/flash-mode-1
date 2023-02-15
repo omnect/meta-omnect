@@ -202,15 +202,11 @@ run_flash_mode_1() {
     machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
     if [[ " ${machine_features} " =~ " grub " ]]; then
         echo "Configuring grub"
-        mkdir -p /tmp/boot
-        mount ${blk_dev_dst}${p}1 /tmp/boot
+        run_cmd_stdout mkdir -p /tmp/boot
+        run_cmd_stdout mount ${blk_dev_dst}${p}1 /tmp/boot
         sed "s#@@ROOT_DEVICE@@#${blk_dev_dst}${p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
-        umount /tmp/boot
-    else
-        echo "REMOVE ME grub.cfg.in expected but not found"
-        run_cmd_stdout ls -l /etc/omnect
+        run_cmd_stdout umount /tmp/boot
     fi
-
 
     if [[ " ${machine_features} " =~ " efi " ]]; then
         echo "Configuring efi"
@@ -231,9 +227,12 @@ run_flash_mode_1() {
 
 # main entry point
 flash_mode_1_run() {
-    local blk_dev_data=""
+    add_module_post_hook on_exit
     set -o pipefail
-    run_flash_mode_1 2>&1 | tee /tmp/flash-mode-1.log >/dev/console 2>&1; RET=$?
+    local blk_dev_data=""
+
+    run_flash_mode_1 2>&1 | tee /tmp/flash-mode-1.log >/dev/console 2>&1;
+    return=${?}
     blk_dev_data=$(get_block_device data)
     if [ -b "${blk_dev_data}" ]; then
         # store log file
@@ -244,8 +243,5 @@ flash_mode_1_run() {
         run_cmd sync
         run_cmd umount "/tmp/mnt_data"
     fi
-    if [ $RET -eq 0 ]; then poweroff -f; fi
-
-    # continue startup in case of errors
-    return 0
+    if [ ${return} -eq 0 ]; then poweroff -f; fi
 }

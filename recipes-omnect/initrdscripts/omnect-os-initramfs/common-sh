@@ -7,25 +7,42 @@ common_sh_enabled()
     return 1  # there is no entry point in this library
 }
 
-msg_fatal() {
-    msg "FATAL ERROR: $1"
+# - overwrites msg from initramfs-framework
+# - we write to kmsg, so we can respect the kernel cmdline "quiet" argument
+#   and we're able to find the initramfs output in the journal
+msg() {
+    echo "<6> $@" >/dev/kmsg
 }
 
-run_cmd() {
-    msg  "$@"
-    eval "$@" >/dev/console 2>&1
-    if [ $? -ne 0 ]; then msg_fatal "command failed"; return 1; fi
-    return 0
+msg_fatal() {
+    msg "<2> FATAL ERROR: $1"
+}
+
+msg_error() {
+    msg "<3> ERROR: $1"
+}
+
+stderr_error() {
+    echo "ERROR: $1" >&2
 }
 
 stderr_fatal() {
     echo "FATAL ERROR: $1" >&2
 }
 
+run_cmd() {
+    msg  "$@"
+    eval "$@" &>/dev/kmsg 2>&1
+    local result=$?
+    if [ ${result} -ne 0 ]; then msg_error "command \"$@\" failed: ${result}"; return ${result}; fi
+    return 0
+}
+
 run_cmd_stdout() {
     echo "$@"
     eval "$@"
-    if [ $? -ne 0 ]; then stderr_fatal "command failed"; return 1; fi
+    local result=$?
+    if [ ${result} -ne 0 ]; then stderr_error "command \"$@\" failed: ${result}"; return ${result}; fi
     return 0
 }
 
@@ -47,7 +64,7 @@ check_ext4_fs()
 
     if [ ${enforce_mkfs} -eq 0 ]; then
         # regular boot; fsck handles unclean state (i.e.; not unmounted)
-        fsck.ext4 -y ${block_device}
+        run_cmd fsck.ext4 -y ${block_device}
         fsck_res=$?
     fi
 
@@ -67,7 +84,7 @@ check_ext4_fs()
         if [ ${fsck_res} -eq 2 ]; then
             # -- corrected by fsck, but reboot required --
             msg "reboot indicated by fsck"
-            reboot -f
+            run_cmd reboot -f
         fi
     fi
 
@@ -138,7 +155,7 @@ set_bootloader_env_var()
 {
     local  var_name="$1"
     local var_value="$2"  # empty string to delete variable
-    fw_setenv ${var_name} ${var_value}
+    run_cmd fw_setenv ${var_name} ${var_value}
 }
 
 # if etc partition is empty, copy the etc dir from factory partition
@@ -147,11 +164,11 @@ setup_etc_from_factory()
     local rootfs_dir="$1"
 
     if [ ! -d "${rootfs_dir}/mnt/etc/upper" ]; then
-        mkdir -p "${rootfs_dir}/mnt/etc/upper"
-        mkdir -p "${rootfs_dir}/mnt/etc/work"
+        run_cmd mkdir -p "${rootfs_dir}/mnt/etc/upper"
+        run_cmd mkdir -p "${rootfs_dir}/mnt/etc/work"
         if [ -d "${rootfs_dir}/mnt/factory/etc" ]; then
             msg "setup etc from factory partition"
-            cp -av "${rootfs_dir}/mnt/factory/etc/." "${rootfs_dir}/mnt/etc/upper"
+            run_cmd cp -av "${rootfs_dir}/mnt/factory/etc/." "${rootfs_dir}/mnt/etc/upper"
         fi
     fi
 }
@@ -206,19 +223,19 @@ setup_data_partition()
     mount_partition "ext4" "${data_blk}" "${rootfs_dir}/mnt/data" "${mnt_opts}"
 
     # mount home overlay
-    mkdir -p "${rootfs_dir}/mnt/data/home/work"
-    mkdir -p "${rootfs_dir}/mnt/data/home/upper"
-    mkdir -p "${rootfs_dir}/mnt/data/var/lib"
-    mkdir -p "${rootfs_dir}/mnt/data/local"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/home/work"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/home/upper"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/var/lib"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/local"
     mount_overlayfs "${rootfs_dir}/home" "${rootfs_dir}/mnt/data/home/upper" "${rootfs_dir}/mnt/data/home/work" \
                     "${mnt_opts}",index=off "${rootfs_dir}/home"
 
     # bind mount /var/lib
-    mkdir -p "${rootfs_dir}/mnt/data/var/lib"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/var/lib"
     run_cmd mount -o bind "${rootfs_dir}/mnt/data/var/lib" "${rootfs_dir}/var/lib"
 
     # bind mount /usr/local
-    mkdir -p "${rootfs_dir}/mnt/data/local"
+    run_cmd mkdir -p "${rootfs_dir}/mnt/data/local"
     run_cmd mount -o bind "${rootfs_dir}/mnt/data/local" "${rootfs_dir}/usr/local"
 }
 
@@ -238,9 +255,10 @@ setup_persistent_var_log()
 
     if grep ^DISTRO_FEATURES ${rootfs_dir}/etc/os-release | grep -q '[" ]persistent-var-log[ "]'; then
         msg "setup persistent var log"
-        mkdir -p ${rootfs_dir}/mnt/data/log
-        run_cmd mount -o bind ${rootfs_dir}/mnt/data/log ${rootfs_dir}/var/log
+        run_cmd mkdir -p ${rootfs_dir}/mnt/data/log || return 1
+        run_cmd mount -o bind ${rootfs_dir}/mnt/data/log ${rootfs_dir}/var/log || return 1
     fi
+    return $?
 }
 
 umount_persistent_var_log()
@@ -254,7 +272,38 @@ umount_persistent_var_log()
 
 get_partition_type()
 {
-    local value=$(sfdisk -l /dev/omnect/rootblk | grep "^Disklabel type:" | awk '{print $NF}')
+    local value=$(sfdisk -l /dev/omnect/rootblk 2>&1 | grep "^Disklabel type:" | awk '{print $NF}')
     debug "get_partition_type: ${value}"
     echo ${value}
+}
+
+on_exit_debug_image()
+{
+    if [ "${return}" != "0" ]; then
+        echo "clear" >> /tmp/debug_init
+        echo "echo \"initramfs failed: ${1}\"" >> /tmp/debug_init
+        /bin/bash --init-file /tmp/debug_init
+    fi
+}
+
+on_exit_release_image()
+{
+    # todo: as soon we have failure handling in the boot process, we should reboot here.
+    # for now, it would probably result in a reboot loop. so we don't.
+    if [ "${return}" != "0" ]; then
+        while true; do
+            msg_fatal "iniramfs failed: ${1}"
+            sleep 60
+        done
+    fi
+}
+
+on_exit()
+{
+    local release=$(grep ^OMNECT_RELEASE_IMAGE= /etc/os-release | awk -F'"' '{print $2}')
+    if [ "${release}" = "1" ]; then
+        on_exit_release_image ${2}
+    else
+        on_exit_debug_image ${2}
+    fi
 }

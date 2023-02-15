@@ -1,0 +1,12 @@
+diff --git a/board/phytec/phycore_imx8mm/spl.c b/board/phytec/phycore_imx8mm/spl.c
+index 0dfc0da4..4d79c0a5 100644
+--- a/board/phytec/phycore_imx8mm/spl.c
++++ b/board/phytec/phycore_imx8mm/spl.c
+@@ -331,6 +331,8 @@ int board_early_init_f(void)
+
+ 	init_uart_clk(2);
+
++	gd->flags |= (GD_FLG_SILENT | GD_FLG_DISABLE_CONSOLE);
++
+ 	return 0;
+ }
