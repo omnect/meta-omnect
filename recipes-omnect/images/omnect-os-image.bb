@@ -37,11 +37,21 @@ IMAGE_INSTALL = "\
     iot-hub-device-update \
     iptables \
     packagegroup-core-ssh-dropbear \
-    procps \
     sudo \
     kmod \
     u-boot-fw-utils \
+    systemd-analyze \
 "
+
+# check environment variable OMNECT_TOOLS
+def check_for_tools(d):
+    # use default list part of this recipe
+    if d.getVar('OMNECT_TOOLS', True) in [None, ""] : return "${OMNECT_TOOLS_DEFAULT}"
+
+    # use settings from environment
+    return "${OMNECT_DEVEL_TOOLS}"
+
+IMAGE_INSTALL += "${@check_for_tools(d)}"
 
 # check environment variable OMNECT_DEVEL_TOOLS
 def check_for_devel_tools(d):
