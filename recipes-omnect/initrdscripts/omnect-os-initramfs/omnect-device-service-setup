@@ -23,6 +23,8 @@ run_omnect_device_service_setup () {
     local tmp_dir="${ROOTFS_DIR}/run/omnect-device-service"  # /run is available in the INITRAMFS
     local factory_reset_trigger_file="${tmp_dir}/factory-reset-trigger"
     local factory_reset_restore_list="${tmp_dir}/factory-reset-restore-list"
+    local omnect_validate_update_flag="$(get_bootloader_env_var omnect_validate_update)"
+    local omnect_validate_update_file="${tmp_dir}/omnect_validate_update"
     local reboot_trigger_file="${tmp_dir}/reboot-trigger"
     local omnect_device_service_group=""
 
@@ -35,6 +37,8 @@ run_omnect_device_service_setup () {
 
     # create files
     run_cmd mkdir -p ${tmp_dir} \
+    && run_cmd chown root:${omnect_device_service_group} ${tmp_dir} \
+    && run_cmd chmod 770 ${tmp_dir} \
     && run_cmd touch ${factory_reset_trigger_file} \
     && run_cmd touch ${factory_reset_restore_list} \
     && run_cmd touch ${reboot_trigger_file} \
@@ -45,6 +49,13 @@ run_omnect_device_service_setup () {
     && run_cmd chmod 660 ${factory_reset_restore_list} \
     && run_cmd chmod 660 ${reboot_trigger_file} \
     || return 1
+
+    # omnect update workflow handling
+    if [ -n "${omnect_validate_update_flag}" ]; then
+        run_cmd touch ${omnect_validate_update_file} \
+        && run_cmd chown root:${omnect_device_service_group} ${omnect_validate_update_file} \
+        && run_cmd chmod 660 ${omnect_validate_update_file}
+    fi
 
     return 0
 }

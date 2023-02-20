@@ -11,6 +11,7 @@ SRC_URI = " \
   file://linux_platform_layer.patch \
   file://rpipart_to_bootpart.patch \
   file://sd_notify.patch \
+  file://deviceupdate-agent.path \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
   file://du-config.json \
@@ -97,6 +98,7 @@ do_install:append() {
 
   # systemd
   install -d ${D}${systemd_system_unitdir}
+  install -m 0644 ${WORKDIR}/deviceupdate-agent.path    ${D}${systemd_system_unitdir}/
   install -m 0644 ${WORKDIR}/deviceupdate-agent.service  ${D}${systemd_system_unitdir}/
   install -m 0644 ${WORKDIR}/deviceupdate-agent.timer    ${D}${systemd_system_unitdir}/
 
@@ -115,12 +117,18 @@ pkg_postinst:${PN}() {
   sed -i -e "s/@@UID@@/$(id -u adu)/" -e "s/@@NAME@@/AducIotAgent/" $D${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
 }
 
-SYSTEMD_SERVICE:${PN} = "deviceupdate-agent.service deviceupdate-agent.timer"
+SYSTEMD_SERVICE:${PN} = " \
+  deviceupdate-agent.path \
+  deviceupdate-agent.service \
+  deviceupdate-agent.timer \
+"
+
 FILES:${PN} += " \
   ${libdir}/adu \
   ${libdir}/tmpfiles.d/iot-hub-device-update.conf \
   ${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml \
   ${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml \
+  ${systemd_system_unitdir}/deviceupdate-agent.path \
   ${systemd_system_unitdir}/deviceupdate-agent.service \
   ${systemd_system_unitdir}/deviceupdate-agent.timer \
   ${sysconfdir}/omnect/consent/consent_conf.json \
