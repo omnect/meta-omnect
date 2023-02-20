@@ -66,10 +66,10 @@ EXTRA_OECMAKE += "-DADUC_WARNINGS_AS_ERRORS=OFF"
 do_install:append() {
   # adu configuration
   install -d ${D}${sysconfdir}/adu
-  jq  --arg adu_deviceproperties_manufacturer ${ADU_DEVICEPROPERTIES_MANUFACTURER} \
-      --arg adu_deviceproperties_model ${ADU_DEVICEPROPERTIES_MODEL} \
-      --arg adu_manufacturer ${ADU_MANUFACTURER} \
-      --arg adu_model ${ADU_MODEL} \
+  jq  --arg adu_deviceproperties_manufacturer "${ADU_DEVICEPROPERTIES_MANUFACTURER}" \
+      --arg adu_deviceproperties_model "${ADU_DEVICEPROPERTIES_MODEL}" \
+      --arg adu_manufacturer "${ADU_MANUFACTURER}" \
+      --arg adu_model "${ADU_MODEL}" \
       '.manufacturer = $adu_manufacturer |
       .model = $adu_model |
       .agents[].manufacturer = $adu_deviceproperties_manufacturer |
