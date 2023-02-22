@@ -37,9 +37,9 @@ DEPENDS = " \
 "
 
 RDEPENDS:${PN} = " \
+  aziot-identityd \
   bash \
   do-client \
-  iot-identity-service \
   swupdate \
 "
 
