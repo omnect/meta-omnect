@@ -28,8 +28,8 @@ DEPENDS += "\
     azure-iot-sdk-c\
 "
 RDEPENDS:${PN} += "\
+    aziot-identityd\
     ca-certificates\
-    iot-identity-service\
 "
 inherit aziot omnect_rust_azure-iot-sdk_deps systemd
 
