@@ -31,7 +31,7 @@ DEPENDS = " \
 # bitbake; maybe we should prevent that via patching
 do_install[depends] += "jq-native:do_populate_sysroot"
 
-RDEPENDS:${PN} = "iot-identity-service"
+RDEPENDS:${PN} = "aziot-identityd"
 
 S = "${WORKDIR}/git/src"
 
