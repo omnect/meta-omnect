@@ -20,7 +20,7 @@ PV = "${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS = "azure-iot-sdk-c libeis-utils"
-RDEPENDS:${PN} = "ca-certificates iot-identity-service"
+RDEPENDS:${PN} = "aziot-identityd ca-certificates"
 
 inherit aziot cmake overwrite_src_uri systemd
 
