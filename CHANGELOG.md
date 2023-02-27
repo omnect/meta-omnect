@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.16.3] Q1 2023
+- omnect-os-image: cleaned up tools to be integrated in development and
+  production images
+
+## [kirkstone-0.16.3] Q1 2023
 - azure-osconfig: removed
 - iot-identity-service:
   - updated version to 1.4.3
@@ -18,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - removed openssl 3.x patches
 
 ## [kirkstone-0.16.2] Q1 2023
-- iot-hub-device-update: fix jq call in recipe (do_install:append)
+- iot-hub-device-update: fixed jq call in recipe (do_install:append)
 
 ## [kirkstone-0.16.1] Q1 2023
 - iot-identity-precondition-service:
