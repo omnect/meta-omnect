@@ -31,7 +31,7 @@ RDEPENDS:${PN} += "\
     aziot-identityd\
     ca-certificates\
 "
-inherit aziot omnect_rust_azure-iot-sdk_deps systemd
+inherit omnect-device-service omnect_rust_azure-iot-sdk_deps systemd
 
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}
@@ -67,11 +67,3 @@ FILES:${PN} += "\
     ${systemd_system_unitdir}/omnect-device-reboot.service \
     ${bindir}/factory_reset.sh \
 "
-
-GROUPADD_PARAM:${PN} += " \
-  -r omnect_device_service; \
-  -r disk; \
-  -r adu; \
-"
-
-USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,disk,adu -g omnect_device_service omnect_device_service;"
