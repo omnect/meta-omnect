@@ -7,7 +7,7 @@ do_install:append() {
     chmod 4750 ${D}${sbindir}/xtables-nft-multi
 
     # for ipv4 this is done automatically when PACKAGECONFIG includes libnftnl, for ipv6 we have to do it
-    ln -sf ${D}${sbindir}/xtables-nft-multi ${D}${sbindir}/ip6tables
+    ln -sf xtables-nft-multi ${D}${sbindir}/ip6tables
 
     sed -i \
         -e 's#^ExecStart=\(.*\)$#ExecStart=/usr/sbin/iptables-nft-restore -- /etc/iptables/iptables.rules#' \
