@@ -1,5 +1,5 @@
 diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
-index 57f467b1..9a53fec1 100644
+index 57f467b1..868a6aa9 100644
 --- a/include/configs/phycore_imx8mm.h
 +++ b/include/configs/phycore_imx8mm.h
 @@ -11,6 +11,8 @@
@@ -11,11 +11,40 @@ index 57f467b1..9a53fec1 100644
  #include "phycore_rauc_env.h"
  #include "phycore_fitimage_env.h"
  
-@@ -54,6 +56,7 @@
+@@ -46,6 +48,12 @@
+ 	"bootpart=2\0" \
+ 	"devnum=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
+ 	"devtype=mmc\0" \
++	"distro_bootcmd=mmc dev ${devnum};" \
++		"if mmc rescan; then " \
++			"env exist kernel_addr || setenv devnum ${mmcdev} && setenv kernel_addr_r ${loadaddr} && saveenv;" \
++			"run load_fdt_script;" \
++			"run scan_boot_script;" \
++		"fi\0" \
+ 	"image=Image\0" \
+ 	"console=ttymxc2\0" \
+ 	"fdt_addr=0x48000000\0" \
+@@ -54,6 +62,8 @@
  	"ramdisk_addr_r=0x49200000\0" \
  	"scan_boot_script=if test -e mmc ${devnum}:1 /boot.scr; then echo Found U-Boot script; run boot_script; echo SCRIPT FAILED: continuing...; fi\0" \
  	"script_addr_r=0x49100000\0" \
-+	OMNECT_ENV_SETTINGS \
++	OMNECT_ENV_UPDATE_WORKFLOW \
++	OMNECT_ENV_SETTINGS
  
  #ifdef CONFIG_IMX_HAB
  #define BOOTCOMMAND_APPEND "reset;"
+@@ -61,13 +71,7 @@
+ #define BOOTCOMMAND_APPEND ""
+ #endif
+ 
+-#define CONFIG_BOOTCOMMAND \
+-	"mmc dev ${devnum}; if mmc rescan; then " \
+-		"env exist kernel_addr || setenv devnum ${mmcdev} && setenv kernel_addr_r ${loadaddr} && saveenv;" \
+-		"run load_fdt_script;" \
+-		"run scan_boot_script;" \
+-	"fi; " \
+-	BOOTCOMMAND_APPEND
++#define CONFIG_BOOTCOMMAND ""
+ 
+ #ifdef CONFIG_ENV_WRITEABLE_LIST
+ /* Set environment flag validation to a list of env vars that must be writable */

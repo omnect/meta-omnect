@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.17.0] Q1 2023
+- fallback handling for A/B updates
+- u-boot: implemented update workflow with fallback handling
+- initramfs: u-boot update flag "omnect_validate_update" creates
+  /run/omnect-device-service/omnect_validate_update
+- omnect-device-service:
+  - if module provisioning is successful
+    delete /run/omnect-device-service/omnect_validate_update
+    and set u-boot env accordingly
+  - reboot if service is started ten times in two minutes
+- iot-hub-device-update:
+  - set u-boot env "omnect_validate_update" handling on apply/revert
+  - only start if
+    /run/omnect-device-service/omnect_validate_update
+    doesn't exist
+
 ## [kirkstone-0.16.3] Q1 2023
 - omnect-os-image: cleaned up tools to be integrated in development and
   production images
