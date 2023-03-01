@@ -6,12 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.8.1"
-SRC_URI += "git://git@github.com/omnect/omnect-device-service.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "eee6857b3a9746475c9af3c09074b559e14e6d05"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.8.2"
+SRC_URI += "git://git@github.com/mlilien/omnect-device-service.git;protocol=ssh;nobranch=1;branch=ssh"
+SRCREV = "7f67bd0cf287a15f9a4f237bcd10ce337122ff8f"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-
+PV:append = ".AUTOINC+7f67bd0cf2"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -95,6 +95,7 @@ SRC_URI += " \
     crate://crates.io/indexmap/1.9.2 \
     crate://crates.io/inotify-sys/0.1.5 \
     crate://crates.io/inotify/0.9.6 \
+    crate://crates.io/iptables/0.5.0 \
     crate://crates.io/itoa/1.0.5 \
     crate://crates.io/js-sys/0.3.61 \
     crate://crates.io/kqueue-sys/1.0.3 \
@@ -116,6 +117,7 @@ SRC_URI += " \
     crate://crates.io/miniz_oxide/0.6.2 \
     crate://crates.io/mio/0.8.5 \
     crate://crates.io/network-interface/0.1.6 \
+    crate://crates.io/nix/0.23.2 \
     crate://crates.io/nix/0.24.3 \
     crate://crates.io/nom/7.1.3 \
     crate://crates.io/notify-debouncer-mini/0.2.1 \
