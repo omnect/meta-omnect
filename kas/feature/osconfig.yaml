@@ -1,8 +1,0 @@
-# kas config file
-
-header:
-  version: 10
-
-local_conf_header:
-  meta-omnect_feature_osconfig: |
-    IMAGE_INSTALL:append = " azure-osconfig"

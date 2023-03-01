@@ -37,21 +37,25 @@ IMAGE_INSTALL = "\
     iot-hub-device-update \
     iptables \
     packagegroup-core-ssh-dropbear \
-    procps \
     sudo \
     kmod \
     u-boot-fw-utils \
+    systemd-analyze \
 "
 
-# check environment variable OMNECT_DEVEL_TOOLS
-def check_for_devel_tools(d):
-    # use default list part of this recipe
-    if d.getVar('OMNECT_DEVEL_TOOLS', True) in [None, ""] : return "${OMNECT_DEVEL_TOOLS_DEFAULT}"
+# check environment variables like OMNECT_TOOLS or OMNECT_DEVEL_TOOLS
+# Note: it is assumed that another variable suffixed with "_DEFAULT" exists and
+#       contains default settings for variable if is not currently defined
+def check_for_defaultvar(d, checkvar):
+    # use default counterpart variable if variable is unset or empty
+    if d.getVar(checkvar, True) in [None, ""]:
+        return "${" + checkvar + "_DEFAULT}"
 
     # use settings from environment
-    return "${OMNECT_DEVEL_TOOLS}"
+    return "${" + checkvar + "}"
 
-IMAGE_INSTALL += "${@check_for_devel_tools(d)}"
+IMAGE_INSTALL += "${@check_for_defaultvar(d, 'OMNECT_TOOLS')}"
+IMAGE_INSTALL += "${@check_for_defaultvar(d, 'OMNECT_DEVEL_TOOLS')}"
 
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
