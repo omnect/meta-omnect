@@ -64,8 +64,9 @@ check_ext4_fs()
 
     if [ ${enforce_mkfs} -eq 0 ]; then
         # regular boot; fsck handles unclean state (i.e.; not unmounted)
-        run_cmd fsck.ext4 -y ${block_device}
+        run_cmd fsck.ext4 -p ${block_device}
         fsck_res=$?
+        msg "fsck result for ${block_device} is ${fck_res}"
     fi
 
     if [ ${enforce_mkfs} -eq 1 ] || [ ${fsck_res} -gt 2 ]; then
@@ -78,7 +79,7 @@ check_ext4_fs()
         run_cmd sync
 
         # check filesystem again with forced mode
-        run_cmd fsck.ext4  ${block_device} -f -y || return 1
+        run_cmd fsck.ext4  ${block_device} -f -p || return 1
 
     else
         if [ ${fsck_res} -eq 2 ]; then

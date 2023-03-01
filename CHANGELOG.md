@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.17.1] Q1 2023
+- initramfs: changed fsck strategy from "-y" to "-p"
+
 ## [kirkstone-0.17.0] Q1 2023
 - fallback handling for A/B updates
 - u-boot: implemented update workflow with fallback handling
