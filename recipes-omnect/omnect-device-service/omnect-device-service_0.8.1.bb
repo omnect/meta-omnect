@@ -6,12 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.8.0"
-SRC_URI += "git://git@github.com/mlilien/omnect-device-service.git;protocol=ssh;nobranch=1;branch=update_fallback_handling"
-SRCREV = "6eb833c38192273a5938530f7dee5ebe53468a44"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.8.1"
+SRC_URI += "git://git@github.com/omnect/omnect-device-service.git;protocol=ssh;nobranch=1;branch=main"
+SRCREV = "eee6857b3a9746475c9af3c09074b559e14e6d05"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+6eb833c381"
+
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -35,9 +35,10 @@ SRC_URI += " \
     crate://crates.io/cexpr/0.6.0 \
     crate://crates.io/cfg-if/1.0.0 \
     crate://crates.io/chrono/0.4.23 \
-    crate://crates.io/clang-sys/1.4.0 \
+    crate://crates.io/clang-sys/1.6.0 \
     crate://crates.io/codespan-reporting/0.11.1 \
     crate://crates.io/core-foundation-sys/0.8.3 \
+    crate://crates.io/cp_r/0.5.1 \
     crate://crates.io/cpufeatures/0.2.5 \
     crate://crates.io/crossbeam-channel/0.5.6 \
     crate://crates.io/crossbeam-utils/0.8.14 \
@@ -49,7 +50,6 @@ SRC_URI += " \
     crate://crates.io/darling/0.14.3 \
     crate://crates.io/darling_core/0.14.3 \
     crate://crates.io/darling_macro/0.14.3 \
-    crate://crates.io/default-env/0.1.1 \
     crate://crates.io/digest/0.10.6 \
     crate://crates.io/either/1.8.1 \
     crate://crates.io/env_logger/0.8.4 \
@@ -80,7 +80,7 @@ SRC_URI += " \
     crate://crates.io/hermit-abi/0.2.6 \
     crate://crates.io/hex/0.4.3 \
     crate://crates.io/http-body/0.4.5 \
-    crate://crates.io/http/0.2.8 \
+    crate://crates.io/http/0.2.9 \
     crate://crates.io/httparse/1.8.0 \
     crate://crates.io/httpdate/1.0.2 \
     crate://crates.io/humantime/2.1.0 \
@@ -136,9 +136,7 @@ SRC_URI += " \
     crate://crates.io/pin-utils/0.1.0 \
     crate://crates.io/pkg-config/0.3.26 \
     crate://crates.io/ppv-lite86/0.2.17 \
-    crate://crates.io/proc-macro2/0.4.30 \
     crate://crates.io/proc-macro2/1.0.51 \
-    crate://crates.io/quote/0.6.13 \
     crate://crates.io/quote/1.0.23 \
     crate://crates.io/rand/0.8.5 \
     crate://crates.io/rand_chacha/0.3.1 \
@@ -164,8 +162,8 @@ SRC_URI += " \
     crate://crates.io/slab/0.4.7 \
     crate://crates.io/smallvec/1.10.0 \
     crate://crates.io/socket2/0.4.7 \
+    crate://crates.io/stdext/0.3.1 \
     crate://crates.io/strsim/0.10.0 \
-    crate://crates.io/syn/0.15.44 \
     crate://crates.io/syn/1.0.107 \
     crate://crates.io/termcolor/1.2.0 \
     crate://crates.io/thiserror-impl/1.0.38 \
@@ -179,7 +177,7 @@ SRC_URI += " \
     crate://crates.io/tokio-io-timeout/1.2.0 \
     crate://crates.io/tokio-macros/1.8.2 \
     crate://crates.io/tokio-openssl/0.6.3 \
-    crate://crates.io/tokio-util/0.7.4 \
+    crate://crates.io/tokio-util/0.7.7 \
     crate://crates.io/tokio/1.25.0 \
     crate://crates.io/tower-layer/0.3.2 \
     crate://crates.io/tower-service/0.3.2 \
@@ -192,7 +190,6 @@ SRC_URI += " \
     crate://crates.io/unicode-ident/1.0.6 \
     crate://crates.io/unicode-normalization/0.1.22 \
     crate://crates.io/unicode-width/0.1.10 \
-    crate://crates.io/unicode-xid/0.1.0 \
     crate://crates.io/url/2.3.1 \
     crate://crates.io/vcpkg/0.2.15 \
     crate://crates.io/version_check/0.9.4 \
@@ -276,7 +273,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.9.0"
+SRCREV_azure-iot-sdk = "0.9.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.5.7"
