@@ -41,6 +41,8 @@ do_install:append() {
     install -m 0644 ${S}/systemd/omnect-device-factory-reset.path ${D}${systemd_system_unitdir}/omnect-device-factory-reset.path
     install -m 0644 ${S}/systemd/omnect-device-reboot.service ${D}${systemd_system_unitdir}/omnect-device-reboot.service
     install -m 0644 ${S}/systemd/omnect-device-reboot.path ${D}${systemd_system_unitdir}/omnect-device-reboot.path
+    install -m 0644 ${S}/systemd/omnect-update-finalization.service ${D}${systemd_system_unitdir}/omnect-update-finalization.service
+    install -m 0644 ${S}/systemd/omnect-update-finalization.path ${D}${systemd_system_unitdir}/omnect-update-finalization.path
     install -m 755 ${S}/script/factory_reset.sh ${D}${bindir}/
 
     # allow omnect-device-service access to device_id secret created by manual provisioning
@@ -60,10 +62,12 @@ SYSTEMD_SERVICE:${PN} = " \
     omnect-device-service.timer \
     omnect-device-factory-reset.path \
     omnect-device-reboot.path \
+    omnect-update-finalization.path \
 "
 
 FILES:${PN} += "\
     ${systemd_system_unitdir}/omnect-device-factory-reset.service \
     ${systemd_system_unitdir}/omnect-device-reboot.service \
+    ${systemd_system_unitdir}/omnect-update-finalization.service \
     ${bindir}/factory_reset.sh \
 "
