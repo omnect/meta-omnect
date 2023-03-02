@@ -1,8 +1,9 @@
-FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:"
+FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:${THISDIR}/${PN}:"
 
 SRC_URI += "\
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
+  file://omnect-device-service.conf \
 "
 
 PV .= "_${SRCPV}"
@@ -37,6 +38,8 @@ do_install:append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${S}/systemd/omnect-device-service.service ${D}${systemd_system_unitdir}/omnect-device-service.service
     install -m 0644 ${S}/systemd/omnect-device-service.timer ${D}${systemd_system_unitdir}/omnect-device-service.timer
+    install -m 0644 ${S}/systemd/omnect-device-authorized_keys.service ${D}${systemd_system_unitdir}/omnect-device-authorized_keys.service
+    install -m 0644 ${S}/systemd/omnect-device-authorized_keys.path ${D}${systemd_system_unitdir}/omnect-device-authorized_keys.path
     install -m 0644 ${S}/systemd/omnect-device-factory-reset.service ${D}${systemd_system_unitdir}/omnect-device-factory-reset.service
     install -m 0644 ${S}/systemd/omnect-device-factory-reset.path ${D}${systemd_system_unitdir}/omnect-device-factory-reset.path
     install -m 0644 ${S}/systemd/omnect-device-reboot.service ${D}${systemd_system_unitdir}/omnect-device-reboot.service
@@ -50,6 +53,9 @@ do_install:append() {
 
     # allow omnect-device-service provisioning via module identity
     install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/omnect-device-service.toml
+
+    # create tmpfiles.d entry to (re)create dir + permissions
+    install -m 0644 -D ${WORKDIR}/omnect-device-service.conf ${D}${libdir}/tmpfiles.d/omnect-device-service.conf
 }
 
 pkg_postinst:${PN}() {
@@ -60,14 +66,17 @@ pkg_postinst:${PN}() {
 SYSTEMD_SERVICE:${PN} = " \
     omnect-device-service.service \
     omnect-device-service.timer \
+    omnect-device-authorized_keys.path \
     omnect-device-factory-reset.path \
     omnect-device-reboot.path \
     omnect-update-finalization.path \
 "
 
 FILES:${PN} += "\
+    ${bindir}/factory_reset.sh \
+    ${libdir}/tmpfiles.d/omnect-device-service.conf \
+    ${systemd_system_unitdir}/omnect-device-authorized_keys.service \
     ${systemd_system_unitdir}/omnect-device-factory-reset.service \
     ${systemd_system_unitdir}/omnect-device-reboot.service \
     ${systemd_system_unitdir}/omnect-update-finalization.service \
-    ${bindir}/factory_reset.sh \
 "
