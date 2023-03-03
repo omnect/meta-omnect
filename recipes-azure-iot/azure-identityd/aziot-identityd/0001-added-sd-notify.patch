@@ -1,0 +1,77 @@
+From 2cfc4d44564795065437f55950a6745e5c190f96 Mon Sep 17 00:00:00 2001
+From: JanZachmann <jan.zachmann@conplement.de>
+Date: Wed, 1 Mar 2023 17:46:57 +0100
+Subject: [PATCH] added sd-notify
+
+---
+ Cargo.lock                                          | 7 +++++++
+ identity/aziot-identityd/Cargo.toml                 | 1 +
+ identity/aziot-identityd/aziot-identityd.service.in | 1 +
+ identity/aziot-identityd/src/lib.rs                 | 2 ++
+ 4 files changed, 11 insertions(+)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index 5b4fe11..e4f54d3 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -260,6 +260,7 @@ dependencies = [
+  "openssl2",
+  "percent-encoding",
+  "regex",
++ "sd-notify",
+  "serde",
+  "serde_json",
+  "tokio",
+@@ -2247,6 +2248,12 @@ version = "1.0.3"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "ddccb15bcce173023b3fedd9436f882a0739b8dfb45e4f6b6002bee5929f61b2"
+ 
++[[package]]
++name = "sd-notify"
++version = "0.4.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "621e3680f3e07db4c9c2c3fb07c6223ab2fab2e54bd3c04c3ae037990f428c32"
++
+ [[package]]
+ name = "serde"
+ version = "1.0.152"
+diff --git a/identity/aziot-identityd/Cargo.toml b/identity/aziot-identityd/Cargo.toml
+index fd0eb3d..e940e38 100644
+--- a/identity/aziot-identityd/Cargo.toml
++++ b/identity/aziot-identityd/Cargo.toml
+@@ -23,6 +23,7 @@ openssl = "0.10"
+ openssl-sys = "0.9"
+ percent-encoding = "2"
+ regex = "1"
++sd-notify = "0.4"
+ serde = "1"
+ serde_json = "1.0"
+ tokio = { version = "1", features = ["parking_lot", "time"] }
+diff --git a/identity/aziot-identityd/aziot-identityd.service.in b/identity/aziot-identityd/aziot-identityd.service.in
+index 42adf6f..e9f3b9d 100644
+--- a/identity/aziot-identityd/aziot-identityd.service.in
++++ b/identity/aziot-identityd/aziot-identityd.service.in
+@@ -4,6 +4,7 @@ Requires=aziot-identityd.socket
+ After=aziot-identityd.socket
+ 
+ [Service]
++Type=notify
+ Environment="LD_LIBRARY_PATH=@private-libs@"
+ ExecStart=@libexecdir@/aziot-identity-service/aziot-identityd
+ KillMode=process
+diff --git a/identity/aziot-identityd/src/lib.rs b/identity/aziot-identityd/src/lib.rs
+index 3140dcf..165f5ea 100644
+--- a/identity/aziot-identityd/src/lib.rs
++++ b/identity/aziot-identityd/src/lib.rs
+@@ -154,6 +154,8 @@ pub async fn main(
+         }
+     }
+ 
++    let _ = sd_notify::notify(false, &[sd_notify::NotifyState::Ready]);
++
+     config_common::watcher::start_watcher(config_path, config_directory_path, api.clone());
+ 
+     let service = http::Service { api };
+-- 
+2.34.1
+
