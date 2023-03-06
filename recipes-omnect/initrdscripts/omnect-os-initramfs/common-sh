@@ -68,7 +68,7 @@ check_ext4_fs()
         # regular boot; fsck handles unclean state (i.e.; not unmounted)
         run_cmd fsck.ext4 -p ${block_device}
         fsck_res=$?
-        msg "fsck result for ${block_device} is ${fck_res}"
+        msg "fsck result for ${block_device} is ${fsck_res}"
     fi
 
     if [ ${enforce_mkfs} -eq 1 ] || [ ${fsck_res} -gt 2 ]; then
