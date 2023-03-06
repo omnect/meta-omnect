@@ -1,15 +1,3 @@
-From 32def26835344da07658623d708c020d34c8b9c2 Mon Sep 17 00:00:00 2001
-From: JanZachmann <jan.zachmann@conplement.de>
-Date: Wed, 1 Mar 2023 17:46:57 +0100
-Subject: [PATCH] added sd-notify
-
----
- Cargo.lock                                          | 7 +++++++
- identity/aziot-identityd/Cargo.toml                 | 1 +
- identity/aziot-identityd/aziot-identityd.service.in | 1 +
- identity/aziot-identityd/src/lib.rs                 | 2 ++
- 4 files changed, 11 insertions(+)
-
 diff --git a/Cargo.lock b/Cargo.lock
 index 5b4fe11..e4f54d3 100644
 --- a/Cargo.lock
@@ -72,6 +60,3 @@ index 3140dcf..c0221a5 100644
      let incoming = connector
          .incoming(http_common::SOCKET_DEFAULT_PERMISSION, max_requests, None)
          .await?;
--- 
-2.34.1
-

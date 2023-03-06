@@ -11,7 +11,7 @@ SRC_URI += " \
     file://iot-identity-service-certd.template.toml \
     file://iot-identity-service-precondition.service \
     file://apply_doesnt_restart_services.patch \
-    file://0001-added-sd-notify.patch \
+    file://send_sd_notify.patch \
 "
 CARGO_BUILD_FLAGS += "--offline"
 
