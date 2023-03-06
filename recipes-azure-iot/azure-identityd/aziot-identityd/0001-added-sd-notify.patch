@@ -1,4 +1,4 @@
-From 2cfc4d44564795065437f55950a6745e5c190f96 Mon Sep 17 00:00:00 2001
+From 32def26835344da07658623d708c020d34c8b9c2 Mon Sep 17 00:00:00 2001
 From: JanZachmann <jan.zachmann@conplement.de>
 Date: Wed, 1 Mar 2023 17:46:57 +0100
 Subject: [PATCH] added sd-notify
@@ -60,18 +60,18 @@ index 42adf6f..e9f3b9d 100644
  ExecStart=@libexecdir@/aziot-identity-service/aziot-identityd
  KillMode=process
 diff --git a/identity/aziot-identityd/src/lib.rs b/identity/aziot-identityd/src/lib.rs
-index 3140dcf..165f5ea 100644
+index 3140dcf..c0221a5 100644
 --- a/identity/aziot-identityd/src/lib.rs
 +++ b/identity/aziot-identityd/src/lib.rs
-@@ -154,6 +154,8 @@ pub async fn main(
-         }
-     }
+@@ -158,6 +158,8 @@ pub async fn main(
+ 
+     let service = http::Service { api };
  
 +    let _ = sd_notify::notify(false, &[sd_notify::NotifyState::Ready]);
 +
-     config_common::watcher::start_watcher(config_path, config_directory_path, api.clone());
- 
-     let service = http::Service { api };
+     let incoming = connector
+         .incoming(http_common::SOCKET_DEFAULT_PERMISSION, max_requests, None)
+         .await?;
 -- 
 2.34.1
 
