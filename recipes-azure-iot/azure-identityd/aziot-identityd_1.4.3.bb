@@ -181,7 +181,6 @@ SRC_URI += " \
     crate://crates.io/same-file/1.0.6 \
     crate://crates.io/scopeguard/1.1.0 \
     crate://crates.io/scratch/1.0.3 \
-    crate://crates.io/sd-notify/0.4.1 \
     crate://crates.io/serde/1.0.152 \
     crate://crates.io/serde_derive/1.0.152 \
     crate://crates.io/serde_json/1.0.93 \
