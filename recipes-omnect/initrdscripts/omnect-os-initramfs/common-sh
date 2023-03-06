@@ -54,8 +54,10 @@ check_ext4_fs()
     local block_device=$2  # block device name
     local enforce_mkfs=$3  # enforce reformatting: 0|1
     local fsck_res=0
+    local kmsg_ratelimit=$(cat /proc/sys/kernel/printk_devkmsg)
 
     msg "check_ext4_fs ${ext4_label} ${block_device}"
+    echo "on" > /proc/sys/kernel/printk_devkmsg
 
     if [ -z "${block_device}" ] || [ ! -b "${block_device}" ]; then
         msg_fatal "\"${block_device}\" not a valid block device"
@@ -89,6 +91,7 @@ check_ext4_fs()
         fi
     fi
 
+    echo ${kmsg_ratelimit} > /proc/sys/kernel/printk_devkmsg
     return 0
 }
 
