@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.17.3] Q1 2023
+- iot-identity-service:
+  - patched aziot-identityd in order to send sd-notify after successful startup
+  - dependent services (e.g. iot-hub-device-update, omnect-device-service) are better synchronized now regarding connection setup to azure cloud
+- iot-hub-device-update:
+  - patched in order to restart in case an unauthenticated:no-network message was received
+  - this avoids bugs where reported properties might be empty after iot-identity-service was restarted for some reason
+
 ## [kirkstone-0.17.2] Q1 2023
 - aziot-identityd: corrected install destination of openssl engine aziot_keys
 

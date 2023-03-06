@@ -1,9 +1,10 @@
-From d60ad4f48dff689bfde508b732c95c8085b03dd1 Mon Sep 17 00:00:00 2001
+From afff296a5f494895cac63d4b219704441352e6d2 Mon Sep 17 00:00:00 2001
 From: JoergZeidler <joerg.zeidler@conplement.de>
-Date: Fri, 3 Mar 2023 12:15:02 +0100
+Date: Mon, 6 Mar 2023 14:16:27 +0100
 Subject: [PATCH] added restart handling in case adu-agent get "No Network"
- conn state
+ conn state (#18)
 
+fixed typo (#19)
 ---
  .../iothub_communication_manager/CMakeLists.txt       |  3 ++-
  .../src/iothub_communication_manager.c                | 11 +++++++++--
@@ -24,7 +25,7 @@ index aff2425..a7c8a86 100644
              aduc::c_utils
              aduc::eis_utils
 diff --git a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
-index b6611f6..9fec9c6 100644
+index b6611f6..1cff8e9 100644
 --- a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
 +++ b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
 @@ -5,6 +5,7 @@
@@ -40,9 +41,9 @@ index b6611f6..9fec9c6 100644
              break;
          case IOTHUB_CLIENT_CONNECTION_NO_NETWORK:
 -            // Could be transient error, wait for at least 5 minutes to retry.
-+            // Could be transient error
++            // Workaround for empty reported properties in module twin 
 +            // 1) try to restart agent
-+            // 2) if restart again could not be performed, wait for at least 5 minutes to retry.
++            // 2) if restart agent could not be performed, wait for at least 5 minutes to retry.
              Log_Error("No network.");
 -            additionalDelayInSeconds = TIME_SPAN_FIVE_MINUTES_IN_SECONDS;
 +            if (ADUC_MethodCall_RestartAgent() != 0)
