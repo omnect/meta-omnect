@@ -7,9 +7,7 @@ CARGO_WORKSPACE_ROOT = "edgelet"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:"
 
-SRC_URI += " \
-    file://apply_doesnt_restart_services.patch \
-    file://0001-added-sd-notify.patch \
+SRC_URI += "file://apply_doesnt_restart_services.patch"
 
 DEPENDS += "openssl"
 RDEPENDS:${PN} += "aziot-identityd"
