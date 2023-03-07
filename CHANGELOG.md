@@ -9,7 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iptables:
   - switched from legacy to nft variant
   - changed permissions to allow execution by omnect-device-service
-- updated omnect-device-service to 0.9.0 (enabled ssh handling via direct methods)
+- initramfs: refactored omnect-device-service-startup to only create
+  conditional temp files, e.g. for update validation
+  (static temp files now get created by systemd-tmpfiles.d)
+- omnect-device-service: updated to 0.9.0 (enabled ssh handling via direct methods)
 
 ## [kirkstone-0.17.5] Q1 2023
 - removed azure-osconfig
