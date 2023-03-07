@@ -20,6 +20,7 @@ SRC_URI = " \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
   file://0001-add-swupdate-user-consent-handler.patch \
+  file://0001-restart-adu-agent-no-network.patch \
   file://workaround-deprecated-declarations-openssl3.patch \
 "
 PV = "${SRCPV}"
