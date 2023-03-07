@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.17.3] Q1 2023
-- initramfs: turn on unlimited kmsg ratelimit when running fsck.ext4
+- initramfs:
+  - turn on unlimited kmsg ratelimit when running fsck.ext4
+  - fixed typo when printing fsck status
 
 ## [kirkstone-0.17.2] Q1 2023
 - aziot-identityd: corrected install destination of openssl engine aziot_keys
