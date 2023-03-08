@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.18.0] Q1 2023
 - uboot (tauri/polis): enabled conditional loading of devicetree overlays
   (set e.g. via `fw_setenv overlays imx8mm-phygate-tauri-rs232-rs232.dtbo`)
+- README.md: corrected dependencies
 
 ## [kirkstone-0.17.6] Q1 2023
 - iptables:
