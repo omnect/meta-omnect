@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.8.1"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.9.0"
 SRC_URI += "git://git@github.com/omnect/omnect-device-service.git;protocol=ssh;nobranch=1;branch=main"
-SRCREV = "eee6857b3a9746475c9af3c09074b559e14e6d05"
+SRCREV = "b8e6ffdede88544567e228dee1be68598be9bcaf"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -95,6 +95,7 @@ SRC_URI += " \
     crate://crates.io/indexmap/1.9.2 \
     crate://crates.io/inotify-sys/0.1.5 \
     crate://crates.io/inotify/0.9.6 \
+    crate://crates.io/iptables/0.5.0 \
     crate://crates.io/itoa/1.0.5 \
     crate://crates.io/js-sys/0.3.61 \
     crate://crates.io/kqueue-sys/1.0.3 \
@@ -116,6 +117,7 @@ SRC_URI += " \
     crate://crates.io/miniz_oxide/0.6.2 \
     crate://crates.io/mio/0.8.5 \
     crate://crates.io/network-interface/0.1.6 \
+    crate://crates.io/nix/0.23.2 \
     crate://crates.io/nix/0.24.3 \
     crate://crates.io/nom/7.1.3 \
     crate://crates.io/notify-debouncer-mini/0.2.1 \
@@ -273,7 +275,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.9.1"
+SRCREV_azure-iot-sdk = "0.9.2"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.5.7"

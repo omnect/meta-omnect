@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.17.6] Q1 2023
+- iptables:
+  - switched from legacy to nft variant
+  - changed permissions to allow execution by omnect-device-service
+- initramfs: refactored omnect-device-service-startup to only create
+  conditional temp files, e.g. for update validation
+  (static temp files now get created by systemd-tmpfiles.d)
+- omnect-device-service: updated to 0.9.0 (enabled ssh handling via direct methods)
+
 ## [kirkstone-0.17.5] Q1 2023
 - removed azure-osconfig
 

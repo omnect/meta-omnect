@@ -19,42 +19,27 @@ get_id() {
     echo $line | awk -F: '{print $3}'
 }
 
+# setup conditional temp files for omnect-device-service, e.g. for the update workflow handling;
+# (static temp files for omnect-device-service are created via systemd-tmpfiles.d)
 run_omnect_device_service_setup () {
     local tmp_dir="${ROOTFS_DIR}/run/omnect-device-service"  # /run is available in the INITRAMFS
-    local factory_reset_trigger_file="${tmp_dir}/factory-reset-trigger"
-    local factory_reset_restore_list="${tmp_dir}/factory-reset-restore-list"
     local omnect_validate_update_flag="$(get_bootloader_env_var omnect_validate_update)"
     local omnect_validate_update_file="${tmp_dir}/omnect_validate_update"
-    local reboot_trigger_file="${tmp_dir}/reboot-trigger"
-    local omnect_device_service_group=""
-
-    # get group ID
-    omnect_device_service_group=$(get_id omnect_device_service ${ROOTFS_DIR}/etc/group)
-    if [ -z "${omnect_device_service_group}" ]; then
-        msg "ERROR: group omnect_device_service not found in rootfs"
-        return 1
-    fi
-
-    # create files
-    run_cmd mkdir -p ${tmp_dir} \
-    && run_cmd chown root:${omnect_device_service_group} ${tmp_dir} \
-    && run_cmd chmod 770 ${tmp_dir} \
-    && run_cmd touch ${factory_reset_trigger_file} \
-    && run_cmd touch ${factory_reset_restore_list} \
-    && run_cmd touch ${reboot_trigger_file} \
-    && run_cmd chown root:${omnect_device_service_group} ${factory_reset_trigger_file} \
-    && run_cmd chown root:${omnect_device_service_group} ${factory_reset_restore_list} \
-    && run_cmd chown root:${omnect_device_service_group} ${reboot_trigger_file} \
-    && run_cmd chmod 660 ${factory_reset_trigger_file} \
-    && run_cmd chmod 660 ${factory_reset_restore_list} \
-    && run_cmd chmod 660 ${reboot_trigger_file} \
-    || return 1
 
     # omnect update workflow handling
     if [ -n "${omnect_validate_update_flag}" ]; then
-        run_cmd touch ${omnect_validate_update_file} \
-        && run_cmd chown root:${omnect_device_service_group} ${omnect_validate_update_file} \
-        && run_cmd chmod 660 ${omnect_validate_update_file}
+        local omnect_device_service_user="$(get_id omnect_device_service ${ROOTFS_DIR}/etc/passwd)"
+        local omnect_device_service_group="$(get_id omnect_device_service ${ROOTFS_DIR}/etc/group)"
+
+        [ -z "${omnect_device_service_user}" ] && msg "ERROR: user omnect_device_service not found in rootfs" && return 1
+        [ -z "${omnect_device_service_group}" ] && msg "ERROR: group omnect_device_service not found in rootfs" && return 1
+
+        run_cmd mkdir -p ${tmp_dir} \
+        && run_cmd chown ${omnect_device_service_user}:${omnect_device_service_group} ${tmp_dir} \
+        && run_cmd chmod 700 ${tmp_dir} \
+        && run_cmd touch ${omnect_validate_update_file} \
+        && run_cmd chown ${omnect_device_service_user}:${omnect_device_service_group} ${omnect_validate_update_file} \
+        && run_cmd chmod 600 ${omnect_validate_update_file}
     fi
 
     return 0
