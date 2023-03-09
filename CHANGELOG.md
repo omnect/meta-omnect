@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.0] Q1 2023
+- uboot (tauri/polis): enabled conditional loading of device tree overlays
+  (set e.g. via `fw_setenv overlays imx8mm-phygate-tauri-rs232-rs232.dtbo`)
+- README.md: corrected dependencies
+- README.device.md:
+  - updated BSP features table
+  - added device tree overlay documentation
+
 ## [kirkstone-0.17.6] Q1 2023
 - iptables:
   - switched from legacy to nft variant
