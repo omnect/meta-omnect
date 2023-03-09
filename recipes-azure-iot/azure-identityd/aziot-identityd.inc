@@ -11,6 +11,8 @@ SRC_URI += " \
     file://iot-identity-service-certd.template.toml \
     file://iot-identity-service-precondition.service \
     file://apply_doesnt_restart_services.patch \
+    file://send_sd_notify.patch \
+    crate://crates.io/sd-notify/0.4.1 \
 "
 CARGO_BUILD_FLAGS += "--offline"
 
@@ -142,8 +144,8 @@ do_install() {
     fi
 
     # libaziot-key-openssl-engine-shared
-    install -d -m 0755  ${D}${libdir}/engines-1.1
-    install -m 0644     ${B}/target/${TARGET_SYS}/release/libaziot_key_openssl_engine_shared.so ${D}${libdir}/engines-1.1/aziot_keys.so
+    install -d -m 0755  ${D}${libdir}/engines-3
+    install -m 0644     ${B}/target/${TARGET_SYS}/release/libaziot_key_openssl_engine_shared.so ${D}${libdir}/engines-3/aziot_keys.so
 
     # devel
     install -d -m 0755  ${D}${includedir}/aziot-identity-service
@@ -167,7 +169,7 @@ pkg_postinst:${PN}() {
 }
 
 FILES:${PN} += " \
-    ${libdir}/engines-1.1/aziot_keys.so \
+    ${libdir}/engines-3/aziot_keys.so \
     ${libdir}/libaziot_keys.so \
     ${libdir}/tmpfiles.d/iot-identity-service.conf \
 "
