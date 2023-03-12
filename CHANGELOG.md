@@ -54,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.17.1] Q1 2023
 - initramfs: changed fsck strategy from "-y" to "-p"
 
-## [kirkstone-0.17.0] Q1 2023WIP:
+## [kirkstone-0.17.0] Q1 2023:
 - fallback handling for A/B updates
 - u-boot: implemented update workflow with fallback handling
 - initramfs: u-boot update flag "omnect_validate_update" creates
