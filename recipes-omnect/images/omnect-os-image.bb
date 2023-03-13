@@ -39,6 +39,7 @@ IMAGE_INSTALL = "\
     packagegroup-core-ssh-dropbear \
     sudo \
     kmod \
+    polkit \
     u-boot-fw-utils \
     systemd-analyze \
 "

@@ -1,8 +1,0 @@
-[Unit]
-Before=paths.target
-
-[Path]
-PathChanged=/run/omnect-device-service/omnect_validate_update
-
-[Install]
-WantedBy=paths.target
