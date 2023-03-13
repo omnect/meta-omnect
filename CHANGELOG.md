@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.1] Q1 2023
+- kas:
+  - updated poky to 4.0.8
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-security to latest kirkstone HEAD
+  - updated meta-swupdate to latest kirkstone HEAD
+  - updated meta-virtualization to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+- u-boot/u-boot-imx: lock env when `OMNECT_RELEASE_IMAGE=1`
+- u-boot-imx: added own phycore_imx8mm.h and removed patches accordingly
 ## [kirkstone-0.18.0] Q1 2023
 - uboot (tauri/polis): enabled conditional loading of device tree overlays
   (set e.g. via `fw_setenv overlays imx8mm-phygate-tauri-rs232-rs232.dtbo`)

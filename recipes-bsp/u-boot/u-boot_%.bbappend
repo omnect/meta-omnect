@@ -12,6 +12,7 @@ OMNECT_THISDIR_SAVED := "${THISDIR}/"
 SRC_URI += "file://bootm_len_check.patch"
 
 SRC_URI += "\
+    ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'file://lock-env.cfg', '', d)} \
     file://redundant-env-fragment.cfg \
     file://silent_console.cfg \
     file://omnect_env.h \
