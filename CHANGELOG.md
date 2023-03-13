@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.1] Q1 2023
+- iot-hub-device-update: timer triggers service if it wasn't activated 5mins
+  after boot
+  (this is meaningful if the service activation is skipped at first start and
+  thus the service never had the state "inactive". this can happen in an update
+  validation scenario. a successful update validation should trigger the start
+  of the service via path activation by deleting the barrier path which caused
+  the activation skip in the first place. this additional timer setting is a
+  backup, if the path activation after deleting the barrier path fails.)
+
 ## [kirkstone-0.18.0] Q1 2023
 - uboot (tauri/polis): enabled conditional loading of device tree overlays
   (set e.g. via `fw_setenv overlays imx8mm-phygate-tauri-rs232-rs232.dtbo`)
