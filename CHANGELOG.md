@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.18.1] Q1 2023
+## [kirkstone-0.18.4] Q1 2023
 - kas:
   - updated poky to 4.0.8
   - updated meta-openembedded to latest kirkstone HEAD
@@ -16,6 +16,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - updated meta-freescale to latest kirkstone HEAD
 - u-boot/u-boot-imx: lock env
 - u-boot-imx: added own phycore_imx8mm.h and removed patches accordingly
+
+## [kirkstone-0.18.3] Q1 2023
+- kernel: added CIFS support to allow taking advantage of Samba/Windows shares
+  when wanting to store device data for whatever reason
+
+## [kirkstone-0.18.2] Q1 2023
+- iot-hub-device-update: added "compatibilityId" to "additionalDeviceProperties" in du-config.json
+
+## [kirkstone-0.18.1] Q1 2023
+- iot-hub-device-update: timer triggers service if it wasn't activated 5mins
+  after boot
+  (this is meaningful if the service activation is skipped at first start and
+  thus the service never had the state "inactive". this can happen in an update
+  validation scenario. a successful update validation should trigger the start
+  of the service via path activation by deleting the barrier path which caused
+  the activation skip in the first place. this additional timer setting is a
+  backup, if the path activation after deleting the barrier path fails.)
 
 ## [kirkstone-0.18.0] Q1 2023
 - uboot (tauri/polis): enabled conditional loading of device tree overlays

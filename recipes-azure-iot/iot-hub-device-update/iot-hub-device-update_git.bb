@@ -70,12 +70,14 @@ do_install:append() {
   install -d ${D}${sysconfdir}/adu
   jq  --arg adu_deviceproperties_manufacturer "${ADU_DEVICEPROPERTIES_MANUFACTURER}" \
       --arg adu_deviceproperties_model "${ADU_DEVICEPROPERTIES_MODEL}" \
+      --arg adu_deviceproperties_compatibility_id "${ADU_DEVICEPROPERTIES_COMPATIBILITY_ID}" \
       --arg adu_manufacturer "${ADU_MANUFACTURER}" \
       --arg adu_model "${ADU_MODEL}" \
       '.manufacturer = $adu_manufacturer |
       .model = $adu_model |
       .agents[].manufacturer = $adu_deviceproperties_manufacturer |
-      .agents[].model = $adu_deviceproperties_model'\
+      .agents[].model = $adu_deviceproperties_model |
+      .agents[].additionalDeviceProperties.compatibilityId = $adu_deviceproperties_compatibility_id'\
       ${WORKDIR}/du-config.json > ${D}${sysconfdir}/adu/du-config.json
   chown adu:adu ${D}${sysconfdir}/adu/du-config.json
   chmod 0444 ${D}${sysconfdir}/adu/du-config.json
