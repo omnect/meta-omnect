@@ -37,31 +37,6 @@
 
 #endif
 
-#define CONFIG_EXTRA_ENV_SETTINGS \
-	"boot_script=fatload mmc ${devnum}:1 ${script_addr_r} /boot.scr; source ${script_addr_r}\0" \
-	"load_fdt_script=fatload mmc ${devnum}:1 ${script_addr_r} /fdt-load.scr; source ${script_addr_r}\0" \
-	"bootcmd_pxe=run load_fdt_script; setenv kernel_addr_r ${loadaddr}; dhcp; if pxe get; then pxe boot; fi\0" \
-	"bootargs=console=ttymxc2,115200\0" \
-	"bootpart=2\0" \
-	"devnum=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
-	"devtype=mmc\0" \
-	"distro_bootcmd=mmc dev ${devnum};" \
-		"if mmc rescan; then " \
-			"env exist kernel_addr || setenv devnum ${mmcdev} && setenv kernel_addr_r ${loadaddr} && saveenv;" \
-			"run load_fdt_script;" \
-			"run scan_boot_script;" \
-		"fi\0" \
-	"image=Image\0" \
-	"console=ttymxc2\0" \
-	"fdt_addr=0x48000000\0" \
-	"fdto_addr=0x49000000\0" \
-	"pxefile_addr_r=0x4f800000\0" \
-	"ramdisk_addr_r=0x49200000\0" \
-	"scan_boot_script=if test -e mmc ${devnum}:1 /boot.scr; then echo Found U-Boot script; run boot_script; echo SCRIPT FAILED: continuing...; fi\0" \
-	"script_addr_r=0x49100000\0" \
-    OMNECT_ENV_UPDATE_WORKFLOW \
-	OMNECT_ENV_SETTINGS
-
 /* Link Definitions */
 #define CONFIG_LOADADDR			0x40480000
 #define CONFIG_SYS_LOAD_ADDR		CONFIG_LOADADDR
@@ -103,5 +78,30 @@
 #define CONFIG_MXC_USB_PORTSC		(PORT_PTS_UTMI | PORT_PTS_PTW)
 #define CONFIG_USB_MAX_CONTROLLER_COUNT	2
 #define CONFIG_SERIAL_TAG
+
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"boot_script=fatload mmc ${devnum}:1 ${script_addr_r} /boot.scr; source ${script_addr_r}\0" \
+	"load_fdt_script=fatload mmc ${devnum}:1 ${script_addr_r} /fdt-load.scr; source ${script_addr_r}\0" \
+	"bootcmd_pxe=run load_fdt_script; dhcp; if pxe get; then pxe boot; fi\0" \
+	"bootargs=console=ttymxc2,115200\0" \
+	"bootpart=2\0" \
+	"devtype=mmc\0" \
+	"distro_bootcmd=env exists env_initialized || echo initializing env && setenv env_initialized 1 && saveenv; mmc dev ${mmcdev};" \
+		"if mmc rescan; then " \
+			"setenv devnum ${mmcdev};" \
+			"run load_fdt_script;" \
+			"run scan_boot_script;" \
+		"fi\0" \
+	"console=ttymxc2\0" \
+	"fdt_addr=0x48000000\0" \
+	"fdto_addr=0x49000000\0" \
+	"kernel_addr_r=" __stringify(CONFIG_LOADADDR) "\0" \
+	"pxefile_addr_r=0x4f800000\0" \
+	"ramdisk_addr_r=0x49200000\0" \
+	"scan_boot_script=if test -e mmc ${devnum}:1 /boot.scr; then echo Found U-Boot script; run boot_script; echo SCRIPT FAILED: continuing...; fi\0" \
+	"script_addr_r=0x49100000\0" \
+    OMNECT_ENV_UPDATE_WORKFLOW \
+	OMNECT_ENV_SETTINGS \
+	OMNECT_ENV_EXTRA_BOOTARGS
 
 #endif /* __PHYCORE_IMX8MM_H */
