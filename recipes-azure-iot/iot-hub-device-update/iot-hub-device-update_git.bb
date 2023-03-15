@@ -77,7 +77,7 @@ do_install:append() {
       .model = $adu_model |
       .agents[].manufacturer = $adu_deviceproperties_manufacturer |
       .agents[].model = $adu_deviceproperties_model |
-      .agents[].additionalDeviceProperties.compatibilityId = $adu_deviceproperties_compatibility_id'\
+      .agents[].additionalDeviceProperties.compatibilityid = $adu_deviceproperties_compatibility_id'\
       ${WORKDIR}/du-config.json > ${D}${sysconfdir}/adu/du-config.json
   chown adu:adu ${D}${sysconfdir}/adu/du-config.json
   chmod 0444 ${D}${sysconfdir}/adu/du-config.json
