@@ -19,9 +19,6 @@ SRC_URI += "\
     file://omnect_env.h \
 "
 
-# Todo: locking does not work yet
-# ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'file://lock-env.cfg', '', d)}
-
 # copy configuration fragment from template, before SRC_URI is checked
 do_fetch:prepend() {
     import os
@@ -31,7 +28,6 @@ do_fetch:prepend() {
 }
 
 inherit omnect_fw_env_config
-
 
 do_configure:prepend() {
     # incorporate distro configuration in redundant-env-fragment.cfg

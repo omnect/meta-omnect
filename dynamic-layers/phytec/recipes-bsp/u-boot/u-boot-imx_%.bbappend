@@ -14,7 +14,6 @@ SRC_URI += " \
     file://omnect_env_phycore_imx8mm.h \
 "
 
-TARGET_CFLAGS += "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '-DOMNECT_RELEASE_IMAGE', '', d)}"
 do_configure:prepend() {
     # configure omnect u-boot env
     cp -f ${WORKDIR}/omnect_env.h ${S}/include/configs/
