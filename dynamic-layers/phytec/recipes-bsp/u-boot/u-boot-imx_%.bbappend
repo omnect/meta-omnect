@@ -2,6 +2,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot:${LAYERDIR_omnect}/recipes-bsp/u-b
 
 SRC_URI += " \
     file://add-reset-info.patch \
+    file://omnect_env.patch \
     file://silent_console_early.patch \
     file://enable_generic_console_fs_cmds.cfg \
     file://enable-reset-info-cmd-fragment.cfg \
@@ -9,7 +10,6 @@ SRC_URI += " \
     file://lock-env.cfg \
     file://reloc_gd_env.cfg \
     file://silent_console.cfg \
-    file://phycore_imx8mm.h \
     file://omnect_env.h \
     file://omnect_env_phycore_imx8mm.h \
 "
@@ -27,6 +27,5 @@ do_configure:prepend() {
 }
 
 do_configure:prepend:mx8mm-nxp-bsp() {
-    cp -f ${WORKDIR}/phycore_imx8mm.h ${S}/include/configs/
     cp -f ${WORKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h
 }
