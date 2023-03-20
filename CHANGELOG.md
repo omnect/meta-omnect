@@ -15,7 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - updated meta-phytec to latest kirkstone HEAD
   - updated meta-freescale to latest kirkstone HEAD
 - u-boot/u-boot-imx: lock env
-- u-boot-imx: added own phycore_imx8mm.h and removed patches accordingly
 
 ## [kirkstone-0.18.4] Q1 2023
 - iot-hub-device-update: fixed "compatibilityId" in du-config.json
