@@ -7,13 +7,18 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
 
 SRC_URI += " \
-    file://iot-identity-service.conf \
-    file://iot-identity-service-certd.template.toml \
-    file://iot-identity-service-precondition.service \
     file://apply_doesnt_restart_services.patch \
     file://send_sd_notify.patch \
-    crate://crates.io/sd-notify/0.4.1 \
+    file://aziot-identityd-precondition.service \
+    file://iot-identity-service.conf \
+    file://iot-identity-service-certd.template.toml \
 "
+
+# ToDo: remove this on next update; since `send_sd_notify.patch` will always
+# patch the lock file anyway, we have no benefit with generating the
+# recipe without the patched Cargo.toml
+SRC_URI += "crate://crates.io/sd-notify/0.4.1"
+
 CARGO_BUILD_FLAGS += "--offline"
 
 B = "${S}"
@@ -154,13 +159,13 @@ do_install() {
     # run after time-sync.target
     sed -i 's/^After=\(.*\)$/After=\1 time-sync.target/' ${D}${systemd_system_unitdir}/aziot-identityd.service
 
-    # iot-identity-service-precondition handling
+    # aziot-identityd-precondition.service handling
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/iot-identity-service-precondition.service ${D}${systemd_system_unitdir}/iot-identity-service-precondition.service
+    install -m 0644 ${WORKDIR}/aziot-identityd-precondition.service ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     if ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'true', 'false', d)}; then
-        sed -i "s/@@AZIOTCLI@@/iotedge/" ${D}${systemd_system_unitdir}/iot-identity-service-precondition.service
+        sed -i "s/@@AZIOTCLI@@/iotedge/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     else
-        sed -i "s/@@AZIOTCLI@@/aziotctl/" ${D}${systemd_system_unitdir}/iot-identity-service-precondition.service
+        sed -i "s/@@AZIOTCLI@@/aziotctl/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     fi
 }
 
@@ -181,8 +186,8 @@ SYSTEMD_SERVICE:${PN} = " \
     aziot-certd.socket \
     aziot-identityd.service \
     aziot-identityd.socket \
+    aziot-identityd-precondition.service \
     aziot-keyd.service \
     aziot-keyd.socket \
-    iot-identity-service-precondition.service \
 "
 SYSTEMD_SERVICE:${PN}:append = "${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', ' aziot-tpmd.service aziot-tpmd.socket', '', d)}"

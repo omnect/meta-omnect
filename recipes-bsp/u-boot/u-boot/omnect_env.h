@@ -9,12 +9,14 @@
     "bootpart:dw," \
     "data-mount-options:sw," \
     "env_initialized:dw," \
+    "extra-bootargs:sw," \
     "factory-reset:dw," \
     "factory-reset-restore-list:sw," \
     "factory-reset-status:sw," \
     "flash-mode:dw," \
     "flash-mode-devpath:sw," \
     "omnect_validate_update:bw," \
+    "omnect_validate_update_failed:bw," \
     "omnect_validate_update_part:dw," \
     "resized-data:sw"
 
@@ -35,11 +37,13 @@
 
 // u-boot part of omnect update workflow
 #define OMNECT_ENV_UPDATE_WORKFLOW \
+    "bootpart=2\0" \
     "omnect_update_flow=" \
         "if test -n ${omnect_validate_update}; then " \
             "echo \"Update validation failed - booting from partition ${bootpart}\";" \
             "setenv omnect_validate_update_part;" \
             "setenv omnect_validate_update;" \
+            "setenv omnect_validate_update_failed 1;" \
             "saveenv;" \
             "run distro_bootcmd;" \
         "else " \
@@ -50,6 +54,7 @@
                 "setenv bootpart ${omnect_validate_update_part};" \
                 "run distro_bootcmd;" \
             "else "\
+                "echo \"Normal boot - booting from partition ${bootpart}\";" \
                 "run distro_bootcmd;" \
             "fi;" \
         "fi\0"
