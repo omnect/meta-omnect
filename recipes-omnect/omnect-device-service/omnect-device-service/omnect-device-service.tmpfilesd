@@ -1,0 +1,2 @@
+d /home/omnect/.ssh 0700 omnect omnect -
+f /home/omnect/.ssh/authorized_keys 0600 omnect omnect -

@@ -11,12 +11,11 @@ SRC_URI = " \
   file://linux_platform_layer.patch \
   file://rpipart_to_bootpart.patch \
   file://sd_notify.patch \
-  file://deviceupdate-agent.path \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
   file://du-config.json \
   file://du-diagnostics-config.json \
-  file://iot-hub-device-update.conf \
+  file://iot-hub-device-update.tmpfilesd \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
   file://0001-add-swupdate-user-consent-handler.patch \
@@ -90,7 +89,7 @@ do_install:append() {
   chmod 04550 ${D}${libdir}/adu/adu-shell
 
   # create tmpfiles.d entry to (re)create dir + permissions
-  install -m 0644 -D ${WORKDIR}/iot-hub-device-update.conf ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
+  install -m 0644 -D ${WORKDIR}/iot-hub-device-update.tmpfilesd ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
 
   # configure iot-hub-device-update as iot-identity-service client
   # allow adu client access to device_id secret created by manual provisioning
@@ -101,7 +100,6 @@ do_install:append() {
 
   # systemd
   install -d ${D}${systemd_system_unitdir}
-  install -m 0644 ${WORKDIR}/deviceupdate-agent.path    ${D}${systemd_system_unitdir}/
   install -m 0644 ${WORKDIR}/deviceupdate-agent.service  ${D}${systemd_system_unitdir}/
   install -m 0644 ${WORKDIR}/deviceupdate-agent.timer    ${D}${systemd_system_unitdir}/
 
@@ -121,7 +119,6 @@ pkg_postinst:${PN}() {
 }
 
 SYSTEMD_SERVICE:${PN} = " \
-  deviceupdate-agent.path \
   deviceupdate-agent.service \
   deviceupdate-agent.timer \
 "
@@ -131,7 +128,6 @@ FILES:${PN} += " \
   ${libdir}/tmpfiles.d/iot-hub-device-update.conf \
   ${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml \
   ${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml \
-  ${systemd_system_unitdir}/deviceupdate-agent.path \
   ${systemd_system_unitdir}/deviceupdate-agent.service \
   ${systemd_system_unitdir}/deviceupdate-agent.timer \
   ${sysconfdir}/omnect/consent/consent_conf.json \
@@ -142,4 +138,4 @@ FILES:${PN} += " \
   "
 
 GROUPADD_PARAM:${PN} += "-r adu;-r do;"
-USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G disk,aziotcs,aziotid,aziotks,do -g adu adu;"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,do -g adu adu;"
