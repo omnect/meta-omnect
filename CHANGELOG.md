@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - updated meta-phytec to latest kirkstone HEAD
   - updated meta-freescale to latest kirkstone HEAD
 - u-boot/u-boot-imx: lock env
--
+
 ## [kirkstone-0.18.5] Q1 2023
 - updated `omnect-device-service` to 0.10.0
 - added `polkit` to `DISTRO_FEATURES`
