@@ -9,7 +9,6 @@
     "bootpart:dw," \
     "data-mount-options:sw," \
     "env_initialized:dw," \
-    "extra-bootargs:sw," \
     "factory-reset:dw," \
     "factory-reset-restore-list:sw," \
     "factory-reset-status:sw," \
