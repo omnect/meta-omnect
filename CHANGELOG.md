@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.18.5] Q1 2023
+## [kirkstone-0.18.6] Q1 2023
 - kas:
   - updated poky to 4.0.8
   - updated meta-openembedded to latest kirkstone HEAD
@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - updated meta-phytec to latest kirkstone HEAD
   - updated meta-freescale to latest kirkstone HEAD
 - u-boot/u-boot-imx: lock env
+
+## [kirkstone-0.18.5] Q1 2023
+- updated `omnect-device-service` to 0.10.0
+- added `polkit` to `DISTRO_FEATURES`
+  (dependency of `omnect-device-service` >= 0.10.0)
+- removed user `adu` and user `omnect_device_service` from group `disk`
 
 ## [kirkstone-0.18.4] Q1 2023
 - iot-hub-device-update: fixed "compatibilityId" in du-config.json
