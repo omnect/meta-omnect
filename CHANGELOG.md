@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `omnect-first-boot.bb`
   - license is now `MIT | Apache 2.0`
 - tpm-udev: license is now `MIT | Apache 2.0`
+- u-boot/u-boot-imx: fixed env var `bootpart` handling
+  (env vars can not be writable and be part of the default env, the default env
+   var overlays the written value. here we booted from the wrong partition after
+   a reboot after a successful update validation. from userland you could see
+   `bootpart=3`, but u-boot took the default value `bootpart=2`)
 
 ## [kirkstone-0.18.6] Q1 2023
 - kas:
