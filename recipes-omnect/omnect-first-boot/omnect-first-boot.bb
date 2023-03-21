@@ -1,4 +1,4 @@
-DESCRIPTION = "omnecte-first-boot is a service executed on first boot of device (or after factory-reset)"
+DESCRIPTION = "omnect-first-boot is a service executed on first boot of device (or after factory-reset)"
 
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
