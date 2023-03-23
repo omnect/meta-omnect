@@ -5,16 +5,20 @@
 
 /* Todo dev and mmcdev are redundant: needs refactoring of bootscript */
 /* Todo "env_initialized:do" doesnt work */
+/* Attention: if vars are already part of CONFIG_EXTRA_ENV_SETTINGS
+ * this doesnt work; these vars are shown correctly via userland fw_printenv,
+ * but u-boot takes the default env value
+ */
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS \
     "bootpart:dw," \
     "data-mount-options:sw," \
-    "env_initialized:dw," \
     "factory-reset:dw," \
     "factory-reset-restore-list:sw," \
     "factory-reset-status:sw," \
     "flash-mode:dw," \
     "flash-mode-devpath:sw," \
     "omnect_validate_update:bw," \
+    "omnect_validate_update_failed:bw," \
     "omnect_validate_update_part:dw," \
     "resized-data:sw"
 
@@ -36,10 +40,12 @@
 // u-boot part of omnect update workflow
 #define OMNECT_ENV_UPDATE_WORKFLOW \
     "omnect_update_flow=" \
+        "env exists bootpart || echo \"initializing bootpart=2\" && setenv bootpart 2 && saveenv;" \
         "if test -n ${omnect_validate_update}; then " \
             "echo \"Update validation failed - booting from partition ${bootpart}\";" \
             "setenv omnect_validate_update_part;" \
             "setenv omnect_validate_update;" \
+            "setenv omnect_validate_update_failed 1;" \
             "saveenv;" \
             "run distro_bootcmd;" \
         "else " \
@@ -50,6 +56,7 @@
                 "setenv bootpart ${omnect_validate_update_part};" \
                 "run distro_bootcmd;" \
             "else "\
+                "echo \"Normal boot - booting from partition ${bootpart}\";" \
                 "run distro_bootcmd;" \
             "fi;" \
         "fi\0"

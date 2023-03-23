@@ -2,8 +2,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://80-wlan.network \
-    file://omnect-first-boot.service \
-    file://omnect_first_boot.sh \
 "
 
 RDEPENDS:${PN} += "bash"
@@ -20,12 +18,6 @@ do_install:append() {
         sed -i 's/^Name=wlan0/Name=${OMNECT_WLAN0}/' ${D}${systemd_unitdir}/network/80-wlan.network
         sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_WLAN0}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
     fi
-
-    # first boot handling
-    install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    install -m 0644 ${WORKDIR}/omnect-first-boot.service ${D}${systemd_system_unitdir}/
-    ln -rs ${D}${systemd_system_unitdir}/omnect-first-boot.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/omnect-first-boot.service
-    install -m 0755 -D ${WORKDIR}/omnect_first_boot.sh ${D}${bindir}/
 
     # persistent /var/log
     if ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', 'true', 'false', d)}; then
@@ -93,6 +85,5 @@ do_install:append:phygate-tauri-l-imx8mm-2() {
 }
 
 FILES:${PN} += "\
-    /usr/bin/omnect_first_boot.sh \
     ${systemd_unitdir}/network/80-wlan.network \
 "

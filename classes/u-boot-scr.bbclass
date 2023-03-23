@@ -41,9 +41,6 @@ python create_boot_cmd () {
             if omnect_boot_scr_test_cmds:
                 f.write("%s\n" % (omnect_boot_scr_test_cmds))
 
-            # possibly create "bootpart" env var
-            f.write("if env exists bootpart;then echo Booting from bootpart=${bootpart};else setenv bootpart 2;saveenv;echo bootpart not set, default to bootpart=${bootpart};fi\n")
-
             # load kernel
             f.write("load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)
 

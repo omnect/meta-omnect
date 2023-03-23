@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.7] Q1 2023
+- aziot-identityd-precondition:
+  - renamed from `iot-identity-service-precondition` to `aziot-identityd-precondition`
+  - only start on first boot, update validation or update validation failed
+    condition:
+    either `/run/omnect-device-service/first_boot` or
+    `/run/omnect-device-service/omnect_validate_update` or
+    `/run/omnect-device-service/omnect_validate_update_failed` exists
+- omnect-first-boot.service:
+  - moved as part of `systemd_%.bbappend` recipe to own recipe
+    `omnect-first-boot.bb`
+  - license is now `MIT | Apache 2.0`
+- tpm-udev: license is now `MIT | Apache 2.0`
+- u-boot/u-boot-imx: fixed env var `bootpart` handling
+  (env vars can not be writable and be part of the default env, the default env
+   var overlays the written value. here we booted from the wrong partition after
+   a reboot after a successful update validation. from userland you could see
+   `bootpart=3`, but u-boot took the default value `bootpart=2`)
+
 ## [kirkstone-0.18.6] Q1 2023
 - kas:
   - updated poky to 4.0.8
