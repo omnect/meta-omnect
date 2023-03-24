@@ -1,0 +1,24 @@
+[Unit]
+Description=Azure IoT Identity Service Precondition
+
+Before=aziot-identityd.service \
+    aziot-edged.service \
+    aziot-keyd.service \
+    aziot-certd.service \
+    aziot-tpmd.service
+
+After=omnect-first-boot.service
+
+ConditionPathExists=|/run/omnect-device-service/first_boot
+ConditionPathExists=|/run/omnect-device-service/omnect_validate_update
+ConditionPathExists=|/run/omnect-device-service/omnect_validate_update_failed
+
+[Service]
+Type=oneshot
+ExecStart=@@AZIOTCLI@@ config apply
+Restart=on-failure
+RestartSec=5
+RemainAfterExit=true
+
+[Install]
+WantedBy=basic.target

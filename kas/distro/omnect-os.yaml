@@ -9,7 +9,7 @@ repos:
   meta-omnect:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: 278ec081a64e6a7679d6def550101158126cd935
+    refspec: 82c75b466e55d7dca7a2364986ecb704cf63d141
     layers:
       meta-filesystems:
       meta-networking:
@@ -19,15 +19,15 @@ repos:
   # to build iot-identity-service
   ext/meta-security:
     url: "https://git.yoctoproject.org/meta-security"
-    refspec: c79262a30bd385f5dbb009ef8704a1a01644528e
+    refspec: cc20e2af2ae1c74e306f6c039c4963457c4cbd0f
     layers:
       meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    refspec: 91de63c006e886eba8d9c263c9aa55d4c7632072
+    refspec: 37bd056a2f2228d8c2ac8abc12aa124d6d588e30
   ext/meta-virtualization:
-    url: "https://git.yoctoproject.org/git/meta-virtualization"
-    refspec: 9a94fa2ad76990b0eca40837a98aaf4cd83a7248
+    url: "https://git.yoctoproject.org/meta-virtualization"
+    refspec: a517e15529980f8401b25c99a2d7720ac2d8baae
     patches:
       p001:
         repo: "meta-omnect"
@@ -78,6 +78,7 @@ env:
   # iot-hub-device-update
   ADU_DEVICEPROPERTIES_MANUFACTURER: "ADU_DEVICEPROPERTIES_MANUFACTURER_NOT_SET"
   ADU_DEVICEPROPERTIES_MODEL: "ADU_DEVICEPROPERTIES_MODEL_NOT_SET"
+  ADU_DEVICEPROPERTIES_COMPATIBILITY_ID: "ADU_DEVICEPROPERTIES_COMPATIBILITY_ID_NOT_SET"
   ADU_MANUFACTURER: "ADU_MANUFACTURER_NOT_SET"
   ADU_MODEL: "ADU_MODEL_NOT_SET"
   ADU_GROUP: "ADU_GROUP_NOT_SET"

@@ -34,11 +34,13 @@ IMAGE_INSTALL = "\
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
     omnect-base-files \
+    omnect-first-boot \
     iot-hub-device-update \
     iptables \
     packagegroup-core-ssh-dropbear \
     sudo \
     kmod \
+    polkit \
     u-boot-fw-utils \
     systemd-analyze \
 "

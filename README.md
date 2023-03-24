@@ -107,11 +107,11 @@ We reflect the used poky version in our version schema. `omnect-os` is versioned
 `meta-omnect` depends on:
 - mandatory:
     - [meta-openembedded](https://github.com/openembedded/meta-openembedded.git): `meta-filesystems`, `meta-networking`, `meta-oe` and `meta-python`
-    - [meta-rust](https://github.com/meta-rust/meta-rust.git)
+    - [meta-security] (https://git.yoctoproject.org/meta-security)
     - [meta-swupdate](https://github.com/sbabic/meta-swupdate.git)
+    - [meta-virtualization](https://git.yoctoproject.org/meta-virtualization)
     - [poky](https://git.yoctoproject.org/poky)
 - optional:
-    - [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization) (optional - via dynamic layer, `iotedge` depends on it)
     - [meta-phytec](https://github.com/phytec/meta-phytec) (optional - via dynamic layer, phytec polis support depends on it)
     - [meta-freescale](https://github.com/Freescale/meta-freescale) (optional - via dynamic layer, phytec polis support depends on it)
     - [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git) (optional - via dynamic layer, raspberrypi support depends on it)
