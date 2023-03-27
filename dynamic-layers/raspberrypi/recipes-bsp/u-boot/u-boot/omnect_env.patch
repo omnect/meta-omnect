@@ -1,5 +1,5 @@
 diff --git a/include/configs/rpi.h b/include/configs/rpi.h
-index 4c5c1ac3..3d436e7c 100644
+index 4c5c1ac3..91c81c85 100644
 --- a/include/configs/rpi.h
 +++ b/include/configs/rpi.h
 @@ -13,6 +13,8 @@
@@ -11,18 +11,18 @@ index 4c5c1ac3..3d436e7c 100644
  /* Architecture, CPU, etc.*/
  
  /* Use SoC timer for AArch32, but architected timer for AArch64 */
-@@ -76,6 +78,10 @@
- 	"stdout=serial,vidconsole\0" \
- 	"stderr=serial,vidconsole\0"
+@@ -84,6 +86,10 @@
+ #define INITRD_HIGH "ffffffff"
+ #endif
  
 +#ifdef CONFIG_ENV_IS_IN_MMC
 +#define CONFIG_SYS_MMC_ENV_DEV 0
 +#endif
 +
- #ifdef CONFIG_ARM64
- #define FDT_HIGH "ffffffffffffffff"
- #define INITRD_HIGH "ffffffffffffffff"
-@@ -174,7 +180,9 @@
+ /*
+  * Memory layout for where various images get loaded by boot scripts:
+  *
+@@ -174,7 +180,10 @@
  	ENV_DEVICE_SETTINGS \
  	ENV_DFU_SETTINGS \
  	ENV_MEM_LAYOUT_SETTINGS \
@@ -30,6 +30,7 @@ index 4c5c1ac3..3d436e7c 100644
 +	BOOTENV \
 +	OMNECT_ENV_UPDATE_WORKFLOW \
 +	OMNECT_ENV_SETTINGS \
++	OMNECT_ENV_EXTRA_BOOTARGS
  
  
  #endif
