@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.8] Q1 2023
+- omnect-device-service: bump to 0.10.3 which fixed partial twin handling
+
 ## [kirkstone-0.18.7] Q1 2023
 - aziot-identityd-precondition:
   - renamed from `iot-identity-service-precondition` to `aziot-identityd-precondition`
