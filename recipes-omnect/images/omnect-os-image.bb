@@ -36,24 +36,30 @@ IMAGE_INSTALL = "\
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
     iot-hub-device-update \
+    iptables \
     kmod \
     omnect-base-files \
-    iptables \
+    omnect-first-boot \
     packagegroup-core-ssh-dropbear \
-    procps \
+    polkit \
     sudo \
+    systemd-analyze \
     u-boot-fw-utils \
 "
 
-# check environment variable OMNECT_DEVEL_TOOLS
-def check_for_devel_tools(d):
-    # use default list part of this recipe
-    if d.getVar('OMNECT_DEVEL_TOOLS', True) in [None, ""] : return "${OMNECT_DEVEL_TOOLS_DEFAULT}"
+# check environment variables like OMNECT_TOOLS or OMNECT_DEVEL_TOOLS
+# Note: it is assumed that another variable suffixed with "_DEFAULT" exists and
+#       contains default settings for variable if is not currently defined
+def check_for_defaultvar(d, checkvar):
+    # use default counterpart variable if variable is unset or empty
+    if d.getVar(checkvar, True) in [None, ""]:
+        return "${" + checkvar + "_DEFAULT}"
 
     # use settings from environment
-    return "${OMNECT_DEVEL_TOOLS}"
+    return "${" + checkvar + "}"
 
-IMAGE_INSTALL += "${@check_for_devel_tools(d)}"
+IMAGE_INSTALL += "${@check_for_defaultvar(d, 'OMNECT_TOOLS')}"
+IMAGE_INSTALL += "${@check_for_defaultvar(d, 'OMNECT_DEVEL_TOOLS')}"
 
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
@@ -78,6 +84,16 @@ omnect_setup_sysctl_config() {
 ROOTFS_POSTPROCESS_COMMAND:append = " omnect_create_uboot_env_ff_img;"
 omnect_create_uboot_env_ff_img() {
     dd if=/dev/zero bs=1024 count=${OMNECT_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/omnect_uboot_env_ff.img
+}
+
+# systemd getty terminals get enabled after do_rootfs and/or at runtime if not explicitly masked;
+# for a release image we explicitly disable them by masking
+IMAGE_PREPROCESS_COMMAND:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'disable_getty;', '', d)}"
+disable_getty() {
+    for i in ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/getty.target.wants/getty@*.service; do
+        rm ${i}
+        ln -sf /dev/null ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/$(basename ${i})
+    done
 }
 
 # Poky checks at creation time of rootfs and even later when creating the

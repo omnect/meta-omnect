@@ -2,6 +2,7 @@
 Description=Restart deviceupdate-agent
 
 [Timer]
+OnBootSec=5min
 OnUnitInactiveSec=10min
 
 [Install]

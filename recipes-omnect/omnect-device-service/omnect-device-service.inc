@@ -1,8 +1,9 @@
-FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:"
+FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:${THISDIR}/${PN}:"
 
 SRC_URI += "\
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
+  file://omnect-device-service.tmpfilesd \
 "
 
 PV .= "_${SRCPV}"
@@ -28,26 +29,25 @@ DEPENDS += "\
     azure-iot-sdk-c\
 "
 RDEPENDS:${PN} += "\
+    aziot-identityd\
     ca-certificates\
-    iot-identity-service\
 "
-inherit aziot omnect_rust_azure-iot-sdk_deps systemd
+inherit omnect-device-service omnect_rust_azure-iot-sdk_deps systemd
 
 do_install:append() {
-    install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${S}/systemd/omnect-device-service.service ${D}${systemd_system_unitdir}/omnect-device-service.service
-    install -m 0644 ${S}/systemd/omnect-device-service.timer ${D}${systemd_system_unitdir}/omnect-device-service.timer
-    install -m 0644 ${S}/systemd/omnect-device-factory-reset.service ${D}${systemd_system_unitdir}/omnect-device-factory-reset.service
-    install -m 0644 ${S}/systemd/omnect-device-factory-reset.path ${D}${systemd_system_unitdir}/omnect-device-factory-reset.path
-    install -m 0644 ${S}/systemd/omnect-device-reboot.service ${D}${systemd_system_unitdir}/omnect-device-reboot.service
-    install -m 0644 ${S}/systemd/omnect-device-reboot.path ${D}${systemd_system_unitdir}/omnect-device-reboot.path
-    install -m 755 ${S}/script/factory_reset.sh ${D}${bindir}/
+    install -m 0644 -D ${S}/systemd/omnect-device-service.service ${D}${systemd_system_unitdir}/omnect-device-service.service
+    install -m 0644 -D ${S}/systemd/omnect-device-service.timer ${D}${systemd_system_unitdir}/omnect-device-service.timer
+    install -m 0644 -D ${S}/polkit/omnect-device-service.rules ${D}${datadir}/polkit-1/rules.d/omnect-device-service.rules
+    install -m 0640 -D ${S}/sudo/omnect-device-service ${D}${sysconfdir}/sudoers.d/omnect-device-service
 
     # allow omnect-device-service access to device_id secret created by manual provisioning
     install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/omnect-device-service.toml
 
     # allow omnect-device-service provisioning via module identity
     install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/omnect-device-service.toml
+
+    # create tmpfiles.d entry to (re)create dir + permissions
+    install -m 0644 -D ${WORKDIR}/omnect-device-service.tmpfilesd ${D}${libdir}/tmpfiles.d/omnect-device-service.conf
 }
 
 pkg_postinst:${PN}() {
@@ -58,20 +58,10 @@ pkg_postinst:${PN}() {
 SYSTEMD_SERVICE:${PN} = " \
     omnect-device-service.service \
     omnect-device-service.timer \
-    omnect-device-factory-reset.path \
-    omnect-device-reboot.path \
 "
 
 FILES:${PN} += "\
-    ${systemd_system_unitdir}/omnect-device-factory-reset.service \
-    ${systemd_system_unitdir}/omnect-device-reboot.service \
-    ${bindir}/factory_reset.sh \
+    ${datadir}/polkit-1/rules.d/omnect-device-service.rules \
+    ${libdir}/tmpfiles.d/omnect-device-service.conf \
+    ${sysconfdir}/sudoers.d/omnect-device-service \
 "
-
-GROUPADD_PARAM:${PN} += " \
-  -r omnect_device_service; \
-  -r disk; \
-  -r adu; \
-"
-
-USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,disk,adu -g omnect_device_service omnect_device_service;"

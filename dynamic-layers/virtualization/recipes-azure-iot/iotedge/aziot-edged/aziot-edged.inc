@@ -5,10 +5,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 CARGO_SRC_DIR = "edgelet/aziot-edged"
 CARGO_WORKSPACE_ROOT = "edgelet"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/../:${LAYERDIR_omnect}/files/iotedge-patches:"
-
 DEPENDS += "openssl virtual/docker"
-RDEPENDS:${PN} += "docker iot-identity-service"
+RDEPENDS:${PN} += "aziot-identityd docker"
 
 export OPENSSL_DIR = "${STAGING_EXECPREFIXDIR}"
 export IOTEDGE_CONNECT_MANAGEMENT_URI = "unix:///var/run/iotedge/mgmt.sock"

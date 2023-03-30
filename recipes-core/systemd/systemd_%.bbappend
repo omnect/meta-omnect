@@ -2,8 +2,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://80-wlan.network \
-    file://omnect-first-boot.service \
-    file://omnect_first_boot.sh \
 "
 
 RDEPENDS:${PN} += "bash"
@@ -20,12 +18,6 @@ do_install:append() {
         sed -i 's/^Name=wlan0/Name=${OMNECT_WLAN0}/' ${D}${systemd_unitdir}/network/80-wlan.network
         sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_WLAN0}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
     fi
-
-    # first boot handling
-    install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    install -m 0644 ${WORKDIR}/omnect-first-boot.service ${D}${systemd_system_unitdir}/
-    ln -rs ${D}${systemd_system_unitdir}/omnect-first-boot.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/omnect-first-boot.service
-    install -m 0755 -D ${WORKDIR}/omnect_first_boot.sh ${D}${bindir}/
 
     # persistent /var/log
     if ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', 'true', 'false', d)}; then
@@ -56,6 +48,15 @@ do_install:append() {
     # sync time on sysinit
     install -d ${D}${sysconfdir}/systemd/system/sysinit.target.wants
     ln -rs ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service ${D}${sysconfdir}/systemd/system/sysinit.target.wants/systemd-time-wait-sync.service
+
+    # configure logind
+    # https://www.freedesktop.org/software/systemd/man/logind.conf.html
+    if ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'true', 'false', d)}; then
+        sed -i \
+            -e 's/^#NAutoVTs=\(.*\)$/NAutoVTs=0 /' \
+            -e 's/^#ReserveVT=\(.*\)$/ReserveVT=0 /' \
+            ${D}${sysconfdir}/systemd/logind.conf
+    fi
 }
 
 enable_hardware_watchdog() {
@@ -89,6 +90,5 @@ do_install:append:eg500() {
 }
 
 FILES:${PN} += "\
-    /usr/bin/omnect_first_boot.sh \
     ${systemd_unitdir}/network/80-wlan.network \
 "

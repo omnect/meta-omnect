@@ -5,6 +5,164 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.8] Q1 2023
+- omnect-device-service: bumped to 0.10.3 which fixes partial twin handling
+
+## [kirkstone-0.18.7] Q1 2023
+- aziot-identityd-precondition:
+  - renamed from `iot-identity-service-precondition` to `aziot-identityd-precondition`
+  - only start on first boot, update validation or update validation failed
+    condition:
+    either `/run/omnect-device-service/first_boot` or
+    `/run/omnect-device-service/omnect_validate_update` or
+    `/run/omnect-device-service/omnect_validate_update_failed` exists
+- omnect-first-boot.service:
+  - moved as part of `systemd_%.bbappend` recipe to own recipe
+    `omnect-first-boot.bb`
+  - license is now `MIT | Apache 2.0`
+- tpm-udev: license is now `MIT | Apache 2.0`
+- u-boot/u-boot-imx: fixed env var `bootpart` handling
+  (env vars can not be writable and be part of the default env, the default env
+   var overlays the written value. here we booted from the wrong partition after
+   a reboot after a successful update validation. from userland you could see
+   `bootpart=3`, but u-boot took the default value `bootpart=2`)
+
+## [kirkstone-0.18.6] Q1 2023
+- kas:
+  - updated poky to 4.0.8
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-security to latest kirkstone HEAD
+  - updated meta-swupdate to latest kirkstone HEAD
+  - updated meta-virtualization to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+- u-boot/u-boot-imx: lock env
+
+## [kirkstone-0.18.5] Q1 2023
+- updated `omnect-device-service` to 0.10.0
+- added `polkit` to `DISTRO_FEATURES`
+  (dependency of `omnect-device-service` >= 0.10.0)
+- removed user `adu` and user `omnect_device_service` from group `disk`
+
+## [kirkstone-0.18.4] Q1 2023
+- iot-hub-device-update: fixed "compatibilityId" in du-config.json
+
+## [kirkstone-0.18.3] Q1 2023
+- kernel: added CIFS support to allow taking advantage of Samba/Windows shares
+  when wanting to store device data for whatever reason
+
+## [kirkstone-0.18.2] Q1 2023
+- iot-hub-device-update: added "compatibilityId" to "additionalDeviceProperties" in du-config.json
+
+## [kirkstone-0.18.1] Q1 2023
+- iot-hub-device-update: timer triggers service if it wasn't activated 5mins
+  after boot
+  (this is meaningful if the service activation is skipped at first start and
+  thus the service never had the state "inactive". this can happen in an update
+  validation scenario. a successful update validation should trigger the start
+  of the service via path activation by deleting the barrier path which caused
+  the activation skip in the first place. this additional timer setting is a
+  backup, if the path activation after deleting the barrier path fails.)
+
+## [kirkstone-0.18.0] Q1 2023
+- uboot (tauri/polis): enabled conditional loading of device tree overlays
+  (set e.g. via `fw_setenv overlays imx8mm-phygate-tauri-rs232-rs232.dtbo`)
+- README.md: corrected dependencies
+- README.device.md:
+  - updated BSP features table
+  - added device tree overlay documentation
+
+## [kirkstone-0.17.6] Q1 2023
+- iptables:
+  - switched from legacy to nft variant
+  - changed permissions to allow execution by omnect-device-service
+- initramfs: refactored omnect-device-service-startup to only create
+  conditional temp files, e.g. for update validation
+  (static temp files now get created by systemd-tmpfiles.d)
+- omnect-device-service: updated to 0.9.0 (enabled ssh handling via direct methods)
+
+## [kirkstone-0.17.5] Q1 2023
+- removed azure-osconfig
+
+## [kirkstone-0.17.4] Q1 2023
+- initramfs:
+  - turn on unlimited kmsg ratelimit when running fsck.ext4
+  - fixed typo when printing fsck status
+
+## [kirkstone-0.17.3] Q1 2023
+- iot-identity-service:
+  - patched aziot-identityd in order to send sd-notify after successful startup
+  - dependent services (e.g. iot-hub-device-update, omnect-device-service) are better synchronized now regarding connection setup to azure cloud
+- iot-hub-device-update:
+  - patched in order to restart in case an unauthenticated:no-network message was received
+  - this avoids bugs where reported properties might be empty after iot-identity-service was restarted for some reason
+
+## [kirkstone-0.17.2] Q1 2023
+- aziot-identityd: corrected install destination of openssl engine aziot_keys
+
+## [kirkstone-0.17.1] Q1 2023
+- initramfs: changed fsck strategy from "-y" to "-p"
+
+## [kirkstone-0.17.0] Q1 2023
+- fallback handling for A/B updates
+- u-boot: implemented update workflow with fallback handling
+- initramfs: u-boot update flag "omnect_validate_update" creates
+  /run/omnect-device-service/omnect_validate_update
+- omnect-device-service:
+  - if module provisioning is successful
+    delete /run/omnect-device-service/omnect_validate_update
+    and set u-boot env accordingly
+  - reboot if service is started ten times in two minutes
+- iot-hub-device-update:
+  - set u-boot env "omnect_validate_update" handling on apply/revert
+  - only start if
+    /run/omnect-device-service/omnect_validate_update
+    doesn't exist
+
+## [kirkstone-0.16.3] Q1 2023
+- omnect-os-image: cleaned up tools to be integrated in development and
+  production images
+
+## [kirkstone-0.16.3] Q1 2023
+- azure-osconfig: removed
+- iot-identity-service:
+  - updated version to 1.4.3
+  - renamed recipe "iot-identity-service" -> "aziot-identityd"
+  - recipe file aziot-identityd_1.4.3.bb was generated by cargo bitbake
+  - moved our adaptions of build instructions to aziot-identityd.inc
+  - removed openssl 3.x patches
+- iotedge:
+  - updated version to 1.4.9
+  - removed openssl 3.x patches
+
+## [kirkstone-0.16.2] Q1 2023
+- iot-hub-device-update: fixed jq call in recipe (do_install:append)
+
+## [kirkstone-0.16.1] Q1 2023
+- iot-identity-precondition-service:
+  - changed type to "oneshot" to ensure follow up units
+    get startet after the process exits and not as soon `execve` is started
+  - changed wantedby dependency to basic.target
+
+## [kirkstone-0.16.0] Q1 2023
+- dropbear: disabled password login for release builds
+- imx-atf: default log level error for release builds
+- initramfs:
+  - install debug module only for non-release builds
+  - write messages and errors to /dev/kmsg
+    to respect kernel cmdline arg "quiet" and to push initramfs
+    output to the journal
+  - bind mount / without overlayfs to /mnt/rootCurrent
+  - fixed imx-sdma handling for images where "persistent-var-log" is disabled
+  - exit handler starts bash on fail for most initramfs scripts in non-release builds
+- omnect-os-image: disabled getty for release builds
+- omnect user: enabled sudo without password
+- systemd: disabled auto and reserved virtual terminals for release builds
+- systemd-serialgetty: disabled for release builds (at buildtime)
+- u-boot-imx/phytec: silent console for release builds
+- u-boot/rpi: silent console for release builds
+- u-boot/kernel: kernel boot is quiet on consoles for release builds
+
 ## [kirkstone-0.15.10] Q1 2023
 - iot-hub-device-update: updated to 1.0.2
 

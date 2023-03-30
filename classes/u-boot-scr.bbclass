@@ -19,6 +19,10 @@ python create_boot_cmd () {
                 f.write("\n")
                 f.write("echo \"Loading Device Tree: boot/%s\"\n" % (device_tree))
                 f.write("load ${devtype} ${devnum}:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
+                f.write("fdt addr ${%s}\n" % fdt_addr)
+                # possibly load overlays
+                f.write("fdt resize; for i in ${overlays}; do; load ${devtype} ${devnum}:${bootpart} ${fdto_addr} /boot/${i}; fdt apply ${fdto_addr};done")
+
         except OSError:
             bb.fatal("Unable to open fdt-load.cmd")
 
@@ -30,22 +34,12 @@ python create_boot_cmd () {
             f.write("echo \"Boot script loaded from ${devtype} ${devnum}\"\n")
 
             # load device tree
-            f.write("fdt addr ${%s}\n" % fdt_addr)
+            if not fdt_load:
+                f.write("fdt addr ${%s}\n" % fdt_addr)
 
             # in the case of test boot script
             if omnect_boot_scr_test_cmds:
                 f.write("%s\n" % (omnect_boot_scr_test_cmds))
-
-            # possibly create "bootpart" env var
-            f.write("if env exists bootpart;then echo Booting from bootpart=${bootpart};else setenv bootpart 2;saveenv;echo bootpart not set, default to bootpart=${bootpart};fi\n")
-
-            # TODO optionally allow to load device tree overlays, e.g. disable
-            # spi and eth on polis or tauri-l:
-            #
-            # fdt resize
-            # setexpr fdtovaddr ${fdt_addr_r} + F000
-            # load ${devtype} ${devnum}:${bootpart} ${fdtovaddr} /boot/imx8mm-phycore-no-spiflash.dtbo && fdt apply ${fdtovaddr}
-            # load ${devtype} ${devnum}:${bootpart} ${fdtovaddr} /boot/imx8mm-phycore-no-eth.dtbo && fdt apply ${fdtovaddr}
 
             # load kernel
             f.write("load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)
@@ -53,7 +47,7 @@ python create_boot_cmd () {
             # load initrd
             f.write("load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % omnect_initramfs_fs_type)
 
-            # assemble bootargs: from device tree + extra-bootargs for debugging purpose
+            # assemble bootargs: from device tree + extra-bootargs
             f.write("fdt get value bootargs /chosen bootargs\n")
             f.write("setenv bootargs \"root=/dev/${devtype}blk${devnum}p${bootpart} ${bootargs} ${extra-bootargs}\"\n")
 

@@ -3,6 +3,8 @@ Description=Device Update Agent daemon.
 After=network-online.target deliveryoptimization-agent.service systemd-tmpfiles-setup.service aziot-identityd.service time-sync.target
 Wants=network-online.target deliveryoptimization-agent.service aziot-identityd.service
 
+ConditionPathExists=!/run/omnect-device-service/omnect_validate_update
+
 StartLimitBurst=10
 StartLimitIntervalSec=120
 

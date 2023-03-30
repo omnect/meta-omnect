@@ -4,9 +4,7 @@ rootblk_dev_enabled() {
     return 0
 }
 
-rootblk_dev_run() {
-    msg "$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2) initramfs"
-
+rootblk_dev_generate_dev_omnect() {
     [ -z "${bootparam_root}" ] && msg "no root device set" && return 1
 
     # waiting for root device to show up, e.g. needed by welotec boot from usb
@@ -58,4 +56,12 @@ rootblk_dev_run() {
     else
         msg_fatal "unhandled partition type: \"${ptype}\"" && return 1
     fi
+    return 0
+}
+
+rootblk_dev_run() {
+    add_module_post_hook on_exit
+    msg "$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2) initramfs"
+    rootblk_dev_generate_dev_omnect
+    return=${?}
 }

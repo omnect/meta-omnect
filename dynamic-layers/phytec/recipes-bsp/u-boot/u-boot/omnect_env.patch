@@ -1,22 +1,26 @@
 diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
-index 83acf79a8c..57f467b15d 100644
+index 67c70da907..b2dd0baef0 100644
 --- a/include/configs/phycore_imx8mm.h
 +++ b/include/configs/phycore_imx8mm.h
-@@ -39,112 +39,21 @@
+@@ -11,8 +11,7 @@
+ #include <linux/stringify.h>
+ #include <asm/arch/imx-regs.h>
+ 
+-#include "phycore_rauc_env.h"
+-#include "phycore_fitimage_env.h"
++#include <configs/omnect_env.h>
+ 
+ #define CONFIG_SYS_BOOTM_LEN		SZ_64M
+ #define CONFIG_SPL_MAX_SIZE		(148 * SZ_1K)
+@@ -38,138 +37,6 @@
+ 
  #endif
  
- #define CONFIG_EXTRA_ENV_SETTINGS \
-+	"boot_script=fatload mmc ${devnum}:1 ${script_addr_r} /boot.scr; source ${script_addr_r}\0" \
-+	"load_fdt_script=fatload mmc ${devnum}:1 ${script_addr_r} /fdt-load.scr; source ${script_addr_r}\0" \
-+	"bootcmd_pxe=run load_fdt_script; setenv kernel_addr_r ${loadaddr}; dhcp; if pxe get; then pxe boot; fi\0" \
-+	"bootargs=console=ttymxc2,115200\0" \
-+	"bootpart=2\0" \
-+	"devnum=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
-+	"devtype=mmc\0" \
- 	"image=Image\0" \
- 	"console=ttymxc2\0" \
- 	"fdt_addr=0x48000000\0" \
- 	"fdto_addr=0x49000000\0" \
+-#define CONFIG_EXTRA_ENV_SETTINGS \
+-	"image=Image\0" \
+-	"console=ttymxc2\0" \
+-	"fdt_addr=0x48000000\0" \
+-	"fdto_addr=0x49000000\0" \
 -	"bootcmd_mfg=fastboot 0\0" \
 -	"bootenv_addr=0x49100000\0" \
 -	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
@@ -119,30 +123,60 @@ index 83acf79a8c..57f467b15d 100644
 -	"raucdev=2\0" \
 -	PHYCORE_RAUC_ENV_BOOTLOGIC \
 -	PHYCORE_FITIMAGE_ENV_BOOTLOGIC
-+	"pxefile_addr_r=0x4f800000\0" \
-+	"ramdisk_addr_r=0x49200000\0" \
-+	"scan_boot_script=if test -e mmc ${devnum}:1 /boot.scr; then echo Found U-Boot script; run boot_script; echo SCRIPT FAILED: continuing...; fi\0" \
-+	"script_addr_r=0x49100000\0" \
- 
- #ifdef CONFIG_IMX_HAB
- #define BOOTCOMMAND_APPEND "reset;"
-@@ -153,15 +62,10 @@
- #endif
- 
- #define CONFIG_BOOTCOMMAND \
+-
+-#ifdef CONFIG_IMX_HAB
+-#define BOOTCOMMAND_APPEND "reset;"
+-#else
+-#define BOOTCOMMAND_APPEND ""
+-#endif
+-
+-#define CONFIG_BOOTCOMMAND \
 -	"mmc dev ${mmcdev}; if mmc rescan; then " \
 -		"env exists dofitboot || setenv dofitboot 0;" \
--		"env exists doraucboot || setenv doraucboot 0 && saveenv;" \
+-		"env exists doraucboot || setenv doraucboot 0;" \
 -		"if test ${doraucboot} = 1; then " \
 -			"run raucboot; " \
 -		"elif run loadimage; then " \
 -			"run mmcboot; " \
 -		"else run netboot; " \
 -		"fi; " \
-+	"mmc dev ${devnum}; if mmc rescan; then " \
-+		"env exist kernel_addr || setenv devnum ${mmcdev} && setenv kernel_addr_r ${loadaddr} && saveenv;" \
-+		"run load_fdt_script;" \
-+		"run scan_boot_script;" \
- 	"fi; " \
- 	BOOTCOMMAND_APPEND
+-	"fi; " \
+-	BOOTCOMMAND_APPEND
+-
+-#ifdef CONFIG_ENV_WRITEABLE_LIST
+-/* Set environment flag validation to a list of env vars that must be writable */
+-#define CONFIG_ENV_FLAGS_LIST_STATIC RAUC_REQUIRED_WRITABLE_ENV_FLAGS",dofitboot:dw"
+-#endif
+-
+ /* Link Definitions */
+ #define CONFIG_LOADADDR			0x40480000
+ #define CONFIG_SYS_LOAD_ADDR		CONFIG_LOADADDR
+@@ -212,4 +79,28 @@
+ #define CONFIG_USB_MAX_CONTROLLER_COUNT	2
+ #define CONFIG_SERIAL_TAG
  
++#define CONFIG_EXTRA_ENV_SETTINGS \
++	"boot_script=fatload mmc ${devnum}:1 ${script_addr_r} /boot.scr; source ${script_addr_r}\0" \
++	"load_fdt_script=fatload mmc ${devnum}:1 ${script_addr_r} /fdt-load.scr; source ${script_addr_r}\0" \
++	"bootcmd_pxe=run load_fdt_script; dhcp; if pxe get; then pxe boot; fi\0" \
++	"bootargs=console=ttymxc2,115200\0" \
++	"devtype=mmc\0" \
++	"distro_bootcmd=mmc dev ${mmcdev};" \
++		"if mmc rescan; then " \
++			"setenv devnum ${mmcdev};" \
++			"run load_fdt_script;" \
++			"run scan_boot_script;" \
++		"fi\0" \
++	"console=ttymxc2\0" \
++	"fdt_addr=0x48000000\0" \
++	"fdto_addr=0x49000000\0" \
++	"kernel_addr_r=" __stringify(CONFIG_LOADADDR) "\0" \
++	"pxefile_addr_r=0x4f800000\0" \
++	"ramdisk_addr_r=0x49200000\0" \
++	"scan_boot_script=if test -e mmc ${devnum}:1 /boot.scr; then echo Found U-Boot script; run boot_script; echo SCRIPT FAILED: continuing...; fi\0" \
++	"script_addr_r=0x49100000\0" \
++    OMNECT_ENV_UPDATE_WORKFLOW \
++	OMNECT_ENV_SETTINGS \
++	OMNECT_ENV_EXTRA_BOOTARGS
++
+ #endif /* __PHYCORE_IMX8MM_H */

@@ -5,11 +5,16 @@ imx_sdma_enabled() {
 }
 
 imx_sdma_run() {
+    # explictly no exit hook handling here
+
     # load imx_sdma as early as possible with firmware available
     mkdir -p /lib/firmware
+    mkdir -p /lib/modules
     mount -o bind /rootfs/lib/modules /lib/modules
     mount -o bind /rootfs/lib/firmware /lib/firmware
     modprobe imx_sdma
-    umount /lib/firmware
-    umount /lib/modules
+    # umount deactivated on purpose: umount: can't unmount /lib/firmware: Device or resource busy
+    # it isn't mounted in omnect-os anyway
+    #umount /lib/firmware
+    #umount /lib/modules
 }

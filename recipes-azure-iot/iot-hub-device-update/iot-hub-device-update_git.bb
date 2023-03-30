@@ -15,10 +15,11 @@ SRC_URI = " \
   file://deviceupdate-agent.timer \
   file://du-config.json \
   file://du-diagnostics-config.json \
-  file://iot-hub-device-update.conf \
+  file://iot-hub-device-update.tmpfilesd \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
   file://0001-add-swupdate-user-consent-handler.patch \
+  file://0001-restart-adu-agent-no-network.patch \
   file://workaround-deprecated-declarations-openssl3.patch \
 "
 SRC_URI:append:eg500 = " file://swupdate_v1_grub.sh"
@@ -39,9 +40,9 @@ DEPENDS = " \
 "
 
 RDEPENDS:${PN} = " \
+  aziot-identityd \
   bash \
   do-client \
-  iot-identity-service \
   swupdate \
 "
 
@@ -68,14 +69,16 @@ EXTRA_OECMAKE += "-DADUC_WARNINGS_AS_ERRORS=OFF"
 do_install:append() {
   # adu configuration
   install -d ${D}${sysconfdir}/adu
-  jq  --arg adu_deviceproperties_manufacturer ${ADU_DEVICEPROPERTIES_MANUFACTURER} \
-      --arg adu_deviceproperties_model ${ADU_DEVICEPROPERTIES_MODEL} \
-      --arg adu_manufacturer ${ADU_MANUFACTURER} \
-      --arg adu_model ${ADU_MODEL} \
+  jq  --arg adu_deviceproperties_manufacturer "${ADU_DEVICEPROPERTIES_MANUFACTURER}" \
+      --arg adu_deviceproperties_model "${ADU_DEVICEPROPERTIES_MODEL}" \
+      --arg adu_deviceproperties_compatibility_id "${ADU_DEVICEPROPERTIES_COMPATIBILITY_ID}" \
+      --arg adu_manufacturer "${ADU_MANUFACTURER}" \
+      --arg adu_model "${ADU_MODEL}" \
       '.manufacturer = $adu_manufacturer |
       .model = $adu_model |
       .agents[].manufacturer = $adu_deviceproperties_manufacturer |
-      .agents[].model = $adu_deviceproperties_model'\
+      .agents[].model = $adu_deviceproperties_model |
+      .agents[].additionalDeviceProperties.compatibilityid = $adu_deviceproperties_compatibility_id'\
       ${WORKDIR}/du-config.json > ${D}${sysconfdir}/adu/du-config.json
   chown adu:adu ${D}${sysconfdir}/adu/du-config.json
   chmod 0444 ${D}${sysconfdir}/adu/du-config.json
@@ -88,7 +91,7 @@ do_install:append() {
   chmod 04550 ${D}${libdir}/adu/adu-shell
 
   # create tmpfiles.d entry to (re)create dir + permissions
-  install -m 0644 -D ${WORKDIR}/iot-hub-device-update.conf ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
+  install -m 0644 -D ${WORKDIR}/iot-hub-device-update.tmpfilesd ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
 
   # configure iot-hub-device-update as iot-identity-service client
   # allow adu client access to device_id secret created by manual provisioning
@@ -121,7 +124,11 @@ pkg_postinst:${PN}() {
   sed -i -e "s/@@UID@@/$(id -u adu)/" -e "s/@@NAME@@/AducIotAgent/" $D${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
 }
 
-SYSTEMD_SERVICE:${PN} = "deviceupdate-agent.service deviceupdate-agent.timer"
+SYSTEMD_SERVICE:${PN} = " \
+  deviceupdate-agent.service \
+  deviceupdate-agent.timer \
+"
+
 FILES:${PN} += " \
   ${libdir}/adu \
   ${libdir}/tmpfiles.d/iot-hub-device-update.conf \
@@ -137,4 +144,4 @@ FILES:${PN} += " \
   "
 
 GROUPADD_PARAM:${PN} += "-r adu;-r do;"
-USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G disk,aziotcs,aziotid,aziotks,do -g adu adu;"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,do -g adu adu;"

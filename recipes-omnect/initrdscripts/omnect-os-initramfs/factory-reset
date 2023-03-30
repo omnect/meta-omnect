@@ -42,7 +42,7 @@ wipe_partition_dd() {
     if [ -z "${part}"  ]; then return 1; fi
 
     # skip superblock, to keep label in the case of interruption; may take a longer time
-    dd bs=1M if=/dev/urandom iflag=fullblock oflag=direct oflag=seek_bytes seek=${seek_bytes} of=${part} status=progress
+    run_cmd dd bs=1M if=/dev/urandom iflag=fullblock oflag=direct oflag=seek_bytes seek=${seek_bytes} of=${part} status=progress
     sync
     return 0
 }
@@ -94,7 +94,7 @@ factory_reset_wipe_custom() {
         return 2
     fi
     msg "Running custom wipe ${custom_wipe}..."
-    ${custom_wipe}
+    run_cmd ${custom_wipe}
     if [ $? -ne 0 ]; then
         msg "ERROR: custom wipe \"${custom_wipe}\" failed; abort..."
         return 1
@@ -114,7 +114,7 @@ factory_reset_finish() {
 
     # get into normal startup
     msg "Rebooting system..."
-    reboot -f
+    run_cmd reboot -f
     # -- never reached --
 }
 
@@ -131,7 +131,7 @@ factory_reset_backup() {
     fi
 
     # do backup, keep permissions and ownership
-    cp --parents -av "${ROOTFS_DIR}/${path_name}" "${FACTORY_RESET_BACKUP_DIR}"
+    run_cmd cp --parents -av "${ROOTFS_DIR}/${path_name}" "${FACTORY_RESET_BACKUP_DIR}"
     ret=$?
 
     sync
@@ -151,7 +151,7 @@ factory_reset_restore() {
 
     cd ${FACTORY_RESET_BACKUP_DIR}/${ROOTFS_DIR}
         # do restore, keep permissions and ownership
-        cp --parents -av "${path_name:1}" "${ROOTFS_DIR}"
+        run_cmd cp --parents -av "${path_name:1}" "${ROOTFS_DIR}"
         ret=$?
     cd -
 
@@ -196,6 +196,7 @@ factory_reset_umount() {
 
 # main entry point
 factory_reset_run() {
+    # explictly no exit hook handling here
 
     if [ -z "${ROOTFS_DIR}" ]; then
         fatal "no ROOTFS_DIR"
@@ -220,7 +221,7 @@ factory_reset_run() {
         factory_reset_mount  # logical filesystem tree
 
         # do the backup
-        mkdir -p ${FACTORY_RESET_BACKUP_DIR}
+        run_cmd mkdir -p ${FACTORY_RESET_BACKUP_DIR}
         iterate_restore_list "${factory_reset_restore_list}" 1
         if [ $? -ne 0 ]; then
             # severe error; do not continue with factory reset
