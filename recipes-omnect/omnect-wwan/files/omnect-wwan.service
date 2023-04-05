@@ -1,0 +1,17 @@
+#  SPDX-License-Identifier: LGPL-2.1-or-later
+
+[Unit]
+Description=Omnect WWAN service taking care of LTE modems
+After=systemd-networkd.service
+Wants=network.target
+
+[Service]
+Type=exec
+Restart=always
+RestartSec=5
+User=root
+
+ExecStart=/usr/bin/modem-connect.sh
+
+[Install]
+WantedBy=network-online.target
