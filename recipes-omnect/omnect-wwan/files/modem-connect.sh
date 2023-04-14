@@ -106,7 +106,7 @@ while :; do
 	#pktstate=$(qmicli -d /dev/cdc-wdm0 -p --wds-get-packet-service-status)
 	# at least in some cases pings failed without prio nslookup, absolute
 	# no idea why, thus add an nslookup as precaution ...
-	out=$((nslookup 8.8.8.8 && ping -c 30 8.8.8.8) 2>&1) > /dev/null || break
+	out=$((nslookup 8.8.8.8 && ping -c 30 -I wwan0 8.8.8.8) 2>&1) > /dev/null || break
     done
 
     # when down/inoperable disconnect ...
