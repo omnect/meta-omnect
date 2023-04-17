@@ -27,7 +27,7 @@ repos:
     refspec: 37bd056a2f2228d8c2ac8abc12aa124d6d588e30
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
-    refspec: a517e15529980f8401b25c99a2d7720ac2d8baae
+    refspec: b0b7e2dd03b33bb3141aed04f07a7c3690416d25
     patches:
       p001:
         repo: "meta-omnect"
