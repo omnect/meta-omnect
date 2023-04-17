@@ -1,0 +1,1 @@
+KERNEL=="cdc-wdm[0-9]*", TAG+="systemd", MODE="0660"

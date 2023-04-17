@@ -11,6 +11,7 @@ SRC_URI = " \
 	file://omnect-wwan.service \
 	file://80-wwan.network \
 	file://80-wwan.link \
+	file://wwan.rules \
 	file://modem-connect.sh \
 "
 
@@ -26,6 +27,9 @@ do_install() {
     install -m 0644 ${WORKDIR}/omnect-wwan.service ${D}/${systemd_system_unitdir}/
     install -m 0644 ${WORKDIR}/80-wwan.network     ${D}/${systemd_unitdir}/network/
     install -m 0644 ${WORKDIR}/80-wwan.link        ${D}/${systemd_unitdir}/network/
+
+    install -d ${D}/${sysconfdir}/udev/rules.d
+    install -m 0644 ${WORKDIR}/wwan.rules          ${D}/${sysconfdir}/udev/rules.d/
 
     install -d ${D}/usr/bin
     install -m 755 ${WORKDIR}/modem-connect.sh     ${D}/usr/bin/modem-connect.sh

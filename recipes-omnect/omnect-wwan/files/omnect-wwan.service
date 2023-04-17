@@ -2,8 +2,9 @@
 
 [Unit]
 Description=Omnect WWAN service taking care of LTE modems
-After=systemd-networkd.service
 Wants=network.target
+Requires=dev-cdc\x2dwdm0.device
+After=systemd-networkd.service dev-cdc\x2dwdm0.device
 
 [Service]
 Type=exec
