@@ -5,9 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.18.10] Q2 2023
+## [kirkstone-0.18.11] Q2 2023
 - kas:
+  - updated poky to 4.0.9
+  - updated meta-openembedded to latest kirkstone HEAD
   - updated meta-virtualization to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+  - updated meta-raspberrypi to latest kirkstone HEAD
+- azure-iot-sdk-c: updated to LTS_01_2023_Ref02
+
+## [kirkstone-0.18.10] Q2 2023
+- kas: updated meta-virtualization to latest kirkstone HEAD
 
 ## [kirkstone-0.18.9] Q1 2023
 - systemd-journal-flush: fixed corruption of journal on reboot
