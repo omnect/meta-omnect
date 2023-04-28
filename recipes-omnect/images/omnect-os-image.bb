@@ -45,9 +45,15 @@ IMAGE_INSTALL = "\
     systemd-analyze \
     less \
     libqmi \
-    modemmanager \
-    omnect-wwan \
+    networkmanager networkmanager-wwan modemmanager \
+    mobile-broadband-provider-info \
+    usb-modeswitch usb-modeswitch-data \
 "
+
+#     modemmanager \
+#     connman connman-client \
+#     ofono ofono-tests mobile-broadband-provider-info \
+# 
 
 # check environment variables like OMNECT_TOOLS or OMNECT_DEVEL_TOOLS
 # Note: it is assumed that another variable suffixed with "_DEFAULT" exists and
