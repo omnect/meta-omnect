@@ -13,10 +13,16 @@ SRC_URI += " \
     file://omnect_env.h \
     file://omnect_env_phycore_imx8mm.h \
 "
+# Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
+# swupdate and iot-hub-device-update, the local version must be increased;
+UBOOT_LOCALVERSION = "-1"
+PKGV = "${PV}${UBOOT_LOCALVERSION}"
 
 do_configure:prepend() {
     # configure omnect u-boot env
     cp -f ${WORKDIR}/omnect_env.h ${S}/include/configs/
+
+    sed -i -e "s|^#define OMNECT_ENV_BOOTLOADER_VERSION$|#define OMNECT_ENV_BOOTLOADER_VERSION \"version=${PKGV}\\\0\"|g" ${S}/include/configs/omnect_env.h
 
     if [ -n "${APPEND}" ]; then
         sed -i -e "s|^#define OMNECT_ENV_EXTRA_BOOTARGS$|#define OMNECT_ENV_EXTRA_BOOTARGS \"extra-bootargs=${APPEND}\\\0\"|g" ${S}/include/configs/omnect_env.h
@@ -28,4 +34,9 @@ do_configure:prepend() {
 
 do_configure:prepend:mx8mm-nxp-bsp() {
     cp -f ${WORKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h
+}
+
+do_install:append() {
+    tar -czvf boot-partition-update.tar.gz -C ${DEPLOY_DIR_IMAGE} boot.scr fdt-load.scr
+    install -m 0644 -D boot-partition-update.tar.gz ${DEPLOY_DIR_IMAGE}
 }
