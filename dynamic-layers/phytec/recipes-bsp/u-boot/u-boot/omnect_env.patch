@@ -1,5 +1,5 @@
 diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
-index 67c70da907..b2dd0baef0 100644
+index 67c70da907..dc925ce556 100644
 --- a/include/configs/phycore_imx8mm.h
 +++ b/include/configs/phycore_imx8mm.h
 @@ -11,8 +11,7 @@
@@ -151,7 +151,7 @@ index 67c70da907..b2dd0baef0 100644
  /* Link Definitions */
  #define CONFIG_LOADADDR			0x40480000
  #define CONFIG_SYS_LOAD_ADDR		CONFIG_LOADADDR
-@@ -212,4 +79,28 @@
+@@ -212,4 +79,29 @@
  #define CONFIG_USB_MAX_CONTROLLER_COUNT	2
  #define CONFIG_SERIAL_TAG
  
@@ -177,6 +177,7 @@ index 67c70da907..b2dd0baef0 100644
 +	"script_addr_r=0x49100000\0" \
 +    OMNECT_ENV_UPDATE_WORKFLOW \
 +	OMNECT_ENV_SETTINGS \
++	OMNECT_ENV_BOOTLOADER_VERSION \
 +	OMNECT_ENV_EXTRA_BOOTARGS
 +
  #endif /* __PHYCORE_IMX8MM_H */

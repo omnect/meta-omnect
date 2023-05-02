@@ -18,6 +18,10 @@ SRC_URI += "\
     file://silent_console.cfg \
     file://omnect_env.h \
 "
+# Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
+# swupdate and iot-hub-device-update, the local version must be increased;
+UBOOT_LOCALVERSION = "-1"
+PKGV = "${PV}${UBOOT_LOCALVERSION}"
 
 # copy configuration fragment from template, before SRC_URI is checked
 do_fetch:prepend() {
@@ -45,6 +49,9 @@ do_configure:prepend() {
 
     # configure omnect u-boot env
     cp -f ${WORKDIR}/omnect_env.h ${S}/include/configs/
+
+    sed -i -e "s|^#define OMNECT_ENV_BOOTLOADER_VERSION$|#define OMNECT_ENV_BOOTLOADER_VERSION \"version=${PKGV}\\\0\"|g" ${S}/include/configs/omnect_env.h
+
     if [ -n "${APPEND}" ]; then
         sed -i -e "s|^#define OMNECT_ENV_EXTRA_BOOTARGS$|#define OMNECT_ENV_EXTRA_BOOTARGS \"extra-bootargs=${APPEND}\\\0\"|g" ${S}/include/configs/omnect_env.h
     fi
