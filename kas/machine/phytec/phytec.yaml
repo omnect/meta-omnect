@@ -6,7 +6,7 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    refspec: 0a53a8a782288a07e65c5cfd7b61480d27b78e93
+    refspec: 72bfe6f42a5ad2cc221c0595712666348a1773dc
     patches:
       p001:
         repo: "meta-omnect"
