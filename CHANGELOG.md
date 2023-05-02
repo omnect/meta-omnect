@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - kas:
   - updated meta-phytec to latest kirkstone HEAD (u-boot version bump)
   - updated meta-swupdate to latest kirkstone HEAD
+- kernel: enabled vcan, vxcan as modules if MACHINE_FEATURES contains can
 
 ## [kirkstone-0.18.12] Q2 2023
 - omnect-device-service: updated to 0.10.4
