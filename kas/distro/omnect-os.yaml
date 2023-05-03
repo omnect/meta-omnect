@@ -24,7 +24,7 @@ repos:
       meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    refspec: 37bd056a2f2228d8c2ac8abc12aa124d6d588e30
+    refspec: fb01170b98cf9541d286ba5a890fb85d83949b91
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     refspec: dde0ff9eaa301ec5bd3daf667c7966cf55404d26

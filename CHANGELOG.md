@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.13] Q2 2023
+- ip: changed from busybox to iproute2 binary
+  (e.g. enables configuring bitrate of can devices)
+- kas:
+  - updated meta-phytec to latest kirkstone HEAD (u-boot version bump)
+  - updated meta-swupdate to latest kirkstone HEAD
+- kernel: enabled vcan, vxcan as modules if MACHINE_FEATURES contains can
+
 ## [kirkstone-0.18.12] Q2 2023
 - omnect-device-service: updated to 0.10.4
   (timeouthandling for systemd operations in update-validation)
