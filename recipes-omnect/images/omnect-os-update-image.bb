@@ -19,7 +19,7 @@ IMAGE_DEPENDS = "omnect-os-image virtual/kernel"
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 # images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "omnect-os imx-boot boot-partition-update"
+SWUPDATE_IMAGES = "omnect-os ${@bb.utils.contains('MACHINE', 'phygate-tauri-l-imx8mm-2', 'imx-boot', '', d)} boot-partition-update"
 
 SWUPDATE_IMAGES_FSTYPES[omnect-os] = ".ext4.gz"
 SWUPDATE_IMAGES_FSTYPES[boot-partition-update] = ".tar.gz"
