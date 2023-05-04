@@ -18,10 +18,6 @@ SRC_URI += "\
     file://silent_console.cfg \
     file://omnect_env.h \
 "
-# Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
-# swupdate and iot-hub-device-update, the local version must be increased;
-UBOOT_LOCALVERSION = "-1"
-PKGV = "${PV}${UBOOT_LOCALVERSION}"
 
 # copy configuration fragment from template, before SRC_URI is checked
 do_fetch:prepend() {
