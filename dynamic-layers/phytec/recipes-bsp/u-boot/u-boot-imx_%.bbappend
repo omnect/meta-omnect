@@ -35,8 +35,3 @@ do_configure:prepend() {
 do_configure:prepend:mx8mm-nxp-bsp() {
     cp -f ${WORKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h
 }
-
-do_install:append() {
-    tar -czvf boot-partition-update.tar.gz -C ${DEPLOY_DIR_IMAGE} boot.scr fdt-load.scr
-    install -m 0644 -D boot-partition-update.tar.gz ${DEPLOY_DIR_IMAGE}
-}
