@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.14] Q2 2023
+- updated iot-identity-service to 1.4.4
+- updated iotedge to 1.4.10
+
 ## [kirkstone-0.18.13] Q2 2023
 - ip: changed from busybox to iproute2 binary
   (e.g. enables configuring bitrate of can devices)
