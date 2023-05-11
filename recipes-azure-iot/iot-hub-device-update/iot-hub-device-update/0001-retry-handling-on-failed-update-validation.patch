@@ -1,13 +1,13 @@
-From b6ee70a6d31f585bacb726c9731261416f939782 Mon Sep 17 00:00:00 2001
+From 59e44ea9e12a577a5fd488bcb2c26afbc13b1738 Mon Sep 17 00:00:00 2001
 From: Jan Zachmann <jan.zachmann@conplement.de>
 Date: Fri, 5 May 2023 12:33:57 +0200
 Subject: [PATCH] retry handling on failed update validation
 
 ---
- scripts/error_code_generator_defs/result_codes.json      | 4 ++++
- src/adu_workflow/src/agent_workflow.c                    | 8 +++++++-
- .../swupdate_handler/src/swupdate_handler.cpp            | 9 ++++++++-
- 3 files changed, 19 insertions(+), 2 deletions(-)
+ scripts/error_code_generator_defs/result_codes.json  |  4 ++++
+ src/adu_workflow/src/agent_workflow.c                | 11 ++++++++++-
+ .../swupdate_handler/src/swupdate_handler.cpp        | 12 +++++++++++-
+ 3 files changed, 25 insertions(+), 2 deletions(-)
 
 diff --git a/scripts/error_code_generator_defs/result_codes.json b/scripts/error_code_generator_defs/result_codes.json
 index 36ce7352..4d02404b 100644
@@ -25,7 +25,7 @@ index 36ce7352..4d02404b 100644
              ]
            },
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index 23ad8a40..12c462ac 100644
+index 23ad8a40..6bea151b 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
 @@ -14,6 +14,7 @@
@@ -36,12 +36,22 @@ index 23ad8a40..12c462ac 100644
  #include <stdlib.h>
  
  #include <time.h>
-@@ -494,6 +495,12 @@ void ADUC_Workflow_HandlePropertyUpdate(
+@@ -427,6 +428,8 @@ void ADUC_Workflow_HandlePropertyUpdate(
+     ADUC_WorkflowData* currentWorkflowData, const unsigned char* propertyUpdateValue, bool forceUpdate)
+ {
+     ADUC_WorkflowHandle nextWorkflow;
++    const char omnectValidateUpdateFailedFile[FILENAME_MAX] =
++        "/run/omnect-device-service/omnect_validate_update_failed";
+ 
+     ADUC_Result result = workflow_init((const char*)propertyUpdateValue, true /* shouldValidate */, &nextWorkflow);
+ 
+@@ -494,6 +497,13 @@ void ADUC_Workflow_HandlePropertyUpdate(
  
                  Log_Debug("Retry %s is applicable", newRetryToken);
  
-+                // remove omnect_validate_update_failed_file barrier
-+                if (0 != remove(STRING_c_str("/var/run/omnect-device-service/omnect_validate_update_failed")))
++                // Remove omnect_validate_update_failed_file barrier in case an update retry was
++                // triggered by cloud.
++                if (0 != remove(omnectValidateUpdateFailedFile))
 +                {
 +                    Log_Warn("Couldn't remove omnect_validate_update_failed_file barrier file");
 +                }
@@ -49,7 +59,7 @@ index 23ad8a40..12c462ac 100644
                  // Sets both cancellation type to Retry and updates the current retry token
                  workflow_update_retry_deployment(currentWorkflowData->WorkflowHandle, newRetryToken);
  
-@@ -964,7 +971,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
+@@ -964,7 +974,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
                      // Reset workflow state to process deployment and transfer
                      // the deferred workflow to current.
                      workflow_update_for_replacement(workflowData->WorkflowHandle);
@@ -58,10 +68,10 @@ index 23ad8a40..12c462ac 100644
                  else
                  {
 diff --git a/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp b/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
-index 8ecad89b..fa15dc37 100644
+index 8ecad89b..ebf91613 100644
 --- a/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
 +++ b/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
-@@ -130,11 +130,18 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -130,11 +130,21 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
      ADUC_WorkflowHandle workflowHandle = workflowData->WorkflowHandle;
      char* workFolder = workflow_get_workfolder(workflowHandle);
      int fileCount = 0;
@@ -72,6 +82,9 @@ index 8ecad89b..fa15dc37 100644
      bool updateTypeOk = false;
 +    std::ifstream omnectValidateUpdateFailedFile("/var/run/omnect-device-service/omnect_validate_update_failed");
 +
++    // We return with an error in case we just booted into here after an update validation
++    // failed on the new partition. We do this in order to step into update failed state 
++    // which also shows up in ADU cloud and offers triggering an update retry.
 +    if (omnectValidateUpdateFailedFile.good())
 +    {
 +        Log_Error("Update validation on new boot part failed. Rebooted to old boot part.");
