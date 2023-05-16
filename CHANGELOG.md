@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.18.15] Q2 2023
 - iot-hub-device-update:
   - return error on failed update validation
-  - remove update barrier on update retry triggered by cloud 
+  - allow retry triggered by cloud 
 
 ## [kirkstone-0.18.14] Q2 2023
 - updated iot-identity-service to 1.4.4
