@@ -35,3 +35,8 @@ do_configure:prepend() {
 do_configure:prepend:mx8mm-nxp-bsp() {
     cp -f ${WORKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h
 }
+
+do_install:append() {
+  echo "${PKGV}" > version
+  install -m 0444 version -D ${D}${datadir}/bootloader/version
+}

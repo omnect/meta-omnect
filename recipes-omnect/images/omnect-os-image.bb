@@ -7,6 +7,14 @@ LIC_FILES_CHKSUM = "\
     file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10 \
 "
 
+DEPENDS += "virtual/bootloader"
+
+python () {
+    path = d.getVar('PKG_CONFIG_SYSROOT_DIR') + d.getVar('datadir') + '/bootloader/version'
+    str = open(path, 'r').read().split()[0]
+    d.setVar('BOOTLOADER_VERSION', str)
+}
+
 inherit core-image
 
 # we need the initramfs bundled kernel before rootfs postprocessing
