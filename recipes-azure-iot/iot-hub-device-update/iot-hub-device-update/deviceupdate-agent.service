@@ -25,5 +25,9 @@ ExecStartPre=-/usr/bin/AducIotAgent -l 2 --extension-type updateContentHandler -
 ExecStartPre=-/usr/bin/AducIotAgent -l 2 --extension-type contentDownloader                                                  --register-extension /usr/lib/adu/extensions/libdeliveryoptimization_content_downloader.so
 ExecStart=/usr/bin/AducIotAgent -l 0 -e
 
+RuntimeDirectory=iot-hub-device-update
+RuntimeDirectoryMode=750
+RuntimeDirectoryPreserve=no
+
 [Install]
 WantedBy=multi-user.target
