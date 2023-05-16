@@ -1,4 +1,4 @@
-From 5cd0ae6c2576f7aa9102841d616c5cf19365aa46 Mon Sep 17 00:00:00 2001
+From 0ee26d10bac8c3a2ae8865b1989cdf27a609ec98 Mon Sep 17 00:00:00 2001
 From: Jan Zachmann <jan.zachmann@conplement.de>
 Date: Fri, 5 May 2023 12:33:57 +0200
 Subject: [PATCH] retry handling on failed update validation
@@ -25,7 +25,7 @@ index 36ce7352..4d02404b 100644
              ]
            },
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index 23ad8a40..b4a47a32 100644
+index 23ad8a40..7d26277a 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
 @@ -14,7 +14,9 @@
@@ -44,7 +44,7 @@ index 23ad8a40..b4a47a32 100644
      ADUC_WorkflowHandle nextWorkflow;
 +    const char omnectValidateUpdateFailedFile[FILENAME_MAX] =
 +        "/run/omnect-device-service/omnect_validate_update_failed";
-+    const char omnectUpdateRetryFile[FILENAME_MAX] = "/run/omnect-device-service/omnect_update_retry";
++    const char omnectUpdateRetryFile[FILENAME_MAX] = "/run/omnect_update_retry";
  
      ADUC_Result result = workflow_init((const char*)propertyUpdateValue, true /* shouldValidate */, &nextWorkflow);
  
@@ -83,7 +83,7 @@ index 23ad8a40..b4a47a32 100644
                  else
                  {
 diff --git a/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp b/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
-index 8ecad89b..a0a6fb23 100644
+index 8ecad89b..0bb9293f 100644
 --- a/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
 +++ b/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
 @@ -130,11 +130,23 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
@@ -96,10 +96,10 @@ index 8ecad89b..a0a6fb23 100644
      unsigned int updateTypeVersion = 0;
      bool updateTypeOk = false;
 +    std::ifstream omnectValidateUpdateFailedFile("/var/run/omnect-device-service/omnect_validate_update_failed");
-+    std::ifstream omnectUpdateRetryFile("/var/run/omnect-device-service/omnect_update_retry");
++    std::ifstream omnectUpdateRetryFile("/var/run/omnect_update_retry");
 +
 +    // We return with an error in case we just booted into here after an update validation
-+    // failed on the new partition. We do this in order to step into update failed state 
++    // failed on the new partition. We do this in order to step into update failed state
 +    // which also shows up in ADU cloud and offers triggering an update retry.
 +    // If the cloud triggered a retry we ignore omnect_validate_update_failed flag.
 +    if (omnectValidateUpdateFailedFile.good() && !omnectUpdateRetryFile.good())
