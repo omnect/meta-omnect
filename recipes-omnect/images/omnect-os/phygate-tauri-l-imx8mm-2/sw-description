@@ -12,7 +12,10 @@ software =
                 if bootloader_version == image.version then
                 result = nil
                 else
-                os.execute(\"mkdir -p /run/bootloader && touch /run/bootloader/update\")
+                os.execute(\"mkdir -p /run/bootloader\")
+                f = io.open(\"/run/bootloader/update\", \"w\")
+                f:write(image.version)
+                f:close()
                 result = image
                 end
                 fh:close()
@@ -58,12 +61,6 @@ software =
                         filesystem = "vfat"
                     }
                 );
-                uboot: (
-                    {
-                        name = "version";
-                        value = "$swupdate_get_pkgvar(u-boot-imx@PKGV)";
-                    }
-                  );
             };
             copy2 : {
                 images: (
@@ -101,12 +98,6 @@ software =
                         filesystem = "vfat"
                     }
                 );
-                uboot: (
-                    {
-                        name = "version";
-                        value = "$swupdate_get_pkgvar(u-boot-imx@PKGV)";
-                    }
-                  );
             };
         };
     }

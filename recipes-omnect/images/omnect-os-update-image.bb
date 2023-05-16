@@ -16,6 +16,8 @@ python () {
         bb.build.addtask('do_bootloader_rpi', 'do_swuimage', 'do_unpack do_prepare_recipe_sysroot', d)
     elif d.getVar('MACHINE') == 'phygate-tauri-l-imx8mm-2':
         bb.build.addtask('do_bootloader_tauri', 'do_swuimage', 'do_unpack do_prepare_recipe_sysroot', d)
+    else:
+        raise bb.parse.SkipRecipe("MACHINE type unknown for omnect-os-update-image.")
 }
 
 do_bootloader_rpi() {

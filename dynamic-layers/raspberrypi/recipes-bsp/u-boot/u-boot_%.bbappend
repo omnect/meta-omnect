@@ -18,7 +18,6 @@ do_configure:prepend() {
 }
 
 do_install:append() {
-
   echo "${PKGV}" > version
   install -m 0444 version -D ${D}${datadir}/bootloader/version
 }
