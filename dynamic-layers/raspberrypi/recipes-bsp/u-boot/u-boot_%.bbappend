@@ -16,3 +16,9 @@ PKGV = "${PV}${UBOOT_LOCALVERSION}"
 do_configure:prepend() {
     cp -f ${WORKDIR}/omnect_env_rpi.h ${S}/include/configs/omnect_env_machine.h
 }
+
+do_install:append() {
+
+  echo "${PKGV}" > version
+  install -m 0444 version -D ${D}${datadir}/bootloader/version
+}
