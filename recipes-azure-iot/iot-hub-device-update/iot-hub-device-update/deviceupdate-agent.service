@@ -26,7 +26,7 @@ ExecStartPre=-/usr/bin/AducIotAgent -l 2 --extension-type contentDownloader     
 ExecStart=/usr/bin/AducIotAgent -l 0 -e
 
 RuntimeDirectory=iot-hub-device-update
-RuntimeDirectoryMode=750
+RuntimeDirectoryMode=700
 RuntimeDirectoryPreserve=no
 
 [Install]
