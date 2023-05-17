@@ -1,9 +1,0 @@
-[Match]
-Name=wwan0
-
-[Network]
-DHCP=yes
-LLDP=no
-
-[DHCPv4]
-UseMTU=True

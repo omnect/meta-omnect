@@ -1,4 +1,0 @@
-[Match]
-Type=wwan
-Driver=qmi_wwan
-Property=ID_VENDOR_ID=1bc7 ID_MODEL_ID=1031
