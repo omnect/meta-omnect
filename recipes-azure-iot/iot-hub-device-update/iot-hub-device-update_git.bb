@@ -20,6 +20,7 @@ SRC_URI = " \
   file://iot-identity-service-identityd.template.toml \
   file://0001-add-swupdate-user-consent-handler.patch \
   file://0001-restart-adu-agent-no-network.patch \
+  file://0001-retry-handling-on-failed-update-validation.patch \
   file://workaround-deprecated-declarations-openssl3.patch \
 "
 PV = "${SRCPV}"
@@ -137,5 +138,9 @@ FILES:${PN} += " \
   ${sysconfdir}/omnect/consent/swupdate/installed_criteria \
   "
 
-GROUPADD_PARAM:${PN} += "-r adu;-r do;"
-USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,do -g adu adu;"
+GROUPADD_PARAM:${PN} += " \
+  -r adu; \
+  -r do; \
+  -r omnect_validate_update; \
+"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,do,omnect_validate_update -g adu adu;"
