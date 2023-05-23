@@ -17,7 +17,6 @@ This yocto meta layer provides the poky based device management distribution `om
 - `omnect-os update image` - the [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image
     - additionally: updating the bootloader via swupdate
 
-`omnect-os update image` - the corresponding [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image
 ### `DISTRO_FEATURES`
 `omnect-os` depends on [poky](https://www.yoctoproject.org/software-item/poky/).
 It is built with the default `poky` `DISTRO_FEATURES`.
