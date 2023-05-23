@@ -13,9 +13,9 @@ SRC_URI = "file://sw-description"
 
 python () {
     if d.getVar('MACHINE') == 'raspberrypi4-64':
-        bb.build.addtask('do_bootloader_rpi', 'do_swuimage', 'do_unpack do_prepare_recipe_sysroot', d)
+        bb.build.addtask('do_bootloader_rpi', 'do_swuimage', '', d)
     elif d.getVar('MACHINE') == 'phygate-tauri-l-imx8mm-2':
-        bb.build.addtask('do_bootloader_tauri', 'do_swuimage', 'do_unpack do_prepare_recipe_sysroot', d)
+        bb.build.addtask('do_bootloader_tauri', 'do_swuimage', '', d)
     else:
         raise bb.parse.SkipRecipe("MACHINE type unknown for omnect-os-update-image.")
 }
