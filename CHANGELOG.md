@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (swupdate has to support the archive feature,
   otherwise the whole update will not work -> breaking change for current release)
 
+## [kirkstone-next-0.0.10] Q2 2023
+- swupdate: enabled archive support
+
 ## [kirkstone-next-0.0.9] Q2 2023
   ## [kirkstone-0.18.15] Q2 2023
   ## [kirkstone-0.18.14] Q2 2023
