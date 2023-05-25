@@ -9,7 +9,7 @@ repos:
   meta-omnect:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: 571e36e20e9d1f27af0eb4545291beeb64f280e2
+    refspec: 5f120a926b0fcd55cfe7565bb7ddf23661cad498
     layers:
       meta-filesystems:
       meta-networking:
@@ -24,10 +24,10 @@ repos:
       meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    refspec: fb01170b98cf9541d286ba5a890fb85d83949b91
+    refspec: 22e9aee741bbeffe05dd942212f26d2cb9f5f5b7
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
-    refspec: dde0ff9eaa301ec5bd3daf667c7966cf55404d26
+    refspec: 9d056f957b42e31f1c2c5bad0af1ab6c84b53ee6
     patches:
       p001:
         repo: "meta-omnect"

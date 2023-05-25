@@ -5,10 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.16] Q2 2023
+- kas:
+  - updated poky to 4.0.10
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-swupdate to latest kirkstone HEAD
+  - updated meta-virtualization to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+  - changed ref to meta-imx to an explicit commit, since upstream moved the tag "rel_imx_5.15.71_2.2.0" in the past
+
 ## [kirkstone-0.18.15] Q2 2023
 - iot-hub-device-update:
   - return error on failed update validation
-  - allow retry triggered by cloud 
+  - allow retry triggered by cloud
 
 ## [kirkstone-0.18.14] Q2 2023
 - updated iot-identity-service to 1.4.4
