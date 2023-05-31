@@ -5,7 +5,7 @@ software =
     @@MACHINE@@ = {
         embedded-script ="
         function check_bootloader_version(image)
-                os.execute(\"fw_printenv -n version > /tmp/bootloader_version\")
+                os.execute(\"fw_printenv -n omnect_u-boot_version > /tmp/bootloader_version\")
                 fh = io.open(\"/tmp/bootloader_version\")
                 bootloader_version = fh:read()
                 swupdate.trace(\"bootloader_version: \" .. bootloader_version)
@@ -36,21 +36,6 @@ software =
                         device = "/dev/omnect/rootA";
                     }
                 );
-                files: (
-                    {
-                        name = "boot-partition"
-                        hook = "check_bootloader_version";
-                        version = "$swupdate_get_pkgvar(u-boot@PKGV)";
-                        filename = "boot-partition-update.tar.gz";
-                        type = "archive";
-                        compressed = "zlib";
-                        preserve-attributes = false;
-                        path = "/";
-                        sha256 = "$swupdate_get_sha256(boot-partition-update.tar.gz)";
-                        device = "/dev/omnect/boot";
-                        filesystem = "vfat"
-                    }
-                );
             };
             copy2 : {
                 images: (
@@ -63,6 +48,8 @@ software =
                         device = "/dev/omnect/rootB";
                     }
                 );
+            };
+            bootloader : {
                 files: (
                     {
                         name = "boot-partition"

@@ -5,7 +5,7 @@ software =
     @@MACHINE@@ = {
         embedded-script ="
         function check_bootloader_version(image)
-                os.execute(\"fw_printenv -n version > /tmp/bootloader_version\")
+                os.execute(\"fw_printenv -n omnect_u-boot_version > /tmp/bootloader_version\")
                 fh = io.open(\"/tmp/bootloader_version\")
                 bootloader_version = fh:read()
                 swupdate.trace(\"bootloader_version: \" .. bootloader_version)
@@ -34,31 +34,6 @@ software =
                         type = "raw";
                         compressed = "zlib";
                         device = "/dev/omnect/rootA";
-                    },
-                    {
-                        name = "bootloader"
-                        hook = "check_bootloader_version";
-                        filename = "imx-boot";
-                        sha256 = "$swupdate_get_sha256(imx-boot)";
-                        version = "$swupdate_get_pkgvar(u-boot-imx@PKGV)";
-                        type = "raw";
-                        device = "/dev/omnect/rootblk";
-                        offset = "33K";
-                    }
-                );
-                files: (
-                    {
-                        name = "boot-partition"
-                        hook = "check_bootloader_version";
-                        version = "$swupdate_get_pkgvar(u-boot-imx@PKGV)";
-                        filename = "boot-partition-update.tar.gz";
-                        type = "archive";
-                        compressed = "zlib";
-                        preserve-attributes = false;
-                        path = "/";
-                        sha256 = "$swupdate_get_sha256(boot-partition-update.tar.gz)";
-                        device = "/dev/omnect/boot";
-                        filesystem = "vfat"
                     }
                 );
             };
@@ -71,7 +46,11 @@ software =
                         type = "raw";
                         compressed = "zlib";
                         device = "/dev/omnect/rootB";
-                    },
+                    }
+                );
+            };
+            bootloader : {
+                images: (
                     {
                         name = "bootloader"
                         hook = "check_bootloader_version";
