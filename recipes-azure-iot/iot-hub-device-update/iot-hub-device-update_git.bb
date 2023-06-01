@@ -22,6 +22,7 @@ SRC_URI = " \
   file://0001-restart-adu-agent-no-network.patch \
   file://0001-retry-handling-on-failed-update-validation.patch \
   file://workaround-deprecated-declarations-openssl3.patch \
+  file://install_bootloader.patch \
 "
 PV = "${SRCPV}"
 

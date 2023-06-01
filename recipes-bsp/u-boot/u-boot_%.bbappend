@@ -45,6 +45,9 @@ do_configure:prepend() {
 
     # configure omnect u-boot env
     cp -f ${WORKDIR}/omnect_env.h ${S}/include/configs/
+
+    sed -i -e "s|^#define OMNECT_ENV_BOOTLOADER_VERSION$|#define OMNECT_ENV_BOOTLOADER_VERSION \"omnect_u-boot_version=${PKGV}\\\0\"|g" ${S}/include/configs/omnect_env.h
+
     if [ -n "${APPEND}" ]; then
         sed -i -e "s|^#define OMNECT_ENV_EXTRA_BOOTARGS$|#define OMNECT_ENV_EXTRA_BOOTARGS \"extra-bootargs=${APPEND}\\\0\"|g" ${S}/include/configs/omnect_env.h
     fi

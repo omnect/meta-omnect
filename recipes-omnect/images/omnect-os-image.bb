@@ -6,6 +6,17 @@ LIC_FILES_CHKSUM = "\
     file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302 \
     file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10 \
 "
+# we need the bootloader version in the *testdata.json artifact
+def omnect_create_bootloader_version(d):
+    path = d.getVar('DEPLOY_DIR_IMAGE') + '/bootloader_version'
+    str = ""
+    try:
+        str = open(path, 'r').read().split()[0]
+    except:
+        pass
+    return str
+
+BOOTLOADER_VERSION = "${@omnect_create_bootloader_version(d)}"
 
 inherit core-image
 

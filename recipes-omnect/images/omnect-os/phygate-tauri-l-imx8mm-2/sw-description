@@ -1,0 +1,83 @@
+software =
+{
+    version = "@@SOFTWARE_VERSION@@";
+
+    @@MACHINE@@ = {
+        embedded-script ="
+        function check_bootloader_version(image)
+                os.execute(\"fw_printenv -n omnect_u-boot_version > /tmp/bootloader_version\")
+                fh = io.open(\"/tmp/bootloader_version\")
+                bootloader_version = fh:read()
+                swupdate.trace(\"bootloader_version: \" .. bootloader_version)
+                if bootloader_version == image.version then
+                result = nil
+                else
+                os.execute(\"mkdir -p /run/bootloader\")
+                f = io.open(\"/run/bootloader/update\", \"w\")
+                f:write(image.version)
+                f:close()
+                result = image
+                end
+                fh:close()
+                swupdate.trace(\"image.version: \" .. image.version)
+                return true, result
+        end
+        ";
+        hardware-compatibility: [ "@@HW_REV@@" ];
+        stable : {
+            copy1 : {
+                images: (
+                    {
+                        name = "@@SOFTWARE_NAME@@"
+                        filename = "@@DISTRO@@-@@MACHINE@@.ext4.gz";
+                        sha256 = "$swupdate_get_sha256(@@DISTRO@@-@@MACHINE@@.ext4.gz)";
+                        type = "raw";
+                        compressed = "zlib";
+                        device = "/dev/omnect/rootA";
+                    }
+                );
+            };
+            copy2 : {
+                images: (
+                    {
+                        name = "@@SOFTWARE_NAME@@"
+                        filename = "@@DISTRO@@-@@MACHINE@@.ext4.gz";
+                        sha256 = "$swupdate_get_sha256(@@DISTRO@@-@@MACHINE@@.ext4.gz)";
+                        type = "raw";
+                        compressed = "zlib";
+                        device = "/dev/omnect/rootB";
+                    }
+                );
+            };
+            bootloader : {
+                images: (
+                    {
+                        name = "bootloader"
+                        hook = "check_bootloader_version";
+                        filename = "imx-boot";
+                        sha256 = "$swupdate_get_sha256(imx-boot)";
+                        version = "$swupdate_get_pkgvar(u-boot-imx@PKGV)";
+                        type = "raw";
+                        device = "/dev/omnect/rootblk";
+                        offset = "33K";
+                    }
+                );
+                files: (
+                    {
+                        name = "boot-partition"
+                        hook = "check_bootloader_version";
+                        version = "$swupdate_get_pkgvar(u-boot-imx@PKGV)";
+                        filename = "boot-partition-update.tar.gz";
+                        type = "archive";
+                        compressed = "zlib";
+                        preserve-attributes = false;
+                        path = "/";
+                        sha256 = "$swupdate_get_sha256(boot-partition-update.tar.gz)";
+                        device = "/dev/omnect/boot";
+                        filesystem = "vfat"
+                    }
+                );
+            };
+        };
+    }
+}

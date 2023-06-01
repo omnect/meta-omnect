@@ -1,0 +1,19 @@
+diff --git a/src/adu-shell/scripts/adu-swupdate.sh b/src/adu-shell/scripts/adu-swupdate.sh
+index b7f7e6e..31ad008 100644
+--- a/src/adu-shell/scripts/adu-swupdate.sh
++++ b/src/adu-shell/scripts/adu-swupdate.sh
+@@ -121,6 +121,14 @@ if [[ $action == "install" ]]; then
+ 
+         # Call swupdate with the image file and the public key for signature validation
+         swupdate -v -i "${image_file}" -k /usr/share/swupdate/public.pem -e ${selection} &>> "${log_dir}/swupdate.log"
++        if [ $? -eq 0 ]; then
++            swupdate -v -i "${image_file}" -k /usr/share/swupdate/public.pem -e stable,bootloader &>> "${log_dir}/swupdate.log"
++            if [ $? -eq 0 ]; then
++                if [ -f "/run/bootloader/update" ]; then
++                    fw_setenv omnect_u-boot_version $(set -- $(cat /run/bootloader/update); echo $1)
++                fi
++            fi
++        fi
+         $ret $?
+     else
+         echo "Image file $image_file was not found." >> "${log_dir}/swupdate.log"
