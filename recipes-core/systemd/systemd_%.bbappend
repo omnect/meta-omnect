@@ -84,7 +84,11 @@ do_install:append:phyboard-polis-imx8mm-4() {
 
 # adapt tauri-l systemd-networkd-wait-online.service state
 do_install:append:phygate-tauri-l-imx8mm-2() {
-    sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_ETH1}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+    if [ "${OMNECT_WWAN0}" ]; then
+        sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_ETH1} --interface=${OMNECT_WWAN0}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+    else
+        sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_ETH1}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+    fi
 }
 
 FILES:${PN} += "\
