@@ -18,8 +18,8 @@ DEPENDS += "virtual/bootloader"
 
 addtask do_bootloader_package before do_swuimage
 
-# do_bootloader_package task shall only run in case the deploy step of the u-boot is finished
-do_bootloader_package[depends] += "virtual/bootloader:do_deploy"
+# do_bootloader_package task shall only run in case the deploy step of u-boot and kernel are finished
+do_bootloader_package[depends] += "virtual/bootloader:do_deploy virtual/kernel:do_deploy"
 
 do_bootloader_package() {
     if [ "${MACHINE}" = "raspberrypi4-64" ]; then
