@@ -1,5 +1,5 @@
 diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
-index 67c70da907..b2dd0baef0 100644
+index dc49748f1f..0cd43820eb 100644
 --- a/include/configs/phycore_imx8mm.h
 +++ b/include/configs/phycore_imx8mm.h
 @@ -11,8 +11,7 @@
@@ -151,7 +151,7 @@ index 67c70da907..b2dd0baef0 100644
  /* Link Definitions */
  #define CONFIG_LOADADDR			0x40480000
  #define CONFIG_SYS_LOAD_ADDR		CONFIG_LOADADDR
-@@ -212,4 +79,28 @@
+@@ -214,4 +81,26 @@
  #define CONFIG_USB_MAX_CONTROLLER_COUNT	2
  #define CONFIG_SERIAL_TAG
  
@@ -159,7 +159,6 @@ index 67c70da907..b2dd0baef0 100644
 +	"boot_script=fatload mmc ${devnum}:1 ${script_addr_r} /boot.scr; source ${script_addr_r}\0" \
 +	"load_fdt_script=fatload mmc ${devnum}:1 ${script_addr_r} /fdt-load.scr; source ${script_addr_r}\0" \
 +	"bootcmd_pxe=run load_fdt_script; dhcp; if pxe get; then pxe boot; fi\0" \
-+	"bootargs=console=ttymxc2,115200\0" \
 +	"devtype=mmc\0" \
 +	"distro_bootcmd=mmc dev ${mmcdev};" \
 +		"if mmc rescan; then " \
@@ -167,7 +166,6 @@ index 67c70da907..b2dd0baef0 100644
 +			"run load_fdt_script;" \
 +			"run scan_boot_script;" \
 +		"fi\0" \
-+	"console=ttymxc2\0" \
 +	"fdt_addr=0x48000000\0" \
 +	"fdto_addr=0x49000000\0" \
 +	"kernel_addr_r=" __stringify(CONFIG_LOADADDR) "\0" \
