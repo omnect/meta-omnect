@@ -37,5 +37,5 @@ do_configure:prepend:mx8mm-nxp-bsp() {
 }
 
 do_deploy:append() {
-  echo "${PKGV}" > ${DEPLOY_DIR_IMAGE}/bootloader_version
+  echo "${PKGV}" > ${DEPLOYDIR}/bootloader_version
 }

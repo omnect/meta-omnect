@@ -18,5 +18,5 @@ do_configure:prepend() {
 }
 
 do_deploy:append() {
-  echo "${PKGV}" > ${DEPLOY_DIR_IMAGE}/bootloader_version
+  echo "${PKGV}" > ${DEPLOYDIR}/bootloader_version
 }
