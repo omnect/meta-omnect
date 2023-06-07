@@ -5,17 +5,17 @@ index dc49748f1f..0cd43820eb 100644
 @@ -11,8 +11,7 @@
  #include <linux/stringify.h>
  #include <asm/arch/imx-regs.h>
- 
+
 -#include "phycore_rauc_env.h"
 -#include "phycore_fitimage_env.h"
 +#include <configs/omnect_env.h>
- 
+
  #define CONFIG_SYS_BOOTM_LEN		SZ_64M
  #define CONFIG_SPL_MAX_SIZE		(148 * SZ_1K)
 @@ -38,138 +37,6 @@
- 
+
  #endif
- 
+
 -#define CONFIG_EXTRA_ENV_SETTINGS \
 -	"image=Image\0" \
 -	"console=ttymxc2\0" \
@@ -154,7 +154,7 @@ index dc49748f1f..0cd43820eb 100644
 @@ -214,4 +81,26 @@
  #define CONFIG_USB_MAX_CONTROLLER_COUNT	2
  #define CONFIG_SERIAL_TAG
- 
+
 +#define CONFIG_EXTRA_ENV_SETTINGS \
 +	"boot_script=fatload mmc ${devnum}:1 ${script_addr_r} /boot.scr; source ${script_addr_r}\0" \
 +	"load_fdt_script=fatload mmc ${devnum}:1 ${script_addr_r} /fdt-load.scr; source ${script_addr_r}\0" \
@@ -175,6 +175,6 @@ index dc49748f1f..0cd43820eb 100644
 +	"script_addr_r=0x49100000\0" \
 +    OMNECT_ENV_UPDATE_WORKFLOW \
 +	OMNECT_ENV_SETTINGS \
-+	OMNECT_ENV_EXTRA_BOOTARGS
++	OMNECT_ENV_BOOTARGS
 +
  #endif /* __PHYCORE_IMX8MM_H */
