@@ -6,11 +6,11 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 SRC_URI = " \
   git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.0.2;nobranch=1 \
   file://adu-swupdate-key.patch \
+  file://connection-status-handler.patch \
   file://eis-utils-cert-chain-buffer.patch \
   ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
   file://linux_platform_layer.patch \
   file://rpipart_to_bootpart.patch \
-  file://sd_notify.patch \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
   file://du-config.json \
@@ -19,7 +19,6 @@ SRC_URI = " \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
   file://0001-add-swupdate-user-consent-handler.patch \
-  file://0001-restart-adu-agent-no-network.patch \
   file://0001-retry-handling-on-failed-update-validation.patch \
   file://workaround-deprecated-declarations-openssl3.patch \
 "
