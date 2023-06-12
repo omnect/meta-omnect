@@ -7,18 +7,19 @@ inherit cargo
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/omnect-device-service/0.11.0"
-SRC_URI += "git://git@github.com/JanZachmann/icsdm-device-service.git;protocol=ssh;nobranch=1;branch=feature-toggle"
-SRCREV = "e1aa8c5f6bc32f3c5a5cb1e52c45c5c94fa8aabb"
+SRC_URI += "git://git@github.com/JanZachmann/omnect-device-service.git;protocol=ssh;nobranch=1;branch=feature-toggle"
+SRCREV = "dcab15ae439ce51322a7623b03b12093df002120"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+e1aa8c5f6b"
+PV:append = ".AUTOINC+dcab15ae43"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
 SRC_URI += " \
     crate://crates.io/addr2line/0.19.0 \
     crate://crates.io/adler/1.0.2 \
-    crate://crates.io/aho-corasick/1.0.1 \
+    crate://crates.io/aho-corasick/1.0.2 \
+    crate://crates.io/android-tzdata/0.1.1 \
     crate://crates.io/android_system_properties/0.1.5 \
     crate://crates.io/anyhow/1.0.71 \
     crate://crates.io/async-broadcast/0.5.1 \
@@ -40,13 +41,13 @@ SRC_URI += " \
     crate://crates.io/bitflags/1.3.2 \
     crate://crates.io/block-buffer/0.10.4 \
     crate://crates.io/blocking/1.3.1 \
-    crate://crates.io/bumpalo/3.12.2 \
+    crate://crates.io/bumpalo/3.13.0 \
     crate://crates.io/byteorder/1.4.3 \
     crate://crates.io/bytes/1.4.0 \
     crate://crates.io/cc/1.0.79 \
     crate://crates.io/cexpr/0.6.0 \
     crate://crates.io/cfg-if/1.0.0 \
-    crate://crates.io/chrono/0.4.24 \
+    crate://crates.io/chrono/0.4.26 \
     crate://crates.io/clang-sys/1.6.1 \
     crate://crates.io/concurrent-queue/2.2.0 \
     crate://crates.io/core-foundation-sys/0.8.4 \
@@ -74,7 +75,7 @@ SRC_URI += " \
     crate://crates.io/fnv/1.0.7 \
     crate://crates.io/foreign-types-shared/0.1.1 \
     crate://crates.io/foreign-types/0.3.2 \
-    crate://crates.io/form_urlencoded/1.1.0 \
+    crate://crates.io/form_urlencoded/1.2.0 \
     crate://crates.io/fsevent-sys/4.1.0 \
     crate://crates.io/futures-channel/0.3.28 \
     crate://crates.io/futures-core/0.3.28 \
@@ -87,7 +88,7 @@ SRC_URI += " \
     crate://crates.io/futures-util/0.3.28 \
     crate://crates.io/futures/0.3.28 \
     crate://crates.io/generic-array/0.14.7 \
-    crate://crates.io/getrandom/0.2.9 \
+    crate://crates.io/getrandom/0.2.10 \
     crate://crates.io/gimli/0.27.2 \
     crate://crates.io/glob/0.3.1 \
     crate://crates.io/h2/0.3.19 \
@@ -109,14 +110,14 @@ SRC_URI += " \
     crate://crates.io/hyper-timeout/0.4.1 \
     crate://crates.io/hyper/0.14.26 \
     crate://crates.io/iana-time-zone-haiku/0.1.2 \
-    crate://crates.io/iana-time-zone/0.1.56 \
+    crate://crates.io/iana-time-zone/0.1.57 \
     crate://crates.io/ident_case/1.0.1 \
-    crate://crates.io/idna/0.3.0 \
+    crate://crates.io/idna/0.4.0 \
     crate://crates.io/indexmap/1.9.3 \
     crate://crates.io/inotify-sys/0.1.5 \
     crate://crates.io/inotify/0.9.6 \
     crate://crates.io/instant/0.1.12 \
-    crate://crates.io/io-lifetimes/1.0.10 \
+    crate://crates.io/io-lifetimes/1.0.11 \
     crate://crates.io/iptables/0.5.0 \
     crate://crates.io/itoa/1.0.6 \
     crate://crates.io/js-sys/0.3.63 \
@@ -124,21 +125,21 @@ SRC_URI += " \
     crate://crates.io/kqueue/1.0.7 \
     crate://crates.io/lazy_static/1.4.0 \
     crate://crates.io/lazycell/1.3.0 \
-    crate://crates.io/libc/0.2.144 \
+    crate://crates.io/libc/0.2.146 \
     crate://crates.io/libloading/0.7.4 \
     crate://crates.io/linked-hash-map/0.5.6 \
     crate://crates.io/linked_hash_set/0.1.4 \
     crate://crates.io/linux-raw-sys/0.3.8 \
-    crate://crates.io/lock_api/0.4.9 \
+    crate://crates.io/lock_api/0.4.10 \
     crate://crates.io/log-panics/2.1.0 \
-    crate://crates.io/log/0.4.17 \
+    crate://crates.io/log/0.4.19 \
     crate://crates.io/memchr/2.5.0 \
     crate://crates.io/memoffset/0.6.5 \
     crate://crates.io/memoffset/0.7.1 \
     crate://crates.io/mime/0.3.17 \
     crate://crates.io/minimal-lexical/0.2.1 \
     crate://crates.io/miniz_oxide/0.6.2 \
-    crate://crates.io/mio/0.8.6 \
+    crate://crates.io/mio/0.8.8 \
     crate://crates.io/network-interface/0.1.6 \
     crate://crates.io/nix/0.23.2 \
     crate://crates.io/nix/0.24.3 \
@@ -146,45 +147,44 @@ SRC_URI += " \
     crate://crates.io/nom/7.1.3 \
     crate://crates.io/notify-debouncer-mini/0.3.0 \
     crate://crates.io/notify/6.0.0 \
-    crate://crates.io/num-integer/0.1.45 \
     crate://crates.io/num-traits/0.2.15 \
     crate://crates.io/num_cpus/1.15.0 \
-    crate://crates.io/object/0.30.3 \
-    crate://crates.io/once_cell/1.17.1 \
+    crate://crates.io/object/0.30.4 \
+    crate://crates.io/once_cell/1.18.0 \
     crate://crates.io/openssl-macros/0.1.1 \
-    crate://crates.io/openssl-sys/0.9.87 \
-    crate://crates.io/openssl/0.10.52 \
+    crate://crates.io/openssl-sys/0.9.88 \
+    crate://crates.io/openssl/0.10.54 \
     crate://crates.io/ordered-stream/0.2.0 \
     crate://crates.io/parking/2.1.0 \
     crate://crates.io/parking_lot/0.12.1 \
-    crate://crates.io/parking_lot_core/0.9.7 \
+    crate://crates.io/parking_lot_core/0.9.8 \
     crate://crates.io/peeking_take_while/0.1.2 \
-    crate://crates.io/percent-encoding/2.2.0 \
+    crate://crates.io/percent-encoding/2.3.0 \
     crate://crates.io/pin-project-lite/0.2.9 \
     crate://crates.io/pin-utils/0.1.0 \
     crate://crates.io/pkg-config/0.3.27 \
     crate://crates.io/polling/2.8.0 \
     crate://crates.io/ppv-lite86/0.2.17 \
     crate://crates.io/proc-macro-crate/1.3.1 \
-    crate://crates.io/proc-macro2/1.0.58 \
-    crate://crates.io/quote/1.0.27 \
+    crate://crates.io/proc-macro2/1.0.60 \
+    crate://crates.io/quote/1.0.28 \
     crate://crates.io/rand/0.8.5 \
     crate://crates.io/rand_chacha/0.3.1 \
     crate://crates.io/rand_core/0.6.4 \
     crate://crates.io/redox_syscall/0.2.16 \
     crate://crates.io/redox_syscall/0.3.5 \
-    crate://crates.io/regex-syntax/0.7.1 \
-    crate://crates.io/regex/1.8.1 \
+    crate://crates.io/regex-syntax/0.7.2 \
+    crate://crates.io/regex/1.8.4 \
     crate://crates.io/rustc-demangle/0.1.23 \
     crate://crates.io/rustc-hash/1.1.0 \
-    crate://crates.io/rustix/0.37.19 \
+    crate://crates.io/rustix/0.37.20 \
     crate://crates.io/rustversion/1.0.12 \
     crate://crates.io/ryu/1.0.13 \
     crate://crates.io/same-file/1.0.6 \
     crate://crates.io/scopeguard/1.1.0 \
     crate://crates.io/sd-notify/0.4.1 \
-    crate://crates.io/serde/1.0.163 \
-    crate://crates.io/serde_derive/1.0.163 \
+    crate://crates.io/serde/1.0.164 \
+    crate://crates.io/serde_derive/1.0.164 \
     crate://crates.io/serde_json/1.0.96 \
     crate://crates.io/serde_repr/0.1.12 \
     crate://crates.io/serde_with/2.3.3 \
@@ -202,9 +202,9 @@ SRC_URI += " \
     crate://crates.io/strum/0.24.1 \
     crate://crates.io/strum_macros/0.24.3 \
     crate://crates.io/syn/1.0.109 \
-    crate://crates.io/syn/2.0.16 \
+    crate://crates.io/syn/2.0.18 \
     crate://crates.io/systemd-zbus/0.1.0 \
-    crate://crates.io/tempfile/3.5.0 \
+    crate://crates.io/tempfile/3.6.0 \
     crate://crates.io/termcolor/1.2.0 \
     crate://crates.io/thiserror-impl/1.0.40 \
     crate://crates.io/thiserror/1.0.40 \
@@ -218,7 +218,7 @@ SRC_URI += " \
     crate://crates.io/tokio-macros/2.1.0 \
     crate://crates.io/tokio-openssl/0.6.3 \
     crate://crates.io/tokio-util/0.7.8 \
-    crate://crates.io/tokio/1.28.1 \
+    crate://crates.io/tokio/1.28.2 \
     crate://crates.io/toml_datetime/0.6.1 \
     crate://crates.io/toml_edit/0.19.8 \
     crate://crates.io/tower-layer/0.3.2 \
@@ -230,9 +230,9 @@ SRC_URI += " \
     crate://crates.io/typenum/1.16.0 \
     crate://crates.io/uds_windows/1.0.2 \
     crate://crates.io/unicode-bidi/0.3.13 \
-    crate://crates.io/unicode-ident/1.0.8 \
+    crate://crates.io/unicode-ident/1.0.9 \
     crate://crates.io/unicode-normalization/0.1.22 \
-    crate://crates.io/url/2.3.1 \
+    crate://crates.io/url/2.4.0 \
     crate://crates.io/vcpkg/0.2.15 \
     crate://crates.io/version_check/0.9.4 \
     crate://crates.io/waker-fn/1.1.0 \
