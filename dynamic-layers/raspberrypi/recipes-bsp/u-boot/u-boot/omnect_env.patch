@@ -5,16 +5,16 @@ index 4c5c1ac3..91c81c85 100644
 @@ -13,6 +13,8 @@
  #include <asm/arch/base.h>
  #endif
- 
+
 +#include <configs/omnect_env.h>
 +
  /* Architecture, CPU, etc.*/
- 
+
  /* Use SoC timer for AArch32, but architected timer for AArch64 */
 @@ -84,6 +86,10 @@
  #define INITRD_HIGH "ffffffff"
  #endif
- 
+
 +#ifdef CONFIG_ENV_IS_IN_MMC
 +#define CONFIG_SYS_MMC_ENV_DEV 0
 +#endif
@@ -30,7 +30,7 @@ index 4c5c1ac3..91c81c85 100644
 +	BOOTENV \
 +	OMNECT_ENV_UPDATE_WORKFLOW \
 +	OMNECT_ENV_SETTINGS \
-+	OMNECT_ENV_EXTRA_BOOTARGS
- 
- 
++	OMNECT_ENV_BOOTARGS
+
+
  #endif
