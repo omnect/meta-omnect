@@ -67,11 +67,6 @@ IMAGE_INSTALL = "\
     less \
 "
 
-#     modemmanager \
-#     connman connman-client \
-#     ofono ofono-tests mobile-broadband-provider-info \
-# 
-
 # check environment variables like OMNECT_TOOLS or OMNECT_DEVEL_TOOLS
 # Note: it is assumed that another variable suffixed with "_DEFAULT" exists and
 #       contains default settings for variable if is not currently defined
