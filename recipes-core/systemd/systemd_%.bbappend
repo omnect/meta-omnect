@@ -82,13 +82,17 @@ do_install:append:phyboard-polis-imx8mm-4() {
     enable_hardware_watchdog
 }
 
-# adapt tauri-l systemd-networkd-wait-online.service state
-do_install:append:phygate-tauri-l-imx8mm-2() {
+do_install:append() {
     if [ "${OMNECT_WWAN0}" ]; then
-        sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_ETH1} --interface=${OMNECT_WWAN0}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
-    else
-        sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_ETH1}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+        sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_WWAN0}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
     fi
+}
+
+# adapt tauri-l systemd-networkd-wait-online.service state
+# NOTE: the possibly repeated parameter '--any' (already part in substitution
+#       in do_install_append() above) shouldn't do any harm
+do_install:append:phygate-tauri-l-imx8mm-2() {
+    sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH1}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 
 FILES:${PN} += "\
