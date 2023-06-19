@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-next-0.1.5] Q2 2023
+- u-boot-imx: fix patch file that was broken during last merge
+
+## [kirkstone-next-0.1.5] Q2 2023
   ## [kirkstone-0.18.24] Q2 2023
   ## [kirkstone-0.18.23] Q2 2023
   ## [kirkstone-0.18.22] Q2 2023
