@@ -37,7 +37,7 @@ IMAGE_INSTALL = "\
     omnect-first-boot \
     iot-hub-device-update \
     iptables \
-    packagegroup-core-ssh-dropbear \
+    packagegroup-core-ssh-openssh \
     sudo \
     kmod \
     polkit \
