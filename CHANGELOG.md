@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   mobile interfaces and connections
   (includes changed rootfs size -> breaking change for current release)
 
+## [kirkstone-next-0.1.4] Q2 2023
+- fixed bootloader_version file generation. -> must be part of the DEPLOYDIR folder to handle setscene yocto mechanism
+
+## [kirkstone-next-0.1.3] Q2 2023
+- fixed do_bootloader_package: add additional u-boot-scr:do_deploy dependency for the task
+
+## [kirkstone-next-0.1.2] Q2 2023
+- fixed do_bootloader_package: task shall only run in case the deploy step of u-boot and kernel are finished
+
 ## [kirkstone-next-0.1.1] Q2 2023
 - fixed bootloader dependency during omnect-os-update-image generation
 
