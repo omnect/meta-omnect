@@ -38,7 +38,7 @@
 #define OMNECT_ENV_BOOTLOADER_VERSION
 
 // set by either u-boot_%.bbappend or u-boot-imx_%.bbappend
-#define OMNECT_ENV_EXTRA_BOOTARGS
+#define OMNECT_ENV_BOOTARGS
 
 // u-boot part of omnect update workflow
 #define OMNECT_ENV_UPDATE_WORKFLOW \

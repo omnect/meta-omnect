@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added general cellular support using NetworkManager and ModemManager to control
   mobile interfaces and connections
   (includes changed rootfs size -> breaking change for current release)
+## [kirkstone-next-0.1.5] Q2 2023
+  ## [kirkstone-0.18.24] Q2 2023
+  ## [kirkstone-0.18.23] Q2 2023
+  ## [kirkstone-0.18.22] Q2 2023
+  ## [kirkstone-0.18.21] Q2 2023
+  ## [kirkstone-0.18.20] Q2 2023
+  ## [kirkstone-0.18.19] Q2 2023
+  ## [kirkstone-0.18.18] Q2 2023
+  ## [kirkstone-0.18.17] Q2 2023
+  ## [kirkstone-0.18.16] Q2 2023
 
 ## [kirkstone-next-0.1.4] Q2 2023
 - fixed bootloader_version file generation. -> must be part of the DEPLOYDIR folder to handle setscene yocto mechanism
