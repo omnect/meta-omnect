@@ -13,16 +13,7 @@ do_configure:prepend() {
 
 cat <<EOF >> "${S}/${CARGO_WORKSPACE_ROOT}/Cargo.toml"
 
-${marker}
-[patch.'https://github.com/omnect/azure-iot-sdk']
-azure-iot-sdk = { path = "${WORKDIR}/azure-iot-sdk" }
-
-[patch.'https://github.com/omnect/eis-utils']
-eis-utils = { path = "${WORKDIR}/eis-utils" }
-
-[patch.'https://github.com/omnect/azure-iot-sdk-sys']
-azure-iot-sdk-sys = { path = "${WORKDIR}/azure-iot-sdk-sys" }
-
+${marker}z
 [patch.'https://github.com/Azure/iot-identity-service']
 aziot-cert-client-async = { path = "${WORKDIR}/aziot-cert-client-async/cert/aziot-cert-client-async" }
 aziot-cert-common = { path = "${WORKDIR}/aziot-cert-client-async/cert/aziot-cert-common" }
