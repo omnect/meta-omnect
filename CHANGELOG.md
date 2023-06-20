@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added general cellular support using NetworkManager and ModemManager to control
   mobile interfaces and connections
   (includes changed rootfs size -> breaking change for current release)
+
+## [kirkstone-next-0.1.6] Q2 2023
+- u-boot-imx: fix patch file that was broken during last merge
+
 ## [kirkstone-next-0.1.5] Q2 2023
   ## [kirkstone-0.18.24] Q2 2023
   ## [kirkstone-0.18.23] Q2 2023
