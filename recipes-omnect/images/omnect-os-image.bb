@@ -64,7 +64,6 @@ IMAGE_INSTALL = "\
     polkit \
     u-boot-fw-utils \
     systemd-analyze \
-    less \
 "
 
 # check environment variables like OMNECT_TOOLS or OMNECT_DEVEL_TOOLS
