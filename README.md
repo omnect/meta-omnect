@@ -155,6 +155,7 @@ openssl genrsa -aes256 -passout file:priv.pass -out priv.pem
 # Build 'omnect-os-image' and 'omnect-os-update-image' via:
 docker run --rm \
 -v $(pwd):/builder \
+-u 0:$(id -g) \
 -e USER_ID=$(id -u) \
 -e GROUP_ID=$(id -g) \
 -e OMNECT_BUILD_NUMBER=1 \
