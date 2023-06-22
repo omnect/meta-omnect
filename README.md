@@ -146,6 +146,8 @@ This repository provides [`kas`](https://kas.readthedocs.io/en/latest/) configur
 E.g. if you want to build an `omnect-os` raspberrypi 4 image with `iotedge` support for the omnect-portal (todo link to omnect-portal doku) follow these steps:
 
 ```sh
+mkdir omnect-os-build
+cd omnect-os-build
 git clone https://github.com/omnect/meta-omnect.git
 
 # Generate 'SWUPDATE_PASSWORD_FILE' and 'SWUPDATE_PRIVATE_KEY'
@@ -159,7 +161,7 @@ docker run --rm \
 -e USER_ID=$(id -u) \
 -e GROUP_ID=$(id -g) \
 -e OMNECT_BUILD_NUMBER=1 \
--e OMNECT_USER_PASSWORD="<your password>" \
+-e OMNECT_USER_PASSWORD="your escaped password" \
 -e SWUPDATE_PASSWORD_FILE=/builder/priv.pass \
 -e SWUPDATE_PRIVATE_KEY=/builder/priv.pem \
 ghcr.io/siemens/kas/kas \
