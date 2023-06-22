@@ -6,9 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.18.26] Q2 2023
-- systemd-networkd-wait-online.service: increased timeout to 5min
-- omnect-device-service.service: only reboot if service can not start during
-  update validation
+- systemd-networkd-wait-online.service:
+  - enabled configuration of timeout via
+    `/etc/omnect/systemd-networkd-wait-online.env` and env var
+    `OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS`
+  - set default timeout to 5min
+- omnect-device-service.service: updated to 0.11.5 (removed force-reboot
+  behavior on start limit)
 
 ## [kirkstone-0.18.25] Q2 2023
 - changed git uri's from ssh to https for recently open sourced omnect dependencies
