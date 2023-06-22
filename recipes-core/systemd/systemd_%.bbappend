@@ -18,9 +18,9 @@ do_install:append() {
 
     if ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'true', 'false', d)}; then
         # enable dhcp for wlan devices
-
-        install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network/
+        install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network
         sed -i 's/^Name=wlan0/Name=${OMNECT_WLAN0}/' ${D}${systemd_unitdir}/network/80-wlan.network
+        # configure systemd-networkd-wait-online success if any of eth0 or wlan0 are online
         sed -i -e 's#^ExecStart=\(.*\)#EnvironmentFile=-/etc/omnect/systemd-networkd-wait-online.env\nExecStart=/bin/bash -c \x27\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_WLAN0} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
             ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
     fi
