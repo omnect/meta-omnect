@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.25] Q2 2023
+- changed git uri's from ssh to https for recently open sourced omnect dependencies
+- wifi-commissioning-gatt-service: updated to version 0.3.6
+- iot-client-template-rs: updated to version 0.4.21
+- omnect-device-service: updated to version 0.11.4
+- iot-module-template-c: removed
+
 ## [kirkstone-0.18.24] Q2 2023
 - wifi-commissioning-gatt-service:
   - updated to version 0.3.5 which fixes wifi reconnection issues
