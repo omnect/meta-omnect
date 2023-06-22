@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `/etc/omnect/systemd-networkd-wait-online.env` and env var
     `OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS`
   - set default timeout to 5min
+  - reboot on failure
 - omnect-device-service.service: updated to 0.11.5 (removed force-reboot
   behavior on start limit)
 
