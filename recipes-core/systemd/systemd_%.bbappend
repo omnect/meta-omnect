@@ -23,6 +23,9 @@ do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', 'true', 'false', d)}; then
         sed -i 's/^#Storage=auto/Storage=persistent/' ${D}${sysconfdir}/systemd/journald.conf
 
+        # fix journal corruption on reboot resp. "umount of /var/log failed"
+        sed -i 's/^\[Unit\]/\[Unit\]\nPartOf=var-log.mount/' ${D}${systemd_system_unitdir}/systemd-journal-flush.service
+
         # (Re)create journal folder permissions in data partions, e.g. after a
         # factory reset via tmpfiles.d.
         # (https://www.freedesktop.org/software/systemd/man/tmpfiles.d.html).

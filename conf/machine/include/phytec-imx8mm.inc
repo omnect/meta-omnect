@@ -16,6 +16,11 @@ IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
 # initramfs type
 OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 
+# Set Serial console
+SERIAL_CONSOLES ="${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '115200;ttymxc2', d)}"
+#bootargs console is not part of the devictree, so we have to append it to kernel commandline
+APPEND += "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', 'console=ttymxc2,115200', d)}"
+
 # u-boot boot.scr config
 KERNEL_BOOTCMD = "booti"
 UBOOT_ARCH = "arm64"

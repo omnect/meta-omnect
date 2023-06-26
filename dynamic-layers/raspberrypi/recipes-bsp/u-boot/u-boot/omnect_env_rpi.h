@@ -6,6 +6,7 @@
 /* Attention: if vars are already part of CONFIG_EXTRA_ENV_SETTINGS
  * this doesnt work; these vars are shown correctly via userland fw_printenv,
  * but u-boot takes the default env value
+ * This means in this case extra-bootargs and quirks_set may not be preset by omnect_env*.h
  */
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_MACHINE "," \
     "extra-bootargs:sw," \

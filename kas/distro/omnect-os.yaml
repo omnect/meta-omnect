@@ -9,7 +9,7 @@ repos:
   meta-omnect:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: 82c75b466e55d7dca7a2364986ecb704cf63d141
+    refspec: f95484417e3d3e65ca15b460ba71dfd35773f0e4
     layers:
       meta-filesystems:
       meta-networking:
@@ -19,15 +19,15 @@ repos:
   # to build iot-identity-service
   ext/meta-security:
     url: "https://git.yoctoproject.org/meta-security"
-    refspec: cc20e2af2ae1c74e306f6c039c4963457c4cbd0f
+    refspec: d398cc6ea6716afd3a3a6e88ad8fbdc89510ef23
     layers:
       meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    refspec: 37bd056a2f2228d8c2ac8abc12aa124d6d588e30
+    refspec: 22e9aee741bbeffe05dd942212f26d2cb9f5f5b7
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
-    refspec: a517e15529980f8401b25c99a2d7720ac2d8baae
+    refspec: b3b3dbc67504e8cd498d6db202ddcf5a9dd26a9d
     patches:
       p001:
         repo: "meta-omnect"

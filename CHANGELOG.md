@@ -5,6 +5,91 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.25] Q2 2023
+- changed git uri's from ssh to https for recently open sourced omnect dependencies
+- wifi-commissioning-gatt-service: updated to version 0.3.6
+- iot-client-template-rs: updated to version 0.4.21
+- omnect-device-service: updated to version 0.11.4
+- iot-module-template-c: removed
+
+## [kirkstone-0.18.24] Q2 2023
+- wifi-commissioning-gatt-service:
+  - updated to version 0.3.5 which fixes wifi reconnection issues
+
+## [kirkstone-0.18.23] Q2 2023
+- omnect-device-service: 
+  - updated to 0.11.2 which introduces wifi-commissioning feature reporting
+
+## [kirkstone-0.18.22] Q2 2023
+- kas:
+  - updated meta-phytec to latest kirkstone HEAD
+
+## [kirkstone-0.18.21] Q2 2023
+- omnect-device-service: updated to 0.11.1 which introduces feature toggles
+
+## [kirkstone-0.18.20] Q2 2023
+- kas:
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-security to latest kirkstone HEAD
+  - updated meta-virtualization to latest kirkstone HEAD
+
+## [kirkstone-0.18.19] Q2 2023
+- iot-hub-device-update: send sd_notify ready when client is authenticated
+
+## [kirkstone-0.18.18] Q2 2023
+- phytec tauri-l-2: corrected/adapted `OMNECT_ETH1` to meta-phytec changes
+
+## [kirkstone-0.18.17] Q2 2023
+- release image: disabled serial console
+
+## [kirkstone-0.18.16] Q2 2023
+- kas:
+  - updated poky to 4.0.10
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-swupdate to latest kirkstone HEAD
+  - updated meta-virtualization to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+  - changed ref to meta-imx to an explicit commit, since upstream moved the tag "rel_imx_5.15.71_2.2.0" in the past
+
+## [kirkstone-0.18.15] Q2 2023
+- iot-hub-device-update:
+  - return error on failed update validation
+  - allow retry triggered by cloud
+
+## [kirkstone-0.18.14] Q2 2023
+- updated iot-identity-service to 1.4.4
+- updated iotedge to 1.4.10
+
+## [kirkstone-0.18.13] Q2 2023
+- ip: changed from busybox to iproute2 binary
+  (e.g. enables configuring bitrate of can devices)
+- kas:
+  - updated meta-phytec to latest kirkstone HEAD (u-boot version bump)
+  - updated meta-swupdate to latest kirkstone HEAD
+- kernel: enabled vcan, vxcan as modules if MACHINE_FEATURES contains can
+
+## [kirkstone-0.18.12] Q2 2023
+- omnect-device-service: updated to 0.10.4
+  (timeouthandling for systemd operations in update-validation)
+
+## [kirkstone-0.18.11] Q2 2023
+- kas:
+  - updated poky to 4.0.9
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-virtualization to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+  - updated meta-raspberrypi to latest kirkstone HEAD
+- azure-iot-sdk-c: updated to LTS_01_2023_Ref02
+
+## [kirkstone-0.18.10] Q2 2023
+- kas: updated meta-virtualization to latest kirkstone HEAD
+
+## [kirkstone-0.18.9] Q1 2023
+- systemd-journal-flush: fixed corruption of journal on reboot
+  (now /var/log is unmounted correctly on reboot)
+
 ## [kirkstone-0.18.8] Q1 2023
 - omnect-device-service: bumped to 0.10.3 which fixes partial twin handling
 
