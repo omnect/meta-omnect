@@ -12,11 +12,19 @@ bashcompletiondir = "${datadir}/bash-completion/completions"
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}
 
-    # enable dhcp for wlan devices
+    # reboot on systemd-networkd-wait online failure
+    sed -i \
+        -e 's/^\[Unit\]/\[Unit\]\nOnFailure=systemd-reboot.service/' \
+        -e 's#^ExecStart=\(.*\)#EnvironmentFile=-/etc/omnect/systemd-networkd-wait-online.env\nExecStart=\1#' \
+        ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+
     if ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network/
+        # enable dhcp for wlan devices
+        install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network
         sed -i 's/^Name=wlan0/Name=${OMNECT_WLAN0}/' ${D}${systemd_unitdir}/network/80-wlan.network
-        sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_WLAN0}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+        # configure systemd-networkd-wait-online success if any of eth0 or wlan0 are online
+        sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_WLAN0} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+            ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
     fi
 
     # persistent /var/log
@@ -84,7 +92,8 @@ do_install:append:phyboard-polis-imx8mm-4() {
 
 # adapt tauri-l systemd-networkd-wait-online.service state
 do_install:append:phygate-tauri-l-imx8mm-2() {
-    sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_ETH1}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_ETH1} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+        ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 
 FILES:${PN} += "\
