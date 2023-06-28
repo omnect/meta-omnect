@@ -1,0 +1,33 @@
+bootloader_sh_enabled()
+{
+    return 1  # there is no entry point in this library
+}
+
+test_and_mount_boot()
+{
+    mountpoint -q /boot || mount -t vfat /dev/omnect/boot ${ROOTFS_DIR}/boot || return 1
+}
+
+# get value of bootloader environment variable
+get_bootloader_env_var()
+{
+    local var_name="$1"
+    test_and_mount_boot || return 1
+    local value=$(grub-editenv /boot/EFI/BOOT/grubenv list | grep ${var_name} | cut -d'=' -f2)
+    debug "get_bootloader_env_var ${var_name}=${value}"
+    echo ${value}
+}
+
+# set/delete bootloader environment variable
+set_bootloader_env_var()
+{
+    local  var_name="$1"
+    local var_value="$2"  # empty string to delete variable
+
+    test_and_mount_boot || return 1
+    if [ -n "$var_value" ];then
+        run_cmd grub-editenv /boot/EFI/BOOT/grubenv set ${var_name}=${var_value}
+    else
+        run_cmd grub-editenv /boot/EFI/BOOT/grubenv unset ${var_name}
+    fi
+}

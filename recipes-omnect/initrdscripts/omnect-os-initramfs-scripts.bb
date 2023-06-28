@@ -9,6 +9,8 @@ LIC_FILES_CHKSUM = "\
 SRC_URI = "\
     file://rootblk-dev \
     file://common-sh \
+    file://grub-sh \
+    file://uboot-sh \
     file://factory-reset \
     file://flash-mode-1 \
     file://fs-mount \
@@ -24,6 +26,13 @@ RDEPENDS:${PN} = "bash"
 do_install() {
     install -m 0755 -D ${WORKDIR}/common-sh              ${D}/init.d/05-common_sh
     install -m 0755 -D ${WORKDIR}/rootblk-dev            ${D}/init.d/10-rootblk_dev
+
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'true', 'false', d)}; then
+        install -m 0755 -D ${WORKDIR}/grub-sh            ${D}/init.d/11-bootloader_sh
+    else
+        install -m 0755 -D ${WORKDIR}/uboot-sh           ${D}/init.d/11-bootloader_sh
+    fi
+
     install -m 0755 -D ${WORKDIR}/factory-reset          ${D}/init.d/86-factory_reset
 
     install -m 0755 -D ${WORKDIR}/flash-mode-1           ${D}/init.d/87-flash_mode_1
@@ -59,6 +68,7 @@ do_install:append:mx8mm-nxp-bsp () {
 FILES:${PN} = "\
     /init.d/05-common_sh \
     /init.d/10-rootblk_dev \
+    /init.d/11-bootloader_sh \
     /init.d/86-factory_reset \
     /init.d/87-flash_mode_1 \
     /init.d/89-fs_mount \
