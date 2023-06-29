@@ -19,7 +19,6 @@ PACKAGE_INSTALL = "\
     base-passwd \
     coreutils \
     e2fsprogs \
-    e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
     initramfs-framework-base \
@@ -29,12 +28,13 @@ PACKAGE_INSTALL = "\
     libubootenv-bin \
     omnect-os-initramfs-scripts \
     os-release \
+    util-linux-fsck \
     util-linux-sfdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'dhcpcd dropbear bmap-tools xz', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'grub-cfg', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'grub-cfg grub-editenv', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'efi', 'efibootmgr', '', d)} \
     ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', 'initramfs-module-debug', d)} \
 "
