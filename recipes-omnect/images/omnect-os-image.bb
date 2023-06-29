@@ -45,7 +45,7 @@ IMAGE_INSTALL = "\
     systemd-analyze \
 "
 
-require omnect-os-tools.inc
+inherit omnect-os-tools
 
 IMAGE_INSTALL += "${OMNECT_TOOLS}"
 IMAGE_INSTALL += "${OMNECT_DEVEL_TOOLS}"
