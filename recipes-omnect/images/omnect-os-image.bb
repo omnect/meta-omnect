@@ -66,19 +66,10 @@ IMAGE_INSTALL = "\
     systemd-analyze \
 "
 
-# check environment variables like OMNECT_TOOLS or OMNECT_DEVEL_TOOLS
-# Note: it is assumed that another variable suffixed with "_DEFAULT" exists and
-#       contains default settings for variable if is not currently defined
-def check_for_defaultvar(d, checkvar):
-    # use default counterpart variable if variable is unset or empty
-    if d.getVar(checkvar, True) in [None, ""]:
-        return "${" + checkvar + "_DEFAULT}"
+inherit omnect-os-tools
 
-    # use settings from environment
-    return "${" + checkvar + "}"
-
-IMAGE_INSTALL += "${@check_for_defaultvar(d, 'OMNECT_TOOLS')}"
-IMAGE_INSTALL += "${@check_for_defaultvar(d, 'OMNECT_DEVEL_TOOLS')}"
+IMAGE_INSTALL += "${OMNECT_TOOLS}"
+IMAGE_INSTALL += "${OMNECT_DEVEL_TOOLS}"
 
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
