@@ -34,7 +34,7 @@ PACKAGE_INSTALL = "\
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'dhcpcd dropbear bmap-tools xz', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'grub-cfg grub-editenv', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'grub-cfg grub-editenv grub-env', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'efi', 'efibootmgr', '', d)} \
     ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', 'initramfs-module-debug', d)} \
 "

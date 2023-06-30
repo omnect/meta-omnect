@@ -205,12 +205,12 @@ run_flash_mode_1() {
         run_cmd_stdout mkdir -p /tmp/boot
         run_cmd_stdout mount ${blk_dev_dst}${p}1 /tmp/boot
         sed "s#@@ROOT_DEVICE@@#${blk_dev_dst}${p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
+        cp /etc/omnect/grubenv.in /tmp/boot/EFI/BOOT/grubenv
         run_cmd_stdout umount /tmp/boot
     fi
 
     if [[ " ${machine_features} " =~ " efi " ]]; then
         echo "Configuring efi"
-        run_cmd_stdout efibootmgr --create --disk ${blk_dev_dst} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi || return 1
         # delete all efi entries but last
         efi_entries=$(efibootmgr | grep ^Boot[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]\* | awk '{print $1}'| sed  '$ d')
         for i in ${efi_entries}; do
@@ -218,6 +218,9 @@ run_flash_mode_1() {
             i=${i%\*}
             run_cmd_stdout efibootmgr --bootnum ${i} --delete-bootnum || return 1
         done
+        run_cmd_stdout efibootmgr --create --disk ${blk_dev_dst} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi || return 1
+        # setting the efibootmgr without sleep often fails, currently it's not clear why
+        #sleep 10
     fi
 
     echo "flash mode 1 successfully finished"
