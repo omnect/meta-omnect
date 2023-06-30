@@ -8,7 +8,7 @@ if [ "x${omnect_os_boot}" = "x" ]; then
 fi
 
 if [ "x${omnect_validate_update}" = "x" ]; then
-  if [ "x${omnect_validate_update_part} = "x" ]; then
+  if [ "x${omnect_validate_update_part}" = "x" ]; then
     echo 'Normal boot - booting from partition ${omnect_os_boot}'
   else
     echo 'Update in progress - booting from partition ${omnect_validate_update_part}'
