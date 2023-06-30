@@ -5,8 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-X.XX.XX] Q2 2023
-- ssh(d): switched from dropbear to openssh
+## [kirkstone-0.18.29] Q2 2023
+- ssh(d): switched from dropbear to openssh (preparation for enabling ssh jump-host feature)
+
+## [kirkstone-0.18.28] Q2 2023
+- fixed inclusion of image tools controlled by variables OMNECT_TOOLS and OMNECT_DEVEL_TOOLS
+  (tools defined in OMNECT_DEVEL_TOOLS - either as defined in identically
+   named environment variable or tools from OMNECT_DEVEL_TOOLS_DEFAULT as
+   fallback - were also part in release images and neither variable was listed
+   in os-release)
+
+## [kirkstone-0.18.27] Q2 2023
+- factory-reset: fixed bug when restore settings
+
+## [kirkstone-0.18.26] Q2 2023
+- systemd-networkd-wait-online.service:
+  - enabled configuration of timeout via
+    `/etc/omnect/systemd-networkd-wait-online.env` and env var
+    `OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS`
+  - set default timeout to 5min
+  - reboot on failure
+- omnect-device-service.service: updated to 0.11.5 (removed force-reboot
+  behavior on start limit)
+
+## [kirkstone-0.18.25] Q2 2023
+- changed git uri's from ssh to https for recently open sourced omnect dependencies
+- wifi-commissioning-gatt-service: updated to version 0.3.6
+- iot-client-template-rs: updated to version 0.4.21
+- omnect-device-service: updated to version 0.11.4
+- iot-module-template-c: removed
 
 ## [kirkstone-0.18.24] Q2 2023
 - wifi-commissioning-gatt-service:
