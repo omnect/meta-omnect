@@ -86,23 +86,21 @@ mkdir -p "$log_dir"
 # that we use to tell swupdate which partition to target.
 if [[ $(readlink -f /dev/omnect/rootCurrent) == $(readlink -f /dev/omnect/rootA) ]]; then
     selection="stable,copy2"
-    current_part=omnect-os-rootA
     update_part=omnect-os-rootB
 else
     selection="stable,copy1"
-    current_part=omnect-os-rootB
     update_part=omnect-os-rootA
 fi
 
 if [[ $action == "apply" ]]; then
     echo "Applying update." >> "${log_dir}/swupdate.log"
-    mount_boot && grub-editenv /boot/EFI/BOOT/grubenv set omnect_os_boot=${update_part} && umount /boot
+    mount_boot && grub-editenv /boot/EFI/BOOT/grubenv set omnect_validate_update_part=${update_part} && umount /boot
     $ret $?
 fi
 
 if [[ $action == "revert" ]]; then
     echo "Reverting update." >> "${log_dir}/swupdate.log"
-    mount_boot; grub-editenv /boot/EFI/BOOT/grubenv set omnect_os_boot=${current_part} && umount /boot
+    mount_boot; grub-editenv /boot/EFI/BOOT/grubenv unset omnect_validate_update_part && umount /boot
     $ret $?
 fi
 
