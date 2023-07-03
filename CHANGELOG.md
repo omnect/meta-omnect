@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.18.29] Q2 2023
 - ssh(d): switched from dropbear to openssh (preparation for enabling ssh jump-host feature)
 - jq: moved from `OMNECT_DEV_TOOLS_DEFAULT` to `OMNECT_TOOLS_DEFAULT` (reason test dependency)
+- e2fsprogs-tune2fs: moved from `OMNECT_DEV_TOOLS_DEFAULT` to `OMNECT_TOOLS_DEFAULT` (reason test dependency)
 
 ## [kirkstone-0.18.28] Q2 2023
 - fixed inclusion of image tools controlled by variables OMNECT_TOOLS and OMNECT_DEVEL_TOOLS
