@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.18.29] Q3 2023
+- omnect-os-image: add regression test for packages defined in variables OMNECT_TOOLS
+  and OMNECT_DEVEL_TOOLS which checks for presence/absence of tools depending on image
+  (release/devel)
+
 ## [kirkstone-0.18.28] Q2 2023
 - fixed inclusion of image tools controlled by variables OMNECT_TOOLS and OMNECT_DEVEL_TOOLS
   (tools defined in OMNECT_DEVEL_TOOLS - either as defined in identically

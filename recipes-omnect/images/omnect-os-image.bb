@@ -118,3 +118,72 @@ python () {
 }
 
 inherit omnect_user
+
+inherit logging
+
+# postive test for packages, i.e. check if installed
+check_installed_packages() {
+    local manifest="$1"
+    local pkglist="$2"
+    local ret=0
+    for p in $pkglist; do
+        if ! grep -q "^$p " "$manifest"; then
+            bberror "Required TOOL not installed in image: $p"
+            ret=1
+         fi
+    done
+    return $ret
+}
+
+# negative test for packages, i.e. check if _not_ installed
+check_uninstalled_packages() {
+    local manifest="$1"
+    local pkglist="$2"
+    local ret=0
+    for p in $pkglist; do
+        if grep -q "^$p " "$manifest"; then
+            bberror "Unwanted TOOL installed in image: $p"
+            ret=1
+         fi
+    done
+    return $ret
+}
+
+# post processing function checking for default tools
+verify_image_tools() {
+    set -vx
+    local ret=0
+    local manifest="${IMAGE_MANIFEST}"
+
+    bbnote "NOTE: checking for TOOLS in image ..."
+
+    # check for presence of default tools
+    local tools="${OMNECT_TOOLS_DEFAULT}"
+    set -- ${tools}
+    if [ $# -gt 0 ]; then
+	if ! check_installed_packages "$manifest" "$tools"; then
+	    ret=1
+        fi
+    fi
+
+    local release="${OMNECT_RELEASE_IMAGE}"
+    tools="${OMNECT_DEVEL_TOOLS_DEFAULT}"
+    set -- ${tools}
+    if [ $# -gt 0 ]; then
+        if [ "$release" = 1 ]; then
+            if ! check_uninstalled_packages "$manifest" "$tools"; then
+                ret=1
+            fi
+        else
+            if ! check_installed_packages "$manifest" "$tools"; then
+                ret=1
+            fi
+        fi
+    fi
+    if [ $ret != 0 ]; then
+        bberror 'TOOLS check failed'
+    fi
+    return $ret
+}
+
+IMAGE_POSTPROCESS_COMMAND += "verify_image_tools;"
