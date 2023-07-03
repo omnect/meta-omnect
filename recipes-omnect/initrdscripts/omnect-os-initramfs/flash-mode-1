@@ -55,7 +55,6 @@ run_flash_mode_1() {
     local machine_features=""
     local p=""
     local part_type=""
-    local rootfs_bootpart=""
 
     echo "Entering omnect flashing mode 1 ..."
 
