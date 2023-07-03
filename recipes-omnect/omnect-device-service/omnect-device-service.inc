@@ -43,9 +43,9 @@ do_install:append() {
     install -m 0640 -D ${S}/sudo/omnect-device-service ${D}${sysconfdir}/sudoers.d/omnect-device-service
 
     if ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'true', 'false', d)}; then
-        install -m 0640 -D ${S}/sudo/omnect-device-service-update-validation-grub ${D}${sysconfdir}/sudoers.d/omnect-device-service-update-validation
+        install -m 0640 -D ${S}/sudo/omnect-device-service-grub ${D}${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env
     else
-        install -m 0640 -D ${S}/sudo/omnect-device-service-update-validation-uboot ${D}${sysconfdir}/sudoers.d/omnect-device-service-update-validation
+        install -m 0640 -D ${S}/sudo/omnect-device-service-uboot ${D}${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env
     fi
 
 
@@ -73,5 +73,5 @@ FILES:${PN} += "\
     ${datadir}/polkit-1/rules.d/omnect-device-service.rules \
     ${libdir}/tmpfiles.d/omnect-device-service.conf \
     ${sysconfdir}/sudoers.d/omnect-device-service \
-    ${sysconfdir}/sudoers.d/omnect-device-service-update-validation \
+    ${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env \
 "
