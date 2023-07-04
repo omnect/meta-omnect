@@ -6,14 +6,14 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    refspec: a43de22f6c37e590e85f72146788b6c14ad0a8f9
+    refspec: 0628a6bf99ea9f5d2947ec181d485fd857d3b658
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-phytec_do_not_overwrite_BBMASK.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
-    refspec: 63169d4ba8fd427b0a95c9e666864291e7c191ce
+    refspec: 0006eb26ec0cadbf62ab3052130e693be0e77702
     patches:
       p001:
         repo: "meta-omnect"
