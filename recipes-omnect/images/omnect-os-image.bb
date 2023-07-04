@@ -40,7 +40,7 @@ IMAGE_INSTALL = "\
     kmod \
     omnect-base-files \
     omnect-first-boot \
-    packagegroup-core-ssh-dropbear \
+    packagegroup-core-ssh-openssh \
     polkit \
     sudo \
     systemd-analyze \
