@@ -13,8 +13,11 @@ run_fs_mount()
 
     msg "omnect-os initramfs fs mount"
 
-    # unmount boot for grub systems
-    umount ${ROOTFS}/boot &>/dev/null
+    # we already mounted /dev/omnect/boot when we're using grub. so we unmount.
+    if [ -f /usr/bin/grub-editenv ]; then
+        sync
+        run_cmd umount ${ROOTFS_DIR}/boot
+    fi
 
     # the comma separated option list is ordered; i.e., higher preference at the right hand side
     mnt_opts_default="defaults,noatime,nodiratime,async"
