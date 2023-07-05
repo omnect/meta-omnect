@@ -88,12 +88,6 @@ env:
   SWUPDATE_PRIVATE_KEY: "SWUPDATE_PRIVATE_KEY_NOT_SET"
   SWUPDATE_PASSWORD_FILE: "SWUPDATE_PASSWORD_FILE_NOT_SET"
 
-  # general tools used by omnect
-  OMNECT_TOOLS: ""
-
-  # omnect development tools
-  OMNECT_DEVEL_TOOLS: ""
-
   # (plain) password of omnect user
   OMNECT_USER_PASSWORD: ""
 
