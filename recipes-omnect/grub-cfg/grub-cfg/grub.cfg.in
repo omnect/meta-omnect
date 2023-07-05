@@ -3,8 +3,8 @@ timeout=2
 load_env
 
 if [ "x${omnect_os_bootpart}" = "x" ]; then
-  set omnect_os_boot="omnect-os-rootA"
-  save_env omnect_os_boot
+  set omnect_os_bootpart="omnect-os-rootA"
+  save_env omnect_os_bootpart
 fi
 
 if [ "x${omnect_validate_update}" = "x" ]; then
@@ -14,8 +14,8 @@ if [ "x${omnect_validate_update}" = "x" ]; then
     echo 'Update in progress - booting from partition ${omnect_validate_update_part}'
     set omnect_validate_update=1
     save_env omnect_validate_update
-    set omnect_os_boot=${omnect_validate_update_part}
-    # no save_env omnect_os_boot here!
+    set omnect_os_bootpart=${omnect_validate_update_part}
+    # no save_env omnect_os_bootpart here!
   fi
 else
   echo 'Update validation failed - booting from partition ${omnect_os_bootpart}'
