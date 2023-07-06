@@ -50,7 +50,6 @@ do_install:append() {
         install -m 0640 -D ${S}/sudo/omnect-device-service-uboot ${D}${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env
     fi
 
-
     # allow omnect-device-service access to device_id secret created by manual provisioning
     install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/omnect-device-service.toml
 

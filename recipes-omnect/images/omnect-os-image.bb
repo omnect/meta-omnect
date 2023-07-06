@@ -13,7 +13,6 @@ inherit core-image
 do_rootfs[depends] += "virtual/kernel:do_deploy"
 do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
-
 # we add boot.scr to the image on condition
 do_rootfs[depends] += "${@ 'u-boot-scr:do_deploy' if d.getVar('UBOOT_MACHINE', True) else '' }"
 IMAGE_BOOT_FILES += "${@ 'boot.scr' if d.getVar('UBOOT_MACHINE', True) else '' }"
