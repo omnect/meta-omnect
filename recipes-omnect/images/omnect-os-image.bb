@@ -43,12 +43,11 @@ IMAGE_INSTALL = "\
     polkit \
     u-boot-fw-utils \
     systemd-analyze \
+    e2fsprogs-tune2fs \
+    jq \
+    smartmontools \
+    ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
-
-inherit omnect-os-tools
-
-IMAGE_INSTALL += "${OMNECT_TOOLS}"
-IMAGE_INSTALL += "${OMNECT_DEVEL_TOOLS}"
 
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
@@ -125,24 +124,12 @@ inherit logging
 check_installed_packages() {
     local manifest="$1"
     local pkglist="$2"
+    local error_not_installed="$3"
     local ret=0
     for p in $pkglist; do
         if ! grep -q "^$p " "$manifest"; then
-            bberror "Required TOOL not installed in image: $p"
-            ret=1
-         fi
-    done
-    return $ret
-}
-
-# negative test for packages, i.e. check if _not_ installed
-check_uninstalled_packages() {
-    local manifest="$1"
-    local pkglist="$2"
-    local ret=0
-    for p in $pkglist; do
-        if grep -q "^$p " "$manifest"; then
-            bberror "Unwanted TOOL installed in image: $p"
+            [ "$error_not_installed" = 1 ] \
+               && bberror "Required TOOL not installed in image: $p"
             ret=1
          fi
     done
@@ -151,37 +138,37 @@ check_uninstalled_packages() {
 
 # post processing function checking for default tools
 verify_image_tools() {
-    set -vx
     local ret=0
     local manifest="${IMAGE_MANIFEST}"
-
-    bbnote "NOTE: checking for TOOLS in image ..."
-
-    # check for presence of default tools
-    local tools="${OMNECT_TOOLS_DEFAULT}"
-    set -- ${tools}
-    if [ $# -gt 0 ]; then
-	if ! check_installed_packages "$manifest" "$tools"; then
-	    ret=1
-        fi
-    fi
-
     local release="${OMNECT_RELEASE_IMAGE}"
-    tools="${OMNECT_DEVEL_TOOLS_DEFAULT}"
+    local tools="${OMNECT_DEVEL_TOOLS}"
+    local relhint=""
+
+    # something to be checked at all?
+    [ "$tools" ] || return 0
+
+    [ "$release" = 1 ] && relhint="release "
+    bbnote "NOTE: checking for OMNECT_DEVEL_TOOLS in ${relhint}image ..."
+    bbnote "[$tools]"
+
     set -- ${tools}
     if [ $# -gt 0 ]; then
         if [ "$release" = 1 ]; then
-            if ! check_uninstalled_packages "$manifest" "$tools"; then
+            if check_installed_packages "$manifest" "$tools" 0; then
+                bbwarn 'OMNECT_DEVEL_TOOLS are missing in image!'
+                bbwarn "[$tools]"
                 ret=1
             fi
         else
-            if ! check_installed_packages "$manifest" "$tools"; then
+            if ! check_installed_packages "$manifest" "$tools" 1; then
+                bbwarn 'OMNECT_DEVEL_TOOLS are contained in image!'
+                bbwarn "[$tools]"
                 ret=1
             fi
         fi
     fi
     if [ $ret != 0 ]; then
-        bberror 'TOOLS check failed'
+        bberror 'TOOLS check failed!'
     fi
     return $ret
 }

@@ -6,10 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.18.31] Q3 2023
-- kas: remove no longer wanted variables OMNECT_TOOLS & OMNECT_DEVEL_TOOLS from omnect-os.yaml
-- omnect-os-image: add regression test for packages defined in variables OMNECT_TOOLS
-  and OMNECT_DEVEL_TOOLS which checks for presence/absence of tools depending on image
-  (release/devel)
+- kas: removed no longer wanted variables OMNECT_TOOLS & OMNECT_DEVEL_TOOLS from omnect-os.yaml
+- omnect-os-image:
+  - moved packages previously defined in OMNECT_TOOLS_DEFAULT directly into IMAGE_INSTALL
+    and removed variable completely
+    (definition of tools via kas no longer supported, so no fallback needed anymore)
+  - added regression test for packages defined in variable OMNECT_DEVEL_TOOLS which checks
+    for presence/absence of tools depending on image type (release/devel)
+- omnect-os-distro.conf:
+  - renamed variable OMNECT_DEVE_TOOLS_DEFAULT to OMNECT_DEVEL_TOOLS
+  - removed no longer needed variable OMNECT_TOOLS_DEFAULT
+- os-release: removed no longer existong variable OMNECT_TOOLS
 
 ## [kirkstone-0.18.30] Q3 2023
 - kas:
