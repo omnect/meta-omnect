@@ -32,7 +32,6 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' aziot-edged iotedge kernel-modules', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd-bash-completion', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'grub-editenv', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
     iot-hub-device-update \
@@ -41,10 +40,8 @@ IMAGE_INSTALL = "\
     omnect-base-files \
     omnect-first-boot \
     packagegroup-core-ssh-openssh \
-    polkit \
     sudo \
     systemd-analyze \
-    u-boot-fw-utils \
 "
 
 inherit omnect-os-tools

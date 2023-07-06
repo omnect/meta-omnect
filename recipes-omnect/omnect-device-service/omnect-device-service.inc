@@ -15,9 +15,6 @@ python() {
     d.setVar('PV', pv)
 }
 
-# used by pkg_config crate, in turn used by libdbus_sys crate
-DEPENDS += "pkgconfig-native"
-
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
@@ -26,11 +23,16 @@ LIC_FILES_CHKSUM = " \
 "
 
 DEPENDS += "\
-    azure-iot-sdk-c\
+    azure-iot-sdk-c \
+    pkgconfig-native \
 "
+
 RDEPENDS:${PN} += "\
     aziot-identityd\
     ca-certificates\
+    polkit \
+    sudo \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'grub-editenv', 'u-boot-fw-utils', d)} \
 "
 inherit omnect-device-service omnect_rust_azure-iot-sdk_deps systemd
 
