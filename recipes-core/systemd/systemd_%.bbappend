@@ -98,7 +98,8 @@ do_install:append:phygate-tauri-l-imx8mm-2() {
 
 # adapt welotronic eg500 systemd-networkd-wait-online.service state
 do_install:append:eg500() {
-    sed -i -e 's/^ExecStart=\(.*\)/ExecStart=\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_ETH1} --interface=${OMNECT_ETH2}/' ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+    sed -i -e 's#^ExecStart=\(.*\)/ExecStart=/bin/bash -c \x27\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_ETH1} --interface=${OMNECT_ETH2} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+        ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 
 FILES:${PN} += "\
