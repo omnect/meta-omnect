@@ -224,8 +224,6 @@ run_flash_mode_1() {
             run_cmd_stdout efibootmgr --bootnum ${i} --delete-bootnum || return 1
         done
         run_cmd_stdout efibootmgr --create --disk ${blk_dev_dst} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi || return 1
-        # setting the efibootmgr without sleep often fails, currently it's not clear why
-        #sleep 10
     fi
 
     echo "flash mode 1 successfully finished"
