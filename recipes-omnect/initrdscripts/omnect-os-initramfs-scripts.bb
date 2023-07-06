@@ -9,12 +9,11 @@ LIC_FILES_CHKSUM = "\
 SRC_URI = "\
     file://rootblk-dev \
     file://common-sh \
-    file://grub-sh \
-    file://uboot-sh \
     file://factory-reset \
     file://flash-mode-1 \
     file://fs-mount \
     file://omnect-device-service-setup \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'file://grub-sh', 'file://uboot-sh', d)} \
 "
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', ' file://flash-mode-2', '', d)}"
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ' file://resize-data', '', d)}"
