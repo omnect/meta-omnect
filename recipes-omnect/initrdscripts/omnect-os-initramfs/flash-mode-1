@@ -66,6 +66,12 @@ run_flash_mode_1() {
     set_bootloader_env_var ${OMNECT_FLASH_MODE_VAR}
     set_bootloader_env_var ${OMNECT_FLASH_DEVPATH_VAR}
 
+    # we already mounted /dev/omnect/boot when we're using grub. so we unmount before copying boot.
+    if [ -f /usr/bin/grub-editenv ]; then
+        sync
+        run_cmd umount ${ROOTFS_DIR}/boot
+    fi
+
     # check for (mandatory) substitutions of variable templates
     if [ "${OMNECT_FLASH_MODE_UBOOT_ENV1_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV1_START"; return 1; fi
     if [ "${OMNECT_FLASH_MODE_UBOOT_ENV2_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV2_START"; return 1; fi
