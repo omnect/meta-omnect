@@ -13,24 +13,19 @@ SRC_URI = "\
     file://flash-mode-1 \
     file://fs-mount \
     file://omnect-device-service-setup \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'file://grub-sh', 'file://uboot-sh', d)} \
 "
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', ' file://flash-mode-2', '', d)}"
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ' file://resize-data', '', d)}"
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ' file://persistent-var-log', '', d)}"
 SRC_URI:append:mx8mm-nxp-bsp = " file://imx-sdma"
+SRC_URI:append:omnect_grub = " file://grub-sh"
+SRC_URI:append:omnect_uboot = " file://uboot-sh"
 
 RDEPENDS:${PN} = "bash"
 
 do_install() {
     install -m 0755 -D ${WORKDIR}/common-sh              ${D}/init.d/05-common_sh
     install -m 0755 -D ${WORKDIR}/rootblk-dev            ${D}/init.d/10-rootblk_dev
-
-    if ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'true', 'false', d)}; then
-        install -m 0755 -D ${WORKDIR}/grub-sh            ${D}/init.d/11-bootloader_sh
-    else
-        install -m 0755 -D ${WORKDIR}/uboot-sh           ${D}/init.d/11-bootloader_sh
-    fi
 
     install -m 0755 -D ${WORKDIR}/factory-reset          ${D}/init.d/86-factory_reset
 
@@ -62,6 +57,14 @@ do_install() {
 
 do_install:append:mx8mm-nxp-bsp () {
     install -m 0755 -D ${WORKDIR}/imx-sdma               ${D}/init.d/90-imx_sdma
+}
+
+do_install:append:omnect_grub () {
+    install -m 0755 -D ${WORKDIR}/grub-sh            ${D}/init.d/11-bootloader_sh
+}
+
+do_install:append:omnect_uboot () {
+    install -m 0755 -D ${WORKDIR}/uboot-sh           ${D}/init.d/11-bootloader_sh
 }
 
 FILES:${PN} = "\

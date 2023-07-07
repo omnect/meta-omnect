@@ -32,23 +32,20 @@ RDEPENDS:${PN} += "\
     ca-certificates\
     polkit \
     sudo \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'grub-editenv', 'u-boot-fw-utils', d)} \
 "
+RDEPENDS:${PN}:append:omnect_grub = " grub-editenv"
+RDEPENDS:${PN}:append:omnect_uboot = " u-boot-fw-utils"
+
 inherit omnect-device-service omnect_rust_azure-iot-sdk_deps systemd
 
-CARGO_BUILD_FLAGS .= "${@bb.utils.contains('MACHINE_FEATURES', 'grub', ' --features=bootloader_grub', ' --features=bootloader_uboot', d)}"
+CARGO_BUILD_FLAGS:append:omnect_grub = " --features=bootloader_grub"
+CARGO_BUILD_FLAGS:append:omnect_uboot = " --features=bootloader_uboot"
 
 do_install:append() {
     install -m 0644 -D ${S}/systemd/omnect-device-service.service ${D}${systemd_system_unitdir}/omnect-device-service.service
     install -m 0644 -D ${S}/systemd/omnect-device-service.timer ${D}${systemd_system_unitdir}/omnect-device-service.timer
     install -m 0644 -D ${S}/polkit/omnect-device-service.rules ${D}${datadir}/polkit-1/rules.d/omnect-device-service.rules
     install -m 0640 -D ${S}/sudo/omnect-device-service ${D}${sysconfdir}/sudoers.d/omnect-device-service
-
-    if ${@bb.utils.contains('MACHINE_FEATURES', 'grub', 'true', 'false', d)}; then
-        install -m 0640 -D ${S}/sudo/omnect-device-service-grub ${D}${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env
-    else
-        install -m 0640 -D ${S}/sudo/omnect-device-service-uboot ${D}${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env
-    fi
 
     # allow omnect-device-service access to device_id secret created by manual provisioning
     install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/omnect-device-service.toml
@@ -58,6 +55,14 @@ do_install:append() {
 
     # create tmpfiles.d entry to (re)create dir + permissions
     install -m 0644 -D ${WORKDIR}/omnect-device-service.tmpfilesd ${D}${libdir}/tmpfiles.d/omnect-device-service.conf
+}
+
+do_install:append:omnect_grub() {
+    install -m 0640 -D ${S}/sudo/omnect-device-service-grub ${D}${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env
+}
+
+do_install:append:omnect_uboot() {
+    install -m 0640 -D ${S}/sudo/omnect-device-service-uboot ${D}${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env
 }
 
 pkg_postinst:${PN}() {

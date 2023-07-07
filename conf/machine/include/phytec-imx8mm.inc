@@ -49,6 +49,9 @@ FILESEXTRAPATHS:prepend:pn-imx-boot-phytec := "${LAYERDIR_freescale-layer}/recip
 SYSTEMD_RuntimeWatchdogSec  = "60"
 SYSTEMD_RebootWatchdogSec   = "60"
 
+# this machine uses uboot
+MACHINEOVERRIDES:append = ":omnect_uboot"
+
 # For now remove optee from MACHINE_FEATURES. We don't support secure boot at
 # the moment and tee-supplicant will fail, because we don't boot with the
 # appropriate device-tree.

@@ -14,8 +14,10 @@ do_rootfs[depends] += "virtual/kernel:do_deploy"
 do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
 # we add boot.scr to the image on condition
-do_rootfs[depends] += "${@ 'u-boot-scr:do_deploy' if d.getVar('UBOOT_MACHINE', True) else '' }"
-IMAGE_BOOT_FILES += "${@ 'boot.scr' if d.getVar('UBOOT_MACHINE', True) else '' }"
+do_rootfs_extra_depends = ""
+do_rootfs_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
+do_rootfs[depends] += "${do_rootfs_extra_depends}"
+IMAGE_BOOT_FILES:append:omnect_uboot = " boot.scr"
 IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
 
 # native openssl tool required
