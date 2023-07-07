@@ -45,7 +45,6 @@ IMAGE_INSTALL = "\
     systemd-analyze \
     e2fsprogs-tune2fs \
     jq \
-    smartmontools \
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 
@@ -120,7 +119,7 @@ inherit omnect_user
 
 inherit logging
 
-# postive test for packages, i.e. check if installed
+# positive test for packages, i.e. check if installed
 check_installed_packages() {
     local manifest="$1"
     local pkglist="$2"
@@ -155,13 +154,13 @@ verify_image_tools() {
     if [ $# -gt 0 ]; then
         if [ "$release" = 1 ]; then
             if check_installed_packages "$manifest" "$tools" 0; then
-                bbwarn 'OMNECT_DEVEL_TOOLS are missing in image!'
+                bbwarn 'OMNECT_DEVEL_TOOLS are contained in image!'
                 bbwarn "[$tools]"
                 ret=1
             fi
         else
             if ! check_installed_packages "$manifest" "$tools" 1; then
-                bbwarn 'OMNECT_DEVEL_TOOLS are contained in image!'
+                bbwarn 'OMNECT_DEVEL_TOOLS are missing in image!'
                 bbwarn "[$tools]"
                 ret=1
             fi

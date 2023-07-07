@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - added regression test for packages defined in variable OMNECT_DEVEL_TOOLS which checks
     for presence/absence of tools depending on image type (release/devel)
 - omnect-os-distro.conf:
-  - renamed variable OMNECT_DEVE_TOOLS_DEFAULT to OMNECT_DEVEL_TOOLS
+  - renamed variable OMNECT_DEVEL_TOOLS_DEFAULT to OMNECT_DEVEL_TOOLS
   - removed no longer needed variable OMNECT_TOOLS_DEFAULT
 - os-release: removed no longer existong variable OMNECT_TOOLS
 
