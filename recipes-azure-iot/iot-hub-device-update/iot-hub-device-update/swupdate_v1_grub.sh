@@ -7,9 +7,9 @@
 # Licensed under the MIT License.
 
 function mount_boot() {
-if ! $(mountpoint -q /boot); then
-    mount /dev/omnect/boot /boot
-fi
+    if ! $(mountpoint -q /boot); then
+        mount /dev/omnect/boot /boot
+    fi
 }
 
 # Ensure that getopt starts from first option if ". <script.sh>" was used.
