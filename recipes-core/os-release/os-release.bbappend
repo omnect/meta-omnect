@@ -1,5 +1,4 @@
 inherit metadata_scm
-inherit omnect-os-tools
 
 OS_RELEASE_FIELDS += "DISTRO_FEATURES"
 OS_RELEASE_FIELDS += "IMAGE_INSTALL"
