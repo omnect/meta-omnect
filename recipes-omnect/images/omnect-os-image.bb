@@ -24,9 +24,11 @@ inherit core-image
 do_rootfs[depends] += "virtual/kernel:do_deploy"
 do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
-# we add boot.scr to the image
-do_rootfs[depends] += "u-boot-scr:do_deploy"
-IMAGE_BOOT_FILES += "boot.scr"
+# we add boot.scr to the image on condition
+do_rootfs_extra_depends = ""
+do_rootfs_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
+do_rootfs[depends] += "${do_rootfs_extra_depends}"
+IMAGE_BOOT_FILES:append:omnect_uboot = " boot.scr"
 IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
 
 # native openssl tool required
@@ -44,22 +46,18 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
-    omnect-base-files \
-    omnect-first-boot \
     iot-hub-device-update \
     iptables \
-    packagegroup-core-ssh-dropbear \
-    sudo \
     kmod \
-    polkit \
-    u-boot-fw-utils \
+    omnect-base-files \
+    omnect-first-boot \
+    packagegroup-core-ssh-openssh \
+    sudo \
     systemd-analyze \
+    e2fsprogs-tune2fs \
+    jq \
+    ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
-
-inherit omnect-os-tools
-
-IMAGE_INSTALL += "${OMNECT_TOOLS}"
-IMAGE_INSTALL += "${OMNECT_DEVEL_TOOLS}"
 
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
@@ -129,3 +127,60 @@ python () {
 }
 
 inherit omnect_user
+
+inherit logging
+
+# positive test for packages, i.e. check if installed
+check_installed_packages() {
+    local manifest="$1"
+    local pkglist="$2"
+    local error_not_installed="$3"
+    local ret=0
+    for p in $pkglist; do
+        if ! grep -q "^$p " "$manifest"; then
+            [ "$error_not_installed" = 1 ] \
+               && bberror "Required TOOL not installed in image: $p"
+            ret=1
+         fi
+    done
+    return $ret
+}
+
+# post processing function checking for default tools
+verify_image_tools() {
+    local ret=0
+    local manifest="${IMAGE_MANIFEST}"
+    local release="${OMNECT_RELEASE_IMAGE}"
+    local tools="${OMNECT_DEVEL_TOOLS}"
+    local relhint=""
+
+    # something to be checked at all?
+    [ "$tools" ] || return 0
+
+    [ "$release" = 1 ] && relhint="release "
+    bbnote "NOTE: checking for OMNECT_DEVEL_TOOLS in ${relhint}image ..."
+    bbnote "[$tools]"
+
+    set -- ${tools}
+    if [ $# -gt 0 ]; then
+        if [ "$release" = 1 ]; then
+            if check_installed_packages "$manifest" "$tools" 0; then
+                bbwarn 'OMNECT_DEVEL_TOOLS are contained in image!'
+                bbwarn "[$tools]"
+                ret=1
+            fi
+        else
+            if ! check_installed_packages "$manifest" "$tools" 1; then
+                bbwarn 'OMNECT_DEVEL_TOOLS are missing in image!'
+                bbwarn "[$tools]"
+                ret=1
+            fi
+        fi
+    fi
+    if [ $ret != 0 ]; then
+        bberror 'TOOLS check failed!'
+    fi
+    return $ret
+}
+
+IMAGE_POSTPROCESS_COMMAND += "verify_image_tools;"

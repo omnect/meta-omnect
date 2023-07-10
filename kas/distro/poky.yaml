@@ -8,8 +8,12 @@ distro: poky
 repos:
   ext/poky:
     url: "https://git.yoctoproject.org/git/poky"
-    refspec: yocto-4.0.10
+    refspec: yocto-4.0.11
     layers:
       meta:
       meta-poky:
       meta-yocto-bsp:
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/poky_bootimg_efi_wic.patch"

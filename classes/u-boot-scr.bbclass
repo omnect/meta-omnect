@@ -18,10 +18,10 @@ python create_boot_cmd () {
             with open(fdt_load_script_file, "w") as f:
                 f.write("\n")
                 f.write("echo \"Loading Device Tree: boot/%s\"\n" % (device_tree))
-                f.write("load ${devtype} ${devnum}:${bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
+                f.write("load ${devtype} ${devnum}:${omnect_os_bootpart} ${%s} boot/%s\n" % (fdt_addr,device_tree))
                 f.write("fdt addr ${%s}\n" % fdt_addr)
                 # possibly load overlays
-                f.write("fdt resize; for i in ${overlays}; do; load ${devtype} ${devnum}:${bootpart} ${fdto_addr} /boot/${i}; fdt apply ${fdto_addr};done")
+                f.write("fdt resize; for i in ${overlays}; do; load ${devtype} ${devnum}:${omnect_os_bootpart} ${fdto_addr} /boot/${i}; fdt apply ${fdto_addr};done")
 
         except OSError:
             bb.fatal("Unable to open fdt-load.cmd")
@@ -42,14 +42,14 @@ python create_boot_cmd () {
                 f.write("%s\n" % (omnect_boot_scr_test_cmds))
 
             # load kernel
-            f.write("load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)
+            f.write("load ${devtype} ${devnum}:${omnect_os_bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)
 
             # load initrd
-            f.write("load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % omnect_initramfs_fs_type)
+            f.write("load ${devtype} ${devnum}:${omnect_os_bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % omnect_initramfs_fs_type)
 
             # assemble bootargs: from device tree + omnect-bootargs + extra-bootargs
             f.write("fdt get value bootargs /chosen bootargs\n")
-            f.write("setenv bootargs \"root=/dev/${devtype}blk${devnum}p${bootpart} ${bootargs} ${omnect-bootargs} ${extra-bootargs}\"\n")
+            f.write("setenv bootargs \"root=/dev/${devtype}blk${devnum}p${omnect_os_bootpart} ${bootargs} ${omnect-bootargs} ${extra-bootargs}\"\n")
 
             # boot
             f.write("%s ${kernel_addr_r} ${ramdisk_addr_r} ${%s}\n" % (boot_cmd, fdt_addr))
