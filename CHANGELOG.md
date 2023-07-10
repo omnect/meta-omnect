@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [kirkstone-next-0.1.10] Q3 2023
+- corrected `UBOOT_LOCALVERSION` of rpi4 and tauri-l
+
 ## [kirkstone-next-0.1.9] Q3 2023
   ## [kirkstone-0.19.0] Q3 2023
   ## [kirkstone-0.18.31] Q3 2023
