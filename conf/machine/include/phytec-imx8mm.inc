@@ -13,6 +13,9 @@ IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
 IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
 # Todo add 'oftree' to rootfs?
 
+# initramfs type
+OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
+
 # Set Serial console
 SERIAL_CONSOLES ="${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '115200;ttymxc2', d)}"
 #bootargs console is not part of the devictree, so we have to append it to kernel commandline
@@ -46,6 +49,9 @@ FILESEXTRAPATHS:prepend:pn-imx-boot-phytec := "${LAYERDIR_freescale-layer}/recip
 SYSTEMD_RuntimeWatchdogSec  = "60"
 SYSTEMD_RebootWatchdogSec   = "60"
 
+# this machine uses uboot
+MACHINEOVERRIDES:append = ":omnect_uboot"
+
 # For now remove optee from MACHINE_FEATURES. We don't support secure boot at
 # the moment and tee-supplicant will fail, because we don't boot with the
 # appropriate device-tree.
@@ -55,3 +61,5 @@ MACHINE_FEATURES:remove = " \
     nxp8987 \
     optee \
 "
+
+MACHINEOVERRIDES:append = ":phytec-imx8mm"

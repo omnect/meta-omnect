@@ -111,6 +111,12 @@ do_install:append() {
         ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 
+# adapt welotronic eg500 systemd-networkd-wait-online.service state
+do_install:append:eg500() {
+    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_ETH1} --interface=${OMNECT_ETH2} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+        ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+}
+
 FILES:${PN} += "\
     ${systemd_unitdir}/network/80-wlan.network \
 "

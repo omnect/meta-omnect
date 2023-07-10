@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [kirkstone-next-0.1.9] Q3 2023
+  ## [kirkstone-0.19.0] Q3 2023
+  ## [kirkstone-0.18.31] Q3 2023
+  ## [kirkstone-0.18.30] Q3 2023
+  ## [kirkstone-0.18.29] Q3 2023
+
+## [kirkstone-next-0.1.8] Q3 2023
+- fixed omnect-os-update-image generation for rpi3 and polis images
 
 
 ## [kirkstone-next-0.2.0] Q2 2023

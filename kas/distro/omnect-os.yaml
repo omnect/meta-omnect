@@ -9,7 +9,7 @@ repos:
   meta-omnect:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    refspec: f95484417e3d3e65ca15b460ba71dfd35773f0e4
+    refspec: a82d92c8a6525da01524bf8f4a60bf6b35dcbb3d
     layers:
       meta-filesystems:
       meta-networking:
@@ -24,7 +24,7 @@ repos:
       meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    refspec: 22e9aee741bbeffe05dd942212f26d2cb9f5f5b7
+    refspec: d1d4abfaf82d37c31e3cec3602d6d8d56d105185
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     refspec: b3b3dbc67504e8cd498d6db202ddcf5a9dd26a9d
@@ -78,7 +78,6 @@ env:
   # iot-hub-device-update
   ADU_DEVICEPROPERTIES_MANUFACTURER: "ADU_DEVICEPROPERTIES_MANUFACTURER_NOT_SET"
   ADU_DEVICEPROPERTIES_MODEL: "ADU_DEVICEPROPERTIES_MODEL_NOT_SET"
-  ADU_DEVICEPROPERTIES_COMPATIBILITY_ID: "ADU_DEVICEPROPERTIES_COMPATIBILITY_ID_NOT_SET"
   ADU_MANUFACTURER: "ADU_MANUFACTURER_NOT_SET"
   ADU_MODEL: "ADU_MODEL_NOT_SET"
   ADU_GROUP: "ADU_GROUP_NOT_SET"
@@ -87,12 +86,6 @@ env:
   HW_REV: "1.0"
   SWUPDATE_PRIVATE_KEY: "SWUPDATE_PRIVATE_KEY_NOT_SET"
   SWUPDATE_PASSWORD_FILE: "SWUPDATE_PASSWORD_FILE_NOT_SET"
-
-  # general tools used by omnect
-  OMNECT_TOOLS: ""
-
-  # omnect development tools
-  OMNECT_DEVEL_TOOLS: ""
 
   # (plain) password of omnect user
   OMNECT_USER_PASSWORD: ""

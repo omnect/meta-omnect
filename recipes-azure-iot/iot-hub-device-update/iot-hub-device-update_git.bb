@@ -23,6 +23,8 @@ SRC_URI = " \
   file://workaround-deprecated-declarations-openssl3.patch \
   file://install_bootloader.patch \
 "
+SRC_URI:append:eg500 = " file://swupdate_v1_grub.sh"
+
 PV = "${SRCPV}"
 
 S = "${WORKDIR}/git"
@@ -112,6 +114,10 @@ do_install:append() {
   install -d ${D}${sysconfdir}/omnect/consent/swupdate
   install -m 0770 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
   install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
+}
+
+do_install:append:eg500() {
+  install -m 0755 ${WORKDIR}/swupdate_v1_grub.sh ${D}${libdir}/adu/adu-swupdate.sh
 }
 
 pkg_postinst:${PN}() {
