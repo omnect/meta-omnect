@@ -55,3 +55,5 @@ MACHINE_FEATURES:remove = " \
     nxp8987 \
     optee \
 "
+
+MACHINEOVERRIDES:append = ":phytec-imx8mm"
