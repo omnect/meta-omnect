@@ -10,7 +10,7 @@
  * but u-boot takes the default env value
  */
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS \
-    "bootpart:dw," \
+    "omnect_os_bootpart:dw," \
     "data-mount-options:sw," \
     "factory-reset:dw," \
     "factory-reset-restore-list:sw," \
@@ -43,9 +43,9 @@
 // u-boot part of omnect update workflow
 #define OMNECT_ENV_UPDATE_WORKFLOW \
     "omnect_update_flow=" \
-        "env exists bootpart || echo \"initializing bootpart=2\" && setenv bootpart 2 && saveenv;" \
+        "env exists omnect_os_bootpart || echo \"initializing omnect_os_bootpart=2\" && setenv omnect_os_bootpart 2 && saveenv;" \
         "if test -n ${omnect_validate_update}; then " \
-            "echo \"Update validation failed - booting from partition ${bootpart}\";" \
+            "echo \"Update validation failed - booting from partition ${omnect_os_bootpart}\";" \
             "setenv omnect_validate_update_part;" \
             "setenv omnect_validate_update;" \
             "setenv omnect_validate_update_failed 1;" \
@@ -56,10 +56,10 @@
                 "echo \"Update in progress - booting from partition ${omnect_validate_update_part}\";" \
                 "setenv omnect_validate_update 1;" \
                 "saveenv;" \
-                "setenv bootpart ${omnect_validate_update_part};" \
+                "setenv omnect_os_bootpart ${omnect_validate_update_part};" \
                 "run distro_bootcmd;" \
             "else "\
-                "echo \"Normal boot - booting from partition ${bootpart}\";" \
+                "echo \"Normal boot - booting from partition ${omnect_os_bootpart}\";" \
                 "run distro_bootcmd;" \
             "fi;" \
         "fi\0"

@@ -1,0 +1,42 @@
+timeout=2
+
+load_env
+
+if [ "x${omnect_os_bootpart}" = "x" ]; then
+  set omnect_os_bootpart="omnect-os-rootA"
+  save_env omnect_os_bootpart
+fi
+
+if [ "x${omnect_validate_update}" = "x" ]; then
+  if [ "x${omnect_validate_update_part}" = "x" ]; then
+    echo 'Normal boot - booting from partition ${omnect_os_bootpart}'
+  else
+    echo 'Update in progress - booting from partition ${omnect_validate_update_part}'
+    set omnect_validate_update=1
+    save_env omnect_validate_update
+    set omnect_os_bootpart=${omnect_validate_update_part}
+    # no save_env omnect_os_bootpart here!
+  fi
+else
+  echo 'Update validation failed - booting from partition ${omnect_os_bootpart}'
+  set omnect_validate_update_part=
+  save_env omnect_validate_update_part
+  set omnect_validate_update=
+  save_env omnect_validate_update
+  set omnect_validate_update_failed=1
+  save_env omnect_validate_update_failed
+fi
+
+set default="${omnect_os_bootpart}"
+
+menuentry 'omnect-os-rootA'{
+    set root=(hd0,gpt2)
+    linux /boot/bzImage rootwait root=@@ROOT_DEVICE@@2 console=tty0
+    initrd /boot/initramfs.cpio.gz
+}
+
+menuentry 'omnect-os-rootB'{
+    set root=(hd0,gpt3)
+    linux /boot/bzImage rootwait root=@@ROOT_DEVICE@@3 console=tty0
+    initrd /boot/initramfs.cpio.gz
+}
