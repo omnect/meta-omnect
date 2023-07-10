@@ -13,9 +13,11 @@ inherit core-image
 do_rootfs[depends] += "virtual/kernel:do_deploy"
 do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
-# we add boot.scr to the image
-do_rootfs[depends] += "u-boot-scr:do_deploy"
-IMAGE_BOOT_FILES += "boot.scr"
+# we add boot.scr to the image on condition
+do_rootfs_extra_depends = ""
+do_rootfs_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
+do_rootfs[depends] += "${do_rootfs_extra_depends}"
+IMAGE_BOOT_FILES:append:omnect_uboot = " boot.scr"
 IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
 
 # native openssl tool required
@@ -33,15 +35,13 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     coreutils \
-    omnect-base-files \
-    omnect-first-boot \
     iot-hub-device-update \
     iptables \
+    kmod \
+    omnect-base-files \
+    omnect-first-boot \
     packagegroup-core-ssh-openssh \
     sudo \
-    kmod \
-    polkit \
-    u-boot-fw-utils \
     systemd-analyze \
     e2fsprogs-tune2fs \
     jq \

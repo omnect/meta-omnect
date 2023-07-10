@@ -55,7 +55,6 @@ run_flash_mode_1() {
     local machine_features=""
     local p=""
     local part_type=""
-    local rootfs_bootpart=""
 
     echo "Entering omnect flashing mode 1 ..."
 
@@ -66,6 +65,12 @@ run_flash_mode_1() {
     # disable flash mode for subsequent restarts
     set_bootloader_env_var ${OMNECT_FLASH_MODE_VAR}
     set_bootloader_env_var ${OMNECT_FLASH_DEVPATH_VAR}
+
+    # we already mounted /dev/omnect/boot when we're using grub. so we unmount before copying boot.
+    if [ -f /usr/bin/grub-editenv ]; then
+        sync
+        run_cmd umount ${ROOTFS_DIR}/boot
+    fi
 
     # check for (mandatory) substitutions of variable templates
     if [ "${OMNECT_FLASH_MODE_UBOOT_ENV1_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV1_START"; return 1; fi
@@ -205,12 +210,12 @@ run_flash_mode_1() {
         run_cmd_stdout mkdir -p /tmp/boot
         run_cmd_stdout mount ${blk_dev_dst}${p}1 /tmp/boot
         sed "s#@@ROOT_DEVICE@@#${blk_dev_dst}${p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
+        cp /etc/omnect/grubenv.in /tmp/boot/EFI/BOOT/grubenv
         run_cmd_stdout umount /tmp/boot
     fi
 
     if [[ " ${machine_features} " =~ " efi " ]]; then
         echo "Configuring efi"
-        run_cmd_stdout efibootmgr --create --disk ${blk_dev_dst} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi || return 1
         # delete all efi entries but last
         efi_entries=$(efibootmgr | grep ^Boot[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]\* | awk '{print $1}'| sed  '$ d')
         for i in ${efi_entries}; do
@@ -218,6 +223,7 @@ run_flash_mode_1() {
             i=${i%\*}
             run_cmd_stdout efibootmgr --bootnum ${i} --delete-bootnum || return 1
         done
+        run_cmd_stdout efibootmgr --create --disk ${blk_dev_dst} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi || return 1
     fi
 
     echo "flash mode 1 successfully finished"

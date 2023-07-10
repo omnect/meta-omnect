@@ -13,3 +13,7 @@ repos:
       meta:
       meta-poky:
       meta-yocto-bsp:
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/poky_bootimg_efi_wic.patch"

@@ -15,9 +15,6 @@ python() {
     d.setVar('PV', pv)
 }
 
-# used by pkg_config crate, in turn used by libdbus_sys crate
-DEPENDS += "pkgconfig-native"
-
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
@@ -26,13 +23,23 @@ LIC_FILES_CHKSUM = " \
 "
 
 DEPENDS += "\
-    azure-iot-sdk-c\
+    azure-iot-sdk-c \
+    pkgconfig-native \
 "
+
 RDEPENDS:${PN} += "\
     aziot-identityd\
     ca-certificates\
+    polkit \
+    sudo \
 "
+RDEPENDS:${PN}:append:omnect_grub = " grub-editenv"
+RDEPENDS:${PN}:append:omnect_uboot = " u-boot-fw-utils"
+
 inherit omnect-device-service omnect_rust_azure-iot-sdk_deps systemd
+
+CARGO_BUILD_FLAGS:append:omnect_grub = " --features=bootloader_grub"
+CARGO_BUILD_FLAGS:append:omnect_uboot = " --features=bootloader_uboot"
 
 do_install:append() {
     install -m 0644 -D ${S}/systemd/omnect-device-service.service ${D}${systemd_system_unitdir}/omnect-device-service.service
@@ -50,6 +57,14 @@ do_install:append() {
     install -m 0644 -D ${WORKDIR}/omnect-device-service.tmpfilesd ${D}${libdir}/tmpfiles.d/omnect-device-service.conf
 }
 
+do_install:append:omnect_grub() {
+    install -m 0640 -D ${S}/sudo/omnect-device-service-grub ${D}${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env
+}
+
+do_install:append:omnect_uboot() {
+    install -m 0640 -D ${S}/sudo/omnect-device-service-uboot ${D}${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env
+}
+
 pkg_postinst:${PN}() {
     sed -i    "s/@@UID@@/$(id -u omnect_device_service)/"                                           $D${sysconfdir}/aziot/keyd/config.d/omnect-device-service.toml
     sed -i -e "s/@@UID@@/$(id -u omnect_device_service)/" -e "s/@@NAME@@/omnect-device-service/"    $D${sysconfdir}/aziot/identityd/config.d/omnect-device-service.toml
@@ -64,4 +79,5 @@ FILES:${PN} += "\
     ${datadir}/polkit-1/rules.d/omnect-device-service.rules \
     ${libdir}/tmpfiles.d/omnect-device-service.conf \
     ${sysconfdir}/sudoers.d/omnect-device-service \
+    ${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env \
 "
