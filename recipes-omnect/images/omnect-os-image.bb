@@ -43,12 +43,10 @@ IMAGE_INSTALL = "\
     packagegroup-core-ssh-openssh \
     sudo \
     systemd-analyze \
+    e2fsprogs-tune2fs \
+    jq \
+    ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
-
-inherit omnect-os-tools
-
-IMAGE_INSTALL += "${OMNECT_TOOLS}"
-IMAGE_INSTALL += "${OMNECT_DEVEL_TOOLS}"
 
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
@@ -118,3 +116,60 @@ python () {
 }
 
 inherit omnect_user
+
+inherit logging
+
+# positive test for packages, i.e. check if installed
+check_installed_packages() {
+    local manifest="$1"
+    local pkglist="$2"
+    local error_not_installed="$3"
+    local ret=0
+    for p in $pkglist; do
+        if ! grep -q "^$p " "$manifest"; then
+            [ "$error_not_installed" = 1 ] \
+               && bberror "Required TOOL not installed in image: $p"
+            ret=1
+         fi
+    done
+    return $ret
+}
+
+# post processing function checking for default tools
+verify_image_tools() {
+    local ret=0
+    local manifest="${IMAGE_MANIFEST}"
+    local release="${OMNECT_RELEASE_IMAGE}"
+    local tools="${OMNECT_DEVEL_TOOLS}"
+    local relhint=""
+
+    # something to be checked at all?
+    [ "$tools" ] || return 0
+
+    [ "$release" = 1 ] && relhint="release "
+    bbnote "NOTE: checking for OMNECT_DEVEL_TOOLS in ${relhint}image ..."
+    bbnote "[$tools]"
+
+    set -- ${tools}
+    if [ $# -gt 0 ]; then
+        if [ "$release" = 1 ]; then
+            if check_installed_packages "$manifest" "$tools" 0; then
+                bbwarn 'OMNECT_DEVEL_TOOLS are contained in image!'
+                bbwarn "[$tools]"
+                ret=1
+            fi
+        else
+            if ! check_installed_packages "$manifest" "$tools" 1; then
+                bbwarn 'OMNECT_DEVEL_TOOLS are missing in image!'
+                bbwarn "[$tools]"
+                ret=1
+            fi
+        fi
+    fi
+    if [ $ret != 0 ]; then
+        bberror 'TOOLS check failed!'
+    fi
+    return $ret
+}
+
+IMAGE_POSTPROCESS_COMMAND += "verify_image_tools;"
