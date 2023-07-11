@@ -20,4 +20,7 @@ OS_RELEASE_FIELDS += "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', 'OMN
 
 OS_RELEASE_FIELDS += "OMNECT_RELEASE_IMAGE"
 
+# to get rid of DISTRO_CODENAME like e.g. kirkstone in VERSION info, overwrite it with DISTRO_VERSION
+VERSION = "${DISTRO_VERSION}"
+
 do_compile[nostamp] = "1"
