@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.19.5] Q3 2023
+- added documentation for the welotec eg500 device
+- added documentation how to flash on systems which use grub or uboot as last bootloader
+
 ## [kirkstone-0.19.4] Q3 2023
 - procps: moved from `OMNECT_DEV_TOOLS_DEFAULT` to `IMAGE_INSTALL` (reason: iotedge needs "ps -e" option)
 
