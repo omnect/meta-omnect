@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.19.3] Q3 2023
+- added documentation for the welotec eg500 device
+- added documentation how to flash on systems which use grub or uboot as last bootloader
+
 ## [kirkstone-0.19.2] Q3 2023
 - iot-hub-device-update: corrected du-config.json
 
