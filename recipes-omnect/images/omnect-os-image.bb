@@ -45,6 +45,7 @@ IMAGE_INSTALL = "\
     systemd-analyze \
     e2fsprogs-tune2fs \
     jq \
+    procps \
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 
