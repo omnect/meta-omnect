@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.19.4] Q3 2023
+- procps: moved from `OMNECT_DEV_TOOLS_DEFAULT` to `IMAGE_INSTALL` (reason: iotedge needs "ps -e" option)
+
 ## [kirkstone-0.19.3] Q3 2023
 - initramfs: fixed race condition in flash-mode-2 causing test
   pipeline to fail with missing file wic.xz
