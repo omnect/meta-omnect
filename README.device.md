@@ -1,5 +1,5 @@
 # BSP Features
-| device                                                                                             | last bootloader | wifi  | bluetooth |  rtc  |  tpm  | gpt partition | pxe boot | sdcard boot | emmc boot | nvme boot | uart (uboot + linux) | PoR detect | Hardware Watchdog |
+| device                                                                                             | OS bootloader | wifi  | bluetooth |  rtc  |  tpm  | gpt partition | pxe boot | sdcard boot | emmc boot | nvme boot | uart (OS bootloader + linux) | PoR detect | Hardware Watchdog |
 | -------------------------------------------------------------------------------------------------- | :-------------: | :---: | :-------: | :---: | :---: | :-----------: | :------: | :---------: | :-------: | :-------: | :------------------: | :--------: | :---------------: |
 | [raspberrypi4-64](https://www.raspberrypi.org/)  | uboot | x | x | o? | o¹ | x | x | x | x (cm4) | - | /dev/ttyS0 reserved by os in devel image | x | x |
 | [raspberrypi3](https://www.raspberrypi.org/) | uboot | x | x | o? | o¹| - | x  | x | - | -| /dev/ttyS0 reserved by os in devel image | x | x |
