@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.19.5] Q3 2023
 - added documentation for the welotec eg500 device
-- added documentation how to flash on systems which use grub or uboot as last bootloader
+- added documentation how to flash on systems which use grub or uboot as OS bootloader
 
 ## [kirkstone-0.19.4] Q3 2023
 - procps: moved from `OMNECT_DEV_TOOLS_DEFAULT` to `IMAGE_INSTALL` (reason: iotedge needs "ps -e" option)

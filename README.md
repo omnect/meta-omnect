@@ -204,7 +204,7 @@ There are the following two flash modes:
 - 1: clone disk image from the disk the system is currently running to another disk of the system
 - 2: flash disk image from network to same disk the system is currently running
 
-Depending on omnect-os bootloader (uboot or grub) the flash modes are triggered differently.
+Depending on OS bootloader (uboot or grub) the flash modes are triggered differently.
 The corresponding platform specific OS bootloader and the block device paths are defined in [README.device.md](./README.device.md).
 
 #### Flash Mode 1
