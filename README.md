@@ -301,7 +301,7 @@ The bootloader environment variable *flash-mode* will be deleted automatically.
 In this way, the system enters the normal mode, booting the new image.
 
 ### Factory Reset
-Set the bootloader environment variable `factory-reset`, in order to reset `data` and `etc` partitions on a target with uboot as OS bootloader
+Set the OS bootloader environment variable `factory-reset`, in order to reset `data` and `etc` partitions on a target with uboot as OS bootloader
 ```sh
 sudo fw_setenv factory-reset 1
 sudo reboot
@@ -359,7 +359,7 @@ and the partitions `etc` and `data` remain untouched.
 In the case of an error during the restore of a file or directory, the restore processing will be continued with other paths part of the restore list.
 In both cases, the error will be indicated by the factory reset status (see below).
 
-The status of the factory reset is returned by the bootloader environment variable `factory-reset-status`.
+The status of the factory reset is returned by the OS bootloader environment variable `factory-reset-status`.
 It has the following format:
 ```bnf
 <factory reset status> ::= <main status>':'<subordinated status>
@@ -376,7 +376,7 @@ In the case of a successfully performed factory reset, the OS bootloader environ
 ### Debug Mount Options of Data Partition
 
 The filesystem inside the data partition is mounted using the mount options `defaults,noatime,nodiratime,async,rw`, per default.
-For debugging purpose, it is possible to enforce different mount options for the data partition, using the bootloader environment variable `data-mount-options`:<br>
+For debugging purpose, it is possible to enforce different mount options for the data partition, using the OS bootloader environment variable `data-mount-options`:<br>
 (OS bootloader is uboot)
 ```sh
 # enforce sync mount
