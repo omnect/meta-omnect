@@ -12,7 +12,7 @@ This yocto meta layer provides the poky based device management distribution `om
     - `iot-hub-device-update` and `iot-identity-service` are installed
     - `iot-hub-device-update` is provisioned as module identity via `iot-identity-service`
     - first boot script `/usr/bin/omnect_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-omnect/recipes-core/systemd/systemd/omnect_first_boot.sh`
-    - factory reset via `u-boot` environment variable `factory-reset`
+    - factory reset via OS bootloader environment variable `factory-reset`
       - **note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset), below.
 
 ### `DISTRO_FEATURES`
@@ -84,15 +84,15 @@ Device         Boot   Start      End  Sectors  Size Id Type
 
 The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M and is resized on the first boot to the max available size.
 
-There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks.
+**Only for images where uboot is used as OS bootloader**: There is a reserved area between the boot partition and the rootA partition used for two redundant uboot environment banks.
 For this purpose, the following configuration variables are used:
 
 - `OMNECT_PART_OFFSET_UBOOT_ENV1`
-    - offset of 1st u-boot environment bank (in KiB, decimal)
+    - offset of 1st uboot environment bank (in KiB, decimal)
 - `OMNECT_PART_OFFSET_UBOOT_ENV2`
-    - offset of 2nd u-boot environment bank (in KiB, decimal)
+    - offset of 2nd uboot environment bank (in KiB, decimal)
 - `OMNECT_PART_SIZE_UBOOT_ENV`
-    - size of one u-boot environment bank (in KiB, decimal)
+    - size of one uboot environment bank (in KiB, decimal)
 
 ## Compatibility
 `meta-omnect` is compatible with the current yocto LTS release branch `kirkstone`.
@@ -204,11 +204,22 @@ There are the following two flash modes:
 - 1: clone disk image from the disk the system is currently running to another disk of the system
 - 2: flash disk image from network to same disk the system is currently running
 
+Depending on OS bootloader (uboot or grub) the flash modes are triggered differently.
+The corresponding platform specific OS bootloader and the block device paths are defined in [README.device.md](./README.device.md).
+
 #### Flash Mode 1
 For the flash mode 1, it is required to specify the destination disk, the current disk image will be cloned to.
 For this purpose, the block device path has to be used.
 
-The following example shows how to trigger the flash mode 1 using the block device path, on the target system:
+The flash mode 1 behaves like a factory reset, related to the new boot device:
+- reset to default bootloader environment
+- enforce first boot condition
+- reset *etc* partition
+- reset *data* partition; optionally resize
+
+
+The following example shows how to trigger the flash mode 1 using the block device path, on the target system:<br>
+(OS bootloader is uboot)
 ```sh
 sudo -s
 fw_setenv flash-mode 1
@@ -218,24 +229,31 @@ reboot
 Entering omnect flashing mode 1...
 ...
 ```
-Note, the *fw_setenv* command requires root permissions.
+**Note, the *fw_setenv* command requires root permissions.**
 
-The platform specific block device paths are defined in [README.device.md](./README.device.md).
+(OS bootloader is grub)
+```sh
+sudo -s
+grub-editenv /boot/EFI/BOOT/grubenv set flash-mode=1
+grub-editenv /boot/EFI/BOOT/grubenv set flash-mode-devpath=/dev/nvme0n1
+reboot
+...
+Entering omnect flashing mode 1...
+...
+```
+**Note, the *grub-editenv ... set* command requires root permissions.**
 
-After the flash mode 1 has been finished successfully, the target system will be switched-off.
-The u-boot environment variables *flash-mode* and *flash-mode-devpath* will be deleted automatically.
+**Note make sure that the system boots from the same device after the triggered reboot. E.g. if you boot from usb and
+initiate flash mode 1 and trigger reboot, make sure that you boot from usb again. This reboot will enter the initramfs and execute the flash process.**
 
-The next step is to select the prepared device as new boot device, which is platform depended (see [README.device.md](./README.device.md)).
-
-The flash mode 1 behaves like a factory reset, related to the new boot device:
-- reset to default u-boot environment
-- enforce first boot condition
-- reset *etc* partition
-- reset *data* partition; optionally resize
+After flash mode 1 has been finished successfully, the target system will be switched-off.
+The bootloader environment variables *flash-mode* and *flash-mode-devpath* will be deleted automatically.
 
 #### Flash Mode 2
 Enable the distribution feature `flash-mode-2` at build time, if you want to use it.
-In order to trigger the flash mode 2, use the following commands on the target system:
+
+In order to trigger the flash mode 2, use the following commands on the target system:<br>
+(OS bootloader is uboot)
 ```sh
 sudo -s
 fw_setenv flash-mode 2
@@ -244,8 +262,21 @@ reboot
 Entering omnect flashing mode 2...
 ...
 ```
-**Note 1: *fw_setenv* command requires root permissions.**<br>
-**Note 2: `flash-mode 2` is restricted to eth0.**
+**Note, *fw_setenv* command requires root permissions.**<br>
+
+(OS bootloader is grub)
+```sh
+sudo -s
+grub-editenv /boot/EFI/BOOT/grubenv set flash-mode=2
+reboot
+...
+Entering omnect flashing mode 2...
+...
+```
+**Note, the *grub-editenv ... set* command requires root permissions.**<br>
+
+
+**Note, `flash-mode 2` is restricted to eth0.**
 
 In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
 ```sh
@@ -266,15 +297,22 @@ Later during runtime, changing the password in the rootfs is not synchronized to
 The destination file names have to be *wic.bmap* and *wic.xz*.
 
 After finishing the flash procedure, the system reboots automatically.
-The u-boot environment variable *flash-mode* will be deleted automatically.
+The bootloader environment variable *flash-mode* will be deleted automatically.
 In this way, the system enters the normal mode, booting the new image.
 
 ### Factory Reset
-Set the u-boot environment variable `factory-reset`, in order to reset `data` and `etc` partitions:
+Set the OS bootloader environment variable `factory-reset`, in order to reset `data` and `etc` partitions on a target with uboot as OS bootloader
 ```sh
 sudo fw_setenv factory-reset 1
 sudo reboot
 ```
+or on a system with grub as OS bootloader
+```sh
+sudo grub-editenv /boot/EFI/BOOT/grubenv set factory-reset=1
+sudo reboot
+```
+The platform specific OS bootloader is defined in [README.device.md](./README.device.md).
+
 This re-creates the corresponding filesystems of partitions `data` and `etc` on the next boot (in the initramfs context).
 If the `factory` partition contains a directory `etc`, then the content is copied to the `etc` partition.
 
@@ -283,7 +321,7 @@ This means, old data is not wiped before re-creating the respective filesystems.
 This kind of factory reset does not ensure any data privacy.
 
 In order to provide higher level of privacy, the desired wipe mode can be selected.
-For this purpose, the u-boot environment variable `factory-reset` can be set to the following values:
+For this purpose, the OS bootloader environment variable `factory-reset` can be set to the following values:
 
 |     | Factory Reset Mode                                      | Remark                                     |
 | --- | ------------------------------------------------------- | ------------------------------------------ |
@@ -300,12 +338,16 @@ In order to establish the custom wipe mode, a Yocto recipe `omnect-os-initramfs-
 
 The factory reset provides the option to exclude particular files or directories.
 For example, it may make sense to keep the WIFI configuration, in order to prevent loosing the network connectivity.
-For this purpose, the u-boot environment variable `factory-reset-restore-list` has to be used for.
+For this purpose, the OS bootloader environment variable `factory-reset-restore-list` has to be used for.
 In the following example, the regular file `/etc/wpa_supplicant/wpa_supplicant-wlan0.conf` and the directory
-`/etc/aziot/identityd/` survives the factory reset:
-
+`/etc/aziot/identityd/` survives the factory reset:<br>
+(OS bootloader is uboot)
 ```sh
 sudo fw_setenv factory-reset-restore-list '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf;/etc/aziot/identityd/'
+```
+(OS bootloader is grub)
+```sh
+sudo grub-editenv /boot/EFI/BOOT/grubenv set factory-reset-restore-list='/etc/wpa_supplicant/wpa_supplicant-wlan0.conf;/etc/aziot/identityd/'
 ```
 
 The list of path names is separated by the character `;` and is enclosed by the `'` quotation mark.
@@ -317,7 +359,7 @@ and the partitions `etc` and `data` remain untouched.
 In the case of an error during the restore of a file or directory, the restore processing will be continued with other paths part of the restore list.
 In both cases, the error will be indicated by the factory reset status (see below).
 
-The status of the factory reset is returned by the u-boot environment variable `factory-reset-status`.
+The status of the factory reset is returned by the OS bootloader environment variable `factory-reset-status`.
 It has the following format:
 ```bnf
 <factory reset status> ::= <main status>':'<subordinated status>
@@ -329,12 +371,13 @@ The overall *factory reset status* consists of two parts:
 - *main status*: general processing state; 0 -> wipe mode supported; 1 -> wipe mode unsupported; 2 -> backup/restore failure
 - *subordinated status*: execution exit status, in case of *main status* == 0 (success)
 
-In the case of successfully performed factory reset, the u-boot environment variable `factory-reset-status` is set to the value `0:0`.
+In the case of a successfully performed factory reset, the OS bootloader environment variable `factory-reset-status` is set to the value `0:0`.
 
 ### Debug Mount Options of Data Partition
 
 The filesystem inside the data partition is mounted using the mount options `defaults,noatime,nodiratime,async,rw`, per default.
-For debugging purpose, it is possible to enforce different mount options for the data partition, using the u-boot environment variable `data-mount-options`:
+For debugging purpose, it is possible to enforce different mount options for the data partition, using the OS bootloader environment variable `data-mount-options`:<br>
+(OS bootloader is uboot)
 ```sh
 # enforce sync mount
 sudo fw_setenv data-mount-options defaults,noatime,nodiratime,sync,rw
@@ -344,7 +387,18 @@ sudo reboot
 sudo fw_setenv data-mount-options
 sudo reboot
 ```
-**Note:** The u-boot environment variable `data-mount-options` should be removed at the end of the debugging session.
+(OS bootloader is grub)
+```sh
+# enforce sync mount
+sudo grub-editenv /boot/EFI/BOOT/grubenv set data-mount-options=defaults,noatime,nodiratime,sync,rw
+sudo reboot
+...
+# remove debug mount options; continue with default
+sudo grub-editenv /boot/EFI/BOOT/grubenv unset data-mount-options
+sudo reboot
+```
+
+**Note:** The bootloader environment variable `data-mount-options` should be removed at the end of the debugging session.
 
 **Note:** It is not advised to use sync mount in operational mode.
 
