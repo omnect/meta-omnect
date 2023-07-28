@@ -3,9 +3,12 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://add-reset-info.patch \
     file://enable-reset-info-cmd-fragment.cfg \
+    file://fix-usb-scanning-upstream.patch \
+    file://fix-usb-scanning-balena.patch \
     file://omnect_env.patch \
     file://rpi-always-set-fdt_addr-with-firmware-provided-FDT-address.patch \
     file://omnect_env_rpi.h \
+    file://0001-usb-xhci-ring.c-don-t-queue-URB-for-halted-endpoint.patch \
 "
 
 # Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
