@@ -23,8 +23,8 @@ do_install:append() {
         install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network
         sed -i 's/^Name=wlan0/Name=${OMNECT_WLAN0}/' ${D}${systemd_unitdir}/network/80-wlan.network
         # configure systemd-networkd-wait-online success if any of eth0 or wlan0 are online
-        sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_WLAN0} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
-            ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+        #sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_WLAN0} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+        #    ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
     fi
 
     # persistent /var/log
@@ -107,7 +107,7 @@ def online_ifc_list_to_parameter_list(d, ifclistvar):
 ONLINE_INTERFACE_ARGS = "${@online_ifc_list_to_parameter_list(d, 'OMNECT_ONLINE_INTERFACES')}"
 
 do_install:append() {
-    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 ${ONLINE_INTERFACE_ARGS} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:-${ONLINE_INTERFACE_ARGS}} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
         ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 
