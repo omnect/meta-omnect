@@ -8,10 +8,10 @@ inherit cargo
 # how to get omnect-device-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/omnect-device-service/0.13.0"
 SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=use-async-azure-iot-sdk"
-SRCREV = "c204377a92825dcbe3a85ba757ca360c64ca04f6"
+SRCREV = "9bbb06a94acd10d7e10bda6969d426e150c80c53"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+c204377a92"
+PV:append = ".AUTOINC+9bbb06a94a"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -229,7 +229,7 @@ SRC_URI += " \
     crate://crates.io/tokio-macros/2.1.0 \
     crate://crates.io/tokio-openssl/0.6.3 \
     crate://crates.io/tokio-util/0.7.8 \
-    crate://crates.io/tokio/1.29.0 \
+    crate://crates.io/tokio/1.28.2 \
     crate://crates.io/toml_datetime/0.6.1 \
     crate://crates.io/toml_edit/0.19.8 \
     crate://crates.io/tower-layer/0.3.2 \
@@ -302,8 +302,8 @@ SRC_URI += " \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-keyd-config;destsuffix=aziot-keyd-config \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=cert-renewal;destsuffix=cert-renewal \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=http-common;destsuffix=http-common \
-    git://github.com/JanZachmann/azure-iot-sdk-sys.git;protocol=https;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
     git://github.com/JanZachmann/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
+    git://github.com/omnect/azure-iot-sdk-sys.git;protocol=https;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
     git://github.com/omnect/eis-utils.git;protocol=https;nobranch=1;name=eis-utils;destsuffix=eis-utils \
 "
 
@@ -347,13 +347,13 @@ SRCREV_FORMAT .= "_azure-iot-sdk"
 SRCREV_azure-iot-sdk = "async-api"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
-SRCREV_azure-iot-sdk-sys = "az-sdk-convenience-layer"
+SRCREV_azure-iot-sdk-sys = "0.6.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk-sys"
 SRCREV_FORMAT .= "_cert-renewal"
 SRCREV_cert-renewal = "1.4.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/cert-renewal"
 SRCREV_FORMAT .= "_eis-utils"
-SRCREV_eis-utils = "0.2.6"
+SRCREV_eis-utils = "0.3.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/eis-utils"
 SRCREV_FORMAT .= "_http-common"
 SRCREV_http-common = "1.4.1"
@@ -365,7 +365,7 @@ LIC_FILES_CHKSUM = " \
 "
 
 SUMMARY = "This service allows remote features like: user fw update consent, factory reset, network adapter status and reboot."
-HOMEPAGE = "git@github.com:omnect/omnect-device-service.git"
+HOMEPAGE = "https://www.omnect.io/home"
 LICENSE = "MIT OR Apache-2.0"
 
 # includes this file if it exists but does not fail

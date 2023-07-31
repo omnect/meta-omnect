@@ -6,12 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get iot-client-template-rs could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/iot-client-template-rs/0.4.21"
-SRC_URI += "git://github.com/omnect/iot-client-template-rs.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "d95819fd85397d2258c75dd94c2ab4b5e7732a07"
+# SRC_URI += "crate://crates.io/iot-client-template-rs/0.5.0"
+SRC_URI += "git://github.com/JanZachmann/iot-client-template-rs.git;protocol=https;nobranch=1;branch=use_async_sdk"
+SRCREV = "d963e526d0326e9181425c4a84df8fe137838cf4"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-
+PV:append = ".AUTOINC+d963e526d0"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -60,7 +60,6 @@ SRC_URI += " \
     crate://crates.io/futures-util/0.3.28 \
     crate://crates.io/futures/0.3.28 \
     crate://crates.io/generic-array/0.14.7 \
-    crate://crates.io/getrandom/0.2.10 \
     crate://crates.io/gimli/0.27.3 \
     crate://crates.io/glob/0.3.1 \
     crate://crates.io/h2/0.3.19 \
@@ -117,12 +116,8 @@ SRC_URI += " \
     crate://crates.io/pin-project-lite/0.2.9 \
     crate://crates.io/pin-utils/0.1.0 \
     crate://crates.io/pkg-config/0.3.27 \
-    crate://crates.io/ppv-lite86/0.2.17 \
     crate://crates.io/proc-macro2/1.0.60 \
     crate://crates.io/quote/1.0.28 \
-    crate://crates.io/rand/0.8.5 \
-    crate://crates.io/rand_chacha/0.3.1 \
-    crate://crates.io/rand_core/0.6.4 \
     crate://crates.io/redox_syscall/0.3.5 \
     crate://crates.io/regex-syntax/0.7.2 \
     crate://crates.io/regex/1.8.4 \
@@ -207,8 +202,8 @@ SRC_URI += " \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-keyd-config;destsuffix=aziot-keyd-config \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=cert-renewal;destsuffix=cert-renewal \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=http-common;destsuffix=http-common \
+    git://github.com/JanZachmann/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
     git://github.com/omnect/azure-iot-sdk-sys.git;protocol=https;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
-    git://github.com/omnect/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
     git://github.com/omnect/eis-utils.git;protocol=https;nobranch=1;name=eis-utils;destsuffix=eis-utils \
 "
 
@@ -249,16 +244,16 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.9.5"
+SRCREV_azure-iot-sdk = "async-api"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
-SRCREV_azure-iot-sdk-sys = "0.5.8"
+SRCREV_azure-iot-sdk-sys = "0.6.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk-sys"
 SRCREV_FORMAT .= "_cert-renewal"
 SRCREV_cert-renewal = "1.4.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/cert-renewal"
 SRCREV_FORMAT .= "_eis-utils"
-SRCREV_eis-utils = "0.2.6"
+SRCREV_eis-utils = "0.3.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/eis-utils"
 SRCREV_FORMAT .= "_http-common"
 SRCREV_http-common = "1.4.1"
@@ -269,8 +264,8 @@ LIC_FILES_CHKSUM = " \
     file://MIT OR Apache-2.0;md5=generateme \
 "
 
-SUMMARY = "iot-client-template-rs"
-HOMEPAGE = "git@github.com:omnect/iot-client-template-rs.git"
+SUMMARY = "This service demonstrates usage of omnect azure-iot-sdk."
+HOMEPAGE = "https://www.omnect.io/home"
 LICENSE = "MIT OR Apache-2.0"
 
 # includes this file if it exists but does not fail
