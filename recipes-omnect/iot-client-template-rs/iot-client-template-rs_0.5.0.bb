@@ -8,10 +8,10 @@ inherit cargo
 # how to get iot-client-template-rs could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/iot-client-template-rs/0.5.0"
 SRC_URI += "git://github.com/JanZachmann/iot-client-template-rs.git;protocol=https;nobranch=1;branch=use_async_sdk"
-SRCREV = "d963e526d0326e9181425c4a84df8fe137838cf4"
+SRCREV = "bc9cc3c3862e599d20042497efc8c106e53ef615"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+d963e526d0"
+PV:append = ".AUTOINC+bc9cc3c386"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -202,8 +202,8 @@ SRC_URI += " \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-keyd-config;destsuffix=aziot-keyd-config \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=cert-renewal;destsuffix=cert-renewal \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=http-common;destsuffix=http-common \
-    git://github.com/JanZachmann/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
     git://github.com/omnect/azure-iot-sdk-sys.git;protocol=https;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
+    git://github.com/omnect/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
     git://github.com/omnect/eis-utils.git;protocol=https;nobranch=1;name=eis-utils;destsuffix=eis-utils \
 "
 
@@ -244,7 +244,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "async-api"
+SRCREV_azure-iot-sdk = "0.10.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.0"
