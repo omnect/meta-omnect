@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.19.7] Q3 2023
 - omnect-device-service: updated to 0.1?.0 (switched to async azure-iot-sdk)
 - iot-client-template-rs: updated to 0.5.0 (switched to async azure-iot-sdk)
+- iot-identity-service: updated to 1.4.5
+- iotedge: updated to 1.4.16
+- meta-rust: updated toolchain to 1.65
 
 ## [kirkstone-0.19.6] Q3 2023
 - kas: updated meta-raspberrypi to latest kirkstone HEAD
