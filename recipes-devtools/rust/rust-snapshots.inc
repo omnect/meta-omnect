@@ -5,8 +5,8 @@
 ## The version is replicated here.
 ## TODO: find a way to add additional SRC_URIs based on the contents of an
 ##       earlier SRC_URI.
-RS_VERSION = "1.61.0"
-CARGO_VERSION = "1.61.0"
+RS_VERSION = "1.65.0"
+CARGO_VERSION = "1.65.0"
 
 # TODO: Add hashes for other architecture toolchains as well. Make a script?
 SRC_URI[rust-std-snapshot-x86_64.sha256sum] = "270b07aa5f2de52255a117e1e587138d77375ce0d09a1d7fead085f29b3977e9"
