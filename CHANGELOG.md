@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.19.7] Q3 2023
-- omnect-device-service: updated to 0.1?.0 (switched to async azure-iot-sdk)
+- omnect-device-service: updated to 0.13.0 (switched to async azure-iot-sdk)
 - iot-client-template-rs: updated to 0.5.0 (switched to async azure-iot-sdk)
 - iot-identity-service: updated to 1.4.5
 - iotedge: updated to 1.4.16
