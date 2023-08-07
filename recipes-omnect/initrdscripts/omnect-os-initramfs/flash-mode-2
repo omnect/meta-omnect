@@ -37,6 +37,12 @@ flash_mode_2_enabled() {
     return 1  # disable flash mode; normal boot; main entry point _NOT_ called
 }
 
+setup_fifo() {
+    # setup FIFO
+    run_cmd mkfifo ${OMNECT_FLASH_MODE_FIFO} || return 1
+    run_cmd chown omnect:omnect ${OMNECT_FLASH_MODE_FIFO} || return 1
+}
+
 setup_network() {
     local if_name="$1"
     local ip_addr=""
@@ -80,10 +86,6 @@ run_bmap_tool() {
     blk_dev=$(get_block_device boot)
     blk_dev=${blk_dev%p*}
     if [ ! -b "${blk_dev}" ]; then msg_fatal "${blk_dev} does not exist or not a block device"; return 1; fi
-
-    # setup FIFO
-    run_cmd mkfifo ${OMNECT_FLASH_MODE_FIFO} || return 1
-    run_cmd chown omnect:omnect ${OMNECT_FLASH_MODE_FIFO} || return 1
 
     # bmap file must be copied with scp
     msg "please run  scp <your-bmap-file> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:$(basename ${OMNECT_FLASH_MODE_BMAP_FILE})"
@@ -132,6 +134,7 @@ run_flash_mode_2() {
         return 1
     fi
 
+    setup_fifo || return 1
     setup_network ${OMNECT_FLASH_MODE_ETH} || return 1
     run_bmap_tool || return 1
 
