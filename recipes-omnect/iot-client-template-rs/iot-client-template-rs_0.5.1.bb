@@ -6,12 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get iot-client-template-rs could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/iot-client-template-rs/0.5.0"
+# SRC_URI += "crate://crates.io/iot-client-template-rs/0.5.1"
 SRC_URI += "git://github.com/omnect/iot-client-template-rs.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "462b3125be487fba03ca7dc6cacc9cb164146cd8"
+SRCREV = "e6729ba00e5228434446da1971b1f840dc04536e"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+462b3125be"
+
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
