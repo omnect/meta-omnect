@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ## [kirkstone-0.19.7] Q3 2023
   ## [kirkstone-0.19.6] Q3 2023
   ## [kirkstone-0.19.5] Q3 2023
-  ## [kirkstone-0.19.5] Q3 2023
   ## [kirkstone-0.19.4] Q3 2023
   ## [kirkstone-0.19.3] Q3 2023
 
