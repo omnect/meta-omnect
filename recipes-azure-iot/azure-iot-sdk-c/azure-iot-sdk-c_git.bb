@@ -17,7 +17,7 @@ inherit cmake
 EXTRA_OECMAKE += "-Duse_prov_client:BOOL=OFF"
 EXTRA_OECMAKE += "-Dskip_samples:BOOL=ON"
 
-# fix compilation of iot-hub-device-update, iot-client-template which depend on azure-iot-sdk-c
+# fix compilation of services which depend on azure-iot-sdk-c (e.g. iot-hub-device-update)
 do_configure:prepend() {
    sed -i 's/${OPENSSL_LIBRARIES}/crypto ssl/g' ${S}/c-utility/CMakeLists.txt
    sed -i 's/${CURL_LIBRARIES}/curl/g' ${S}/c-utility/CMakeLists.txt
