@@ -65,6 +65,7 @@ IMAGE_INSTALL = "\
     omnect-base-files \
     omnect-first-boot \
     packagegroup-core-ssh-openssh \
+    procps \
     sudo \
     systemd-analyze \
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
