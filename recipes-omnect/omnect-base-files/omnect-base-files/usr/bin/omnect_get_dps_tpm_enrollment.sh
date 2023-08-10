@@ -1,5 +1,5 @@
 #!/bin/sh
-TPM2TOOLS_TCTI="device:/dev/tpmrm0"
+export TPM2TOOLS_TCTI="device:/dev/tpmrm0"
 
 cd /tmp
 tpm2_createek --ek-context ek.ctx --key-algorithm rsa --public ek.pub
