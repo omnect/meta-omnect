@@ -68,13 +68,6 @@ do_install:append() {
             -e 's/^#ReserveVT=\(.*\)$/ReserveVT=0 /' \
             ${D}${sysconfdir}/systemd/logind.conf
     fi
-
-    # for tpm devices set env var TPM2TOOLS_TCTI system wide
-    if ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', 'true', 'false', d)}; then
-        sed -i \
-            -e 's@^#DefaultEnvironment=\(.*\)@DefaultEnvironment=\"TPM2TOOLS_TCTI=device:/dev/tpmrm0\"@' \
-            ${D}${sysconfdir}/systemd/system.conf
-    fi
 }
 
 enable_hardware_watchdog() {

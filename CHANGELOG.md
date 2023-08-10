@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    endorsement key was only printed if the ek hierarchy persistent handle
    was already initialized by iot-identity-service
  - omnect_get_deviceid.sh: fixed missing runtime dependency toml-cli
- - systemd: for tpm devices set env var `TPM2TOOLS_TCTI` system wide
+ - omnect-base-files: profile.d: for tpm devices set env var `TPM2TOOLS_TCTI`
 
 ## [kirkstone-0.19.7] Q3 2023
 - omnect-device-service: updated to 0.13.0 (switched to async azure-iot-sdk)

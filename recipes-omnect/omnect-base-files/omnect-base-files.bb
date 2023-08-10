@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "\
 "
 
 SRC_URI = "\
+    ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', 'file://etc/profile.d/tpm2tools.sh', '', d)} \
     file://etc/bashrc \
     file://etc/profile.d/omnect_profile.sh \
     file://etc/profile.d/omnect_prompt.sh \
@@ -20,6 +21,7 @@ RDEPENDS:${PN} += "\
 "
 
 FILES:${PN} = "\
+    ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', '/etc/profile.d/tpm2tools.sh', '', d)} \
     ${exec_prefix}/local \
     ${libdir}/tmpfiles.d/omnect-base-files.conf \
     /etc/bashrc \
@@ -45,6 +47,10 @@ do_install() {
     install -m 0644 -D ${WORKDIR}/etc/sudoers.d/001_omnect ${D}/etc/sudoers.d/001_omnect
     install -m 0644 -D ${WORKDIR}/etc/profile.d/omnect_profile.sh ${D}/etc/profile.d/omnect_profile.sh
     install -m 0644 -D ${WORKDIR}/etc/profile.d/omnect_prompt.sh ${D}/etc/profile.d/omnect_prompt.sh
+
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', 'true', 'false', d)}; then
+        install -m 0644 -D ${WORKDIR}/etc/profile.d/tpm2tools.sh ${D}/etc/profile.d/tpm2tools.sh
+    fi
 
     # install mountpoints
     install -d -D ${D}/mnt/cert \
