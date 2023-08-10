@@ -16,6 +16,7 @@ SRC_URI = "\
 
 RDEPENDS:${PN} += "\
   bash \
+  toml-cli \
 "
 
 FILES:${PN} = "\
