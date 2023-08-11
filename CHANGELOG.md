@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.19.8] Q3 2023
+ - omnect_get_dps_tpm_enrollment.sh: fixed chicken hen problem, prior the
+   endorsement key was only printed if the ek hierarchy persistent handle
+   was already initialized by iot-identity-service
+ - omnect_get_deviceid.sh: fixed missing runtime dependency toml-cli
+ - omnect-base-files: profile.d: for tpm devices set env var `TPM2TOOLS_TCTI`
+
 ## [kirkstone-0.19.7] Q3 2023
 - omnect-device-service: updated to 0.13.0 (switched to async azure-iot-sdk)
 - iot-client-template-rs: updated to 0.5.1 (switched to async azure-iot-sdk)
