@@ -2,6 +2,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://80-wlan.network \
+    file://aziot-identityd-startup-timeout-lte.conf \
 "
 
 RDEPENDS:${PN} += "bash"
@@ -22,9 +23,6 @@ do_install:append() {
         # enable dhcp for wlan devices
         install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network
         sed -i 's/^Name=wlan0/Name=${OMNECT_WLAN0}/' ${D}${systemd_unitdir}/network/80-wlan.network
-        # configure systemd-networkd-wait-online success if any of eth0 or wlan0 are online
-        #sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 --any --interface=${OMNECT_ETH0} --interface=${OMNECT_WLAN0} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
-        #    ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
     fi
 
     # persistent /var/log
@@ -109,6 +107,10 @@ ONLINE_INTERFACE_ARGS = "${@online_ifc_list_to_parameter_list(d, 'OMNECT_ONLINE_
 do_install:append() {
     sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:-${ONLINE_INTERFACE_ARGS}} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
         ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+    if ${@bb.utils.contains('DISTRO_FEATURES', '3g', 'true', 'false', d)}; then
+	install -d ${D}${sysconfdir}/systemd/system/aziot-identityd.service.d
+	install -m 0644 ${WORKDIR}/aziot-identityd-startup-timeout-lte.conf ${D}${sysconfdir}/systemd/system/aziot-identityd.service.d/startup-timeout.conf
+    fi
 }
 
 # adapt welotronic eg500 systemd-networkd-wait-online.service state
@@ -119,4 +121,5 @@ do_install:append:eg500() {
 
 FILES:${PN} += "\
     ${systemd_unitdir}/network/80-wlan.network \
+    ${@bb.utils.contains('DISTRO_FEATURES', '3g', '${sysconfdir}/systemd/system/aziot-identityd.service.d/startup-timeout.conf', '', d)} \
 "
