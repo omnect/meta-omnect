@@ -11,6 +11,9 @@ SRC_URI += "\
     file://0001-usb-xhci-ring.c-don-t-queue-URB-for-halted-endpoint.patch \
 "
 
+# NOTE: patch fix-usb-scanning-balena.patch is part of upstream U-Boot 2022.04,
+#       so remove when advancing to more recent version.
+
 # Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
 # swupdate and iot-hub-device-update, the local version must be increased;
 UBOOT_LOCALVERSION = "-2"

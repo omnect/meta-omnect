@@ -5,6 +5,9 @@ SRC_URI += " \
 	file://NetworkManager.conf \
 "
 
+# NOTE: the patch is only needed with NetworkManager 1.36, in 1.38 and above it
+#       is already there
+
 PACKAGECONFIG:append = " modemmanager"
 PACKAGECONFIG:remove = " dnsmasq"
 
