@@ -8,9 +8,10 @@ inherit cargo
 # how to get omnect-device-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/omnect-device-service/0.13.2"
 SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=fix-toolchain-file"
-SRCREV = "1ab7ca3f69362bf56cea3144aad56ac0a10d8d03"
+SRCREV = "bd9999263f1dcd7b7541c84185a276b62f4bcefc"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
+PV:append = ".AUTOINC+bd9999263f"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -109,7 +110,7 @@ SRC_URI += " \
     crate://crates.io/http-body/0.4.5 \
     crate://crates.io/http/0.2.9 \
     crate://crates.io/httparse/1.8.0 \
-    crate://crates.io/httpdate/1.0.2 \
+    crate://crates.io/httpdate/1.0.3 \
     crate://crates.io/humantime/2.1.0 \
     crate://crates.io/hyper-openssl/0.9.2 \
     crate://crates.io/hyper-proxy/0.9.1 \
@@ -164,8 +165,8 @@ SRC_URI += " \
     crate://crates.io/object/0.31.1 \
     crate://crates.io/once_cell/1.18.0 \
     crate://crates.io/openssl-macros/0.1.1 \
-    crate://crates.io/openssl-sys/0.9.90 \
-    crate://crates.io/openssl/0.10.55 \
+    crate://crates.io/openssl-sys/0.9.91 \
+    crate://crates.io/openssl/0.10.56 \
     crate://crates.io/ordered-stream/0.2.0 \
     crate://crates.io/parking/2.1.0 \
     crate://crates.io/parking_lot/0.12.1 \
@@ -310,6 +311,7 @@ SRC_URI += " \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-keyd-config;destsuffix=aziot-keyd-config \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=cert-renewal;destsuffix=cert-renewal \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=http-common;destsuffix=http-common \
+    git://github.com/janzachmann/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
     git://github.com/omnect/azure-iot-sdk-sys.git;protocol=https;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
     git://github.com/omnect/eis-utils.git;protocol=https;nobranch=1;name=eis-utils;destsuffix=eis-utils \
 "
@@ -350,6 +352,9 @@ EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-key-common-http"
 SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
+SRCREV_FORMAT .= "_azure-iot-sdk"
+SRCREV_azure-iot-sdk = "async-api"
+EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk-sys"
