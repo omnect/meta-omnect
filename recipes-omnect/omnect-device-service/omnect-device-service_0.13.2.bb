@@ -6,12 +6,11 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.13.0"
-SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1"
-SRCREV = "ad919e0aa581eba021e47baf81f921a65db8a422"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.13.2"
+SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=fix-toolchain-file"
+SRCREV = "1ab7ca3f69362bf56cea3144aad56ac0a10d8d03"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -210,6 +209,7 @@ SRC_URI += " \
     crate://crates.io/sha1/0.10.5 \
     crate://crates.io/shlex/1.1.0 \
     crate://crates.io/signal-hook-registry/1.4.1 \
+    crate://crates.io/signal-hook-tokio/0.3.1 \
     crate://crates.io/signal-hook/0.3.17 \
     crate://crates.io/slab/0.4.8 \
     crate://crates.io/smallvec/1.11.0 \
@@ -311,7 +311,6 @@ SRC_URI += " \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=cert-renewal;destsuffix=cert-renewal \
     git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=http-common;destsuffix=http-common \
     git://github.com/omnect/azure-iot-sdk-sys.git;protocol=https;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
-    git://github.com/omnect/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
     git://github.com/omnect/eis-utils.git;protocol=https;nobranch=1;name=eis-utils;destsuffix=eis-utils \
 "
 
@@ -351,9 +350,6 @@ EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-key-common-http"
 SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
-SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.10.0"
-EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk-sys"

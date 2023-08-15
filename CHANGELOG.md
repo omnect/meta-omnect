@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.19.9] Q3 2023
+- omnect-device-service: updated to 0.13.2 (fixed potential deadlock)
+
 ## [kirkstone-0.19.8] Q3 2023
  - omnect_get_dps_tpm_enrollment.sh: fixed chicken hen problem, prior the
    endorsement key was only printed if the ek hierarchy persistent handle
