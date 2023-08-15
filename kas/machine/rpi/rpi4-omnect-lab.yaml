@@ -5,4 +5,4 @@ header:
   includes:
     - kas/machine/rpi/rpi.yaml
 
-machine: rpi4-test
+machine: rpi4-omnect-lab
