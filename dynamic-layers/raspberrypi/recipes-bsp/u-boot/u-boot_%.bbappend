@@ -3,12 +3,13 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://add-reset-info.patch \
     file://enable-reset-info-cmd-fragment.cfg \
-    file://fix-usb-scanning-upstream.patch \
-    file://fix-usb-scanning-balena.patch \
     file://omnect_env.patch \
     file://rpi-always-set-fdt_addr-with-firmware-provided-FDT-address.patch \
     file://omnect_env_rpi.h \
-    file://0001-usb-xhci-ring.c-don-t-queue-URB-for-halted-endpoint.patch \
+"
+
+SRC_URI:append:rpi4-omnect-lab = "\
+    file://disable-usb.cfg \
 "
 
 # NOTE: patch fix-usb-scanning-balena.patch is part of upstream U-Boot 2022.04,
