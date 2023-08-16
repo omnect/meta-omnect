@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.13.0"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.13.2"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1"
-SRCREV = "ad919e0aa581eba021e47baf81f921a65db8a422"
+SRCREV = "266d9bf4a94a6e9dcae0e4030dd14fb45755372c"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -110,7 +110,7 @@ SRC_URI += " \
     crate://crates.io/http-body/0.4.5 \
     crate://crates.io/http/0.2.9 \
     crate://crates.io/httparse/1.8.0 \
-    crate://crates.io/httpdate/1.0.2 \
+    crate://crates.io/httpdate/1.0.3 \
     crate://crates.io/humantime/2.1.0 \
     crate://crates.io/hyper-openssl/0.9.2 \
     crate://crates.io/hyper-proxy/0.9.1 \
@@ -165,8 +165,8 @@ SRC_URI += " \
     crate://crates.io/object/0.31.1 \
     crate://crates.io/once_cell/1.18.0 \
     crate://crates.io/openssl-macros/0.1.1 \
-    crate://crates.io/openssl-sys/0.9.90 \
-    crate://crates.io/openssl/0.10.55 \
+    crate://crates.io/openssl-sys/0.9.91 \
+    crate://crates.io/openssl/0.10.56 \
     crate://crates.io/ordered-stream/0.2.0 \
     crate://crates.io/parking/2.1.0 \
     crate://crates.io/parking_lot/0.12.1 \
@@ -210,6 +210,7 @@ SRC_URI += " \
     crate://crates.io/sha1/0.10.5 \
     crate://crates.io/shlex/1.1.0 \
     crate://crates.io/signal-hook-registry/1.4.1 \
+    crate://crates.io/signal-hook-tokio/0.3.1 \
     crate://crates.io/signal-hook/0.3.17 \
     crate://crates.io/slab/0.4.8 \
     crate://crates.io/smallvec/1.11.0 \
@@ -352,7 +353,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.10.0"
+SRCREV_azure-iot-sdk = "0.11.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.0"
