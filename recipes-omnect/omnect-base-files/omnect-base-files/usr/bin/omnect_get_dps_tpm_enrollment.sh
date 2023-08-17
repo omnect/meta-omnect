@@ -1,11 +1,8 @@
 #!/bin/sh
-
-# location of the endorsement key in the tpm device
-ek_address=0x81010001
+export TPM2TOOLS_TCTI="device:/dev/tpmrm0"
 
 cd /tmp
-
-tpm2_readpublic -Q -c ${ek_address} -o ek.pub 2> /dev/null
+tpm2_createek --ek-context ek.ctx --key-algorithm rsa --public ek.pub
 
 printf "Gathering the registration information...\n\nEndorsement Key:\n%s\n" $( base64 -w0 ek.pub)
-rm ek.pub 2> /dev/null
+rm ek.ctx ek.pub 2> /dev/null
