@@ -6,14 +6,14 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    refspec: 0628a6bf99ea9f5d2947ec181d485fd857d3b658
+    refspec: e5011aacea8a7d105a695baa20530fb8df801e32
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-phytec_do_not_overwrite_BBMASK.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
-    refspec: 0006eb26ec0cadbf62ab3052130e693be0e77702
+    refspec: 3e9ef23d98aa842cf84251a27c9b8dde8925ea61
     patches:
       p001:
         repo: "meta-omnect"
@@ -23,9 +23,8 @@ repos:
     refspec: d5bbb487b2816dfc74984a78b67f7361ce404253
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
-    # switched to explicit ref, since upstream moved the tag in the past
-    #refspec: rel_imx_5.15.71_2.2.0
-    refspec: 01df9917808c12ac561b417d2b1f3652a64cdab9
+    # switched to explicit ref, since upstream moved tags in the past
+    refspec: b68ce6b22ca45f4fbb2c6a608b8c6ae7b1f21c63
     layers:
       meta-bsp:
       meta-sdk:

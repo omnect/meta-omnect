@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.19.10] Q3 2023
+- kas:
+  - updated poky to 4.0.12
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-security to latest kirkstone HEAD
+  - updated meta-swupdate to latest kirkstone HEAD
+  - updated meta-virtualization to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+  - updated meta-imx to latest kirkstone HEAD
+- rust-llvm: adapted to changes in poky
+
 ## [kirkstone-0.19.9] Q3 2023
 - omnect-device-service: updated to 0.13.2 (fixed potential deadlock)
 
