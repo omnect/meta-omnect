@@ -6,25 +6,28 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    refspec: e5011aacea8a7d105a695baa20530fb8df801e32
+    branch: kirkstone
+    commit: e5011aacea8a7d105a695baa20530fb8df801e32
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-phytec_do_not_overwrite_BBMASK.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
-    refspec: 3e9ef23d98aa842cf84251a27c9b8dde8925ea61
+    branch: kirkstone
+    commit: 3e9ef23d98aa842cf84251a27c9b8dde8925ea61
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-freescale_layerdir.patch"
   ext/meta-freescale-distro:
     url: "https://github.com/Freescale/meta-freescale-distro.git"
-    refspec: d5bbb487b2816dfc74984a78b67f7361ce404253
+    branch: kirkstone
+    commit: d5bbb487b2816dfc74984a78b67f7361ce404253
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
-    # switched to explicit ref, since upstream moved tags in the past
-    refspec: b68ce6b22ca45f4fbb2c6a608b8c6ae7b1f21c63
+    branch: kirkstone-5.15.71-2.2.1
+    commit: b68ce6b22ca45f4fbb2c6a608b8c6ae7b1f21c63
     layers:
       meta-bsp:
       meta-sdk:
