@@ -294,3 +294,31 @@ on_exit()
         on_exit_debug_image ${2}
     fi
 }
+
+flashmode_efi_grub_handling()
+{
+    local dest_dev=${1}
+    local p=${2}
+    local machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
+
+    if [[ " ${machine_features} " =~ " grub " ]]; then
+        echo "Configuring grub"
+        run_cmd_stdout mkdir -p /tmp/boot
+        run_cmd_stdout mount ${dest_dev}${p}1 /tmp/boot
+        sed "s#@@ROOT_DEVICE@@#${dest_dev}${p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
+        cp /etc/omnect/grubenv.in /tmp/boot/EFI/BOOT/grubenv
+        run_cmd_stdout umount /tmp/boot
+    fi
+
+    if [[ " ${machine_features} " =~ " efi " ]]; then
+        echo "Configuring efi"
+        # delete all efi entries but last
+        local efi_entries=$(efibootmgr | grep ^Boot[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]\* | awk '{print $1}'| sed  '$ d')
+        for i in ${efi_entries}; do
+            i=${i#Boot}
+            i=${i%\*}
+            run_cmd_stdout efibootmgr --bootnum ${i} --delete-bootnum || return 1
+        done
+        run_cmd_stdout efibootmgr --create --disk ${dest_dev} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi || return 1
+    fi
+}
