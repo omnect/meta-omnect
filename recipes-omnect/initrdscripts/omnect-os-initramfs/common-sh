@@ -319,6 +319,12 @@ flashmode_efi_grub_handling()
             i=${i%\*}
             run_cmd_stdout efibootmgr --bootnum ${i} --delete-bootnum || return 1
         done
-        run_cmd_stdout efibootmgr --create --disk ${dest_dev} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi || return 1
+
+        run_cmd_stdout efibootmgr --create --disk ${dest_dev} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi
+        if [ $? -ne 0 ]; then
+            echo "setting efibootmgr failed"
+            sleep 300
+            return 1
+        fi
     fi
 }

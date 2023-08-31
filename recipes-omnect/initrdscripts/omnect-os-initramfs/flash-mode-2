@@ -117,6 +117,24 @@ run_bmap_tool() {
     msg_fatal "bmaptool(${blk_dev}) failed: ${bmap_ret}" && return 1
 }
 
+vfat_workaround()
+{
+    # if we we boot with grub and kernel and/or initramfs are booted from the
+    # boot partition, then fsck /dev/omnect/boot will succeed before running
+    # bmaptool and fail after running bmaptool.
+    # note:
+    # if we boot with grub and kernel and/or initramfs are booted from
+    # another location, fsck /dev/omnect/boot succeeds after running bmaptool
+    # as well.
+
+    run_cmd fsck.vfat -p /dev/omnect/boot
+    if [ ${?} -ne 0 ]; then
+        mount -t vfat /dev/omnect/boot ${ROOTFS_DIR}/boot && msg "mounted ${ROOTFS_DIR}/boot"
+        rm -f ${ROOTFS_DIR}/boot/FSCK*
+        umount ${ROOTFS_DIR}/boot
+    fi
+}
+
 # deploy WIC image via network to (same) active block device
 run_flash_mode_2() {
     msg "Entering omnect flashing mode 2 ..."
@@ -133,6 +151,7 @@ run_flash_mode_2() {
     setup_fifo || return 1
     setup_network eth0 || return 1
     run_bmap_tool || return 1
+    vfat_workaround
 
     local dest_blk=$(readlink -f /dev/omnect/rootA)
     dest_blk=${dest_blk::-1} # can be /dev/nvme0n1p or /dev/sda
@@ -155,5 +174,13 @@ run_flash_mode_2() {
 flash_mode_2_run() {
     add_module_post_hook on_exit
     run_flash_mode_2
-    return=${?}
+    local ret=${?}
+    if [ ${ret} -ne 0 ]; then
+        echo flash_mode_2_run return=${ret}
+        sleep 120
+        return ${ret}
+    else
+        return 0
+    fi
+
 }
