@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.19.12] Q3 2023
+- linux-welotec eg500: compile network driver into kernel
+  (initramfs otherwise would have to load the module for
+  flash-mode 2)
+- initramfs flash-mode 2:
+  - don't use variable OMNECT_ETH0
+    (eth names differ between initramfs and booted omnect-os,
+    because systemd renames devices)
+  - handle efibootmgr entry for efi devices
+
 ## [kirkstone-0.19.11] Q3 2023
 - kas: adapted to kas 4.0
 
