@@ -1,8 +1,8 @@
 diff --git a/scripts/lib/wic/plugins/source/bootimg-efi.py b/scripts/lib/wic/plugins/source/bootimg-efi.py
-index a65a5b9780..30f8f20e76 100644
+index a2b9f4c893..945e538d3a 100644
 --- a/scripts/lib/wic/plugins/source/bootimg-efi.py
 +++ b/scripts/lib/wic/plugins/source/bootimg-efi.py
-@@ -285,65 +285,70 @@ class BootimgEFIPlugin(SourcePlugin):
+@@ -285,67 +285,72 @@ class BootimgEFIPlugin(SourcePlugin):
  
          hdddir = "%s/hdd/boot" % cr_workdir
  
@@ -51,6 +51,8 @@ index a65a5b9780..30f8f20e76 100644
 -
 -                # https://www.freedesktop.org/software/systemd/man/systemd-stub.html
 -                objcopy_cmd = "%s-objcopy" % target_sys
+-                objcopy_cmd += " --enable-deterministic-archives"
+-                objcopy_cmd += " --preserve-dates"
 -                objcopy_cmd += " --add-section .osrel=%s/usr/lib/os-release" % staging_dir_host
 -                objcopy_cmd += " --change-section-vma .osrel=0x20000"
 -                objcopy_cmd += " --add-section .cmdline=%s" % cmdline.name
@@ -110,6 +112,8 @@ index a65a5b9780..30f8f20e76 100644
 +
 +        #         # https://www.freedesktop.org/software/systemd/man/systemd-stub.html
 +        #         objcopy_cmd = "%s-objcopy" % target_sys
++        #         objcopy_cmd += " --enable-deterministic-archives"
++        #         objcopy_cmd += " --preserve-dates"
 +        #         objcopy_cmd += " --add-section .osrel=%s/usr/lib/os-release" % staging_dir_host
 +        #         objcopy_cmd += " --change-section-vma .osrel=0x20000"
 +        #         objcopy_cmd += " --add-section .cmdline=%s" % cmdline.name

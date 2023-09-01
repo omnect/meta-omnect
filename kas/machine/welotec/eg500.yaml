@@ -8,6 +8,7 @@ repos:
   ext/meta-welotec-bsp:
     # todo: that shouldn't be a omnect repository
     url: "git@github.com:omnect/meta-welotec-bsp.git"
-    refspec: 5fee2164ef28d3437273b3d52135fcd1b0022446
+    branch: kirkstone
+    commit: 5fee2164ef28d3437273b3d52135fcd1b0022446
 
 machine: eg500
