@@ -2,4 +2,4 @@
 #
 LLVM_RELEASE = "14.0.5"
 require rust-sources.inc
-require recipes-devtools/rust/rust-llvm.inc
+require rust-llvm.inc
