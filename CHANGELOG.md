@@ -12,7 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   when kernel and/or initramfs are loaded from boot partition via grub
 - README.md: simplified documentation due to introduction of
   `bootloader_env.sh` wrapper
-
+- kernel: generic configuration of `CONFIG_OVERLAY_FS_INDEX` so it is equal
+  on all platforms
+-
 ## [kirkstone-0.19.12] Q3 2023
 - linux-welotec eg500: compile network driver into kernel
   (initramfs otherwise would have to load the module for
