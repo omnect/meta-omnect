@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.20.0] Q3 2023
+- added bootloader-env recipe: `bootloader_env.sh` as wrapper for
+  `fw_{setenv,printenv}` (u-boot) vs `grub-editenv` (grub)
+- initramfs flash-mode-2: added workaround for fsck problem of boot partition
+  when kernel and/or initramfs are loaded from boot partition via grub
+- README.md: simplified documentation due to introduction of
+  `bootloader_env.sh` wrapper
+
 ## [kirkstone-0.19.12] Q3 2023
 - linux-welotec eg500: compile network driver into kernel
   (initramfs otherwise would have to load the module for
