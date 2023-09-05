@@ -1,2 +1,3 @@
 d /home/omnect/.ssh 0700 omnect omnect -
 f /home/omnect/.ssh/authorized_keys 0600 omnect omnect -
+d /run/omnect-device-service/ssh-tunnel 0747 omnect_device_service omnect_device_service 1h -
