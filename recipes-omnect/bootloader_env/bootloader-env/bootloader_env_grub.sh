@@ -13,7 +13,7 @@ function get() {
     [[ ${argsc} -lt 2 ]] && help && exit 1
     local key=${1}
     local value=$(grub-editenv ${grubenv} list | grep ^${key}= | awk -F'=' '{print $2}')
-    [[ -z "${value}" ]] && exit 2
+    [[ -z "${value}" ]] && echo && exit 2
     echo ${value}
 }
 
