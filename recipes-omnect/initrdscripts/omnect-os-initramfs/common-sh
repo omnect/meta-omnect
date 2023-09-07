@@ -324,9 +324,8 @@ flashmode_efi_grub_handling()
         run_cmd_stdout mkdir -p /tmp/boot
         run_cmd_stdout mount ${dest_dev}${p}1 /tmp/boot
         run_cmd_stdout efibootmgr --create --disk ${dest_dev} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi
-        #this is a test:
+        # same entry with another label ... for debug purposes, when booting after flash-mode-{1,2} fails
         run_cmd_stdout efibootmgr --create --disk ${dest_dev} --part 1 --label "omnect_os " --loader \\\\EFI\\\\BOOT\\\\bootx64.efi
-        run_cmd_stdout efibootmgr --create --disk ${dest_dev} --part 1 --label "omnect_os  " --loader \\\\EFI\\\\BOOT\\\\bootx64.efi
         efibootmgr -v > /tmp/boot/EFI/BOOT/efibootmgr_entry
         run_cmd_stdout umount /tmp/boot
     fi
