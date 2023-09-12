@@ -80,7 +80,7 @@ run_bmap_tool() {
     local bmap_ret=""
 
     # detect block device
-    blk_dev=$(get_block_device boot)
+    blk_dev=$(readlink -f /dev/omnect/boot)
     blk_dev=${blk_dev%p*}
     if [ ! -b "${blk_dev}" ]; then msg_fatal "${blk_dev} does not exist or not a block device"; return 1; fi
 

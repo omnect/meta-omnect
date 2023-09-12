@@ -72,8 +72,8 @@ factory_reset_wipe_dd() {
     local ret=0
 
     msg "wipe method 1"
-    wipe_partition_dd "${ETC_PART}"  || ret=$?
-    wipe_partition_dd "${DATA_PART}" || ret=$?
+    wipe_partition_dd /dev/omnect/etc  || ret=$?
+    wipe_partition_dd /dev/omnect/data || ret=$?
     return ${ret}
 }
 
@@ -81,8 +81,8 @@ factory_reset_wipe_fstrim() {
     local ret=0
 
     msg "wipe method 2"
-    wipe_partition_fstrim "${ETC_PART}"  || ret=$?
-    wipe_partition_fstrim "${DATA_PART}" || ret=$?
+    wipe_partition_fstrim /dev/omnect/etc  || ret=$?
+    wipe_partition_fstrim /dev/omnect/data || ret=$?
     return ${ret}
 }
 
@@ -180,9 +180,9 @@ iterate_restore_list() {
 
 factory_reset_mount() {
     mount_partition "ext4" "/dev/omnect/rootCurrent" "${ROOTFS_DIR}" "defaults,ro"
-    mount_partition "ext4" "${FACTORY_PART}" "${ROOTFS_DIR}/mnt/factory" "defaults,ro"
-    setup_etc_partition  "${ROOTFS_DIR}" "$(get_block_device etc)"  "defaults,rw"
-    setup_data_partition "${ROOTFS_DIR}" "$(get_block_device data)" "defaults,rw"
+    mount_partition "ext4" "/dev/omnect/factory" "${ROOTFS_DIR}/mnt/factory" "defaults,ro"
+    setup_etc_partition  "${ROOTFS_DIR}" "defaults,rw"
+    setup_data_partition "${ROOTFS_DIR}" "defaults,rw"
     setup_persistent_var_log "${ROOTFS_DIR}"
 }
 
@@ -209,10 +209,6 @@ factory_reset_run() {
     fi
 
     factory_reset_restore_list=$(get_bootloader_env_var "${FACTORY_RESET_RESTORE_LIST_VAR}")
-
-    FACTORY_PART=$(get_block_device factory)
-       DATA_PART=$(get_block_device    data)
-        ETC_PART=$(get_block_device     etc)
 
     msg "Running Factory Reset [mode=${factory_reset_mode}]..."
 
@@ -253,8 +249,8 @@ factory_reset_run() {
     if [ ${FACTORY_RESET_RET1} -ne 0 ] || [ ${FACTORY_RESET_RET2} -ne 0 ]; then factory_reset_finish; fi
 
     # no severe errors; enforce mkfs
-    check_ext4_fs "data" "${DATA_PART}" 1
-    check_ext4_fs "etc"  "${ETC_PART}"  1
+    reformat_ext4_fs "data"
+    reformat_ext4_fs "etc"
 
     if [ -n "${factory_reset_restore_list}" ]; then
         factory_reset_mount  # logical filesystem tree
