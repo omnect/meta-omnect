@@ -123,7 +123,7 @@ index 8ecad89b..269e0884 100644
      unsigned int updateTypeVersion = 0;
      bool updateTypeOk = false;
 +    bool retry = false;
-+    std::ifstream omnectValidateUpdateFailedFilePath("/var/run/omnect-device-service/omnect_validate_update_failed");
++    std::ifstream omnectValidateUpdateFailedFilePath("/run/omnect-device-service/omnect_validate_update_failed");
 +    const char* runtimeDir = std::getenv("RUNTIME_DIRECTORY");
 +    std::string omnectUpdateRetryFileName("/omnect_update_retry");
 +
