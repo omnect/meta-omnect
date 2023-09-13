@@ -5,12 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.20.0] Q3 2023
+## [kirkstone-0.21.0] Q3 2023
 - omnect-os-initramfs:
   - introduced fsck status handling
     (writes fsck error state to /run/omnect-device-service/fsck.json)
   - refactored fsck and reformat handling
 - refactored ownership and permission of /run/omnect-device-service/
+
+## [kirkstone-0.20.0] Q3 2023
+- omnect-device-service:
+  - update to version 0.14.0
+  - add ssh_tunnel_user
+  - add sudoers entry with ssh command permissions for ssh_tunnel_user
+  - add systemd-tmpfiles for omnect-device-service
+- sshd: configure to accept certificate-based authentication for ssh-tunnel feature
+- iot-hub-device-update: fix path inconsistenies
 
 ## [kirkstone-0.19.12] Q3 2023
 - linux-welotec eg500: compile network driver into kernel
