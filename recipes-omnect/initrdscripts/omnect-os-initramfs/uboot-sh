@@ -7,9 +7,9 @@ bootloader_sh_enabled()
 get_bootloader_env_var()
 {
     local var_name="$1"
-    local value=$(fw_printenv ${var_name} | cut -d'=' -f2)
+    local value="$(fw_printenv -n "${var_name}")"
     debug "get_bootloader_env_var ${var_name}=${value}"
-    echo ${value}
+    echo "${value}"
 }
 
 # set/delete bootloader environment variable
@@ -17,8 +17,9 @@ set_bootloader_env_var()
 {
     local  var_name="$1"
     local var_value="$2"  # empty string to delete variable
-    msg fw_setenv "${var_name}" "${var_value}"
-    if [ -n "$var_value" ];then
+    msg "set_bootloader_env_var" "${var_name}" "${var_value}"
+
+    if [ -n "${var_value}" ];then
         fw_setenv "${var_name}" "${var_value}"
     else
         fw_setenv "${var_name}"

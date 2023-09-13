@@ -7,7 +7,7 @@ test_and_mount_boot()
 {
     if ! mountpoint -q ${ROOTFS_DIR}/boot; then
         mkdir -p ${ROOTFS_DIR}/boot
-        run_cmd fsck.vfat -p /dev/omnect/boot
+        run_cmd fsck.vfat -y /dev/omnect/boot
         mount -t vfat /dev/omnect/boot ${ROOTFS_DIR}/boot && msg "mounted ${ROOTFS_DIR}/boot"  || return 1
     fi
 }
@@ -19,7 +19,7 @@ get_bootloader_env_var()
     test_and_mount_boot || return 1
     local value=$(grub-editenv ${ROOTFS_DIR}/boot/EFI/BOOT/grubenv list | grep ${var_name}\= | cut -d'=' -f2)
     debug "get_bootloader_env_var ${var_name}=${value}"
-    echo ${value}
+    echo "${value}"
 }
 
 # set/delete bootloader environment variable
@@ -27,6 +27,7 @@ set_bootloader_env_var()
 {
     local  var_name="$1"
     local var_value="$2"  # empty string to delete variable
+    msg "set_bootloader_env_var" "${var_name}" "${var_value}"
 
     test_and_mount_boot || return 1
     if [ -n "$var_value" ];then

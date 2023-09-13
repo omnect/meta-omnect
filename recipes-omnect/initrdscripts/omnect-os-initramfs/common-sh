@@ -11,23 +11,23 @@ common_sh_enabled()
 # - we write to kmsg, so we can respect the kernel cmdline "quiet" argument
 #   and we're able to find the initramfs output in the journal
 msg() {
-    echo "<6> $@" >/dev/kmsg
+    echo "<6>omnect-os-initramfs: ${@}" > /dev/kmsg
 }
 
 msg_fatal() {
-    msg "<2> FATAL ERROR: $1"
+    echo "<2>omnect-os-initramfs: FATAL ERROR: ${@}" > /dev/kmsg
 }
 
 msg_error() {
-    msg "<3> ERROR: $1"
+    echo "<3> ERROR: ${@}" > /dev/kmsg
 }
 
 stderr_error() {
-    echo "ERROR: $1" >&2
+    echo "ERROR: $@" >&2
 }
 
 stderr_fatal() {
-    echo "FATAL ERROR: $1" >&2
+    echo "FATAL ERROR: $@" >&2
 }
 
 run_cmd() {
@@ -58,7 +58,7 @@ check_fs()
     echo "on" > /proc/sys/kernel/printk_devkmsg
 
     # regular boot; fsck handles unclean state (i.e.; not unmounted)
-    fsck -p /dev/omnect/${label} &> /tmp/fsck_out
+    fsck -y /dev/omnect/${label} &> /tmp/fsck_out
     fsck_res=$?
     msg "fsck result for \"${label}\" is ${fsck_res}"
 

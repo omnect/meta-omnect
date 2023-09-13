@@ -23,7 +23,7 @@ fsck_handling() {
     local omnect_run_dir=$1
     local omnect_device_service_user=$2
     local omnect_device_service_group=$3
-    local labels=("boot", "cert", "data", "etc")
+    local labels=("boot" "cert" "data" "etc")
 
     echo "{}" > ${omnect_run_dir}/fsck.json
     for i in ${labels[@]}; do

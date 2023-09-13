@@ -10,7 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - introduced fsck status handling
     (writes fsck error state to /run/omnect-device-service/fsck.json)
   - refactored fsck and reformat handling
-- refactored ownership and permission of /run/omnect-device-service/
+  - log with identifier "omnect-os-initramfs"
+  - refactored ownership and permissions of /run/omnect-device-service/
+- systemd-tmpfilesd: refactored permissions of
+  /run/omnect-device-service/ssh_tunnel/
 
 ## [kirkstone-0.20.0] Q3 2023
 - omnect-device-service:
