@@ -63,7 +63,8 @@ check_fs()
     msg "fsck result for \"${label}\" is ${fsck_res}"
 
     if [ ${fsck_res} -ne 0 ]; then
-        set_bootloader_env_var "omnect_fsck_${label}" "$(cat /tmp/fsck_out)"
+        local content="$(tr '\n' '\302\245' < /tmp/fsck_out)"
+        set_bootloader_env_var "omnect_fsck_${label}" "${content}"
     fi
 
     if [ ${fsck_res} -eq 2 ]; then

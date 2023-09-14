@@ -27,9 +27,9 @@ fsck_handling() {
 
     echo "{}" > ${omnect_run_dir}/fsck.json
     for i in ${labels[@]}; do
-        local content=$(get_bootloader_env_var omnect_fsck_${i})
+        local content="$(get_bootloader_env_var omnect_fsck_${i})"
         if [ -n "${content}" ]; then
-            msg omnect_fsck_${i}="${content}"
+            msg omnect_fsck_${i}="$(echo "${content}" | tr '\n' '\302\245')"
             jq --arg i "${i}" --arg content "${content}" '{($i): ($content)}' ${omnect_run_dir}/fsck.json > ${omnect_run_dir}/fsck.json.tmp || return 1
             mv ${omnect_run_dir}/fsck.json.tmp ${omnect_run_dir}/fsck.json
             set_bootloader_env_var omnect_fsck_${i} ""
