@@ -122,14 +122,11 @@ vfat_grub_dd_workaround()
     local dest=${1}
     local machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
 
-    # even with vfat_grub_fsck_workaround we encountered situations
-    # where the device could not boot after flash-mode and could
-    # boot if the flash-mode did run again.
+    # we encountered situations where the device could not boot after
+    # flash-mode-2 and could boot if flash-mode-2 did run again.
     # it also could be fixed by manually copying the to be flashed
-    # grub binary bootx64.efi again.
-
-    # with this workaround the error in vfat_grub_fsck_workaround seems
-    # not to get triggered
+    # grub binary bootx64.efi again. (in the error case checksums
+    # of bootx64.efi on the device and in the wic image differed.)
 
     # ATTENTION: this workaround makes it impossible to boot it
     # flash-mode-2 is not finished, e.g. device is shutdown waiting
@@ -139,24 +136,6 @@ vfat_grub_dd_workaround()
         dd if=/dev/zero of=${dest} bs=@@OMNECT_PART_SIZE_BOOT@@K count=1
     fi
 
-}
-
-vfat_grub_fsck_workaround()
-{
-    # if we we boot with grub and kernel and/or initramfs are booted from the
-    # boot partition, then fsck /dev/omnect/boot will succeed before running
-    # bmaptool and fail after running bmaptool.
-    # note:
-    # if we boot with grub and kernel and/or initramfs are booted from
-    # another location, fsck /dev/omnect/boot succeeds after running bmaptool
-    # as well.
-
-    run_cmd fsck.vfat -p /dev/omnect/boot
-    if [ ${?} -ne 0 ]; then
-        mount -t vfat /dev/omnect/boot ${ROOTFS_DIR}/boot && msg "mounted ${ROOTFS_DIR}/boot"
-        rm -f ${ROOTFS_DIR}/boot/FSCK*
-        umount ${ROOTFS_DIR}/boot
-    fi
 }
 
 # deploy WIC image via network to (same) active block device
@@ -185,8 +164,6 @@ run_flash_mode_2() {
     setup_network eth0 || return 1
     vfat_grub_dd_workaround "${dest_blk}${p}1"
     run_bmap_tool || return 1
-    vfat_grub_fsck_workaround
-
 
     flashmode_efi_grub_handling ${dest_blk} ${p}
 
