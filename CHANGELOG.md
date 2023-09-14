@@ -5,8 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.21.0] Q3 2023
+- added bootloader-env recipe: `bootloader_env.sh` as wrapper for
+  `fw_{setenv,printenv}` (u-boot) vs `grub-editenv` (grub)
+- initramfs flash-mode-2: added workaround for filesystem problems of boot
+  partition when kernel and/or initramfs are loaded from boot partition via grub
+- README.md: simplified documentation due to introduction of
+  `bootloader_env.sh` wrapper
+- kernel: generic configuration of `CONFIG_OVERLAY_FS_INDEX` so it is equal
+  on all platforms
+
 ## [kirkstone-0.20.0] Q3 2023
-- omnect-device-service: 
+- omnect-device-service:
   - update to version 0.14.0
   - add ssh_tunnel_user
   - add sudoers entry with ssh command permissions for ssh_tunnel_user

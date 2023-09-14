@@ -117,6 +117,27 @@ run_bmap_tool() {
     msg_fatal "bmaptool(${blk_dev}) failed: ${bmap_ret}" && return 1
 }
 
+vfat_grub_dd_workaround()
+{
+    local dest=${1}
+    local machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
+
+    # we encountered situations where the device could not boot after
+    # flash-mode-2 and could boot if flash-mode-2 did run again.
+    # it also could be fixed by manually copying the to be flashed
+    # grub binary bootx64.efi again. (in the error case checksums
+    # of bootx64.efi on the device and in the wic image differed.)
+
+    # ATTENTION: this workaround makes it impossible to boot it
+    # flash-mode-2 is not finished, e.g. device is shutdown waiting
+    # for wic.bmap and wic.xz
+
+    if [[ " ${machine_features} " =~ " grub " ]]; then
+        dd if=/dev/zero of=${dest} bs=@@OMNECT_PART_SIZE_BOOT@@K count=1
+    fi
+
+}
+
 # deploy WIC image via network to (same) active block device
 run_flash_mode_2() {
     msg "Entering omnect flashing mode 2 ..."
@@ -130,10 +151,6 @@ run_flash_mode_2() {
         run_cmd umount ${ROOTFS_DIR}/boot
     fi
 
-    setup_fifo || return 1
-    setup_network eth0 || return 1
-    run_bmap_tool || return 1
-
     local dest_blk=$(readlink -f /dev/omnect/rootA)
     dest_blk=${dest_blk::-1} # can be /dev/nvme0n1p or /dev/sda
     local p=${dest_blk:0-1}
@@ -142,6 +159,11 @@ run_flash_mode_2() {
     else
         p=""
     fi
+
+    setup_fifo || return 1
+    setup_network eth0 || return 1
+    vfat_grub_dd_workaround "${dest_blk}${p}1"
+    run_bmap_tool || return 1
 
     flashmode_efi_grub_handling ${dest_blk} ${p}
 
@@ -155,5 +177,13 @@ run_flash_mode_2() {
 flash_mode_2_run() {
     add_module_post_hook on_exit
     run_flash_mode_2
-    return=${?}
+    local ret=${?}
+    if [ ${ret} -ne 0 ]; then
+        echo flash_mode_2_run return=${ret}
+        sleep 120
+        return ${ret}
+    else
+        return 0
+    fi
+
 }
