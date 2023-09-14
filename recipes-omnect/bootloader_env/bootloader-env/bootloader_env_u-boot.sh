@@ -1,11 +1,11 @@
 #!/bin/bash
-commands=("get","list","set","unset")
+commands=("get" "list" "set" "unset")
 argsc=${#}
 
 function help() {
     echo "usage:"
     echo "bootloader_env.sh command key [value]"
-    echo "    command: {get,set,unset}"
+    echo "    command: {get,list,set,unset}"
 }
 
 function get() {
@@ -35,7 +35,7 @@ function unset() {
 }
 
 [[ ${#} -lt 1 ]] && help && exit 1
-[[ ! "${commands[@]}" =~ "${1}" ]] && help && exit 1
+[[ ! " ${commands[@]} " =~ " ${1} " ]] && help && exit 1
 
 #exec
 ${1} ${@:2}
