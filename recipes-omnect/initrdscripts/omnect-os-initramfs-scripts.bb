@@ -41,7 +41,8 @@ do_install() {
     fi
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'true', 'false', d)}; then
-        install -m 0755 -D ${WORKDIR}/flash-mode-2           ${D}/init.d/87-flash_mode_2
+        install -m 0755 -D ${WORKDIR}/flash-mode-2                          ${D}/init.d/87-flash_mode_2
+        sed -i "s/@@OMNECT_PART_SIZE_BOOT@@/${OMNECT_PART_SIZE_BOOT}/g"     ${D}/init.d/87-flash_mode_2
     fi
     if ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', 'true', 'false', d)}; then
         install -m 0755 -D ${WORKDIR}/resize-data        ${D}/init.d/88-resize_data
