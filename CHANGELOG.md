@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.21.0] Q3 2023
 - added bootloader-env recipe: `bootloader_env.sh` as wrapper for
   `fw_{setenv,printenv}` (u-boot) vs `grub-editenv` (grub)
-- initramfs flash-mode-2: added workarounds for filesystem problems of boot
+- initramfs flash-mode-2: added workaround for filesystem problems of boot
   partition when kernel and/or initramfs are loaded from boot partition via grub
 - README.md: simplified documentation due to introduction of
   `bootloader_env.sh` wrapper
