@@ -12,6 +12,8 @@ SRC_URI = "\
     file://grubenv \
 "
 
+do_install[depends] += "grub-efi:do_deploy"
+
 do_install() {
 	install -m 0644 -D ${WORKDIR}/grubenv ${D}${sysconfdir}/omnect/grubenv.in
 }
