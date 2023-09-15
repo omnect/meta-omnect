@@ -86,15 +86,15 @@ Device         Boot   Start      End  Sectors  Size Id Type
 
 The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M and is resized on the first boot to the max available size.
 
-**Only for images where uboot is used as OS bootloader**: There is a reserved area between the boot partition and the rootA partition used for two redundant uboot environment banks.
+**Only for images where u-boot is used as OS bootloader**: There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks.
 For this purpose, the following configuration variables are used:
 
 - `OMNECT_PART_OFFSET_UBOOT_ENV1`
-    - offset of 1st uboot environment bank (in KiB, decimal)
+    - offset of 1st u-boot environment bank (in KiB, decimal)
 - `OMNECT_PART_OFFSET_UBOOT_ENV2`
-    - offset of 2nd uboot environment bank (in KiB, decimal)
+    - offset of 2nd u-boot environment bank (in KiB, decimal)
 - `OMNECT_PART_SIZE_UBOOT_ENV`
-    - size of one uboot environment bank (in KiB, decimal)
+    - size of one u-boot environment bank (in KiB, decimal)
 
 ## Compatibility
 `meta-omnect` is compatible with the current yocto LTS release branch `kirkstone`.
@@ -206,9 +206,6 @@ There are the following two flash modes:
 - 1: clone disk image from the disk the system is currently running to another disk of the system
 - 2: flash disk image from network to same disk the system is currently running
 
-Depending on OS bootloader (uboot or grub) the flash modes are triggered differently.
-The corresponding platform specific OS bootloader and the block device paths are defined in [README.device.md](./README.device.md).
-
 #### Flash Mode 1
 For the flash mode 1, it is required to specify the destination disk, the current disk image will be cloned to.
 For this purpose, the block device path has to be used.
@@ -221,29 +218,17 @@ The flash mode 1 behaves like a factory reset, related to the new boot device:
 
 
 The following example shows how to trigger the flash mode 1 using the block device path, on the target system:<br>
-(OS bootloader is uboot)
 ```sh
 sudo -s
-fw_setenv flash-mode 1
-fw_setenv flash-mode-devpath '/dev/mmcblk2'
+bootloader_env.sh set flash-mode 1
+bootloader_env.sh set flash-mode-devpath '/dev/mmcblk2'
 reboot
 ...
 Entering omnect flashing mode 1...
 ...
 ```
-**Note, the *fw_setenv* command requires root permissions.**
-
-(OS bootloader is grub)
-```sh
-sudo -s
-grub-editenv /boot/EFI/BOOT/grubenv set flash-mode=1
-grub-editenv /boot/EFI/BOOT/grubenv set flash-mode-devpath=/dev/nvme0n1
-reboot
-...
-Entering omnect flashing mode 1...
-...
-```
-**Note, the *grub-editenv ... set* command requires root permissions.**
+**Note, the *bootloader_env.sh* command requires root permissions.**
+**Note, the corresponding platform specific block device paths are defined in [README.device.md](./README.device.md).**
 
 **Note make sure that the system boots from the same device after the triggered reboot. E.g. if you boot from usb and
 initiate flash mode 1 and trigger reboot, make sure that you boot from usb again. This reboot will enter the initramfs and execute the flash process.**
@@ -255,28 +240,15 @@ The bootloader environment variables *flash-mode* and *flash-mode-devpath* will 
 Enable the distribution feature `flash-mode-2` at build time, if you want to use it.
 
 In order to trigger the flash mode 2, use the following commands on the target system:<br>
-(OS bootloader is uboot)
 ```sh
 sudo -s
-fw_setenv flash-mode 2
+bootloader_env.sh set flash-mode 2
 reboot
 ...
 Entering omnect flashing mode 2...
 ...
 ```
-**Note, *fw_setenv* command requires root permissions.**<br>
-
-(OS bootloader is grub)
-```sh
-sudo -s
-grub-editenv /boot/EFI/BOOT/grubenv set flash-mode=2
-reboot
-...
-Entering omnect flashing mode 2...
-...
-```
-**Note, the *grub-editenv ... set* command requires root permissions.**<br>
-
+**Note, *bootloader_env.sh* command requires root permissions.**<br>
 
 **Note, `flash-mode 2` is restricted to eth0.**
 
@@ -303,17 +275,11 @@ The bootloader environment variable *flash-mode* will be deleted automatically.
 In this way, the system enters the normal mode, booting the new image.
 
 ### Factory Reset
-Set the OS bootloader environment variable `factory-reset`, in order to reset `data` and `etc` partitions on a target with uboot as OS bootloader
+Set the OS bootloader environment variable `factory-reset`, in order to reset `data` and `etc` partitions
 ```sh
-sudo fw_setenv factory-reset 1
+sudo bootloader_env.sh set factory-reset 1
 sudo reboot
 ```
-or on a system with grub as OS bootloader
-```sh
-sudo grub-editenv /boot/EFI/BOOT/grubenv set factory-reset=1
-sudo reboot
-```
-The platform specific OS bootloader is defined in [README.device.md](./README.device.md).
 
 This re-creates the corresponding filesystems of partitions `data` and `etc` on the next boot (in the initramfs context).
 If the `factory` partition contains a directory `etc`, then the content is copied to the `etc` partition.
@@ -343,13 +309,9 @@ For example, it may make sense to keep the WIFI configuration, in order to preve
 For this purpose, the OS bootloader environment variable `factory-reset-restore-list` has to be used for.
 In the following example, the regular file `/etc/wpa_supplicant/wpa_supplicant-wlan0.conf` and the directory
 `/etc/aziot/identityd/` survives the factory reset:<br>
-(OS bootloader is uboot)
 ```sh
-sudo fw_setenv factory-reset-restore-list '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf;/etc/aziot/identityd/'
+sudo bootloader_env.sh set factory-reset-restore-list '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf;/etc/aziot/identityd/'
 ```
-(OS bootloader is grub)
-```sh
-sudo grub-editenv /boot/EFI/BOOT/grubenv set factory-reset-restore-list='/etc/wpa_supplicant/wpa_supplicant-wlan0.conf;/etc/aziot/identityd/'
 ```
 
 The list of path names is separated by the character `;` and is enclosed by the `'` quotation mark.
@@ -379,24 +341,13 @@ In the case of a successfully performed factory reset, the OS bootloader environ
 
 The filesystem inside the data partition is mounted using the mount options `defaults,noatime,nodiratime,async,rw`, per default.
 For debugging purpose, it is possible to enforce different mount options for the data partition, using the OS bootloader environment variable `data-mount-options`:<br>
-(OS bootloader is uboot)
 ```sh
 # enforce sync mount
-sudo fw_setenv data-mount-options defaults,noatime,nodiratime,sync,rw
+sudo bootloader_env.sh set data-mount-options defaults,noatime,nodiratime,sync,rw
 sudo reboot
 ...
 # remove debug mount options; continue with default
-sudo fw_setenv data-mount-options
-sudo reboot
-```
-(OS bootloader is grub)
-```sh
-# enforce sync mount
-sudo grub-editenv /boot/EFI/BOOT/grubenv set data-mount-options=defaults,noatime,nodiratime,sync,rw
-sudo reboot
-...
-# remove debug mount options; continue with default
-sudo grub-editenv /boot/EFI/BOOT/grubenv unset data-mount-options
+sudo bootloader_env.sh unset data-mount-options
 sudo reboot
 ```
 

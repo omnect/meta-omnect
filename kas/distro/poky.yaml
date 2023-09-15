@@ -8,7 +8,8 @@ distro: poky
 repos:
   ext/poky:
     url: "https://git.yoctoproject.org/git/poky"
-    refspec: yocto-4.0.11
+    branch: kirkstone
+    commit: 5b0919e0200c129c88a5b24d6f229a100541855a
     layers:
       meta:
       meta-poky:

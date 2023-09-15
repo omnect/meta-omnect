@@ -14,9 +14,6 @@ OMNECT_FLASH_MODE_FLAG_FILE="/etc/enforce_flash_mode"
 OMNECT_FLASH_MODE_FIFO="/home/omnect/wic.xz"
 OMNECT_FLASH_MODE_BMAP_FILE="/home/omnect/wic.bmap"
 
-# variable templates, which are replaced at build time
-OMNECT_FLASH_MODE_ETH="UNDEFINED"
-
 # called by generic INITRAMFS
 flash_mode_2_enabled() {
     debug "flash mode 2: ${OMNECT_FLASH_MODE}"
@@ -120,33 +117,55 @@ run_bmap_tool() {
     msg_fatal "bmaptool(${blk_dev}) failed: ${bmap_ret}" && return 1
 }
 
+vfat_grub_dd_workaround()
+{
+    local dest=${1}
+    local machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
+
+    # we encountered situations where the device could not boot after
+    # flash-mode-2 and could boot if flash-mode-2 did run again.
+    # it also could be fixed by manually copying the to be flashed
+    # grub binary bootx64.efi again. (in the error case checksums
+    # of bootx64.efi on the device and in the wic image differed.)
+
+    # ATTENTION: this workaround makes it impossible to boot it
+    # flash-mode-2 is not finished, e.g. device is shutdown waiting
+    # for wic.bmap and wic.xz
+
+    if [[ " ${machine_features} " =~ " grub " ]]; then
+        dd if=/dev/zero of=${dest} bs=@@OMNECT_PART_SIZE_BOOT@@K count=1
+    fi
+
+}
+
 # deploy WIC image via network to (same) active block device
 run_flash_mode_2() {
-    local root_a_p=""
-    local machine_features=""
     msg "Entering omnect flashing mode 2 ..."
 
     # disable flash mode for subsequent restarts
     set_bootloader_env_var ${OMNECT_FLASH_MODE_VAR}
 
-    if [ "${OMNECT_FLASH_MODE_ETH}" == "UNDEFINED" ]; then
-        msg_fatal "missing definition OMNECT_FLASH_MODE_ETH"
-        return 1
+    # we already mounted /dev/omnect/boot when we're using grub. so we unmount before copying boot.
+    if [ -f /usr/bin/grub-editenv ]; then
+        sync
+        run_cmd umount ${ROOTFS_DIR}/boot
+    fi
+
+    local dest_blk=$(readlink -f /dev/omnect/rootA)
+    dest_blk=${dest_blk::-1} # can be /dev/nvme0n1p or /dev/sda
+    local p=${dest_blk:0-1}
+    if [ "${p}" == "p" ]; then
+        dest_blk=${dest_blk::-1}
+    else
+        p=""
     fi
 
     setup_fifo || return 1
-    setup_network ${OMNECT_FLASH_MODE_ETH} || return 1
+    setup_network eth0 || return 1
+    vfat_grub_dd_workaround "${dest_blk}${p}1"
     run_bmap_tool || return 1
 
-    machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
-    if [[ " ${machine_features} " =~ " grub " ]]; then
-        run_cmd mkdir -p /tmp/boot
-        run_cmd mount /dev/omnect/boot /tmp/boot
-        root_a_p=$(readlink -f /dev/omnect/rootA)
-        root_a_p=${root_a_p::-1}
-        run_cmd sed "s#@@ROOT_DEVICE@@#${root_a_p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
-        run_cmd umount /tmp/boot
-    fi
+    flashmode_efi_grub_handling ${dest_blk} ${p}
 
     msg "Rebooting system..."
     sync
@@ -158,5 +177,13 @@ run_flash_mode_2() {
 flash_mode_2_run() {
     add_module_post_hook on_exit
     run_flash_mode_2
-    return=${?}
+    local ret=${?}
+    if [ ${ret} -ne 0 ]; then
+        echo flash_mode_2_run return=${ret}
+        sleep 120
+        return ${ret}
+    else
+        return 0
+    fi
+
 }
