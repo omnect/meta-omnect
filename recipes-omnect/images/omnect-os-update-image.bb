@@ -42,7 +42,7 @@ do_bootloader_package:rpi() {
     tar -czvf boot-partition-update.tar.gz -C ${DEPLOY_DIR_IMAGE}/boot-partition .
 }
 
-do_bootloader_package:omnect_uboot() {
+do_bootloader_package:phytec-imx8mm() {
     tar -czvf boot-partition-update.tar.gz -C ${DEPLOY_DIR_IMAGE} boot.scr fdt-load.scr
 }
 
