@@ -1,0 +1,25 @@
+From 058520728e03a3da2ee758686dd0dfcdef28ee46 Mon Sep 17 00:00:00 2001
+From: JoergZeidler <62105035+JoergZeidler@users.noreply.github.com>
+Date: Mon, 18 Sep 2023 08:31:14 +0200
+Subject: [PATCH] fix CancelApply swupdate_handler_v1 (#27)
+
+---
+ .../step_handlers/swupdate_handler/src/swupdate_handler.cpp     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp b/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
+index 8ecad89..a5825c1 100644
+--- a/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
++++ b/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
+@@ -479,7 +479,7 @@ static ADUC_Result CancelApply(const char* logFolder)
+ 
+     std::string command = adushconst::adu_shell;
+     std::vector<std::string> args{ adushconst::update_type_opt,       adushconst::update_type_microsoft_swupdate,
+-                                   adushconst::update_action_opt,     adushconst::update_action_apply,
++                                   adushconst::update_action_opt,     adushconst::update_action_rollback,
+                                    adushconst::target_log_folder_opt, logFolder };
+ 
+     std::string output;
+-- 
+2.34.1
+

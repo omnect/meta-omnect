@@ -21,6 +21,7 @@ SRC_URI = " \
   file://0001-add-swupdate-user-consent-handler.patch \
   file://0001-retry-handling-on-failed-update-validation.patch \
   file://workaround-deprecated-declarations-openssl3.patch \
+  file://0001-fix-cancel-apply-swupdate_handler_v1.patch \
 "
 SRC_URI:append:eg500 = " file://swupdate_v1_grub.sh"
 
