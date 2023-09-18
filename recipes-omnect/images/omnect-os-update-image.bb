@@ -11,15 +11,21 @@ LIC_FILES_CHKSUM = "\
 
 SRC_URI = "file://sw-description"
 
-COMPATIBLE_MACHINE = "rpi|phytec-imx8mm"
+COMPATIBLE_MACHINE = "rpi|phytec-imx8mm|omnect_grub"
 
-# depends needed to get access to the PKGV from the u-boot package
+# needed to get access to PKGV
 DEPENDS += "virtual/bootloader"
 
 addtask do_bootloader_package before do_swuimage
 
-# do_bootloader_package task shall only run in case the deploy step of u-boot, kernel and u-boot-scr are finished
-do_bootloader_package[depends] += "virtual/bootloader:do_deploy virtual/kernel:do_deploy u-boot-scr:do_deploy"
+do_bootloader_package_extra_depends = ""
+do_bootloader_package_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
+do_bootloader_package[depends] += "virtual/bootloader:do_deploy virtual/kernel:do_deploy ${do_bootloader_package_extra_depends}"
+
+do_bootloader_package() {
+    echo "unexpected usage of default do_bootloader_package function"
+    exit 1
+}
 
 do_bootloader_package:rpi() {
     BOOT_FILES="${IMAGE_BOOT_FILES}"
@@ -36,8 +42,17 @@ do_bootloader_package:rpi() {
     tar -czvf boot-partition-update.tar.gz -C ${DEPLOY_DIR_IMAGE}/boot-partition .
 }
 
-do_bootloader_package() {
+do_bootloader_package:phytec-imx8mm() {
     tar -czvf boot-partition-update.tar.gz -C ${DEPLOY_DIR_IMAGE} boot.scr fdt-load.scr
+}
+
+do_bootloader_package:omnect_grub() {
+    mkdir -p ${WORKDIR}/EFI/BOOT
+    cp ${DEPLOY_DIR_IMAGE}/grub-efi-bootx64.efi ${WORKDIR}/EFI/BOOT/bootx64.efi
+    cp ${DEPLOY_DIR_IMAGE}/bootloader_version   ${WORKDIR}/EFI/BOOT/bootloader_version
+    sed "s#@@ROOT_DEVICE@@#/dev/nvme0n1p#g" ${LAYERDIR_omnect}/recipes-omnect/grub-cfg/grub-cfg/grub.cfg.in > ${WORKDIR}/EFI/BOOT/grub.cfg
+    cd ${WORKDIR}
+    tar cfz boot-partition-update.tar.gz EFI/BOOT/*
 }
 
 do_bootloader_package:append() {
@@ -47,7 +62,7 @@ do_bootloader_package:append() {
 inherit swupdate
 
 # images to build before building swupdate image
-IMAGE_DEPENDS = "omnect-os-image virtual/kernel"
+IMAGE_DEPENDS = "omnect-os-image"
 
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
