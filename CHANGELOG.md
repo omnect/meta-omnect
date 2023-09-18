@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.21.1] Q3 2023
+- iot-hub-device-update: fixed CancelApply for swupdate_handler_v1,
+  so that the correct revert function is called from the adu-swupdate.sh script
+
 ## [kirkstone-0.21.0] Q3 2023
 - added bootloader-env recipe: `bootloader_env.sh` as wrapper for
   `fw_{setenv,printenv}` (u-boot) vs `grub-editenv` (grub)
