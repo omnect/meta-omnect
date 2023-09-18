@@ -12,6 +12,7 @@ After=omnect-first-boot.service
 ConditionPathExists=|/run/omnect-device-service/first_boot
 ConditionPathExists=|/run/omnect-device-service/omnect_validate_update
 ConditionPathExists=|/run/omnect-device-service/omnect_validate_update_failed
+ConditionPathExists=|/run/omnect-device-service/omnect_bootloader_updated
 
 [Service]
 Type=oneshot

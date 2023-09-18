@@ -3,9 +3,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-# Copyright (c) conplement AG
-# Licensed under the MIT License.
-
 # Ensure that getopt starts from first option if ". <script.sh>" was used.
 OPTIND=1
 
@@ -80,22 +77,34 @@ mkdir -p "$log_dir"
 # that we use to tell swupdate which partition to target.
 if [[ $(readlink -f /dev/omnect/rootCurrent) == $(readlink -f /dev/omnect/rootA) ]]; then
     selection="stable,copy2"
-    update_part=omnect-os-rootB
+    update_part=3
 else
     selection="stable,copy1"
-    update_part=omnect-os-rootA
+    update_part=2
 fi
 
 if [[ $action == "apply" ]]; then
+    # Set the bootloader environment variable
+    # to tell the bootloader to boot into the update partition.
+    # omnect_os_bootpart variable is specific to our boot.scr script.
+    # if the bootloader is also updated, the update will not be validated.
+    # -> revert to old rootFS not possible
     echo "Applying update." >> "${log_dir}/swupdate.log"
-    if [ ! -f "/run/omnect-bootloader-update" ]; then
-        bootloader_env.sh set omnect_validate_update_part ${update_part}
+    if [ -f "/run/omnect-bootloader-update" ]; then
+        bootloader_env.sh set omnect_os_bootpart $update_part
+        echo "use omnect_os_bootpart environment" >> "${log_dir}/swupdate.log"
+    else
+        bootloader_env.sh set omnect_validate_update_part $update_part
         echo "use omnect_validate_update_part environment" >> "${log_dir}/swupdate.log"
     fi
     $ret $?
 fi
 
 if [[ $action == "revert" ]]; then
+    # Set the bootloader environment variable
+    # to tell the bootloader to boot into the current partition
+    # instead of the one that was updated.
+    # omnect_validate_update_part variable is specific to our boot.scr script.
     echo "Reverting update." >> "${log_dir}/swupdate.log"
     bootloader_env.sh unset omnect_validate_update_part
     $ret $?
@@ -115,12 +124,12 @@ if [[ $action == "install" ]]; then
         # Call swupdate with the image file and the public key for signature validation
         swupdate -v -i "${image_file}" -k /usr/share/swupdate/public.pem -e ${selection} &>> "${log_dir}/swupdate.log"
         if [ $? -eq 0 ]; then
-            # workaround for update from image without set bootloader version
-            [ -f /boot/EFI/BOOT/bootloader_version ] || echo > /boot/EFI/BOOT/bootloader_version
             swupdate -v -i "${image_file}" -k /usr/share/swupdate/public.pem -e stable,bootloader &>> "${log_dir}/swupdate.log"
             if [ $? -eq 0 ]; then
-                bootloader_env.sh set omnect_os_bootpart ${update_part}
-                bootloader_env.sh set omnect_bootloader_updated 1
+                if [ -f "/run/omnect-bootloader-update" ]; then
+                    bootloader_env.sh set omnect_u-boot_version $(cat /run/omnect-bootloader-update)
+                    bootloader_env.sh set omnect_bootloader_updated 1
+                fi
             fi
         fi
         $ret $?
