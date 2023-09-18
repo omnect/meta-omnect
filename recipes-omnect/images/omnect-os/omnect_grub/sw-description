@@ -50,19 +50,19 @@ software =
 		};
         embedded-script ="
         function check_bootloader_version(image)
-                fh = io.open(\"/boot/EFI/BOOT/bootloader_version\")
-                bootloader_version = fh:read()
-                fh:close()
-                swupdate.trace(\"bootloader_version: \" .. bootloader_version)
-                swupdate.trace(\"image.version: \" .. image.version)
-                if bootloader_version == image.version then
+            fh = io.open(\"/boot/EFI/BOOT/bootloader_version\")
+            bootloader_version = fh:read()
+            fh:close()
+            swupdate.trace(\"bootloader_version: \" .. bootloader_version)
+            swupdate.trace(\"image.version: \" .. image.version)
+            if bootloader_version == image.version then
                 result = nil
-                else
+            else
                 f = io.open(\"/run/omnect-bootloader-update\", \"w\")
                 f:close()
                 result = image
-                end
-                return true, result
+            end
+            return true, result
         end
         ";
 	}

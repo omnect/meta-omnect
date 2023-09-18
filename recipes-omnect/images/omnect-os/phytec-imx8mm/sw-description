@@ -5,22 +5,21 @@ software =
     @@MACHINE@@ = {
         embedded-script ="
         function check_bootloader_version(image)
-                os.execute(\"fw_printenv -n omnect_u-boot_version > /tmp/bootloader_version\")
-                fh = io.open(\"/tmp/bootloader_version\")
-                bootloader_version = fh:read()
-                swupdate.trace(\"bootloader_version: \" .. bootloader_version)
-                if bootloader_version == image.version then
+            os.execute(\"fw_printenv -n omnect_u-boot_version > /tmp/bootloader_version\")
+            fh = io.open(\"/tmp/bootloader_version\")
+            bootloader_version = fh:read()
+            fh:close()
+            swupdate.trace(\"bootloader_version: \" .. bootloader_version)
+            swupdate.trace(\"image.version: \" .. image.version)
+            if bootloader_version == image.version then
                 result = nil
-                else
-                os.execute(\"mkdir -p /run/bootloader\")
-                f = io.open(\"/run/bootloader/update\", \"w\")
+            else
+                f = io.open(\"/run/omnect-bootloader-update\", \"w\")
                 f:write(image.version)
                 f:close()
                 result = image
-                end
-                fh:close()
-                swupdate.trace(\"image.version: \" .. image.version)
-                return true, result
+            end
+            return true, result
         end
         ";
         hardware-compatibility: [ "@@HW_REV@@" ];

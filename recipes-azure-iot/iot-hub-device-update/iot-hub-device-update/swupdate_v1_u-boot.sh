@@ -90,7 +90,7 @@ if [[ $action == "apply" ]]; then
     # if the bootloader is also updated, the update will not be validated.
     # -> revert to old rootFS not possible
     echo "Applying update." >> "${log_dir}/swupdate.log"
-    if [ -f "/run/bootloader/update" ]; then
+    if [ -f "/run/omnect-bootloader-update" ]; then
         bootloader_env.sh set omnect_os_bootpart $update_part
         echo "use omnect_os_bootpart environment" >> "${log_dir}/swupdate.log"
     else
@@ -126,8 +126,8 @@ if [[ $action == "install" ]]; then
         if [ $? -eq 0 ]; then
             swupdate -v -i "${image_file}" -k /usr/share/swupdate/public.pem -e stable,bootloader &>> "${log_dir}/swupdate.log"
             if [ $? -eq 0 ]; then
-                if [ -f "/run/bootloader/update" ]; then
-                    bootloader_env.sh set omnect_u-boot_version $(cat /run/bootloader/update)
+                if [ -f "/run/omnect-bootloader-update" ]; then
+                    bootloader_env.sh set omnect_u-boot_version $(cat /run/omnect-bootloader-update)
                     bootloader_env.sh set omnect_bootloader_updated 1
                 fi
             fi
