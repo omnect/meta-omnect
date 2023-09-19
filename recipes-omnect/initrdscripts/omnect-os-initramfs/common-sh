@@ -63,8 +63,10 @@ check_fs()
     msg "fsck result for \"${label}\" is ${fsck_res}"
 
     if [ ${fsck_res} -ne 0 ]; then
-        local content="$(tr '\n' '\302\245' < /tmp/fsck_out)"
+        local content=$(base64 -w0 /tmp/fsck_out)
+        echo content=${content}
         set_bootloader_env_var "omnect_fsck_${label}" "${content}"
+        sleep 10
     fi
 
     if [ ${fsck_res} -eq 2 ]; then

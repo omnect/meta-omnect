@@ -31,8 +31,8 @@ set_bootloader_env_var()
 
     test_and_mount_boot || return 1
     if [ -n "$var_value" ];then
-        grub-editenv ${ROOTFS_DIR}/boot/EFI/BOOT/grubenv set "${var_name}"="${var_value}"
+        grub-editenv ${ROOTFS_DIR}/boot/EFI/BOOT/grubenv set "${var_name}"="${var_value}" || return 1
     else
-        grub-editenv ${ROOTFS_DIR}/boot/EFI/BOOT/grubenv unset "${var_name}"
+        grub-editenv ${ROOTFS_DIR}/boot/EFI/BOOT/grubenv unset "${var_name}" || return 1
     fi
 }

@@ -20,8 +20,8 @@ set_bootloader_env_var()
     msg "set_bootloader_env_var" "${var_name}" "${var_value}"
 
     if [ -n "${var_value}" ];then
-        fw_setenv "${var_name}" "${var_value}"
+        fw_setenv "${var_name}" "${var_value}" || return 1
     else
-        fw_setenv "${var_name}"
+        fw_setenv "${var_name}" || return 1
     fi
 }
