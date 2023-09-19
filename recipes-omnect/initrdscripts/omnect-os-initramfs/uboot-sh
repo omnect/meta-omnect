@@ -25,3 +25,17 @@ set_bootloader_env_var()
         fw_setenv "${var_name}" || return 1
     fi
 }
+
+save_fsck_status_base64()
+{
+    local part_name="${1}"
+    local source_file="${2}"
+    local fsck_res="${3}" #ignored here
+    set_boot_loader_env_var omnect_fsck_${part_name} $(base64 -w0 ${source_file})
+}
+
+get_fsck_status_base64()
+{
+    local part_name="${1}"
+    get_boot_loader_env_var omnect_fsck_${part_name}
+}

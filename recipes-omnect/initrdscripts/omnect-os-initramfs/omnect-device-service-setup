@@ -27,7 +27,7 @@ fsck_handling() {
 
     echo "{}" > ${omnect_run_dir}/fsck.json
     for i in ${labels[@]}; do
-        local content="$(get_bootloader_env_var omnect_fsck_${i} | base64 -d -)"
+        local content="$(get_fsck_status_base64 omnect_fsck_${i} | base64 -d -)"
         if [ -n "${content}" ]; then
             #TODO rm me
             msg omnect_fsck_${i} set

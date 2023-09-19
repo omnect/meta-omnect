@@ -36,3 +36,32 @@ set_bootloader_env_var()
         grub-editenv ${ROOTFS_DIR}/boot/EFI/BOOT/grubenv unset "${var_name}" || return 1
     fi
 }
+
+save_fsck_status_base64()
+{
+    local part_name="${1}"
+    local source_file="${2}"
+    local fsck_res="${3}"
+
+    if [ ! "${part_name}" = "boot" ]; then
+        test_and_mount_boot || return 1
+        base64 -w0 ${source_file} > ${ROOTFS_DIR}/boot/fsck.${part_name}
+    elif [ ! "${fsck_res}" = "2" ]; then
+        test_and_mount_boot || return 1
+        set_boot_loader_env_var omnect_fsck_boot $(base64 -w0 ${source_file}) || set_boot_loader_env_var omnect_fsck_boot $(echo "fsck output to big" | base64 -w0 -)
+    else
+        msg "handled fsck error for boot partition; can not save fsck state"
+    fi
+}
+
+get_fsck_status_base64()
+{
+    local part_name="${1}"
+    test_and_mount_boot || return 1
+    if [ ! "${part_name}" = "boot" ]; then
+        cat ${ROOTFS_DIR}/boot/fsck.${part_name} || return 1
+        rm ${ROOTFS_DIR}/boot/fsck.${part_name}
+    else
+        get_boot_loader_env_var omnect_fsck_boot
+    fi
+}
