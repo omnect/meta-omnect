@@ -53,7 +53,7 @@ run_omnect_device_service_setup () {
     local omnect_validate_update_flag="$(get_bootloader_env_var omnect_validate_update)"
 
     [ -z "${omnect_device_service_user}" ] && msg "ERROR: user omnect_device_service not found in rootfs" && return 1
-    [ -z "${omnect_device_service_group}" ] && msg "ERROR: group omnect_validate_update not found in rootfs" && return 1
+    [ -z "${omnect_device_service_group}" ] && msg "ERROR: group omnect_device_service not found in rootfs" && return 1
 
     run_cmd mkdir -p ${omnect_run_dir} \
     && run_cmd chown ${omnect_device_service_user}:${omnect_device_service_group} ${omnect_run_dir} \

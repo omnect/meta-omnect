@@ -19,7 +19,7 @@ msg_fatal() {
 }
 
 msg_error() {
-    echo "<3> ERROR: ${@}" > /dev/kmsg
+    echo "<3>omnect-os-initramfs: ERROR: ${@}" > /dev/kmsg
 }
 
 stderr_error() {

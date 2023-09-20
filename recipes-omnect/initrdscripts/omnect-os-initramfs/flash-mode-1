@@ -219,7 +219,7 @@ flash_mode_1_run() {
     if [ -b "${blk_dev_data}" ]; then
         # store log file
         mkdir -p /tmp/mnt_data
-        check_fs "${blk_dev_data}"
+        check_fs "data"
         mount_partition "ext4" "${blk_dev_data}" "/tmp/mnt_data" "defaults,rw"
         run_cmd cp /tmp/flash-mode-1.log "/tmp/mnt_data"
         run_cmd sync
