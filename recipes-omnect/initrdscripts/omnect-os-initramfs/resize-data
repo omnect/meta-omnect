@@ -10,7 +10,7 @@ run_resize_data() {
 
     # data partition not yet resized
     if [ -z "${resized_data}" ]; then
-        data_part=$(get_block_device data)
+        data_part=$(readlink -f /dev/omnect/data)
         [[ $(cat /proc/mounts | grep ${data_part} | wc -l) -ne 0 ]] && msg "error: resize_data: \"${data_part}\" is mounted." && return
 
         root_disk=$(readlink -f /dev/omnect/rootblk)
