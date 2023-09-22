@@ -1,5 +1,5 @@
 diff --git a/include/configs/rpi.h b/include/configs/rpi.h
-index 4c5c1ac3..91c81c85 100644
+index 4c5c1ac31f..a4b648fb9e 100644
 --- a/include/configs/rpi.h
 +++ b/include/configs/rpi.h
 @@ -13,6 +13,8 @@
@@ -22,7 +22,7 @@ index 4c5c1ac3..91c81c85 100644
  /*
   * Memory layout for where various images get loaded by boot scripts:
   *
-@@ -174,7 +180,10 @@
+@@ -174,7 +180,11 @@
  	ENV_DEVICE_SETTINGS \
  	ENV_DFU_SETTINGS \
  	ENV_MEM_LAYOUT_SETTINGS \

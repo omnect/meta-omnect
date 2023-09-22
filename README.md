@@ -7,13 +7,15 @@ This yocto meta layer provides the poky based device management distribution `om
 - [iot-hub-device-update](https://github.com/Azure/iot-hub-device-update)
 - [iot-identity-service](https://github.com/Azure/iot-identity-service)
 - [iotedge](https://github.com/Azure/iotedge)
-- `omnect-os image` - an updatable device image with A/B rootfs update support; respectively `omnect-os update image` - the corresponding [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image<br>
+- `omnect-os image` - an updatable device image with A/B rootfs update support<br>
   implicit features:
     - `iot-hub-device-update` and `iot-identity-service` are installed
     - `iot-hub-device-update` is provisioned as module identity via `iot-identity-service`
     - first boot script `/usr/bin/omnect_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-omnect/recipes-core/systemd/systemd/omnect_first_boot.sh`
     - factory reset via OS bootloader environment variable `factory-reset`
       - **note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset), below.
+- `omnect-os update image` - the [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image
+    - additionally: updating the bootloader via swupdate
 
 ### `DISTRO_FEATURES`
 `omnect-os` depends on [poky](https://www.yoctoproject.org/software-item/poky/).

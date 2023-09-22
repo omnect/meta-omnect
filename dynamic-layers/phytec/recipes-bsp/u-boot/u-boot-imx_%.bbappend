@@ -13,6 +13,10 @@ SRC_URI += " \
     file://omnect_env.h \
     file://omnect_env_phycore_imx8mm.h \
 "
+# Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
+# swupdate and iot-hub-device-update, the local version must be increased;
+UBOOT_LOCALVERSION = "-1"
+PKGV = "${PV}${UBOOT_LOCALVERSION}"
 
 inherit omnect_uboot_configure_env
 
@@ -22,4 +26,8 @@ do_configure:prepend() {
 
 do_configure:prepend:mx8mm-nxp-bsp() {
     cp -f ${WORKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h
+}
+
+do_deploy:append() {
+  echo "${PKGV}" > ${DEPLOY_DIR_IMAGE}/bootloader_version
 }
