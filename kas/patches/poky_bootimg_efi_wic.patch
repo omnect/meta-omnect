@@ -1,8 +1,8 @@
 diff --git a/scripts/lib/wic/plugins/source/bootimg-efi.py b/scripts/lib/wic/plugins/source/bootimg-efi.py
-index a2b9f4c893..945e538d3a 100644
+index a2b9f4c893..355cd1b417 100644
 --- a/scripts/lib/wic/plugins/source/bootimg-efi.py
 +++ b/scripts/lib/wic/plugins/source/bootimg-efi.py
-@@ -285,67 +285,72 @@ class BootimgEFIPlugin(SourcePlugin):
+@@ -285,67 +285,75 @@ class BootimgEFIPlugin(SourcePlugin):
  
          hdddir = "%s/hdd/boot" % cr_workdir
  
@@ -133,6 +133,9 @@ index a2b9f4c893..945e538d3a 100644
 +        omnect_grubenv_file = get_bitbake_var("OMNECT_GRUBENV_FILE")
 +        grubenv_install_cmd = "install -m 0644 -D %s %s/EFI/BOOT/grubenv" % (omnect_grubenv_file, hdddir)
 +        exec_cmd(grubenv_install_cmd)
++        deploy_dir_img = get_bitbake_var("DEPLOY_DIR_IMAGE")
++        bootloader_version_install_cmd = "install -m 0644 -D %s/bootloader_version %s/EFI/BOOT/bootloader_version" % (deploy_dir_img, hdddir)
++        exec_cmd(bootloader_version_install_cmd)
  
          if get_bitbake_var("IMAGE_EFI_BOOT_FILES"):
              for src_path, dst_path in cls.install_task:

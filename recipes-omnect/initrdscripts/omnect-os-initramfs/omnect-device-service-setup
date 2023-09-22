@@ -51,6 +51,8 @@ run_omnect_device_service_setup () {
     local omnect_validate_update_failed_flag="$(get_bootloader_env_var omnect_validate_update_failed)"
     local omnect_validate_update_file="${omnect_run_dir}/omnect_validate_update"
     local omnect_validate_update_flag="$(get_bootloader_env_var omnect_validate_update)"
+    local omnect_bootloader_updated_file="${omnect_run_dir}/omnect_bootloader_updated"
+    local omnect_bootloader_updated_flag="$(get_bootloader_env_var omnect_bootloader_updated)"
 
     [ -z "${omnect_device_service_user}" ] && msg "ERROR: user omnect_device_service not found in rootfs" && return 1
     [ -z "${omnect_device_service_group}" ] && msg "ERROR: group omnect_device_service not found in rootfs" && return 1
@@ -62,6 +64,16 @@ run_omnect_device_service_setup () {
     if [ -n "${omnect_validate_update_flag}" ] && [ -n "${omnect_validate_update_failed_flag}" ]; then
         msg_fatal "both flags are set \"omnect_validate_update\" and \"omnect_validate_update_failed\""
         return 1
+    elif   [ -n "${omnect_validate_update_flag}" ] \
+        || [ -n "${omnect_validate_update_failed_flag}" ] \
+        || [ -n "${omnect_bootloader_updated_flag}" ] ; then
+        omnect_device_service_user="$(get_id omnect_device_service ${ROOTFS_DIR}/etc/passwd)"
+        omnect_validate_update_group="$(get_id omnect_validate_update ${ROOTFS_DIR}/etc/group)"
+        [ -z "${omnect_device_service_user}" ] && msg "ERROR: user omnect_device_service not found in rootfs" && return 1
+        [ -z "${omnect_validate_update_group}" ] && msg "ERROR: group omnect_validate_update not found in rootfs" && return 1
+        run_cmd mkdir -p ${omnect_run_dir} \
+        && run_cmd chown ${omnect_device_service_user}:${omnect_validate_update_group} ${omnect_run_dir} \
+        && run_cmd chmod 750 ${omnect_run_dir}
     fi
 
     # omnect update workflow handling
@@ -80,6 +92,12 @@ run_omnect_device_service_setup () {
         # a possible reason to not do it here could be that we never
         # reach aziot-identityd-precondition
     fi
+    if [ -n "${omnect_bootloader_updated_flag}" ]; then
+        run_cmd touch ${omnect_bootloader_updated_file} \
+        && run_cmd chown ${omnect_device_service_user}:${omnect_validate_update_group} ${omnect_bootloader_updated_file} \
+        && run_cmd chmod 600 ${omnect_bootloader_updated_file} \
+        && set_bootloader_env_var omnect_bootloader_updated ""
+    fi
 
     fsck_handling "${omnect_run_dir}" "${omnect_device_service_user}" "${omnect_device_service_group}"  || return 1
 
@@ -88,6 +106,7 @@ run_omnect_device_service_setup () {
 
 omnect_device_service_setup_run() {
     add_module_post_hook on_exit
+    msg omnect_device_service_setup
     run_omnect_device_service_setup
     return=${?}
 }
