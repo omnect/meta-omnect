@@ -18,12 +18,6 @@ CMDLINE_ROOTFS = ""
 # u-boot config vars
 UBOOT_FDT_ADDR = "fdt_addr"
 
-# ethernet device name
-OMNECT_ETH0 = "eth0"
-
-# wlan device name
-OMNECT_WLAN0 = "wlan0"
-
 # configure hardware watchdog
 # the maximum watchdog deadline depends on the hardware capabilities
 SYSTEMD_RuntimeWatchdogSec  = "15"
