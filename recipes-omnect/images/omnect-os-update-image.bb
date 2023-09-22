@@ -13,7 +13,13 @@ SRC_URI = "file://sw-description"
 
 COMPATIBLE_MACHINE = "raspberrypi4-64|phygate-tauri-l-imx8mm-2"
 
+# depends needed to get access to the PKGV from the u-boot package
+DEPENDS += "virtual/bootloader"
+
 addtask do_bootloader_package before do_swuimage
+
+# do_bootloader_package task shall only run in case the deploy step of the u-boot is finished
+do_bootloader_package[depends] += "virtual/bootloader:do_deploy"
 
 do_bootloader_package() {
     if [ "${MACHINE}" = "raspberrypi4-64" ]; then
