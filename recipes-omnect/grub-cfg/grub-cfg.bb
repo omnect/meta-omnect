@@ -13,5 +13,6 @@ SRC_URI = "\
 "
 
 do_install() {
+    sed -i "s/@@APPEND@@/${APPEND}/g" ${WORKDIR}/grub.cfg.in
 	install -m 0644 -D ${WORKDIR}/grub.cfg.in ${D}${sysconfdir}/omnect/grub.cfg.in
 }

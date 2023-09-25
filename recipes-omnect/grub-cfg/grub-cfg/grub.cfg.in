@@ -31,12 +31,12 @@ set default="${omnect_os_bootpart}"
 
 menuentry 'omnect-os-rootA'{
     set root=(hd0,gpt2)
-    linux /boot/bzImage rootwait root=@@ROOT_DEVICE@@2 console=tty0
+    linux /boot/bzImage rootwait root=@@ROOT_DEVICE@@2 console=tty0 @@APPEND@@
     initrd /boot/initramfs.cpio.gz
 }
 
 menuentry 'omnect-os-rootB'{
     set root=(hd0,gpt3)
-    linux /boot/bzImage rootwait root=@@ROOT_DEVICE@@3 console=tty0
+    linux /boot/bzImage rootwait root=@@ROOT_DEVICE@@3 console=tty0 @@APPEND@@
     initrd /boot/initramfs.cpio.gz
 }
