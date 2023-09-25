@@ -20,10 +20,8 @@ SRC_URI = " \
   file://iot-hub-device-update.tmpfilesd \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
+  file://0001-swupdate_v2-update-validation.patch \
 "
-
-SRC_URI:append:omnect_uboot = " file://swupdate_v1_u-boot.sh"
-SRC_URI:append:omnect_grub = " file://swupdate_v1_grub.sh"
 
 PV = "${SRCPV}"
 
@@ -114,14 +112,6 @@ do_install:append() {
   install -d ${D}${sysconfdir}/omnect/consent/swupdate
   install -m 0770 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
   install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
-}
-
-do_install:append:omnect_grub() {
-  install -m 0755 ${WORKDIR}/swupdate_v1_grub.sh ${D}${libdir}/adu/adu-swupdate.sh
-}
-
-do_install:append:omnect_uboot() {
-  install -m 0755 ${WORKDIR}/swupdate_v1_u-boot.sh ${D}${libdir}/adu/adu-swupdate.sh
 }
 
 pkg_postinst:${PN}() {
