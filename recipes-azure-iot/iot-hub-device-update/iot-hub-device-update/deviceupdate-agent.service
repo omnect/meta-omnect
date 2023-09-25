@@ -19,7 +19,7 @@ Group=adu
 
 ExecStartPre=-/usr/bin/AducIotAgent -l 2 --extension-type updateContentHandler --extension-id "microsoft/script:1"           --register-extension /usr/lib/adu/extensions/libmicrosoft_script_1.so
 ExecStartPre=-/usr/bin/AducIotAgent -l 2 --extension-type updateContentHandler --extension-id "microsoft/steps:1"            --register-extension /usr/lib/adu/extensions/libmicrosoft_steps_1.so
-ExecStartPre=-/usr/bin/AducIotAgent -l 2 --extension-type updateContentHandler --extension-id "microsoft/swupdate:1"         --register-extension /usr/lib/adu/extensions/libmicrosoft_swupdate_1.so
+ExecStartPre=-/usr/bin/AducIotAgent -l 2 --extension-type updateContentHandler --extension-id "microsoft/swupdate:2"         --register-extension /usr/lib/adu/extensions/libmicrosoft_swupdate_2.so
 ExecStartPre=-/usr/bin/AducIotAgent -l 2 --extension-type updateContentHandler --extension-id "microsoft/update-manifest:5"  --register-extension /usr/lib/adu/extensions/libmicrosoft_steps_1.so
 ExecStartPre=-/usr/bin/AducIotAgent -l 2 --extension-type updateContentHandler --extension-id "omnect/swupdate_consent:1"    --register-extension /usr/lib/adu/extensions/libomnect_swupdate_consent_1.so
 ExecStartPre=-/usr/bin/AducIotAgent -l 2 --extension-type contentDownloader                                                  --register-extension /usr/lib/adu/extensions/libdeliveryoptimization_content_downloader.so

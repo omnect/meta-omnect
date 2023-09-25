@@ -1,0 +1,56 @@
+From 1a975a7cb9314feba002cc190512b76941b2cf5e Mon Sep 17 00:00:00 2001
+From: Kas User <kas@example.com>
+Date: Mon, 25 Sep 2023 12:18:54 +0000
+Subject: [PATCH] swupdate_v2 update validation
+
+---
+ .../src/swupdate_handler_v2.cpp               | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
+index db5c6c5..ee28f8e 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
++++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
+@@ -300,12 +300,42 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+     memset(&fileEntity, 0, sizeof(fileEntity));
+     int fileCount = workflow_get_update_files_count(workflowHandle);
+     ADUC_Result result = SWUpdate_Handler_DownloadScriptFile(workflowHandle);
++    bool retry = false;
++    std::ifstream omnectValidateUpdateFailedFilePath("/run/omnect-device-service/omnect_validate_update_failed");
++    const char* runtimeDir = std::getenv("RUNTIME_DIRECTORY");
++    std::string omnectUpdateRetryFileName("/omnect_update_retry");
+ 
+     if (IsAducResultCodeFailure(result.ResultCode))
+     {
+         goto done;
+     }
+ 
++    if (NULL == runtimeDir)
++    {
++        Log_Error("Update validation on new boot part failed. Rebooted to old boot part.");
++    }
++    else
++    {
++        std::ifstream omnectUpdateRetryFilePath(std::string(runtimeDir) + omnectUpdateRetryFileName);
++        retry = omnectUpdateRetryFilePath.good();
++    }
++
++    // We return with an error in case we just booted into here after an update validation
++    // failed on the new partition. We do this in order to step into update failed state
++    // which also shows up in ADU cloud and offers triggering an update retry.
++    // If the cloud triggered a retry we ignore omnect_validate_update_failed flag.
++    if (omnectValidateUpdateFailedFilePath.good())
++    {
++        if (!retry)
++        {
++            Log_Error("Update validation on new boot part failed. Rebooted to old boot part.");
++            result.ExtendedResultCode = ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION;
++            goto done;
++        }
++
++        Log_Info("Retry update after failed update vailidation.");
++    }
++
+     // Determine whether to continue downloading the rest.
+     installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
+     result = IsInstalled(workflowData);
