@@ -97,10 +97,10 @@ _timestamp=
 # that we use to tell swupdate which partition to target.
 if [[ $(readlink -f /dev/omnect/rootCurrent) == $(readlink -f /dev/omnect/rootA) ]]; then
     selection="stable,copy2"
-    update_part=3
+    update_part=omnect-os-rootB
 else
     selection="stable,copy1"
-    update_part=2
+    update_part=omnect-os-rootA
 fi
 
 update_timestamp() {
@@ -590,10 +590,11 @@ InstallUpdate() {
             if [[ ${public_key_file} -ne "" ]]; then
                 swupdate -v -i "${image_file}" -k "${public_key_file}"-e ${selection} &>> "${swupdate_log_file}"
                 if [ $? -eq 0 ]; then
+                    # workaround for update from image without set bootloader version
+                    [ -f /boot/EFI/BOOT/bootloader_version ] || echo > /boot/EFI/BOOT/bootloader_version
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,bootloader &>> "${swupdate_log_file}"
                     if [ $? -eq 0 ]; then
                         if [ -f "/run/omnect-bootloader-update" ]; then
-                            bootloader_env.sh set omnect_u-boot_version $(cat /run/omnect-bootloader-update)
                             bootloader_env.sh set omnect_bootloader_updated 1
                         fi
                     fi
@@ -651,11 +652,6 @@ ApplyUpdate() {
 
     echo "Applying." >> "${log_file}"
 
-    # Set the bootloader environment variable
-    # to tell the bootloader to boot into the update partition.
-    # omnect_os_bootpart variable is specific to our boot.scr script.
-    # if the bootloader is also updated, the update will not be validated.
-    # -> revert to old rootFS not possible
     if [ -f "/run/omnect-bootloader-update" ]; then
         bootloader_env.sh set omnect_os_bootpart $update_part
         echo "use omnect_os_bootpart environment" >> "${log_file}"
@@ -707,11 +703,6 @@ ApplyUpdate() {
 #
 CancelUpdate() {
     log_info "CancelUpdate called"
-
-    # Set the bootloader environment variable
-    # to tell the bootloader to boot into the current partition
-    # instead of the one that was updated.
-    # omnect_validate_update_part variable is specific to our boot.scr script.
 
     echo "Cancelling update." >> "${log_file}"
     resultCode=0
