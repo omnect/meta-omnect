@@ -11,23 +11,23 @@ common_sh_enabled()
 # - we write to kmsg, so we can respect the kernel cmdline "quiet" argument
 #   and we're able to find the initramfs output in the journal
 msg() {
-    echo "<6> $@" >/dev/kmsg
+    echo "<6>omnect-os-initramfs: ${@}" > /dev/kmsg
 }
 
 msg_fatal() {
-    msg "<2> FATAL ERROR: $1"
+    echo "<2>omnect-os-initramfs: FATAL ERROR: ${@}" > /dev/kmsg
 }
 
 msg_error() {
-    msg "<3> ERROR: $1"
+    echo "<3>omnect-os-initramfs: ERROR: ${@}" > /dev/kmsg
 }
 
 stderr_error() {
-    echo "ERROR: $1" >&2
+    echo "ERROR: $@" >&2
 }
 
 stderr_fatal() {
-    echo "FATAL ERROR: $1" >&2
+    echo "FATAL ERROR: $@" >&2
 }
 
 run_cmd() {
@@ -48,70 +48,43 @@ run_cmd_stdout() {
 
 # check ext4 filesystem
 # re-format partition in the case of uncorrectable fsck errors or enforced flag
-check_ext4_fs()
+check_fs()
 {
-    local   ext4_label=$1  # filesystem label
-    local block_device=$2  # block device name
-    local enforce_mkfs=$3  # enforce reformatting: 0|1
+    local label=$1  # label
     local fsck_res=0
     local kmsg_ratelimit=$(cat /proc/sys/kernel/printk_devkmsg)
 
-    msg "check_ext4_fs ${ext4_label} ${block_device}"
+    msg "check_fs /dev/omnect/${label}"
     echo "on" > /proc/sys/kernel/printk_devkmsg
 
-    if [ -z "${block_device}" ] || [ ! -b "${block_device}" ]; then
-        msg_fatal "\"${block_device}\" not a valid block device"
-        return 1
+    # regular boot; fsck handles unclean state (i.e.; not unmounted)
+    fsck -y /dev/omnect/${label} &> /tmp/fsck_out
+    fsck_res=$?
+    msg "fsck result for \"${label}\" is ${fsck_res}"
+
+    if [ ${fsck_res} -ne 0 ]; then
+        save_fsck_status_base64 "${label}" "/tmp/fsck_out" "${fsck_res}"
     fi
 
-    if [ ${enforce_mkfs} -eq 0 ]; then
-        # regular boot; fsck handles unclean state (i.e.; not unmounted)
-        run_cmd fsck.ext4 -p ${block_device}
-        fsck_res=$?
-        msg "fsck result for ${block_device} is ${fsck_res}"
-    fi
-
-    if [ ${enforce_mkfs} -eq 1 ] || [ ${fsck_res} -gt 2 ]; then
-        # -- mkfs enforced OR uncorrectable fsck errors --
-        msg "reformatting ${block_device} [fsck_res=${fsck_res}, enforce_mkfs=${enforce_mkfs}] ..."
-        run_cmd mkfs.ext4 -F -q ${block_device} || return 1
-
-        # set ext4 label; disable enforced fsck
-        run_cmd tune2fs ${block_device} -c -1 -i 0 -L ${ext4_label} || return 1
-        run_cmd sync
-
-        # check filesystem again with forced mode
-        run_cmd fsck.ext4  ${block_device} -f -p || return 1
-
-    else
-        if [ ${fsck_res} -eq 2 ]; then
-            # -- corrected by fsck, but reboot required --
-            msg "reboot indicated by fsck"
-            run_cmd reboot -f
-        fi
+    if [ ${fsck_res} -eq 2 ]; then
+        msg "reboot indicated by fsck"
+        run_cmd reboot -f
     fi
 
     echo ${kmsg_ratelimit} > /proc/sys/kernel/printk_devkmsg
     return 0
 }
 
-# get block device name from label
-#     using this functions guarantees consistent /proc/mounts
-get_block_device()
-{
-    local label="$1"  # label designating block device
-    local blk_dev=""
+reformat_ext4_fs() {
+    local label=$1  # filesystem label
 
-    blk_dev=$(readlink -f /dev/omnect/${label})
+    # -- mkfs enforced OR uncorrectable fsck errors --
+    msg "reformatting /dev/omnect/${label}  ..."
+    run_cmd mkfs.ext4 -F -q /dev/omnect/${label} || return 1
 
-    if [ -z "${blk_dev}" ] || [ ! -b "${blk_dev}" ]; then
-        msg_fatal "\"${blk_dev}\" not a valid block device [label=${label}]"  # output: /dev/console
-        echo ""
-        return 1
-    fi
-
-    echo ${blk_dev}
-    return 0
+    # set ext4 label; disable enforced fsck
+    run_cmd tune2fs /dev/omnect/${label} -c -1 -i 0 -L ${label} || return 1
+    run_cmd sync
 }
 
 # mount filesystem of partition
@@ -169,16 +142,15 @@ umount_rootfs_partition()
 setup_etc_partition()
 {
     local     rootfs_dir="$1"
-    local        etc_blk="$2"
-    local       mnt_opts="$3"
+    local       mnt_opts="$2"
 
     msg "setup etc partition"
 
     # check etc partition to handle unclean (not unmounted) state
-    check_ext4_fs "etc" "${etc_blk}" 0
+    check_fs etc
 
     # mount etc partition
-    mount_partition "ext4" "${etc_blk}" "${rootfs_dir}/mnt/etc" "${mnt_opts}"
+    mount_partition "ext4" /dev/omnect/etc "${rootfs_dir}/mnt/etc" "${mnt_opts}"
 
     setup_etc_from_factory "${rootfs_dir}"
 
@@ -198,16 +170,15 @@ umount_etc_partition()
 setup_data_partition()
 {
     local rootfs_dir="$1"
-    local   data_blk="$2"
-    local   mnt_opts="$3"
+    local   mnt_opts="$2"
 
     msg "setup data partition"
 
     # check data partition to handle unclean (not unmounted) state
-    check_ext4_fs "data" "${data_blk}" 0
+    check_fs data
 
     # mount data partition
-    mount_partition "ext4" "${data_blk}" "${rootfs_dir}/mnt/data" "${mnt_opts}"
+    mount_partition "ext4" "/dev/omnect/data" "${rootfs_dir}/mnt/data" "${mnt_opts}"
 
     # mount home overlay
     run_cmd mkdir -p "${rootfs_dir}/mnt/data/home/work"
@@ -295,21 +266,12 @@ on_exit()
     fi
 }
 
-flashmode_efi_grub_handling()
+flashmode_efi_handling()
 {
     local dest_dev=${1}
     local p=${2}
     local machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
     local ret=0
-
-    if [[ " ${machine_features} " =~ " grub " ]]; then
-        echo "Configuring grub"
-        run_cmd_stdout mkdir -p /tmp/boot
-        run_cmd_stdout mount ${dest_dev}${p}1 /tmp/boot
-        sed "s#@@ROOT_DEVICE@@#${dest_dev}${p}#g" /etc/omnect/grub.cfg.in > /tmp/boot/EFI/BOOT/grub.cfg
-        cp /etc/omnect/grubenv.in /tmp/boot/EFI/BOOT/grubenv
-        run_cmd_stdout umount /tmp/boot
-    fi
 
     if [[ " ${machine_features} " =~ " efi " ]]; then
         echo "Configuring efi"

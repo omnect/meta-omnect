@@ -11,6 +11,7 @@ SRC_URI = " \
   file://linux_platform_layer.patch \
   file://0001-add-swupdate-user-consent-handler.patch \
   file://0001-retry-handling-on-failed-update-validation.patch \
+  file://0001-fix-cancel-apply-swupdate_handler_v1.patch \
   file://workaround-deprecated-declarations-openssl3.patch \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
@@ -150,6 +151,5 @@ FILES:${PN} += " \
 GROUPADD_PARAM:${PN} += " \
   -r adu; \
   -r do; \
-  -r omnect_validate_update; \
 "
-USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,do,omnect_validate_update -g adu adu;"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,do -g adu adu;"
