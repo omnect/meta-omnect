@@ -165,7 +165,7 @@ run_flash_mode_2() {
     vfat_grub_dd_workaround "${dest_blk}${p}1"
     run_bmap_tool || return 1
 
-    flashmode_efi_grub_handling ${dest_blk} ${p}
+    flashmode_efi_handling ${dest_blk} ${p}
 
     msg "Rebooting system..."
     sync

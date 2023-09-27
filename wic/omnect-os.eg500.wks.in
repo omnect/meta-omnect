@@ -2,4 +2,4 @@ part --fixed-size ${OMNECT_PART_SIZE_BOOT}K --source bootimg-efi --sourceparams=
 
 include omnect-os.common.wks.inc
 
-bootloader --ptable gpt --configfile ${LAYERDIR_omnect}/recipes-omnect/grub-cfg/grub-cfg/grub-usb.cfg
+bootloader --ptable gpt --configfile ${DEPLOY_DIR_IMAGE}/grub.cfg

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.22.2] Q3 2023
+- welotec eg500: refactored wic image to use the correct grub.cfg;
+  NOTE: you have to inject `recipes-omnect/grub-cfg/grub-cfg/grub-usb.cfg`
+  into the `boot` partition `/EFI/BOOT/grub.cfg` now, if you want to be able
+  to boot from usb.
+  (this enables flash-mode-2 to flash the correct grub.cfg independent of the
+  used omnect-os-initramfs)
+
 ## [kirkstone-0.22.1] Q3 2023
 - grub-cfg: append `APPEND` to kernel cmdline
 

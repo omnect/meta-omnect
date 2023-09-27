@@ -52,7 +52,7 @@ run_flash_mode_1() {
     local extended_partition_size=""
     local extended_partition_start=""
     local last_lba=""
-    local machine_features=""
+    local machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
     local p=""
     local part_type=""
 
@@ -200,7 +200,16 @@ run_flash_mode_1() {
     run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV1_START*1024)) || return 1
     run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV2_START*1024)) || return 1
 
-    flashmode_efi_grub_handling ${blk_dev_dst} ${p}
+    if [[ " ${machine_features} " =~ " grub " ]]; then
+        echo "Configuring grub"
+        run_cmd_stdout mkdir -p /tmp/boot
+        run_cmd_stdout mount ${blk_dev_dst}${p}1 /tmp/boot
+        cp /etc/omnect/grub.cfg /tmp/boot/EFI/BOOT/grub.cfg
+        cp /etc/omnect/grubenv.in /tmp/boot/EFI/BOOT/grubenv
+        run_cmd_stdout umount /tmp/boot
+    fi
+
+    flashmode_efi_handling ${blk_dev_dst} ${p}
 
     echo "flash mode 1 successfully finished"
     run_cmd_stdout sync
