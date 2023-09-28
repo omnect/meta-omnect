@@ -21,12 +21,11 @@ do_install() {
 	install -m 0644 -D ${WORKDIR}/grub.cfg ${D}${sysconfdir}/omnect/grub.cfg
 }
 
+inherit deploy
+
 # do deploy used for omnect-os-image do_wic step
 do_deploy() {
-    install -m 0644 -D ${WORKDIR}/grub.cfg ${DEPLOY_DIR_IMAGE}/grub.cfg
+    install -m 0644 -D ${WORKDIR}/grub.cfg ${DEPLOYDIR}/grub.cfg
 }
 
-inherit deploy
 addtask do_deploy after do_compile before do_build
-
-SSTATE_SKIP_CREATION:task-deploy = '1'
