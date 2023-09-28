@@ -52,7 +52,7 @@ run_flash_mode_1() {
     local extended_partition_size=""
     local extended_partition_start=""
     local last_lba=""
-    local machine_features=""
+    local machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
     local p=""
     local part_type=""
 
@@ -102,7 +102,7 @@ run_flash_mode_1() {
         return 1
     fi
 
-    data_partition=$(get_block_device data)
+    data_partition=$(readlink -f /dev/omnect/data)
     if [ -z "${data_partition}" ]; then
         stderr_fatal "cannot detect data partition"
         return 1
@@ -127,7 +127,7 @@ run_flash_mode_1() {
             return 1
         fi
         # calculate size of extended partition, not affected by (optional) resize of data partition
-        extended_partition_start=$(get_start_sector $(get_block_device extended))
+        extended_partition_start=$(get_start_sector $(readlink -f extended))
         data_partition_start=$(get_start_sector ${data_partition})
         extended_partition_size=$((data_partition_start - extended_partition_start + data_partition_size))
         if [ -z "${extended_partition_size}" ]; then
@@ -177,13 +177,9 @@ run_flash_mode_1() {
 
     # enforce first boot condition
     echo "MKFS etc and data..."
-    if [ "${part_type}" = "gpt" ]; then
-        check_ext4_fs "etc"  "${blk_dev_dst}${p}6" 1
-        check_ext4_fs "data" "${blk_dev_dst}${p}7" 1
-    elif [ "${part_type}" = "dos" ]; then
-        check_ext4_fs "etc"  "${blk_dev_dst}${p}7" 1
-        check_ext4_fs "data" "${blk_dev_dst}${p}8" 1
-    fi
+
+    reformat_ext4_fs "etc"
+    reformat_ext4_fs "data"
 
     echo "COPY boot, factory and cert..."
     run_cmd_stdout dd if=/dev/omnect/boot    of="$(readlink -f ${blk_dev_dst}${p}1)" bs=10M || return 1
@@ -204,7 +200,16 @@ run_flash_mode_1() {
     run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV1_START*1024)) || return 1
     run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV2_START*1024)) || return 1
 
-    flashmode_efi_grub_handling ${blk_dev_dst} ${p}
+    if [[ " ${machine_features} " =~ " grub " ]]; then
+        echo "Configuring grub"
+        run_cmd_stdout mkdir -p /tmp/boot
+        run_cmd_stdout mount ${blk_dev_dst}${p}1 /tmp/boot
+        cp /etc/omnect/grub.cfg /tmp/boot/EFI/BOOT/grub.cfg
+        cp /etc/omnect/grubenv.in /tmp/boot/EFI/BOOT/grubenv
+        run_cmd_stdout umount /tmp/boot
+    fi
+
+    flashmode_efi_handling ${blk_dev_dst} ${p}
 
     echo "flash mode 1 successfully finished"
     run_cmd_stdout sync
@@ -219,11 +224,11 @@ flash_mode_1_run() {
 
     run_flash_mode_1 2>&1 | tee /tmp/flash-mode-1.log >/dev/console 2>&1;
     return=${?}
-    blk_dev_data=$(get_block_device data)
+    blk_dev_data=$(readlink -f /dev/omnect/data)
     if [ -b "${blk_dev_data}" ]; then
         # store log file
         mkdir -p /tmp/mnt_data
-        check_ext4_fs "data" "${blk_dev_data}" 0
+        check_fs "data"
         mount_partition "ext4" "${blk_dev_data}" "/tmp/mnt_data" "defaults,rw"
         run_cmd cp /tmp/flash-mode-1.log "/tmp/mnt_data"
         run_cmd sync

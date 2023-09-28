@@ -1,3 +1,4 @@
 d /home/omnect/.ssh 0700 omnect omnect -
 f /home/omnect/.ssh/authorized_keys 0600 omnect omnect -
-d /run/omnect-device-service/ssh-tunnel 0747 omnect_device_service omnect_device_service 1h -
+# /run/omnect-device-service gets created by omnect-os-initramfs
+d /run/omnect-device-service/ssh-tunnel 0700 ssh_tunnel_user ssh_tunnel_user 1h -

@@ -42,6 +42,7 @@ PACKAGE_INSTALL = "\
     e2fsprogs-tune2fs \
     initramfs-framework-base \
     initramfs-module-debug \
+    jq \
     kmod \
     omnect-os-initramfs-scripts \
     os-release \
