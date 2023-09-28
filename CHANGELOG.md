@@ -5,11 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-next-0.4.0] Q3 2023
+## [kirkstone-next-0.4.0] Q4 2023
 - added general cellular support using NetworkManager and ModemManager to control
   mobile interfaces and connections
 - added LTE test (pseudo-)board rpi4-omnect-lab basing on raspberrypi4-64 and
   extended with LTE and TPM functionalities
+
+## [kirkstone-next-0.3.1] Q3 2023
+  ## [kirkstone-0.22.2] Q3 2023
+  ## [kirkstone-0.22.1] Q3 2023
+  ## [kirkstone-0.22.0] Q3 2023
+  ## [kirkstone-0.21.1] Q3 2023
 
 ## [kirkstone-next-0.3.0] Q3 2023
 - introduction of bootloader update for welotec eg500

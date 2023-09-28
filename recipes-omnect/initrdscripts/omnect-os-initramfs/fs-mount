@@ -28,18 +28,20 @@ run_fs_mount()
     run_cmd mount --bind ${ROOTFS_DIR} ${ROOTFS_DIR}/mnt/rootCurrent
     run_cmd mount --make-private ${ROOTFS_DIR}/mnt/rootCurrent
 
+    # mount boot
+    check_fs "boot"
+    mount /dev/omnect/boot "${ROOTFS_DIR}/boot" || return 1
+
     # mount cert
-    cert_blk=$(get_block_device cert)
-    check_ext4_fs "cert" "${cert_blk}" 0
-    mount_partition "ext4" "${cert_blk}" "${ROOTFS_DIR}/mnt/cert" "${mnt_opts_default},rw" || return 1
+    check_fs "cert"
+    mount_partition "ext4" "/dev/omnect/cert" "${ROOTFS_DIR}/mnt/cert" "${mnt_opts_default},rw" || return 1
     run_cmd mkdir -p ${ROOTFS_DIR}/mnt/cert/ca
     run_cmd mkdir -p ${ROOTFS_DIR}/mnt/cert/priv
 
     # mount factory
-    factory_blk=$(get_block_device factory)
-    mount_partition "ext4" "${factory_blk}" "${ROOTFS_DIR}/mnt/factory" "${mnt_opts_default},ro" || return 1
+    mount_partition "ext4" "/dev/omnect/factory" "${ROOTFS_DIR}/mnt/factory" "${mnt_opts_default},ro" || return 1
 
-    setup_etc_partition "${ROOTFS_DIR}" "$(get_block_device etc)" "${mnt_opts_default},rw" || return 1
+    setup_etc_partition "${ROOTFS_DIR}" "${mnt_opts_default},rw" || return 1
 
     # mount data partition
     #     mount flags can be optionally set via u-boot environment
@@ -49,7 +51,7 @@ run_fs_mount()
     else
         data_opts="${mnt_opts_default},rw"
     fi
-    setup_data_partition "${ROOTFS_DIR}" "$(get_block_device data)" "${data_opts}" || return 1
+    setup_data_partition "${ROOTFS_DIR}" "${data_opts}" || return 1
 
     # mount tmpfs
     mount -t tmpfs -o mode=0755,nodev,nosuid,strictatime tmpfs  ${ROOTFS_DIR}/run || return 1
