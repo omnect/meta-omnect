@@ -28,3 +28,5 @@ do_deploy() {
 
 inherit deploy
 addtask do_deploy after do_compile before do_build
+
+SSTATE_SKIP_CREATION:task-deploy = '1'
