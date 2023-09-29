@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added LTE test (pseudo-)board rpi4-omnect-lab basing on raspberrypi4-64 and
   extended with LTE and TPM functionalities
 
+## [kirkstone-next-0.3.2] Q3 2023
+  ## [kirkstone-0.22.5] Q3 2023
+  ## [kirkstone-0.22.4] Q3 2023
+  ## [kirkstone-0.22.3] Q3 2023
+
 ## [kirkstone-next-0.3.1] Q3 2023
   ## [kirkstone-0.22.2] Q3 2023
   ## [kirkstone-0.22.1] Q3 2023

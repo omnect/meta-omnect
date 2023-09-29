@@ -31,10 +31,10 @@ do_rootfs[depends] += "${do_rootfs_extra_depends}"
 IMAGE_BOOT_FILES:append:omnect_uboot = " boot.scr"
 IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
 
-# we adapt grub.cfg before writing it to image in do_wic
-do_wic_extra_depends = ""
-do_wic_extra_depends:omnect_grub = "grub-cfg:do_deploy"
-do_wic[depends] += "${do_wic_extra_depends}"
+# we adapt grub.cfg before writing it to image in do_image_wic
+do_image_wic_extra_depends = ""
+do_image_wic_extra_depends:omnect_grub = "grub-cfg:do_deploy"
+do_image_wic[depends] += "${do_image_wic_extra_depends}"
 
 # native openssl tool required
 do_rootfs[depends] += "openssl-native:do_populate_sysroot"
