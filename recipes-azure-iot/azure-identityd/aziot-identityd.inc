@@ -125,10 +125,11 @@ do_install() {
 
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.service.in ${D}${systemd_system_unitdir}/aziot-identityd.service
     sed -i \
-        -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service time-sync.target/' \
+        -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service network-online.target time-sync.target/' \
         -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
         -e 's#@libexecdir@#/usr/libexec#g' \
         -e '/Environment=\(.*\)$/d' \
+        -e 's/^Requires=\(.*\)$/Requires=\1 network-online.target/' \
         ${D}${systemd_system_unitdir}/aziot-identityd.service
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.socket ${D}${systemd_system_unitdir}/aziot-identityd.socket
 
@@ -159,9 +160,6 @@ do_install() {
     # devel
     install -d -m 0755  ${D}${includedir}/aziot-identity-service
     install -m 0644     ${S}/key/aziot-keys/aziot-keys.h ${D}${includedir}/aziot-identity-service/aziot-keys.h
-
-    # run after time-sync.target
-    sed -i 's/^After=\(.*\)$/After=\1 time-sync.target/' ${D}${systemd_system_unitdir}/aziot-identityd.service
 
     # aziot-identityd-precondition.service handling
     install -d ${D}${systemd_system_unitdir}
