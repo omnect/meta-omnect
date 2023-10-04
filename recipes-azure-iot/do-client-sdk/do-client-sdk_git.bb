@@ -11,7 +11,7 @@ PV = "${SRCPV}"
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "msft-gsl"
+DEPENDS = "boost msft-gsl"
 
 inherit cmake
 
