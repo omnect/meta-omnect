@@ -5,8 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.22.3] Q3 2023
+## [kirkstone-0.22.6] Q4 2023
 - kas: added dev/own_mirror_only.yaml to allow usage of a dedicated mirror only
+
+## [kirkstone-0.22.5] Q3 2023
+- omnet-os-distro.conf/machine configs: introduce possibility to define
+  different rootfs maximum sizes for release and development images
+  Note: currently the sizes are still identical for both image types, only
+  distinction upon setting of OMNECT_RELEASE_IMAGE was added
+
+## [kirkstone-0.22.4] Q3 2023
+- grub-cfg: deploy grub.cfg to `DEPLOYDIR`
+
+## [kirkstone-0.22.3] Q3 2023
+- omnect-os-image: fixed wic image dependency for devices using grub
 
 ## [kirkstone-0.22.2] Q3 2023
 - welotec eg500: refactored wic image to use the correct grub.cfg;
