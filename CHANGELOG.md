@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.22.6] Q4 2023
+- kas: added dev/own_mirror_only.yaml to allow usage of a dedicated mirror only
+
 ## [kirkstone-0.22.5] Q3 2023
 - omnet-os-distro.conf/machine configs: introduce possibility to define
   different rootfs maximum sizes for release and development images
