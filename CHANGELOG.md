@@ -6,8 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.24.0] Q4 2023
-- bootloader-update:
-  - added handling to update the bootloader(u-boot) via swupdate (swupdate has to support the archive feature, otherwise the whole update will not work -> breaking change for current release)
+- bootloader-update (breaking change for current release):
+  - introduction of bootloader update for phytec tauril2 and raspberry pi4
   - introduction of bootloader update for welotec eg500
   - force first-boot condition when updating bootloader, because we switch root partition without update-validation
   
