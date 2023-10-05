@@ -20,6 +20,7 @@ addtask do_bootloader_package before do_swuimage
 
 do_bootloader_package_extra_depends = ""
 do_bootloader_package_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
+do_bootloader_package_extra_depends:omnect_grub = "grub-cfg:do_deploy"
 do_bootloader_package[depends] += "virtual/bootloader:do_deploy virtual/kernel:do_deploy ${do_bootloader_package_extra_depends}"
 
 do_bootloader_package:rpi() {
@@ -65,7 +66,7 @@ do_bootloader_package:omnect_grub() {
     mkdir -p ${WORKDIR}/EFI/BOOT
     cp ${DEPLOY_DIR_IMAGE}/grub-efi-bootx64.efi ${WORKDIR}/EFI/BOOT/bootx64.efi
     cp ${DEPLOY_DIR_IMAGE}/bootloader_version   ${WORKDIR}/EFI/BOOT/bootloader_version
-    sed "s#@@ROOT_DEVICE@@#/dev/nvme0n1p#g" ${LAYERDIR_omnect}/recipes-omnect/grub-cfg/grub-cfg/grub.cfg.in > ${WORKDIR}/EFI/BOOT/grub.cfg
+    cp ${DEPLOY_DIR_IMAGE}/grub.cfg             ${WORKDIR}/EFI/BOOT/grub.cfg
     cd ${WORKDIR}
     tar cfz boot-partition-update.tar.gz EFI/BOOT/*
 }
