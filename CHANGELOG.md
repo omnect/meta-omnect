@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - updated meta-phytec to latest kirkstone HEAD
   - updated meta-freescale to latest kirkstone HEAD
   - updated meta-raspberrypi to latest kirkstone HEAD
+  - removed now obsolete meta-phytec_do_not_overwrite_BBMASK.patch
 
 ## [kirkstone-0.22.6] Q4 2023
 - kas: added dev/own_mirror_only.yaml to allow usage of a dedicated mirror only

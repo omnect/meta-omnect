@@ -8,10 +8,6 @@ repos:
     url: "https://github.com/phytec/meta-phytec"
     branch: kirkstone
     commit: 547944b5ba61f9ff8a5ca1c09b63497b59c94a54
-    patches:
-      p001:
-        repo: "meta-omnect"
-        path: "kas/patches/meta-phytec_do_not_overwrite_BBMASK.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: kirkstone
