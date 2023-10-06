@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - updated meta-freescale to latest kirkstone HEAD
   - updated meta-raspberrypi to latest kirkstone HEAD
   - removed now obsolete meta-phytec_do_not_overwrite_BBMASK.patch
+  - adapted linux-imx_%.bbappend to meta-phytec changes
 
 ## [kirkstone-0.22.7] Q4 2023
 - iot-identity-service: bumped to 1.4.6
