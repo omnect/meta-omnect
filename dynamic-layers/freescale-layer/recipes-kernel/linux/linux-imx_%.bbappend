@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_virtualization-layer}/recipes-kernel/linux/linux-yocto/:"
 
 SRC_URI += " \
     file://rfkill.cfg \
