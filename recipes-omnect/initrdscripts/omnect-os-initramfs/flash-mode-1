@@ -209,7 +209,7 @@ run_flash_mode_1() {
         run_cmd_stdout umount /tmp/boot
     fi
 
-    flashmode_efi_handling ${blk_dev_dst} ${p}
+    flash_mode_efi_handling ${blk_dev_dst} ${p}
 
     echo "flash mode 1 successfully finished"
     run_cmd_stdout sync
