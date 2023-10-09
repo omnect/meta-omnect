@@ -270,7 +270,27 @@ The destination file names have to be *wic.bmap* and *wic.xz*.
 
 After finishing the flash procedure, the system reboots automatically.
 The bootloader environment variable *flash-mode* will be deleted automatically.
-In this way, the system enters the normal mode, booting the new image.
+
+#### Flash Mode 3
+Enable the distribution feature `flash-mode-3` at build time, if you want to use it.
+
+In order to trigger the flash mode 3, use the following commands on the target system:<br>
+```sh
+sudo -s
+bootloader_env.sh set flash-mode 3
+bootloader_env.sh set flash-mode-url $(echo http://url.to/image.wic[.xz] | base64 -w 0 -)
+reboot
+...
+Entering omnect flashing mode 3... (http://url.to/image.wic[.xz])
+...
+```
+**Note, *bootloader_env.sh* command requires root permissions.**<br>
+
+**Note, `flash-mode 3` is restricted to eth0.**
+
+After finishing the flash procedure, the system reboots automatically.
+The bootloader environment variables *flash-mode* and *flash-mode-url* will be
+deleted automatically.
 
 ### Factory Reset
 Set the OS bootloader environment variable `factory-reset`, in order to reset `data` and `etc` partitions
