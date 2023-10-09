@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.22.8] Q4 2023
+- kas:
+  - updated poky to 4.0.13
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-security to latest kirkstone HEAD
+  - updated meta-virtualization to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+  - updated meta-raspberrypi to latest kirkstone HEAD
+  - removed now obsolete meta-phytec_do_not_overwrite_BBMASK.patch
+  - adapted linux-imx_%.bbappend to meta-phytec changes
+  - omnect-os-image: install kernel-image explicitly to rootfs
+    (meta-phytec removed it from rootfs for phyimx8 devices)
+
 ## [kirkstone-0.22.7] Q4 2023
 - iot-identity-service: bumped to 1.4.6
 - iotedge: bumped to 1.4.21
