@@ -3,8 +3,7 @@
 
 #include <configs/omnect_env_machine.h>
 
-/* Todo dev and mmcdev are redundant: needs refactoring of bootscript */
-/* Todo "env_initialized:do" doesnt work */
+/* @Todo: flash-mode-url should only be writable if feature was set */
 /* Attention: if vars are already part of CONFIG_EXTRA_ENV_SETTINGS
  * this doesnt work; these vars are shown correctly via userland fw_printenv,
  * but u-boot takes the default env value
@@ -17,6 +16,7 @@
     "factory-reset-status:sw," \
     "flash-mode:dw," \
     "flash-mode-devpath:sw," \
+    "flash-mode-url:sw," \
     "omnect_validate_update:bw," \
     "omnect_validate_update_failed:bw," \
     "omnect_validate_update_part:dw," \

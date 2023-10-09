@@ -65,10 +65,6 @@ run_bmap_tool() {
 
     curl -s ${url} > ${OMNECT_FLASH_MODE_FIFO}
 
-    while ps | grep " ${bmap_pid} "; do
-        # bmaptool is still running
-        sleep 1
-    done
     wait ${bmap_pid}
     bmap_ret=${?}
 
@@ -85,6 +81,7 @@ run_bmap_tool() {
 # deploy WIC image via network to (same) active block device
 run_flash_mode_3() {
     local url=$(get_bootloader_env_var ${OMNECT_FLASH_MODE_URL_VAR} | base64 --decode) || exit 1
+    # url=$(echo ${url} | base64 --decode) || exit 1
     msg "Entering omnect flashing mode 3 ... (${url})"
     # disable flash mode for subsequent restarts
     set_bootloader_env_var ${OMNECT_FLASH_MODE_VAR}
