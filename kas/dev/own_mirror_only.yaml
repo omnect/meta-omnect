@@ -1,0 +1,13 @@
+# kas config file
+
+header:
+  version: 11
+
+env:
+  BB_FETCH_PREMIRRORONLY: "1"
+  BB_GIT_SHALLOW: "1"
+  SOURCE_MIRROR_URL: ""
+
+local_conf_header:
+  omnect-os_build_own_mirror_only: |
+    INHERIT += "own-mirrors"

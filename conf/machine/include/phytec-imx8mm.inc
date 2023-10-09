@@ -2,7 +2,7 @@
 WKS_FILE = "omnect-os.phytec.wks.in"
 WKS_FILES:${MACHINE} = "${WKS_FILE}"
 # don't use class wic-helper from meta-phytec
-IMAGE_CLASSES:remove = " wic-helper"
+IMAGE_CLASSES:remove = " wic-helper wic-imx8-helper"
 
 # install kernel-devicetree to 'root' partition instead of 'boot'
 IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \

@@ -54,6 +54,7 @@ IMAGE_INSTALL = "\
     coreutils \
     iot-hub-device-update \
     iptables \
+    kernel-image \
     kmod \
     omnect-base-files \
     omnect-first-boot \
