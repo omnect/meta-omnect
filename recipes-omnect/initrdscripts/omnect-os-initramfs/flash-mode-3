@@ -49,10 +49,8 @@ run_bmap_tool() {
     # umount, if necessary
     mkdir -p /tmp
     cp /proc/mounts /tmp/all_mounts  # make snapshot
-    while read x; do
-        umount_dev=$(echo $x | awk '{print $1}')
-        echo ${umount_dev} | grep -q "$(basename ${blk_dev})"
-        if [ $? -eq 0 ]; then
+    while read umount_dev ignore; do
+        if [[ ${umount_dev} =~ /${blkdev##*/} ]]; then
             echo "umount ${umount_dev}"
             umount ${umount_dev} 2>/dev/null
         fi
