@@ -63,7 +63,7 @@ run_bmap_tool() {
     { run_cmd_stdout bmaptool copy --nobmap ${OMNECT_FLASH_MODE_FIFO} ${blk_dev}; } &
     local bmap_pid=${!}
 
-    curl -s ${url} > ${OMNECT_FLASH_MODE_FIFO}
+    curl -s ${url} > ${OMNECT_FLASH_MODE_FIFO} && echo "curl succeeded"  || ( msg_fatal "curl ${url} failed"; return 1; )
 
     wait ${bmap_pid}
     bmap_ret=${?}
