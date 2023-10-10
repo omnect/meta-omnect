@@ -9,10 +9,9 @@ inherit omnect_initramfs
 
 IMAGE_NAME = "${OMNECT_INITRAMFS_IMAGE_NAME}"
 
-FLASH_MODE_2_PACKAGES = " \
+FLASH_MODE_X_PACKAGES = " \
     bmap-tools \
     dhcpcd \
-    dropbear \
     xz \
 "
 
@@ -50,7 +49,8 @@ PACKAGE_INSTALL = "\
     util-linux-sfdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', '${FLASH_MODE_2_PACKAGES}', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', '${FLASH_MODE_X_PACKAGES} dropbear', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', '${FLASH_MODE_X_PACKAGES} curl', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'efi', 'efibootmgr', '', d)} \
     ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', 'initramfs-module-debug', d)} \
