@@ -278,14 +278,14 @@ In order to trigger the flash mode 3, use the following commands on the target s
 ```sh
 sudo -s
 bootloader_env.sh set flash-mode 3
-bootloader_env.sh set flash-mode-url $(echo http://url.to/image.wic[.xz] | base64 -w 0 -)
+bootloader_env.sh set flash-mode-url $(echo "http://url.to/image.wic[.xz]" | base64 -w 0 -)
 reboot
 ...
 Entering omnect flashing mode 3... (http://url.to/image.wic[.xz])
 ...
 ```
 **Note, *bootloader_env.sh* command requires root permissions.**<br>
-
+**Note, the url has to be escaped with \"\".**<br>
 **Note, `flash-mode 3` is restricted to eth0.**
 
 After finishing the flash procedure, the system reboots automatically.
