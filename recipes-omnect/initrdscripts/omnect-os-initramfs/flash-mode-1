@@ -73,9 +73,12 @@ run_flash_mode_1() {
     fi
 
     # check for (mandatory) substitutions of variable templates
-    if [ "${OMNECT_FLASH_MODE_UBOOT_ENV1_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV1_START"; return 1; fi
-    if [ "${OMNECT_FLASH_MODE_UBOOT_ENV2_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV2_START"; return 1; fi
-    if [ "${OMNECT_FLASH_MODE_UBOOT_ENV_SIZE}"   == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV_SIZE"; return 1; fi
+    if [[ ! " ${machine_features} " =~ " grub " ]]; then
+        if [ "${OMNECT_FLASH_MODE_UBOOT_ENV1_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV1_START"; return 1; fi
+        if [ "${OMNECT_FLASH_MODE_UBOOT_ENV2_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV2_START"; return 1; fi
+        if [ "${OMNECT_FLASH_MODE_UBOOT_ENV_SIZE}"   == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV_SIZE"; return 1; fi
+    fi
+
     if [ "${OMNECT_FLASH_MODE_DATA_SIZE}"        == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_DATA_SIZE"; return 1; fi
 
     if [ -z "${blk_dev_dst}" ]; then
@@ -194,12 +197,6 @@ run_flash_mode_1() {
     echo "COPY current rootfs to rootfsA..."
     run_cmd_stdout e2image -ra -p "/dev/omnect/rootCurrent" "$(readlink -f ${blk_dev_dst}${p}2)" || return 1
 
-    echo "ENFORCE default bootloader environment..."
-    # Warning: we enforce  here that there is a redundant uboot env available, even if the initial wic did'nt have one
-    dd if=/dev/zero bs=1024 count=${OMNECT_FLASH_MODE_UBOOT_ENV_SIZE} 2>/dev/null | tr "\000" "\377" >/tmp/uboot_env_ff.img
-    run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV1_START*1024)) || return 1
-    run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV2_START*1024)) || return 1
-
     if [[ " ${machine_features} " =~ " grub " ]]; then
         echo "Configuring grub"
         run_cmd_stdout mkdir -p /tmp/boot
@@ -207,9 +204,15 @@ run_flash_mode_1() {
         cp /etc/omnect/grub.cfg /tmp/boot/EFI/BOOT/grub.cfg
         cp /etc/omnect/grubenv.in /tmp/boot/EFI/BOOT/grubenv
         run_cmd_stdout umount /tmp/boot
+    else
+        echo "ENFORCE default bootloader environment..."
+        # Warning: we enforce  here that there is a redundant uboot env available, even if the initial wic did'nt have one
+        dd if=/dev/zero bs=1024 count=${OMNECT_FLASH_MODE_UBOOT_ENV_SIZE} 2>/dev/null | tr "\000" "\377" >/tmp/uboot_env_ff.img
+        run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV1_START*1024)) || return 1
+        run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV2_START*1024)) || return 1
     fi
 
-    flashmode_efi_handling ${blk_dev_dst} ${p}
+    flash_mode_efi_handling ${blk_dev_dst} ${p}
 
     echo "flash mode 1 successfully finished"
     run_cmd_stdout sync
