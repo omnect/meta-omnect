@@ -249,8 +249,8 @@ factory_reset_run() {
     if [ ${FACTORY_RESET_RET1} -ne 0 ] || [ ${FACTORY_RESET_RET2} -ne 0 ]; then factory_reset_finish; fi
 
     # no severe errors; enforce mkfs
-    reformat_ext4_fs "data"
-    reformat_ext4_fs "etc"
+    reformat_ext4_fs "/dev/omnect/data" "data"
+    reformat_ext4_fs "/dev/omnect/etc" "etc"
 
     if [ -n "${factory_reset_restore_list}" ]; then
         factory_reset_mount  # logical filesystem tree

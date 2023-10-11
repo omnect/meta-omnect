@@ -181,8 +181,15 @@ run_flash_mode_1() {
     # enforce first boot condition
     echo "MKFS etc and data..."
 
-    reformat_ext4_fs "etc"
-    reformat_ext4_fs "data"
+    if [ "${part_type}" = "gpt" ]; then
+        reformat_ext4_fs "${blk_dev_dst}${p}6" "etc"
+        reformat_ext4_fs "${blk_dev_dst}${p}7" "data"
+    elif [ "${part_type}" = "dos" ]; then
+        reformat_ext4_fs "${blk_dev_dst}${p}7" "etc"
+        reformat_ext4_fs "${blk_dev_dst}${p}8" "data"
+    else
+        echo "unhandlet parition type: ${part_type}"
+    fi
 
     echo "COPY boot, factory and cert..."
     run_cmd_stdout dd if=/dev/omnect/boot    of="$(readlink -f ${blk_dev_dst}${p}1)" bs=10M || return 1
