@@ -28,6 +28,7 @@ do_fetch:prepend() {
 }
 
 inherit omnect_fw_env_config
+inherit omnect_uboot_configure_env
 
 do_configure:prepend() {
     # incorporate distro configuration in redundant-env-fragment.cfg
@@ -43,15 +44,5 @@ do_configure:prepend() {
     # for devtool
     if [ -d "${S}/oe-local-files/" ]; then cp ${cfg_frag} ${S}/oe-local-files/; fi
 
-    # configure omnect u-boot env
-    cp -f ${WORKDIR}/omnect_env.h ${S}/include/configs/
-
-    sed -i -e "s|^#define OMNECT_ENV_BOOTLOADER_VERSION$|#define OMNECT_ENV_BOOTLOADER_VERSION \"omnect_u-boot_version=${PKGV}\\\0\"|g" ${S}/include/configs/omnect_env.h
-
-    if [ -n "${APPEND}" ]; then
-        sed -i -e "s|^#define OMNECT_ENV_BOOTARGS$|#define OMNECT_ENV_BOOTARGS \"omnect-bootargs=${APPEND}\\\0\"|g" ${S}/include/configs/omnect_env.h
-    fi
-    if [ "${OMNECT_RELEASE_IMAGE}" = "1" ]; then
-        sed -i -e "s|^//#define OMNECT_RELEASE_IMAGE$|#define OMNECT_RELEASE_IMAGE|g" ${S}/include/configs/omnect_env.h
-    fi
+    omnect_uboot_configure_env
 }

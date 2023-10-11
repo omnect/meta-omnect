@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.14.0"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.14.4"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1"
-SRCREV = "59fadc14a16091b42b66a3e3de784b0f3acdebcf"
+SRCREV = "bfdefbae52937c1a09bcf721c664be16acc0eadd"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -48,7 +48,7 @@ SRC_URI += " \
     crate://crates.io/cc/1.0.79 \
     crate://crates.io/cexpr/0.6.0 \
     crate://crates.io/cfg-if/1.0.0 \
-    crate://crates.io/chrono/0.4.26 \
+    crate://crates.io/chrono/0.4.30 \
     crate://crates.io/clang-sys/1.6.1 \
     crate://crates.io/concurrent-queue/2.2.0 \
     crate://crates.io/core-foundation-sys/0.8.4 \
@@ -230,7 +230,6 @@ SRC_URI += " \
     crate://crates.io/thiserror/1.0.44 \
     crate://crates.io/time-core/0.1.1 \
     crate://crates.io/time-macros/0.2.10 \
-    crate://crates.io/time/0.1.45 \
     crate://crates.io/time/0.3.23 \
     crate://crates.io/tinyvec/1.6.0 \
     crate://crates.io/tinyvec_macros/0.1.1 \
@@ -259,7 +258,6 @@ SRC_URI += " \
     crate://crates.io/waker-fn/1.1.0 \
     crate://crates.io/walkdir/2.3.3 \
     crate://crates.io/want/0.3.1 \
-    crate://crates.io/wasi/0.10.0+wasi-snapshot-preview1 \
     crate://crates.io/wasi/0.11.0+wasi-snapshot-preview1 \
     crate://crates.io/wasm-bindgen-backend/0.2.87 \
     crate://crates.io/wasm-bindgen-macro-support/0.2.87 \
@@ -354,7 +352,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.11.0"
+SRCREV_azure-iot-sdk = "0.11.4"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.0"
