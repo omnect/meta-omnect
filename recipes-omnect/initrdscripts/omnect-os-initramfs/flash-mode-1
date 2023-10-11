@@ -188,7 +188,7 @@ run_flash_mode_1() {
         reformat_ext4_fs "${blk_dev_dst}${p}7" "etc"
         reformat_ext4_fs "${blk_dev_dst}${p}8" "data"
     else
-        echo "unhandlet parition type: ${part_type}"
+        echo "unhandled partition type: ${part_type}"
     fi
 
     echo "COPY boot, factory and cert..."
