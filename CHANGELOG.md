@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.23.3] Q4 2023
+- machine config: re-define OMNECT_PART_SIZE_ROOTFS for eg500
+
 ## [kirkstone-0.23.2] Q4 2023
 - omnect-os-initramfs:
   - flash-mode-1: corrected reformating `etc` and `data`
