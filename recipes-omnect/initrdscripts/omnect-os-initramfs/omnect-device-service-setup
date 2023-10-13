@@ -84,7 +84,7 @@ run_omnect_device_service_setup () {
     fi
     if [ -n "${omnect_bootloader_updated_flag}" ]; then
         run_cmd touch ${omnect_bootloader_updated_file} \
-        && run_cmd chown ${omnect_device_service_user}:${omnect_validate_update_group} ${omnect_bootloader_updated_file} \
+        && run_cmd chown ${omnect_device_service_user}:${omnect_device_service_group} ${omnect_bootloader_updated_file} \
         && run_cmd chmod 600 ${omnect_bootloader_updated_file} \
         && set_bootloader_env_var omnect_bootloader_updated ""
     fi
