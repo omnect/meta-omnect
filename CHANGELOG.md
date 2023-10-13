@@ -7,10 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.24.0] Q4 2023
 - bootloader-update (breaking change for current release):
-  - introduction of bootloader update for phytec tauril2 and raspberry pi4
-  - introduction of bootloader update for welotec eg500
+  - introduction of bootloader update for phytec tauril2 ,raspberry pi4 and welotec eg500
   - force first-boot condition when updating bootloader, because we switch root partition without update-validation
-  
+
 ## [kirkstone-0.23.3] Q4 2023
 - machine config: re-define OMNECT_PART_SIZE_ROOTFS for eg500
 
