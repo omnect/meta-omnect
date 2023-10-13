@@ -1,6 +1,6 @@
-From a1fc8627080e97e0d4f41c1241abaec17568a648 Mon Sep 17 00:00:00 2001
-From: Joerg Zeidler <joerg.zeidler@conplement.de>
-Date: Tue, 8 Nov 2022 08:58:16 +0100
+From 8d666a0f93ce1f5f0d4a8ed56c179c6381c23faf Mon Sep 17 00:00:00 2001
+From: JoergZeidler <joerg.zeidler@conplement.de>
+Date: Wed, 11 Oct 2023 09:55:27 +0200
 Subject: [PATCH] add swupdate user consent handler
 
 ---
@@ -11,8 +11,8 @@ Subject: [PATCH] add swupdate user consent handler
  .../files/request_consent.json                |   4 +
  .../files/user_consent.json                   |   3 +
  .../inc/aduc/swupdate_consent_handler.hpp     |  72 +++
- .../src/swupdate_consent_handler.cpp          | 563 ++++++++++++++++++
- 8 files changed, 691 insertions(+)
+ .../src/swupdate_consent_handler.cpp          | 573 ++++++++++++++++++
+ 8 files changed, 701 insertions(+)
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
@@ -22,7 +22,7 @@ Subject: [PATCH] add swupdate user consent handler
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 
 diff --git a/src/extensions/step_handlers/CMakeLists.txt b/src/extensions/step_handlers/CMakeLists.txt
-index e2b9bb5f..3922b427 100644
+index e2b9bb5..3922b42 100644
 --- a/src/extensions/step_handlers/CMakeLists.txt
 +++ b/src/extensions/step_handlers/CMakeLists.txt
 @@ -3,6 +3,7 @@ add_subdirectory (script_handler)
@@ -35,7 +35,7 @@ index e2b9bb5f..3922b427 100644
  # Note: add more update content handler extensions here.
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
 new file mode 100644
-index 00000000..d13749be
+index 0000000..d13749b
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
 @@ -0,0 +1,37 @@
@@ -78,7 +78,7 @@ index 00000000..d13749be
 +install (TARGETS ${target_name} LIBRARY DESTINATION ${ADUC_EXTENSIONS_INSTALL_FOLDER})
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json b/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
 new file mode 100644
-index 00000000..69f9ca47
+index 0000000..69f9ca4
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
 @@ -0,0 +1,5 @@
@@ -90,7 +90,7 @@ index 00000000..69f9ca47
 \ No newline at end of file
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json b/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
 new file mode 100644
-index 00000000..698c790c
+index 0000000..698c790
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
 @@ -0,0 +1,6 @@
@@ -103,7 +103,7 @@ index 00000000..698c790c
 \ No newline at end of file
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json b/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json
 new file mode 100644
-index 00000000..9f35e525
+index 0000000..9f35e52
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json
 @@ -0,0 +1,4 @@
@@ -114,7 +114,7 @@ index 00000000..9f35e525
 \ No newline at end of file
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json b/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json
 new file mode 100644
-index 00000000..0e0dcd23
+index 0000000..0e0dcd2
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json
 @@ -0,0 +1,3 @@
@@ -124,7 +124,7 @@ index 00000000..0e0dcd23
 \ No newline at end of file
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp b/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
 new file mode 100644
-index 00000000..7ecb756a
+index 0000000..7ecb756
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
 @@ -0,0 +1,72 @@
@@ -202,10 +202,10 @@ index 00000000..7ecb756a
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 00000000..740e0e95
+index 0000000..7ad650a
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
-@@ -0,0 +1,563 @@
+@@ -0,0 +1,573 @@
 +/**
 + * @file swupdate_consent_handler.cpp
 + * @brief Implementation of ContentHandler API for update content swupdate_consent.
@@ -222,6 +222,7 @@ index 00000000..740e0e95
 +#include "aduc/workflow_utils.h"
 +#include <azure_c_shared_utility/threadapi.h> // ThreadAPI_Sleep
 +#include <parson.h>
++#include <signal.h> // raise()
 +
 +#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/etc/omnect/consent/consent_conf.json"
 +#define ADUC_SWUPDATE_CONSENT_USER_FILE "/etc/omnect/consent/swupdate/user_consent.json"
@@ -620,6 +621,7 @@ index 00000000..740e0e95
 +{
 +    std::fstream f;
 +    bool consent = false;
++    ADUC_WorkflowHandle workflowHandle = workflowData->WorkflowHandle;
 +    char* installedCriteria_workflow = workflow_get_installed_criteria(workflowData->WorkflowHandle);
 +    std::string installedCriteria = ValueOrEmpty(installedCriteria_workflow);
 +    std::string version = GetVersion(installedCriteria);
@@ -637,6 +639,14 @@ index 00000000..740e0e95
 +        // check if general user consent agreed
 +        if (false == GetGeneralConsent())
 +        {
++            if (workflow_is_cancel_requested(workflowHandle))
++            {
++                // see issue: https://github.com/Azure/iot-hub-device-update/issues/511
++                // Workaround until we get a final fix from MS
++                Log_Info("Restarting ADU Agent due to cancel request!");
++                raise(SIGUSR1);
++            }
++
 +            if (true == UserConsentAgreed(version))
 +            {
 +                // log message already present in function, return value currently not needed to evaluate

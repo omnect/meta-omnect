@@ -76,14 +76,15 @@ check_fs()
 }
 
 reformat_ext4_fs() {
-    local label=$1  # filesystem label
+    local path="${1}"  # filesystem
+    local label="${2}"
 
     # -- mkfs enforced OR uncorrectable fsck errors --
-    msg "reformatting /dev/omnect/${label}  ..."
-    run_cmd mkfs.ext4 -F -q /dev/omnect/${label} || return 1
+    msg "reformatting ${path}  ..."
+    run_cmd mkfs.ext4 -F -q ${path} || return 1
 
     # set ext4 label; disable enforced fsck
-    run_cmd tune2fs /dev/omnect/${label} -c -1 -i 0 -L ${label} || return 1
+    run_cmd tune2fs ${path} -c -1 -i 0 -L ${label} || return 1
     run_cmd sync
 }
 
