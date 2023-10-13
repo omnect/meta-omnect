@@ -3,12 +3,11 @@
 
 #include <configs/omnect_env_machine.h>
 
-/* Todo dev and mmcdev are redundant: needs refactoring of bootscript */
-/* Todo "env_initialized:do" doesnt work */
 /* Attention: if vars are already part of CONFIG_EXTRA_ENV_SETTINGS
  * this doesnt work; these vars are shown correctly via userland fw_printenv,
  * but u-boot takes the default env value
  */
+#define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS \
     "omnect_os_bootpart:dw," \
     "data-mount-options:sw," \
@@ -20,7 +19,8 @@
     "omnect_validate_update:bw," \
     "omnect_validate_update_failed:bw," \
     "omnect_validate_update_part:dw," \
-    "resized-data:sw"
+    "resized-data:sw," \
+    OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA
 
 // activated by either u-boot_%.bbappend or u-boot-imx_%.bbappend
 //#define OMNECT_RELEASE_IMAGE

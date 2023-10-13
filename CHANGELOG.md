@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added LTE test (pseudo-)board rpi4-omnect-lab basing on raspberrypi4-64 and
   extended with LTE and TPM functionalities
 
+## [kirkstone-next-0.3.6] Q4 2023
+  ## [kirkstone-0.23.3] Q4 2023
+  ## [kirkstone-0.23.2] Q4 2023
+  ## [kirkstone-0.23.1] Q4 2023
+
+## [kirkstone-next-0.3.5] Q4 2023
+  ## [kirkstone-0.23.0] Q4 2023
+  ## [kirkstone-0.22.9] Q4 2023
+
+## [kirkstone-next-0.3.4] Q4 2023
+  ## [kirkstone-0.22.8] Q4 2023
+  ## [kirkstone-0.22.7] Q4 2023
+  ## [kirkstone-0.22.6] Q4 2023
+
 ## [kirkstone-next-0.3.3] Q4 2023
 - fixed bootloader update for omnect_grub overrides
 
@@ -173,6 +187,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-next-0.0.1] Q1 2023
 - azure-osconfig: updated to 1.0.5.2023013001
+
 ## [kirkstone-0.15.5] Q1 2023
 - iot-identity-service-precondition: synchronized startup with iotedge
   (fixes race with aziot-edged reading the configuration via aziot-identityd)

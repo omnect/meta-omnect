@@ -78,14 +78,15 @@ check_fs()
 }
 
 reformat_ext4_fs() {
-    local label=$1  # filesystem label
+    local path="${1}"  # filesystem
+    local label="${2}"
 
     # -- mkfs enforced OR uncorrectable fsck errors --
-    msg "reformatting /dev/omnect/${label}  ..."
-    run_cmd mkfs.ext4 -F -q /dev/omnect/${label} || return 1
+    msg "reformatting ${path}  ..."
+    run_cmd mkfs.ext4 -F -q ${path} || return 1
 
     # set ext4 label; disable enforced fsck
-    run_cmd tune2fs /dev/omnect/${label} -c -1 -i 0 -L ${label} || return 1
+    run_cmd tune2fs ${path} -c -1 -i 0 -L ${label} || return 1
     run_cmd sync
 }
 
@@ -268,7 +269,7 @@ on_exit()
     fi
 }
 
-flashmode_efi_handling()
+flash_mode_efi_handling()
 {
     local dest_dev=${1}
     local p=${2}
@@ -294,4 +295,44 @@ flashmode_efi_handling()
         run_cmd_stdout umount /tmp/boot
     fi
     return $ret
+}
+
+flash_mode_setup_fifo() {
+    # setup FIFO
+    run_cmd mkfifo ${OMNECT_FLASH_MODE_FIFO} || return 1
+    run_cmd chown omnect:omnect ${OMNECT_FLASH_MODE_FIFO} || return 1
+}
+
+flash_mode_setup_network() {
+    local if_name="$1"
+    local ip_addr=""
+
+    # get network interface up
+    while true; do
+        ifconfig ${if_name} up >/dev/null 2>&1
+        if [ $? -eq 0 ]; then break; fi
+        msg "Waiting for ${if_name} ..."
+        sleep 1
+    done
+
+    # start dhcp client; it is backgrounding in the case the IP address was assigned or timeout
+    run_cmd mkdir -p /tmp || return 1
+    run_cmd dhcpcd ${if_name} || return 1
+
+    # wait for IPv4 address
+    while true; do
+        msg "Waiting for IP address... on ${if_name}"
+        ip_addr=$(ip addr show dev ${if_name} | grep "inet " | awk '{print $2}')
+        if [ -n "${ip_addr}" ]; then break; fi
+        sleep 1
+    done
+    OMNECT_FLASH_MODE_IP_ADDR="${ip_addr%/*}"
+
+    # setup PTY
+    run_cmd mkdir -p /dev/pts || return 1
+    run_cmd mount -t devpts devpts /dev/pts || return 1
+
+    # start SSH server; generate host key on the fly
+    mkdir -p /etc/dropbear
+    run_cmd dropbear -R || return 1
 }

@@ -66,6 +66,7 @@ IMAGE_INSTALL = "\
     iot-hub-device-update \
     iptables \
     jq \
+    kernel-image \
     kmod \
     less \
     omnect-base-files \
