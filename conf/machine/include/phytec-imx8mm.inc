@@ -51,6 +51,7 @@ SYSTEMD_RebootWatchdogSec   = "60"
 
 # this machine uses uboot
 MACHINEOVERRIDES:prepend = "omnect_uboot:"
+MACHINEOVERRIDES:append = ":phytec-imx8mm"
 
 # For now remove optee from MACHINE_FEATURES. We don't support secure boot at
 # the moment and tee-supplicant will fail, because we don't boot with the
@@ -61,5 +62,3 @@ MACHINE_FEATURES:remove = " \
     nxp8987 \
     optee \
 "
-
-MACHINEOVERRIDES:append = ":phytec-imx8mm"
