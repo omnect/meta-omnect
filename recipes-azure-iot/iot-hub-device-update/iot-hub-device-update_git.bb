@@ -5,12 +5,14 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
 SRC_URI = " \
   git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.0.2;nobranch=1 \
-  file://adu-swupdate-key.patch \
   file://connection-status-handler.patch \
   file://eis-utils-cert-chain-buffer.patch \
   ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
   file://linux_platform_layer.patch \
-  file://rpipart_to_bootpart.patch \
+  file://0001-add-swupdate-user-consent-handler.patch \
+  file://0001-fix-cancel-apply-swupdate_handler_v1.patch \
+  file://0001-retry-handling-on-failed-update-validation.patch \
+  file://workaround-deprecated-declarations-openssl3.patch \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
   file://du-config.json \
@@ -18,12 +20,10 @@ SRC_URI = " \
   file://iot-hub-device-update.tmpfilesd \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
-  file://0001-add-swupdate-user-consent-handler.patch \
-  file://0001-retry-handling-on-failed-update-validation.patch \
-  file://workaround-deprecated-declarations-openssl3.patch \
-  file://0001-fix-cancel-apply-swupdate_handler_v1.patch \
 "
-SRC_URI:append:eg500 = " file://swupdate_v1_grub.sh"
+
+SRC_URI:append:omnect_uboot = " file://swupdate_v1_u-boot.sh"
+SRC_URI:append:omnect_grub = " file://swupdate_v1_grub.sh"
 
 PV = "${SRCPV}"
 
@@ -116,8 +116,12 @@ do_install:append() {
   install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
 }
 
-do_install:append:eg500() {
+do_install:append:omnect_grub() {
   install -m 0755 ${WORKDIR}/swupdate_v1_grub.sh ${D}${libdir}/adu/adu-swupdate.sh
+}
+
+do_install:append:omnect_uboot() {
+  install -m 0755 ${WORKDIR}/swupdate_v1_u-boot.sh ${D}${libdir}/adu/adu-swupdate.sh
 }
 
 pkg_postinst:${PN}() {

@@ -1,3 +1,5 @@
+PREFERRED_PROVIDER_virtual/bootloader = "u-boot"
+
 # mask u_boot bbappend from meta-raspberrypi, we handle fw_env.conf in swupdates libubootenv
 BBMASK += "/meta-raspberrypi/recipes-bsp/u-boot/u-boot_%.bbappend"
 
@@ -28,4 +30,4 @@ SYSTEMD_RuntimeWatchdogSec  = "15"
 SYSTEMD_RebootWatchdogSec   = "15"
 
 # this machine uses uboot
-MACHINEOVERRIDES:append = ":omnect_uboot"
+MACHINEOVERRIDES:prepend = "omnect_uboot:"
