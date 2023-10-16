@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.24.1] Q4 2023
+- omnect-device-service: bumped to 0.14.5 which fixes error string in results of direct methods
+
 ## [kirkstone-0.24.0] Q4 2023
 - bootloader-update (breaking change for current release):
   - introduction of bootloader update for phytec tauril2 ,raspberry pi4 and welotec eg500
