@@ -28,14 +28,6 @@ header() { echo -e "\e[4m\e[1m\e[1;32m$*\e[0m"; }
 
 bullet() { echo -e "\e[1;34m*\e[0m $*"; }
 
-warn "*************************************************"
-warn "*                    WARNING                    *"
-warn "*                                               *"
-warn "* THIS FILE IS FOR DEMONSTRATION PURPOSES ONLY. *"
-warn "* DO NOT USE THIS FOR YOUR REAL PRODUCT UPDATE! *"
-warn "*                                               *"
-warn "*************************************************"
-
 # Log debug prefix - blue
 log_debug_pref="\033[1;30m[D]\033[0m"
 
@@ -54,7 +46,7 @@ log_error_pref="\033[1;31m[E]\033[0m"
 workfolder=
 output_file=/var/log/aduc-logs/swupdatehandlerv2.output
 log_file=/var/log/aduc-logs/swupdatehandlerv2.log
-swupdate_log_file=/adu/logs/swupdate.log
+swupdate_log_file=/var/log/aduc-logs/swupdate.log
 result_file=/var/log/aduc-logs/swupdatehandlerv2.result
 
 #
@@ -586,9 +578,8 @@ InstallUpdate() {
             # Generated RSA public key from private key using command:
             # openssl rsa -in ${WORKDIR}/priv.pem -out ${WORKDIR}/public.pem -outform PEM -pubout
 
-            ret_val=1
-            if [[ ${public_key_file} -ne "" ]]; then
-                swupdate -v -i "${image_file}" -k "${public_key_file}"-e ${selection} &>> "${swupdate_log_file}"
+            if [[ ${public_key_file} != "" ]]; then
+                swupdate -v -i "${image_file}" -k "${public_key_file}" -e ${selection} &>> "${swupdate_log_file}"
                 if [ $? -eq 0 ]; then
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,bootloader &>> "${swupdate_log_file}"
                     if [ $? -eq 0 ]; then
@@ -599,6 +590,7 @@ InstallUpdate() {
                     fi
                 fi
             fi
+            ret_val=$?
 
             if [[ $ret_val -eq 0 ]]; then
                 resultCode=600
