@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.14.4"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.14.5"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1"
-SRCREV = "bfdefbae52937c1a09bcf721c664be16acc0eadd"
+SRCREV = "afa89a6a716647960c593cda73ae68ac60b62e57"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -352,7 +352,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.11.4"
+SRCREV_azure-iot-sdk = "0.11.5"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.0"
