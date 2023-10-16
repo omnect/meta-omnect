@@ -10,7 +10,6 @@ SRC_URI = " \
   ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
   file://linux_platform_layer.patch \
   file://0001-add-swupdate-user-consent-handler.patch \
-  file://0001-fix-cancel-apply-swupdate_handler_v1.patch \
   file://0001-retry-handling-on-failed-update-validation.patch \
   file://workaround-deprecated-declarations-openssl3.patch \
   file://deviceupdate-agent.service \
@@ -20,7 +19,6 @@ SRC_URI = " \
   file://iot-hub-device-update.tmpfilesd \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
-  file://0001-swupdate_v2-update-validation.patch \
 "
 
 PV = "${SRCPV}"
