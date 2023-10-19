@@ -3,6 +3,9 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+# Copyright (c) conplement AG
+# Licensed under the MIT License.
+
 # Ensure that getopt starts from first option if ". <script.sh>" was used.
 OPTIND=1
 
