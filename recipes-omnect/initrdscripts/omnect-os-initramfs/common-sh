@@ -272,7 +272,14 @@ flash_mode_efi_handling()
     local dest_dev=${1}
     local p=${2}
     local machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
+    local boot_dev="/dev/omnect/boot"
     local ret=0
+
+    if [ -n "${dest_dev}" ]; then
+        boot_dev="${dest_dev}${p}1"
+    else
+        dest_dev="/dev/omnect/rootblk"
+    fi
 
     if [[ " ${machine_features} " =~ " efi " ]]; then
         echo "Configuring efi"
@@ -285,7 +292,7 @@ flash_mode_efi_handling()
         done
 
         run_cmd_stdout mkdir -p /tmp/boot
-        run_cmd_stdout mount ${dest_dev}${p}1 /tmp/boot
+        run_cmd_stdout mount ${boot_dev} /tmp/boot
         run_cmd_stdout efibootmgr --create --disk ${dest_dev} --part 1 --label "omnect_os" --loader \\\\EFI\\\\BOOT\\\\bootx64.efi
         # same entry with another label ... for debug purposes, when booting after flash-mode-{1,2} fails
         run_cmd_stdout efibootmgr --create --disk ${dest_dev} --part 1 --label "omnect_os " --loader \\\\EFI\\\\BOOT\\\\bootx64.efi
@@ -293,12 +300,6 @@ flash_mode_efi_handling()
         run_cmd_stdout umount /tmp/boot
     fi
     return $ret
-}
-
-flash_mode_setup_fifo() {
-    # setup FIFO
-    run_cmd mkfifo ${OMNECT_FLASH_MODE_FIFO} || return 1
-    run_cmd chown omnect:omnect ${OMNECT_FLASH_MODE_FIFO} || return 1
 }
 
 flash_mode_setup_network() {

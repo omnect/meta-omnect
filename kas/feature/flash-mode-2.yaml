@@ -6,3 +6,5 @@ header:
 local_conf_header:
   meta-omnect_feature_flash-mode-2: |
     DISTRO_FEATURES:append = " flash-mode-2"
+
+    OMNECT_UBOOT_WRITEABLE_ENV_FLAGS:append = "flash-mode-sha256:sw,"

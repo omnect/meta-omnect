@@ -240,29 +240,34 @@ The bootloader environment variables *flash-mode* and *flash-mode-devpath* will 
 #### Flash Mode 2
 Enable the distribution feature `flash-mode-2` at build time, if you want to use it.
 
-In order to trigger the flash mode 2, use the following commands on the target system:<br>
-```sh
-sudo -s
-bootloader_env.sh set flash-mode 2
-reboot
-...
-Entering omnect flashing mode 2...
-...
-```
-**Note, *bootloader_env.sh* command requires root permissions.**<br>
+In order to trigger the flash mode 2,
+1. compute the sha256 checksum of your wic.xz
+   ```sh
+   sha256=$(sha256sum wic.xz | awk -F" " '{print $1}')
+   ```
+2. use the following commands on the target system:<br>
+    ```sh
+    sudo -s
+    bootloader_env.sh set flash-mode 2
+    bootloader_env.sh set flash-mode-sha256 <computed sha256 from step 1>
+    reboot
+    ...
+    Entering omnect flashing mode 2...
+    ...
+    ```
+    **Note, *bootloader_env.sh* command requires root permissions.**<br>
+    **Note, `flash-mode 2` is restricted to eth0.**
 
-**Note, `flash-mode 2` is restricted to eth0.**
-
-In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
-```sh
-scp omnect-os-*.wic.bmap omnect@<target-ip>:wic.bmap
-scp omnect-os-*.wic.xz omnect@<target-ip>:wic.xz
-```
-On systems with new openssh clients >= 9.0 you have to use the legacy option when using `scp`. (See [here](https://www.openssh.com/txt/release-9.0) for details.) :
-```sh
-scp -O omnect-os-*.wic.bmap omnect@<target-ip>:wic.bmap
-scp -O omnect-os-*.wic.xz omnect@<target-ip>:wic.xz
-```
+3. In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
+    ```sh
+    scp omnect-os-*.wic.bmap omnect@<target-ip>:wic.bmap
+    scp omnect-os-*.wic.xz omnect@<target-ip>:wic.xz
+    ```
+    On systems with new openssh clients >= 9.0 you have to use the legacy option when using `scp`. (See [here](https://www.openssh.com/txt/release-9.0) for details.) :
+    ```sh
+    scp -O omnect-os-*.wic.bmap omnect@<target-ip>:wic.bmap
+    scp -O omnect-os-*.wic.xz omnect@<target-ip>:wic.xz
+    ```
 
 The password for the *omnect* user used by the rootfs has to be used.
 The *omnect* user used by the initramfs is independent from the *omnect* user used by the rootfs.
@@ -277,19 +282,26 @@ The bootloader environment variable *flash-mode* will be deleted automatically.
 #### Flash Mode 3
 Enable the distribution feature `flash-mode-3` at build time, if you want to use it.
 
-In order to trigger the flash mode 3, use the following commands on the target system:<br>
-```sh
-sudo -s
-bootloader_env.sh set flash-mode 3
-bootloader_env.sh set flash-mode-url $(echo "http://url.to/image.wic[.xz]" | base64 -w 0 -)
-reboot
-...
-Entering omnect flashing mode 3... (http://url.to/image.wic[.xz])
-...
-```
-**Note, *bootloader_env.sh* command requires root permissions.**<br>
-**Note, the url has to be escaped with \"\".**<br>
-**Note, `flash-mode 3` is restricted to eth0.**
+In order to trigger the flash mode 3,
+1. compute the sha256 checksum of your wic.xz
+   ```sh
+   sha256=$(sha256sum wic.xz | awk -F" " '{print $1}')
+   ```
+2. use the following commands on the target system:<br>
+    ```sh
+    sudo -s
+    bootloader_env.sh set flash-mode 3
+    bootloader_env.sh set flash-mode-url $(echo "http://url.to/image.wic[.xz]" | base64 -w 0 -)
+    bootloader_env.sh set flash-mode-sha256 <computed sha256 from step 1>
+    reboot
+    ...
+    Entering omnect flashing mode 3... (http://url.to/image.wic[.xz])
+    ...
+    ```
+    **Note, *bootloader_env.sh* command requires root permissions.**<br>
+    **Note, the url has to be escaped with \"\".**<br>
+    **Note, on systems without realtime clock the certificate of the url gets not verified.**
+    **Note, `flash-mode 3` is restricted to eth0.**
 
 After finishing the flash procedure, the system reboots automatically.
 The bootloader environment variables *flash-mode* and *flash-mode-url* will be
