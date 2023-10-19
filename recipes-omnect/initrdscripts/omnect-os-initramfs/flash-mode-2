@@ -47,7 +47,7 @@ run_bmap_tool() {
     # bmap file must be copied with scp
     msg "please run  scp <your-bmap-file> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.bmap)"
     while true; do
-        if [ -f /home/omnect/wic.bmap ]; then break; fi
+        if [ -f /home/omnect/wic.bmap ] && [ $(lsof /home/omnect/wic.bmap | wc -l) -eq 0 ]; then break; fi
         sleep 1
     done
     msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.xz)"
@@ -59,6 +59,7 @@ run_bmap_tool() {
         run_cmd_stdout "echo \"${sha256}  /home/omnect/wic.xz\" | sha256sum -c" || return 1
     fi
     vfat_grub_dd_workaround "/dev/omnect/boot"
+    export PATH
     run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
                                  /home/omnect/wic.xz /dev/omnect/rootblk;
     bmap_ret=$?

@@ -243,7 +243,7 @@ Enable the distribution feature `flash-mode-2` at build time, if you want to use
 In order to trigger the flash mode 2,
 1. compute the sha256 checksum of your wic.xz
    ```sh
-   sha256=$(sha256sum wic.xz | awk -F" " '{print $1}')
+   sha256=$(sha256sum image.wic.xz | awk -F" " '{print $1}')
    ```
 2. use the following commands on the target system:<br>
     ```sh
@@ -285,17 +285,17 @@ Enable the distribution feature `flash-mode-3` at build time, if you want to use
 In order to trigger the flash mode 3,
 1. compute the sha256 checksum of your wic.xz
    ```sh
-   sha256=$(sha256sum wic.xz | awk -F" " '{print $1}')
+   sha256=$(sha256sum image.wic.xz | awk -F" " '{print $1}')
    ```
 2. use the following commands on the target system:<br>
     ```sh
     sudo -s
     bootloader_env.sh set flash-mode 3
-    bootloader_env.sh set flash-mode-url $(echo "http://url.to/image.wic[.xz]" | base64 -w 0 -)
+    bootloader_env.sh set flash-mode-url $(echo "http://url.to/image.wic.xz" | base64 -w 0 -)
     bootloader_env.sh set flash-mode-sha256 <computed sha256 from step 1>
     reboot
     ...
-    Entering omnect flashing mode 3... (http://url.to/image.wic[.xz])
+    Entering omnect flashing mode 3... (http://url.to/image.wic.xz)
     ...
     ```
     **Note, *bootloader_env.sh* command requires root permissions.**<br>

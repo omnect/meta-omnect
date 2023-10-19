@@ -38,12 +38,13 @@ run_bmap_tool() {
         fi
     done </tmp/all_mounts
 
-    local curl_opts="--no-progress-meter -Lo /home/omnect/wic_file"
+    local curl_opts="--no-progress-meter -Lo /home/omnect/wic.xz"
     local machine_features="$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')"
     [[ ! " ${machine_features} " =~ " rtc " ]] && curl_opts+=" -k"
     run_cmd_stdout "curl ${curl_opts} \"${url}\" && echo \"curl succeeded\""  || { msg_fatal "curl ${url} failed"; kill ${bmap_pid}; return 1; }
-    run_cmd_stdout "echo \"${sha256}  /home/omnect/wic_file\" | sha256sum -c" || return 1
-    run_cmd_stdout bmaptool copy --nobmap /home/omnect/wic_file /dev/omnect/rootblk
+    run_cmd_stdout "echo \"${sha256}  /home/omnect/wic.xz\" | sha256sum -c" || return 1
+    export PATH
+    run_cmd_stdout bmaptool copy --nobmap /home/omnect/wic.xz /dev/omnect/rootblk
     bmap_ret=${?}
     if [ ${bmap_ret} -eq 0 ]; then return 0; fi  # success
 
