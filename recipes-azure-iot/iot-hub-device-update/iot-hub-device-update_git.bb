@@ -21,6 +21,9 @@ SRC_URI = " \
   file://iot-identity-service-identityd.template.toml \
 "
 
+SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
+SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh"
+
 PV = "${SRCPV}"
 
 S = "${WORKDIR}/git"
@@ -112,6 +115,20 @@ do_install:append() {
   install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
 }
 
+do_install:append:omnect_grub() {
+  # install the swupdate_v2 script only for devel images
+  if ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '0', 'true', 'false', d)}; then
+    install -m 0755 ${WORKDIR}/swupdate_handler_v2_grub.sh ${D}${libdir}/swupdate.sh
+  fi
+}
+
+do_install:append:omnect_uboot() {
+  # install the swupdate_v2 script only for devel images
+  if ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '0', 'true', 'false', d)}; then
+    install -m 0755 ${WORKDIR}/swupdate_handler_v2_u-boot.sh ${D}${libdir}/swupdate.sh
+  fi
+}
+
 pkg_postinst:${PN}() {
   sed -i "s/@@UID@@/$(id -u adu)/" $D${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml
   sed -i -e "s/@@UID@@/$(id -u adu)/" -e "s/@@NAME@@/AducIotAgent/" $D${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
@@ -123,6 +140,7 @@ SYSTEMD_SERVICE:${PN} = " \
 "
 
 FILES:${PN} += " \
+  ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '${libdir}/swupdate.sh', d)} \
   ${libdir}/adu \
   ${libdir}/tmpfiles.d/iot-hub-device-update.conf \
   ${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml \
