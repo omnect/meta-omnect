@@ -43,6 +43,7 @@ PACKAGE_INSTALL = "\
     initramfs-module-debug \
     jq \
     kmod \
+    lsof \
     omnect-os-initramfs-scripts \
     os-release \
     util-linux-fsck \

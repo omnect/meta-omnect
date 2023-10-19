@@ -47,12 +47,12 @@ run_bmap_tool() {
     # bmap file must be copied with scp
     msg "please run  scp <your-bmap-file> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.bmap)"
     while true; do
-        if [ -f /home/omnect/wic.bmap ] && [ $(lsof /home/omnect/wic.bmap | wc -l) -eq 0 ]; then break; fi
+        if [ -f /home/omnect/wic.bmap ]; then break; fi
         sleep 1
     done
     msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.xz)"
     while true; do
-        if [ -f /home/omnect/wic.xz ]; then break; fi
+        if [ -f /home/omnect/wic.xz ] && [ $(lsof /home/omnect/wic.bmap | wc -l) -eq 0 ]; then break; fi
         sleep 1
     done
     if [ ! -f ${OMNECT_FLASH_MODE_FLAG_FILE} ]; then
@@ -123,7 +123,6 @@ run_flash_mode_2() {
 flash_mode_2_run() {
     add_module_post_hook on_exit
     run_flash_mode_2
-    return=${?}
     return=${?}
     echo flash_mode_2_run return=${return}
     return ${return}
