@@ -60,7 +60,15 @@ run_bmap_tool() {
 run_flash_mode_3() {
     local url=$(get_bootloader_env_var flash-mode-url | base64 --decode) || { msg_fatal "couldn't get \"flash-mode-url\""; return 1; }
     local sha256=$(get_bootloader_env_var flash-mode-sha256) || { msg_fatal "couldn't get \"flash-mode-sha256\""; return 1; }
-    msg "Entering omnect flashing mode 3 ... (${url})"
+
+    if [ -z "${url}" ] || [ -z "${sha256}" ]; then
+        msg "invalid parameters:"
+        msg "url=${url}"
+        msg "sha256=${sha256}"
+        return 1
+    fi
+
+    msg "Entering omnect flashing mode 3 ..."
     # disable flash mode for subsequent restarts
     set_bootloader_env_var flash-mode
     set_bootloader_env_var flash-mode-sha256

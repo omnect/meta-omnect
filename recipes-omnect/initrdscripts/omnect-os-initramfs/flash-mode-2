@@ -44,24 +44,26 @@ run_bmap_tool() {
         fi
     done </tmp/all_mounts
 
+    run_cmd mkfifo /home/omnect/wic.xz || return 1
+    run_cmd chown omnect:omnect /home/omnect/wic.xz || return 1
+
     # bmap file must be copied with scp
     msg "please run  scp <your-bmap-file> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.bmap)"
     while true; do
         if [ -f /home/omnect/wic.bmap ]; then break; fi
         sleep 1
     done
+
     msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.xz)"
-    while true; do
-        if [ -f /home/omnect/wic.xz ] && [ $(lsof /home/omnect/wic.bmap | wc -l) -eq 0 ]; then break; fi
-        sleep 1
-    done
+    # wait until scp is complete:
+    dd if=/home/omnect/wic.xz of=/home/omnect/wic_.xz bs=512k &>/dev/null
     if [ ! -f ${OMNECT_FLASH_MODE_FLAG_FILE} ]; then
-        run_cmd_stdout "echo \"${sha256}  /home/omnect/wic.xz\" | sha256sum -c" || return 1
+        run_cmd_stdout "echo \"${sha256}  /home/omnect/wic_.xz\" | sha256sum -c" || return 1
     fi
     vfat_grub_dd_workaround "/dev/omnect/boot"
     export PATH
     run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
-                                 /home/omnect/wic.xz /dev/omnect/rootblk;
+                                 /home/omnect/wic_.xz /dev/omnect/rootblk;
     bmap_ret=$?
     if [ ${bmap_ret} -eq 0 ]; then return 0; fi  # success
 
@@ -97,7 +99,12 @@ vfat_grub_dd_workaround()
 # deploy WIC image via network to (same) active block device
 run_flash_mode_2() {
     local sha256=$(get_bootloader_env_var flash-mode-sha256) || { msg_fatal "couldn't get \"flash-mode-sha256\""; return 1; }
-    msg "Entering omnect flashing mode 2 ..."
+    msg "Entering omnect flashing mode 2 ... (${sha256})"
+
+    if [ ! -f ${OMNECT_FLASH_MODE_FLAG_FILE} ] && [ -z "${sha256}" ]; then
+        msg "bootloader env var \"flash-mode-sha256\" not set"
+        return 1
+    fi
 
     # disable flash mode for subsequent restarts
     set_bootloader_env_var flash-mode
