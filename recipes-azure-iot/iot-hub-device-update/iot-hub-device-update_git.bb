@@ -10,7 +10,6 @@ SRC_URI = " \
   ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
   file://linux_platform_layer.patch \
   file://0001-add-swupdate-user-consent-handler.patch \
-  file://0001-fix-cancel-apply-swupdate_handler_v1.patch \
   file://0001-retry-handling-on-failed-update-validation.patch \
   file://workaround-deprecated-declarations-openssl3.patch \
   file://deviceupdate-agent.service \
@@ -22,8 +21,8 @@ SRC_URI = " \
   file://iot-identity-service-identityd.template.toml \
 "
 
-SRC_URI:append:omnect_uboot = " file://swupdate_v1_u-boot.sh"
-SRC_URI:append:omnect_grub = " file://swupdate_v1_grub.sh"
+SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
+SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh"
 
 PV = "${SRCPV}"
 
@@ -117,11 +116,19 @@ do_install:append() {
 }
 
 do_install:append:omnect_grub() {
-  install -m 0755 ${WORKDIR}/swupdate_v1_grub.sh ${D}${libdir}/adu/adu-swupdate.sh
+  # install the swupdate_v2 script only for devel images
+  if ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '0', 'true', 'false', d)}; then
+    install -d ${D}${libdir}/swupdate
+    install -m 0755 ${WORKDIR}/swupdate_handler_v2_grub.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
+  fi
 }
 
 do_install:append:omnect_uboot() {
-  install -m 0755 ${WORKDIR}/swupdate_v1_u-boot.sh ${D}${libdir}/adu/adu-swupdate.sh
+  # install the swupdate_v2 script only for devel images
+  if ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '0', 'true', 'false', d)}; then
+    install -d ${D}${libdir}/swupdate
+    install -m 0755 ${WORKDIR}/swupdate_handler_v2_u-boot.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
+  fi
 }
 
 pkg_postinst:${PN}() {
@@ -135,6 +142,7 @@ SYSTEMD_SERVICE:${PN} = " \
 "
 
 FILES:${PN} += " \
+  ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '${libdir}/swupdate/omnect-swupdate.sh', d)} \
   ${libdir}/adu \
   ${libdir}/tmpfiles.d/iot-hub-device-update.conf \
   ${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml \

@@ -1,13 +1,13 @@
-From 952daef55d054161d63c82c6339e251e0d3691ee Mon Sep 17 00:00:00 2001
-From: Jan Zachmann <jan.zachmann@conplement.de>
-Date: Fri, 5 May 2023 12:33:57 +0200
-Subject: [PATCH] retry handling on failed update validation
+From a14e2b86cabb9567d1048368b612b5d6cdd71df2 Mon Sep 17 00:00:00 2001
+From: JoergZeidler <joerg.zeidler@conplement.de>
+Date: Mon, 16 Oct 2023 13:17:59 +0200
+Subject: [PATCH] retry handling on failed update-validation
 
 ---
  .../result_codes.json                         |  4 ++
  src/adu_workflow/src/agent_workflow.c         | 41 ++++++++++++++++++-
- .../swupdate_handler/src/swupdate_handler.cpp | 32 ++++++++++++++-
- 3 files changed, 75 insertions(+), 2 deletions(-)
+ .../src/swupdate_handler_v2.cpp               | 30 ++++++++++++++
+ 3 files changed, 74 insertions(+), 1 deletion(-)
 
 diff --git a/scripts/error_code_generator_defs/result_codes.json b/scripts/error_code_generator_defs/result_codes.json
 index 36ce7352..4d02404b 100644
@@ -101,32 +101,24 @@ index 23ad8a40..c39e9a5a 100644
                  }
                  else
                  {
-diff --git a/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp b/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
-index 8ecad89b..269e0884 100644
---- a/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
-+++ b/src/extensions/step_handlers/swupdate_handler/src/swupdate_handler.cpp
-@@ -31,6 +31,7 @@
- #include "adushell_const.hpp"
- 
- #include <algorithm>
-+#include <cstdlib>
- #include <fstream>
- #include <functional>
- #include <memory>
-@@ -130,11 +131,40 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
-     ADUC_WorkflowHandle workflowHandle = workflowData->WorkflowHandle;
-     char* workFolder = workflow_get_workfolder(workflowHandle);
-     int fileCount = 0;
--
-     char* updateType = workflow_get_update_type(workflowHandle);
-     char* updateName = nullptr;
-     unsigned int updateTypeVersion = 0;
-     bool updateTypeOk = false;
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
+index db5c6c57..ee28f8e0 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
++++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
+@@ -300,12 +300,42 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+     memset(&fileEntity, 0, sizeof(fileEntity));
+     int fileCount = workflow_get_update_files_count(workflowHandle);
+     ADUC_Result result = SWUpdate_Handler_DownloadScriptFile(workflowHandle);
 +    bool retry = false;
 +    std::ifstream omnectValidateUpdateFailedFilePath("/run/omnect-device-service/omnect_validate_update_failed");
 +    const char* runtimeDir = std::getenv("RUNTIME_DIRECTORY");
 +    std::string omnectUpdateRetryFileName("/omnect_update_retry");
-+
+ 
+     if (IsAducResultCodeFailure(result.ResultCode))
+     {
+         goto done;
+     }
+ 
 +    if (NULL == runtimeDir)
 +    {
 +        Log_Error("Update validation on new boot part failed. Rebooted to old boot part.");
@@ -152,9 +144,7 @@ index 8ecad89b..269e0884 100644
 +
 +        Log_Info("Retry update after failed update vailidation.");
 +    }
- 
-     if (workflow_is_cancel_requested(workflowHandle))
-     {
--- 
-2.34.1
-
++
+     // Determine whether to continue downloading the rest.
+     installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
+     result = IsInstalled(workflowData);
