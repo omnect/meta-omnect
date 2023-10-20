@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.25.1] Q4 2023
 - flash-mode-2/flash-mode-3: verify copied wic.xz before flashing
   (wic.bmap doesn't need to be verified, it contains a checksum of itself)
+- flash-mode-3: don't verify url certificate if device has no RTC
 
 ## [kirkstone-0.25.0] Q4 2023
 - iot-hub-device-update: changed to swupdate-handler-v2
