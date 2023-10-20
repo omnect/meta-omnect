@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.25.1] Q4 2023
+- iot-hub-device-update: don't install upstreams adu-swupdate.sh
+- u-boot:
+  - write `omnect_u-boot_version` as readonly into u-boot default env
+  - don't set `omnect_u-boot_version` by `swupdate_handle_v2_u-boot.sh`
+    (now we reliably don't flash if the update has `omnect_u-boot_version` as current)
+
 ## [kirkstone-0.25.0] Q4 2023
 - iot-hub-device-update: changed to swupdate-handler-v2
 

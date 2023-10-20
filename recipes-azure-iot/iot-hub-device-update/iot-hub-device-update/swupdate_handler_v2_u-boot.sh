@@ -587,7 +587,6 @@ InstallUpdate() {
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,bootloader &>> "${swupdate_log_file}"
                     if [ $? -eq 0 ]; then
                         if [ -f "/run/omnect-bootloader-update" ]; then
-                            bootloader_env.sh set omnect_u-boot_version $(cat /run/omnect-bootloader-update)
                             bootloader_env.sh set omnect_bootloader_updated 1
                         fi
                     fi
