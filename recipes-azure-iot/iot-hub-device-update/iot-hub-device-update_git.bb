@@ -118,14 +118,16 @@ do_install:append() {
 do_install:append:omnect_grub() {
   # install the swupdate_v2 script only for devel images
   if ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '0', 'true', 'false', d)}; then
-    install -m 0755 ${WORKDIR}/swupdate_handler_v2_grub.sh ${D}${libdir}/swupdate.sh
+    install -d ${D}${libdir}/swupdate
+    install -m 0755 ${WORKDIR}/swupdate_handler_v2_grub.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
   fi
 }
 
 do_install:append:omnect_uboot() {
   # install the swupdate_v2 script only for devel images
   if ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '0', 'true', 'false', d)}; then
-    install -m 0755 ${WORKDIR}/swupdate_handler_v2_u-boot.sh ${D}${libdir}/swupdate.sh
+    install -d ${D}${libdir}/swupdate
+    install -m 0755 ${WORKDIR}/swupdate_handler_v2_u-boot.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
   fi
 }
 
@@ -140,7 +142,7 @@ SYSTEMD_SERVICE:${PN} = " \
 "
 
 FILES:${PN} += " \
-  ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '${libdir}/swupdate.sh', d)} \
+  ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '${libdir}/swupdate/omnect-swupdate.sh', d)} \
   ${libdir}/adu \
   ${libdir}/tmpfiles.d/iot-hub-device-update.conf \
   ${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml \
