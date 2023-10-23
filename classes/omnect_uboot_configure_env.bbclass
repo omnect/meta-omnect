@@ -17,6 +17,6 @@ omnect_uboot_configure_env() {
 
     # concatenate extra writable env flags
     if [ -n "${OMNECT_UBOOT_WRITEABLE_ENV_FLAGS}" ]; then
-        sed -i -e "s|^#define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA$|#define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA \"${OMNECT_UBOOT_WRITEABLE_ENV_FLAGS}\\\0\"|g" ${S}/include/configs/omnect_env.h
+        sed -i -e "s|^#define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA$|#define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA \"${OMNECT_UBOOT_WRITEABLE_ENV_FLAGS}\"|g" ${S}/include/configs/omnect_env.h
     fi
 }

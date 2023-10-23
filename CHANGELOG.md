@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - write `omnect_u-boot_version` as readonly into u-boot default env
   - don't set `omnect_u-boot_version` by `swupdate_handle_v2_u-boot.sh`
     (now we reliably don't flash if the update has `omnect_u-boot_version` as current)
+  - omnect_uboot_configure_env.bbclass: fixed a concatination problem of
+    `CONFIG_ENV_FLAGS_LIST_STATIC`
 
 ## [kirkstone-0.25.0] Q4 2023
 - iot-hub-device-update: changed to swupdate-handler-v2

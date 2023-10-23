@@ -9,13 +9,13 @@
  */
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS \
-    "omnect_os_bootpart:dw," \
     "data-mount-options:sw," \
     "factory-reset:dw," \
     "factory-reset-restore-list:sw," \
     "factory-reset-status:sw," \
     "flash-mode:dw," \
     "flash-mode-devpath:sw," \
+    "omnect_os_bootpart:dw," \
     "omnect_bootloader_updated:bw," \
     "omnect_validate_update:bw," \
     "omnect_validate_update_failed:bw," \
@@ -44,8 +44,8 @@
 // u-boot part of omnect update workflow
 #define OMNECT_ENV_UPDATE_WORKFLOW \
     "omnect_update_flow=" \
-        "env exists omnect_os_bootpart || echo \"initializing omnect_os_bootpart=2\" && setenv omnect_os_bootpart 2 && saveenv;" \
-        "if test \"${omnect_bootloader_updated}\" == \"1\"; then saveenv;fi;" \
+        "printenv;env exists omnect_os_bootpart || echo \"initializing omnect_os_bootpart=2\" && setenv omnect_os_bootpart 2 && saveenv;" \
+        "if test \"${omnect_bootloader_updated}\" == \"1\"; then echo \"bootloader updated.\";saveenv;fi;" \
         "if test -n ${omnect_validate_update}; then " \
             "echo \"Update validation failed - booting from partition ${omnect_os_bootpart}\";" \
             "setenv omnect_validate_update_part;" \
