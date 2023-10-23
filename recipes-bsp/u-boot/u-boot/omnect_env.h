@@ -15,8 +15,8 @@
     "factory-reset-status:sw," \
     "flash-mode:dw," \
     "flash-mode-devpath:sw," \
-    "omnect_os_bootpart:dw," \
     "omnect_bootloader_updated:bw," \
+    "omnect_os_bootpart:dw," \
     "omnect_validate_update:bw," \
     "omnect_validate_update_failed:bw," \
     "omnect_validate_update_part:dw," \
