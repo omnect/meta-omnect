@@ -55,24 +55,12 @@ run_bmap_tool() {
     done
 
     msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.xz)"
-    # wait until scp is complete:
-    dd if=/home/omnect/wic.xz of=/home/omnect/wic_.xz bs=512k &>/dev/null
-    if [ ! -f ${OMNECT_FLASH_MODE_FLAG_FILE} ]; then
-        run_cmd_stdout "echo \"${sha256}  /home/omnect/wic_.xz\" | sha256sum -c" || return 1
-    fi
-    vfat_grub_dd_workaround "/dev/omnect/boot"
-    export PATH
+    # wait until scp is complete, resp. uncompress+verify wic image before writing
     run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
-                                 /home/omnect/wic_.xz /dev/omnect/rootblk;
-    bmap_ret=$?
-    if [ ${bmap_ret} -eq 0 ]; then return 0; fi  # success
-
-    # bmaptool exited with error:
-    #     - mismatch between bmap file and wic image
-    #     - broken destination device
-    #     - broken network
-    #     - usually, there is no way to salvage
-    msg_fatal "bmaptool failed: ${bmap_ret}" && return 1
+        /home/omnect/wic.xz /home/omnect/wic || return 1
+    vfat_grub_dd_workaround "/dev/omnect/boot"
+    run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
+        /home/omnect/wic /dev/omnect/rootblk || return 1
 }
 
 vfat_grub_dd_workaround()
@@ -98,17 +86,10 @@ vfat_grub_dd_workaround()
 
 # deploy WIC image via network to (same) active block device
 run_flash_mode_2() {
-    local sha256=$(get_bootloader_env_var flash-mode-sha256) || { msg_fatal "couldn't get \"flash-mode-sha256\""; return 1; }
     msg "Entering omnect flashing mode 2 ... (${sha256})"
-
-    if [ ! -f ${OMNECT_FLASH_MODE_FLAG_FILE} ] && [ -z "${sha256}" ]; then
-        msg "bootloader env var \"flash-mode-sha256\" not set"
-        return 1
-    fi
 
     # disable flash mode for subsequent restarts
     set_bootloader_env_var flash-mode
-    set_bootloader_env_var flash-mode-sha256
 
     # we already mounted /dev/omnect/boot when we're using grub. so we unmount before copying boot.
     if [ -f /usr/bin/grub-editenv ]; then
@@ -117,7 +98,7 @@ run_flash_mode_2() {
     fi
 
     flash_mode_setup_network eth0 || return 1
-    run_bmap_tool "${sha256}" || return 1
+    run_bmap_tool || return 1
     flash_mode_efi_handling
 
     msg "Rebooting system..."

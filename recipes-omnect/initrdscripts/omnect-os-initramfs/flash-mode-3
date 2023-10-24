@@ -24,7 +24,7 @@ flash_mode_3_enabled() {
 
 run_bmap_tool() {
     local url="${1}"
-    local sha256="${2}"
+    local url_sha256="${2}"
     local umount_dev=""
     local bmap_ret=""
 
@@ -38,11 +38,15 @@ run_bmap_tool() {
         fi
     done </tmp/all_mounts
 
-    local curl_opts="--no-progress-meter -Lo /home/omnect/wic.xz"
+    local curl_opts=""
     local machine_features="$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')"
-    [[ ! " ${machine_features} " =~ " rtc " ]] && curl_opts+=" -k"
-    run_cmd_stdout "curl ${curl_opts} \"${url}\" && echo \"curl succeeded\""  || { msg_fatal "curl ${url} failed"; kill ${bmap_pid}; return 1; }
-    run_cmd_stdout "echo \"${sha256}  /home/omnect/wic.xz\" | sha256sum -c" || return 1
+    [[ ! " ${machine_features} " =~ " rtc " ]] && curl_opts+="-k "
+    curl_opts+="--no-progress-meter -Lo"
+    run_cmd_stdout "curl ${curl_opts} /home/omnect/wic.sha256 \"${url_sha256}\"" && echo "curl \"${url_sha256}\" succeeded" \
+        || { msg_fatal "curl ${url_sha256} failed"; return 1; }
+    run_cmd_stdout "curl ${curl_opts} /home/omnect/wic.xz \"${url}\"" && echo "curl ${url} succeeded" \
+        || { msg_fatal "curl ${url} failed"; return 1; }
+    run_cmd_stdout "echo \"$(awk '{print $1}' /home/omnect/wic.sha256)  /home/omnect/wic.xz\" | sha256sum -c" || return 1
     export PATH
     run_cmd_stdout bmaptool copy --nobmap /home/omnect/wic.xz /dev/omnect/rootblk
     bmap_ret=${?}
@@ -59,20 +63,20 @@ run_bmap_tool() {
 # deploy WIC image via network to (same) active block device
 run_flash_mode_3() {
     local url=$(get_bootloader_env_var flash-mode-url | base64 --decode) || { msg_fatal "couldn't get \"flash-mode-url\""; return 1; }
-    local sha256=$(get_bootloader_env_var flash-mode-sha256) || { msg_fatal "couldn't get \"flash-mode-sha256\""; return 1; }
+    local url_sha256=$(get_bootloader_env_var flash-mode-url-sha256 | base64 --decode) || { msg_fatal "couldn't get \"flash-mode-url-sha256\""; return 1; }
 
-    if [ -z "${url}" ] || [ -z "${sha256}" ]; then
+    if [ -z "${url}" ] || [ -z "${url_sha256}" ]; then
         msg "invalid parameters:"
         msg "url=${url}"
-        msg "sha256=${sha256}"
+        msg "url_sha256=${url_sha256}"
         return 1
     fi
 
     msg "Entering omnect flashing mode 3 ..."
     # disable flash mode for subsequent restarts
     set_bootloader_env_var flash-mode
-    set_bootloader_env_var flash-mode-sha256
     set_bootloader_env_var flash-mode-url
+    set_bootloader_env_var flash-mode-url-sha256
 
     # we already mounted /dev/omnect/boot when we're using grub. so we unmount before copying boot.
     if [ -f /usr/bin/grub-editenv ]; then
@@ -90,7 +94,7 @@ run_flash_mode_3() {
     fi
 
     flash_mode_setup_network eth0 || return 1
-    run_bmap_tool ${url} ${sha256} || return 1
+    run_bmap_tool ${url} ${url_sha256} || return 1
     flash_mode_efi_handling
 
     msg "Rebooting system..."
