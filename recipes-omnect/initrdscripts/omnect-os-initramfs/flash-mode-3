@@ -48,16 +48,7 @@ run_bmap_tool() {
         || { msg_fatal "curl ${url} failed"; return 1; }
     run_cmd_stdout "echo \"$(awk '{print $1}' /home/omnect/wic.sha256)  /home/omnect/wic.xz\" | sha256sum -c" || return 1
     export PATH
-    run_cmd_stdout bmaptool copy --nobmap /home/omnect/wic.xz /dev/omnect/rootblk
-    bmap_ret=${?}
-    if [ ${bmap_ret} -eq 0 ]; then return 0; fi  # success
-
-    # bmaptool exited with error:
-    #     - mismatch between bmap file and wic image
-    #     - broken destination device
-    #     - broken network
-    #     - usually, there is no way to salvage
-    msg_fatal "bmaptool failed: ${bmap_ret}" && return 1
+    run_cmd_stdout bmaptool copy --nobmap /home/omnect/wic.xz /dev/omnect/rootblk || return 1
 }
 
 # deploy WIC image via network to (same) active block device
