@@ -15,7 +15,7 @@ SRC_URI += " \
 "
 # Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
 # swupdate and iot-hub-device-update, the local version must be increased;
-UBOOT_LOCALVERSION = "-2"
+UBOOT_LOCALVERSION = "-3"
 PKGV = "${PV}${UBOOT_LOCALVERSION}"
 
 inherit omnect_uboot_configure_env
