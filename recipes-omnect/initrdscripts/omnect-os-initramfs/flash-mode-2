@@ -86,7 +86,7 @@ vfat_grub_dd_workaround()
 
 # deploy WIC image via network to (same) active block device
 run_flash_mode_2() {
-    msg "Entering omnect flashing mode 2 ... (${sha256})"
+    msg "Entering omnect flashing mode 2 ..."
 
     # disable flash mode for subsequent restarts
     set_bootloader_env_var flash-mode
