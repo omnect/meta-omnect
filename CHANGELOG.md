@@ -5,10 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.25.2] Q4 2023
+## [kirkstone-0.25.3] Q4 2023
 - flash-mode-{2,3}: verify copied wic.xz before flashing
 - flash-mode-3: don't verify url certificate if device has no RTC
--
+
+## [kirkstone-0.25.2] Q4 2023
+- initramfs: fsck result hardening; compress fsck output before base64 encoding
 
 ## [kirkstone-0.25.1] Q4 2023
 - iot-hub-device-update: don't install upstreams adu-swupdate.sh
