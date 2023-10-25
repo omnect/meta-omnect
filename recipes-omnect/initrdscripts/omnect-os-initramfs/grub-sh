@@ -27,7 +27,7 @@ set_bootloader_env_var()
 {
     local  var_name="$1"
     local var_value="$2"  # empty string to delete variable
-    msg "set_bootloader_env_var" "${var_name}" "${var_value}"
+    debug "set_bootloader_env_var" "${var_name}" "${var_value}"
 
     test_and_mount_boot || return 1
     if [ -n "$var_value" ];then
@@ -37,7 +37,7 @@ set_bootloader_env_var()
     fi
 }
 
-save_fsck_status_base64()
+save_fsck_status()
 {
     local part_name="${1}"
     local source_file="${2}"
@@ -45,23 +45,25 @@ save_fsck_status_base64()
 
     if [ ! "${part_name}" = "boot" ]; then
         test_and_mount_boot || return 1
-        base64 -w0 ${source_file} > ${ROOTFS_DIR}/boot/fsck.${part_name}
+        gzip -9c ${source_file} | base64 -w0 - > ${ROOTFS_DIR}/boot/fsck.${part_name}
     elif [ ! "${fsck_res}" = "2" ]; then
         test_and_mount_boot || return 1
-        set_bootloader_env_var omnect_fsck_boot $(base64 -w0 ${source_file}) || set_bootloader_env_var omnect_fsck_boot $(echo "fsck output to big" | base64 -w0 -)
+        set_bootloader_env_var omnect_fsck_boot $(gzip -9c ${source_file} | base64 -w0 -) || set_bootloader_env_var omnect_fsck_boot $(echo "fsck output to big" | gzip - | base64 -w0 -)
     else
         msg "handled fsck error for boot partition; can not save fsck state"
     fi
 }
 
-get_fsck_status_base64()
+get_fsck_status()
 {
     local part_name="${1}"
+    local return=""
     test_and_mount_boot || return 1
     if [ ! "${part_name}" = "boot" ]; then
-        cat ${ROOTFS_DIR}/boot/fsck.${part_name} || return 1
+        return=$(base64 -d ${ROOTFS_DIR}/boot/fsck.${part_name} | zcat) || return 1
         rm ${ROOTFS_DIR}/boot/fsck.${part_name}
     else
-        get_bootloader_env_var omnect_fsck_boot
+        return=$(grub-editenv ${ROOTFS_DIR}/boot/EFI/BOOT/grubenv list | grep \^omnect_fsck_boot\= | cut -d'=' -f2 | base64 -d - | zcat) || return 1
     fi
+    echo -n "${return}"
 }
