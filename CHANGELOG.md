@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.25.4] Q4 2023
+- flash-mode-2: fixed runtime error
+
 ## [kirkstone-0.25.3] Q4 2023
 - flash-mode-{2,3}: verify copied wic.xz before flashing
 - flash-mode-3: don't verify url certificate if device has no RTC
