@@ -8,11 +8,7 @@
 #     2    flash disk image from network to active block device
 #
 OMNECT_FLASH_MODE=""
-
-OMNECT_FLASH_MODE_VAR="flash-mode"
 OMNECT_FLASH_MODE_FLAG_FILE="/etc/enforce_flash_mode"
-OMNECT_FLASH_MODE_FIFO="/home/omnect/wic.xz"
-OMNECT_FLASH_MODE_BMAP_FILE="/home/omnect/wic.bmap"
 
 # called by generic INITRAMFS
 flash_mode_2_enabled() {
@@ -26,7 +22,7 @@ flash_mode_2_enabled() {
     fi
 
     # flash mode triggered at runtime
-    OMNECT_FLASH_MODE=$(get_bootloader_env_var ${OMNECT_FLASH_MODE_VAR})
+    OMNECT_FLASH_MODE=$(get_bootloader_env_var flash-mode)
     if [ "${OMNECT_FLASH_MODE}" == "2" ]; then
         return 0  # enable flash mode; call main entry point
     fi
@@ -36,20 +32,7 @@ flash_mode_2_enabled() {
 
 run_bmap_tool() {
     local umount_dev=""
-    local blk_dev=""
     local bmap_ret=""
-
-    # detect block device
-    blk_dev=$(readlink -f /dev/omnect/boot)
-    blk_dev=${blk_dev%p*}
-    if [ ! -b "${blk_dev}" ]; then msg_fatal "${blk_dev} does not exist or not a block device"; return 1; fi
-
-    # bmap file must be copied with scp
-    msg "please run  scp <your-bmap-file> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:$(basename ${OMNECT_FLASH_MODE_BMAP_FILE})"
-    while true; do
-        if [ -f "${OMNECT_FLASH_MODE_BMAP_FILE}" ]; then break; fi
-        sleep 1
-    done
 
     # umount, if necessary
     mkdir -p /tmp
@@ -61,23 +44,29 @@ run_bmap_tool() {
         fi
     done </tmp/all_mounts
 
-    msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:$(basename ${OMNECT_FLASH_MODE_FIFO})"
-    export PATH
-    run_cmd_stdout bmaptool copy --bmap ${OMNECT_FLASH_MODE_BMAP_FILE} \
-                                 ${OMNECT_FLASH_MODE_FIFO} ${blk_dev}; bmap_ret=$?
-    if [ ${bmap_ret} -eq 0 ]; then return 0; fi  # success
+    run_cmd mkfifo /home/omnect/wic.xz || return 1
+    run_cmd chown omnect:omnect /home/omnect/wic.xz || return 1
 
-    # bmaptool exited with error:
-    #     - mismatch between bmap file and wic image
-    #     - broken destination device
-    #     - broken network
-    #     - usually, there is no way to salvage
-    msg_fatal "bmaptool(${blk_dev}) failed: ${bmap_ret}" && return 1
+    # bmap file must be copied with scp
+    msg "please run  scp <your-bmap-file> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.bmap)"
+    while true; do
+        if [ -f /home/omnect/wic.bmap ]; then break; fi
+        sleep 1
+    done
+
+    msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.xz)"
+    export PATH
+    # wait until scp is complete, resp. uncompress+verify wic image before writing
+    run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
+        /home/omnect/wic.xz /home/omnect/wic || return 1
+    vfat_grub_dd_workaround "/dev/omnect/boot"
+    run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
+        /home/omnect/wic /dev/omnect/rootblk || return 1
 }
 
 vfat_grub_dd_workaround()
 {
-    local dest=${1}
+    local dest="${1}"
     local machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
 
     # we encountered situations where the device could not boot after
@@ -101,7 +90,7 @@ run_flash_mode_2() {
     msg "Entering omnect flashing mode 2 ..."
 
     # disable flash mode for subsequent restarts
-    set_bootloader_env_var ${OMNECT_FLASH_MODE_VAR}
+    set_bootloader_env_var flash-mode
 
     # we already mounted /dev/omnect/boot when we're using grub. so we unmount before copying boot.
     if [ -f /usr/bin/grub-editenv ]; then
@@ -109,21 +98,9 @@ run_flash_mode_2() {
         run_cmd umount ${ROOTFS_DIR}/boot
     fi
 
-    local dest_blk=$(readlink -f /dev/omnect/rootA)
-    dest_blk=${dest_blk::-1} # can be /dev/nvme0n1p or /dev/sda
-    local p=${dest_blk:0-1}
-    if [ "${p}" == "p" ]; then
-        dest_blk=${dest_blk::-1}
-    else
-        p=""
-    fi
-
-    flash_mode_setup_fifo || return 1
     flash_mode_setup_network eth0 || return 1
-    vfat_grub_dd_workaround "${dest_blk}${p}1"
     run_bmap_tool || return 1
-
-    flash_mode_efi_handling ${dest_blk} ${p}
+    flash_mode_efi_handling
 
     msg "Rebooting system..."
     sync
@@ -135,13 +112,7 @@ run_flash_mode_2() {
 flash_mode_2_run() {
     add_module_post_hook on_exit
     run_flash_mode_2
-    local ret=${?}
-    if [ ${ret} -ne 0 ]; then
-        echo flash_mode_2_run return=${ret}
-        sleep 120
-        return ${ret}
-    else
-        return 0
-    fi
-
+    return=${?}
+    echo flash_mode_2_run return=${return}
+    return ${return}
 }

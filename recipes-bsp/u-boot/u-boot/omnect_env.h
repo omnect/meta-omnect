@@ -9,20 +9,21 @@
  */
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS \
-    "omnect_os_bootpart:dw," \
     "data-mount-options:sw," \
     "factory-reset:dw," \
     "factory-reset-restore-list:sw," \
     "factory-reset-status:sw," \
     "flash-mode:dw," \
     "flash-mode-devpath:sw," \
+    "omnect_bootloader_updated:bw," \
+    "omnect_os_bootpart:dw," \
     "omnect_validate_update:bw," \
     "omnect_validate_update_failed:bw," \
     "omnect_validate_update_part:dw," \
     "resized-data:sw," \
     OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA
 
-// activated by either u-boot_%.bbappend or u-boot-imx_%.bbappend
+// set by classes/omnect_uboot_configure_env.bbclass
 //#define OMNECT_RELEASE_IMAGE
 #ifdef OMNECT_RELEASE_IMAGE
 #define CONFIG_BOOTCOMMAND "run omnect_update_flow; reset"
@@ -34,16 +35,17 @@
 #define OMNECT_ENV_SETTINGS
 #endif //OMNECT_RELEASE
 
-// set by either u-boot_%.bbappend or u-boot-imx_%.bbappend
-#define OMNECT_ENV_BOOTLOADER_VERSION
-
-// set by either u-boot_%.bbappend or u-boot-imx_%.bbappend
+// set by classes/omnect_uboot_configure_env.bbclass
 #define OMNECT_ENV_BOOTARGS
+
+// set by classes/omnect_uboot_configure_env.bbclass
+#define OMNECT_ENV_BOOTLOADER_VERSION
 
 // u-boot part of omnect update workflow
 #define OMNECT_ENV_UPDATE_WORKFLOW \
     "omnect_update_flow=" \
-        "env exists omnect_os_bootpart || echo \"initializing omnect_os_bootpart=2\" && setenv omnect_os_bootpart 2 && saveenv;" \
+        "printenv;env exists omnect_os_bootpart || echo \"initializing omnect_os_bootpart=2\" && setenv omnect_os_bootpart 2 && saveenv;" \
+        "if test \"${omnect_bootloader_updated}\" == \"1\"; then echo \"bootloader updated.\";saveenv;fi;" \
         "if test -n ${omnect_validate_update}; then " \
             "echo \"Update validation failed - booting from partition ${omnect_os_bootpart}\";" \
             "setenv omnect_validate_update_part;" \
