@@ -101,7 +101,7 @@ For this purpose, the following configuration variables are used:
 `meta-omnect` is compatible with the current yocto LTS release branch `kirkstone`.
 
 ## Supported Devices
-See [README.device.md](./README.device.md).
+See [BSP-FEATURE-OVERVIEW.md](./doc/board/BSP-FEATURE-OVERVIEW.md).
 
 ## Versioning
 We reflect the used poky version in our version schema. `omnect-os` is versioned via `POKY_VERSION.BUILD_NR`, `4.0.x.y` where `x` is poky kirkstone's patch version and `y` is the build number.
@@ -114,10 +114,12 @@ We reflect the used poky version in our version schema. `omnect-os` is versioned
     - [meta-swupdate](https://github.com/sbabic/meta-swupdate.git)
     - [meta-virtualization](https://git.yoctoproject.org/meta-virtualization)
     - [poky](https://git.yoctoproject.org/poky)
+@ToDo: move?
 - optional:
     - [meta-phytec](https://github.com/phytec/meta-phytec) (optional - via dynamic layer, phytec polis support depends on it)
     - [meta-freescale](https://github.com/Freescale/meta-freescale) (optional - via dynamic layer, phytec polis support depends on it)
     - [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git) (optional - via dynamic layer, raspberrypi support depends on it)
+    - meta-welotec????
 
 
 ## Build
@@ -146,7 +148,7 @@ Differences:
 ### Example build via `kas`
 
 This repository provides [`kas`](https://kas.readthedocs.io/en/latest/) configuration files to build `omnect-os`.
-E.g. if you want to build an `omnect-os` raspberrypi 4 image with `iotedge` support for the omnect-portal (todo link to omnect-portal doku) follow these steps:
+E.g. if you want to build an `omnect-os` raspberry pi 4 image with `iotedge` support follow these steps:
 
 ```sh
 mkdir omnect-os-build
@@ -229,7 +231,7 @@ Entering omnect flashing mode 1...
 ...
 ```
 **Note, the *bootloader_env.sh* command requires root permissions.**
-**Note, the corresponding platform specific block device paths are defined in [README.device.md](./README.device.md).**
+**Note, the corresponding platform specific block device paths are defined in [BSP-FEATURE-OVERVIEW.md](./doc/board/BSP-FEATURE-OVERVIEW.md).**
 
 **Note make sure that the system boots from the same device after the triggered reboot. E.g. if you boot from usb and
 initiate flash mode 1 and trigger reboot, make sure that you boot from usb again. This reboot will enter the initramfs and execute the flash process.**
@@ -390,6 +392,7 @@ The layer is licensed under either of
 
 at your option if not noted otherwise.
 
+@ToDo: keep and extend? move? remove?
 The content of `dynamic-layers/phytec/recipes-kernel/lwb-radio-firmware` is licensed under MIT license ([LICENSE-MIT](dynamic-layers/phytec/recipes-kernel/lwb-radio-firmware/COPYING.MIT)).
 
 The content of `dynamic-layers/phytec/recipes-bsp/imx-mkimage/imx-boot-phytec*` is licensed under MIT license ([LICENSE-MIT](https://git.phytec.de/meta-phytec/tree/COPYING.MIT?h=dunfell)).
