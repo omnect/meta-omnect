@@ -7,7 +7,6 @@ BBMASK += "/meta-raspberrypi/recipes-bsp/u-boot/u-boot_%.bbappend"
 RPI_USE_U_BOOT = "1"
 
 # enable serial interface
-#ENABLE_UART = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '0', '1', d)}"
 ENABLE_UART = "1"
 
 # initramfs type
