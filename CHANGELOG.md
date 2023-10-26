@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - set console kernel parameter for ttymxc2 for release and devel images
   - increase u-boot version, because the above change enforces a bootloader update
     of the release image
+- distro: corrected kernelparameter loglevel for release image, so we log with
+  severity `KERN_CRIT`(2), `KERN_ALERT` (1), `KERN_EMERG` (0)
 
 ## [kirkstone-0.25.2] Q4 2023
 - initramfs: fsck result hardening; compress fsck output before base64 encoding
