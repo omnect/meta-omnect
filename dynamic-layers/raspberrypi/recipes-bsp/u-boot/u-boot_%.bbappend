@@ -19,7 +19,7 @@ SRC_URI += "\
 # `CMDLINE_*` in rpi-cmdline.bb should be reflected with an increase of
 # `UBOOT_LOCALVERSION` to force an update of the entire bootloader
 # (proprietary rpi bootloader + u-boot)
-UBOOT_LOCALVERSION = "-4"
+UBOOT_LOCALVERSION = "-5"
 PKGV = "${PV}${UBOOT_LOCALVERSION}"
 
 do_configure:prepend() {

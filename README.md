@@ -240,36 +240,34 @@ The bootloader environment variables *flash-mode* and *flash-mode-devpath* will 
 #### Flash Mode 2
 Enable the distribution feature `flash-mode-2` at build time, if you want to use it.
 
-In order to trigger the flash mode 2, use the following commands on the target system:<br>
-```sh
-sudo -s
-bootloader_env.sh set flash-mode 2
-reboot
-...
-Entering omnect flashing mode 2...
-...
-```
-**Note, *bootloader_env.sh* command requires root permissions.**<br>
+In order to trigger the flash mode 2,
+1. use the following commands on the target system:<br>
+    ```sh
+    sudo -s
+    bootloader_env.sh set flash-mode 2
+    reboot
+    ...
+    Entering omnect flashing mode 2...
+    ...
+    ```
+    **Note, *bootloader_env.sh* command requires root permissions.**<br>
+    **Note, `flash-mode 2` is restricted to eth0.**
 
-**Note, `flash-mode 2` is restricted to eth0.**
-
-In the next step, the bmap file and the wic image file have to be transferred, built on the host system:
-```sh
-scp omnect-os-*.wic.bmap omnect@<target-ip>:wic.bmap
-scp omnect-os-*.wic.xz omnect@<target-ip>:wic.xz
-```
-On systems with new openssh clients >= 9.0 you have to use the legacy option when using `scp`. (See [here](https://www.openssh.com/txt/release-9.0) for details.) :
-```sh
-scp -O omnect-os-*.wic.bmap omnect@<target-ip>:wic.bmap
-scp -O omnect-os-*.wic.xz omnect@<target-ip>:wic.xz
-```
+2. In the next step, the bmap file and the wic image file have to be transferred from the host system:
+    ```sh
+    scp image.wic.bmap omnect@<target-ip>:wic.bmap
+    scp image.wic.xz omnect@<target-ip>:wic.xz
+    ```
+    On systems with new openssh clients >= 9.0 you have to use the legacy option when using `scp`. (See [here](https://www.openssh.com/txt/release-9.0) for details.) :
+    ```sh
+    scp -O image.wic.bmap omnect@<target-ip>:wic.bmap
+    scp -O image.wic.xz omnect@<target-ip>:wic.xz
+    ```
 
 The password for the *omnect* user used by the rootfs has to be used.
 The *omnect* user used by the initramfs is independent from the *omnect* user used by the rootfs.
 At build time, the configuration (OMNECT_USER_PASSWORD) is applied for both. The passwords are identical.
 Later during runtime, changing the password in the rootfs is not synchronized to the initramfs.
-
-The destination file names have to be *wic.bmap* and *wic.xz*.
 
 After finishing the flash procedure, the system reboots automatically.
 The bootloader environment variable *flash-mode* will be deleted automatically.
@@ -277,23 +275,30 @@ The bootloader environment variable *flash-mode* will be deleted automatically.
 #### Flash Mode 3
 Enable the distribution feature `flash-mode-3` at build time, if you want to use it.
 
-In order to trigger the flash mode 3, use the following commands on the target system:<br>
-```sh
-sudo -s
-bootloader_env.sh set flash-mode 3
-bootloader_env.sh set flash-mode-url $(echo "http://url.to/image.wic[.xz]" | base64 -w 0 -)
-reboot
-...
-Entering omnect flashing mode 3... (http://url.to/image.wic[.xz])
-...
-```
-**Note, *bootloader_env.sh* command requires root permissions.**<br>
-**Note, the url has to be escaped with \"\".**<br>
-**Note, `flash-mode 3` is restricted to eth0.**
+In order to trigger the flash mode 3,
+1. compute the sha256 checksum of your image.wic.xz
+   ```sh
+   sha256sum image.wic.xz > image.wic.sha256
+   ```
+2. use the following commands on the target system:<br>
+    ```sh
+    sudo -s
+    bootloader_env.sh set flash-mode 3
+    bootloader_env.sh set flash-mode-url $(echo "http://url.to/image.wic.xz" | base64 -w 0 -)
+    bootloader_env.sh set flash-mode-url-sha256 $(echo "http://url.to/image.wic.sha256" | base64 -w 0 -)
+    reboot
+    ...
+    Entering omnect flashing mode 3... (http://url.to/image.wic.xz)
+    ...
+    ```
+    **Note, *bootloader_env.sh* command requires root permissions.**<br>
+    **Note, the urls have to be escaped with \"\".**<br>
+    **Note, on systems without realtime clock the certificate of an url gets not verified.**
+    **Note, `flash-mode 3` is restricted to eth0.**
 
 After finishing the flash procedure, the system reboots automatically.
-The bootloader environment variables *flash-mode* and *flash-mode-url* will be
-deleted automatically.
+The bootloader environment variables *flash-mode*, *flash-mode-url* and
+*flash-mode-url-sha256* will be deleted automatically.
 
 ### Factory Reset
 Set the OS bootloader environment variable `factory-reset`, in order to reset `data` and `etc` partitions

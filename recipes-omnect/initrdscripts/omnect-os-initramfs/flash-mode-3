@@ -9,25 +9,12 @@
 #
 OMNECT_FLASH_MODE=""
 
-OMNECT_FLASH_MODE_VAR="flash-mode"
-OMNECT_FLASH_MODE_FLAG_FILE="/etc/enforce_flash_mode_3"
-OMNECT_FLASH_MODE_FIFO="/home/omnect/wic.xz"
-OMNECT_FLASH_MODE_URL_VAR="flash-mode-url"
-
-
 # called by generic INITRAMFS
 flash_mode_3_enabled() {
     debug "flash mode 3: ${OMNECT_FLASH_MODE}"
 
-    # flag file (part of "omnect-os-initramfs-test")
-    if [ -f ${OMNECT_FLASH_MODE_FLAG_FILE} ]; then
-        msg "enable flash mode: by ${OMNECT_FLASH_MODE_FLAG_FILE}"
-        OMNECT_FLASH_MODE=3
-        return 0  # enable flash mode; call main entry point
-    fi
-
     # flash mode triggered at runtime
-    OMNECT_FLASH_MODE=$(get_bootloader_env_var ${OMNECT_FLASH_MODE_VAR})
+    OMNECT_FLASH_MODE=$(get_bootloader_env_var flash-mode)
     if [ "${OMNECT_FLASH_MODE}" == "3" ]; then
         return 0  # enable flash mode; call main entry point
     fi
@@ -37,14 +24,9 @@ flash_mode_3_enabled() {
 
 run_bmap_tool() {
     local url="${1}"
+    local url_sha256="${2}"
     local umount_dev=""
-    local blk_dev=""
     local bmap_ret=""
-
-    # detect block device
-    blk_dev=$(readlink -f /dev/omnect/boot)
-    blk_dev=${blk_dev%p*}
-    if [ ! -b "${blk_dev}" ]; then msg_fatal "${blk_dev} does not exist or not a block device"; return 1; fi
 
     # umount, if necessary
     mkdir -p /tmp
@@ -56,34 +38,36 @@ run_bmap_tool() {
         fi
     done </tmp/all_mounts
 
+    local curl_opts=""
+    local machine_features="$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')"
+    [[ ! " ${machine_features} " =~ " rtc " ]] && curl_opts+="-k "
+    curl_opts+="--no-progress-meter -Lo"
+    run_cmd_stdout "curl ${curl_opts} /home/omnect/wic.sha256 \"${url_sha256}\"" && echo "curl \"${url_sha256}\" succeeded" \
+        || { msg_fatal "curl ${url_sha256} failed"; return 1; }
+    run_cmd_stdout "curl ${curl_opts} /home/omnect/wic.xz \"${url}\"" && echo "curl ${url} succeeded" \
+        || { msg_fatal "curl ${url} failed"; return 1; }
+    run_cmd_stdout "echo \"$(awk '{print $1}' /home/omnect/wic.sha256)  /home/omnect/wic.xz\" | sha256sum -c" || return 1
     export PATH
-
-    { run_cmd_stdout bmaptool copy --nobmap ${OMNECT_FLASH_MODE_FIFO} ${blk_dev}; } &
-    local bmap_pid=${!}
-
-    curl -s "${url}" > ${OMNECT_FLASH_MODE_FIFO} && echo "curl succeeded"  || ( msg_fatal "curl ${url} failed"; return 1; )
-
-    wait ${bmap_pid}
-    bmap_ret=${?}
-
-    if [ ${bmap_ret} -eq 0 ]; then return 0; fi  # success
-
-    # bmaptool exited with error:
-    #     - mismatch between bmap file and wic image
-    #     - broken destination device
-    #     - broken network
-    #     - usually, there is no way to salvage
-    msg_fatal "bmaptool(${blk_dev}) failed: ${bmap_ret}" && return 1
+    run_cmd_stdout bmaptool copy --nobmap /home/omnect/wic.xz /dev/omnect/rootblk || return 1
 }
 
 # deploy WIC image via network to (same) active block device
 run_flash_mode_3() {
-    local url=$(get_bootloader_env_var ${OMNECT_FLASH_MODE_URL_VAR} | base64 --decode) || exit 1
-    # url=$(echo ${url} | base64 --decode) || exit 1
-    msg "Entering omnect flashing mode 3 ... (${url})"
+    local url=$(get_bootloader_env_var flash-mode-url | base64 --decode) || { msg_fatal "couldn't get \"flash-mode-url\""; return 1; }
+    local url_sha256=$(get_bootloader_env_var flash-mode-url-sha256 | base64 --decode) || { msg_fatal "couldn't get \"flash-mode-url-sha256\""; return 1; }
+
+    if [ -z "${url}" ] || [ -z "${url_sha256}" ]; then
+        msg "invalid parameters:"
+        msg "url=${url}"
+        msg "url_sha256=${url_sha256}"
+        return 1
+    fi
+
+    msg "Entering omnect flashing mode 3 ..."
     # disable flash mode for subsequent restarts
-    set_bootloader_env_var ${OMNECT_FLASH_MODE_VAR}
-    set_bootloader_env_var ${OMNECT_FLASH_MODE_URL_VAR}
+    set_bootloader_env_var flash-mode
+    set_bootloader_env_var flash-mode-url
+    set_bootloader_env_var flash-mode-url-sha256
 
     # we already mounted /dev/omnect/boot when we're using grub. so we unmount before copying boot.
     if [ -f /usr/bin/grub-editenv ]; then
@@ -100,12 +84,9 @@ run_flash_mode_3() {
         p=""
     fi
 
-    flash_mode_setup_fifo || return 1
     flash_mode_setup_network eth0 || return 1
-
-    run_bmap_tool ${url} || return 1
-
-    flash_mode_efi_handling ${dest_blk} ${p}
+    run_bmap_tool ${url} ${url_sha256} || return 1
+    flash_mode_efi_handling
 
     msg "Rebooting system..."
     sync
@@ -117,13 +98,7 @@ run_flash_mode_3() {
 flash_mode_3_run() {
     add_module_post_hook on_exit
     run_flash_mode_3
-    local ret=${?}
-    if [ ${ret} -ne 0 ]; then
-        echo flash_mode_3_run return=${ret}
-        sleep 120
-        return ${ret}
-    else
-        return 0
-   fi
-
+    return=${?}
+    echo flash_mode_3_run return=${return}
+    return ${return}
 }
