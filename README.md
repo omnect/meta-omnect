@@ -253,7 +253,7 @@ In order to trigger the flash mode 2,
     **Note, *bootloader_env.sh* command requires root permissions.**<br>
     **Note, `flash-mode 2` is restricted to eth0.**
 
-2. In the next step, the bmap file, the sha256 file and the wic image file have to be transferred from the host system:
+2. In the next step, the bmap file and the wic image file have to be transferred from the host system:
     ```sh
     scp image.wic.bmap omnect@<target-ip>:wic.bmap
     scp image.wic.xz omnect@<target-ip>:wic.xz
