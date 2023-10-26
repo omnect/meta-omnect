@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.25.5] Q4 2023
+- rpi4:
+  - set console kernel parameter for tty and ttyS0 for release and devel images
+  - disable rpi logo on kernel boot
+  - increase u-boot version, because the above changes enforce a bootloader update
+- tauril2:
+  - set console kernel parameter for ttymxc2 for release and devel images
+  - increase u-boot version, because the above change enforces a bootloader update
+    of the release image
+- distro: corrected kernelparameter loglevel for release image, so we log with
+  severity `KERN_CRIT`(2), `KERN_ALERT` (1), `KERN_EMERG` (0)
+
 ## [kirkstone-0.25.4] Q4 2023
 - flash-mode-2: fixed runtime error
 

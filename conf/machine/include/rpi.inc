@@ -7,13 +7,16 @@ BBMASK += "/meta-raspberrypi/recipes-bsp/u-boot/u-boot_%.bbappend"
 RPI_USE_U_BOOT = "1"
 
 # enable serial interface
-ENABLE_UART = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '0', '1', d)}"
+ENABLE_UART = "1"
 
 # initramfs type
 OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 
+# build cmdline.txt
 # overwrite CMDLINE_ROOTFS from meta-raspberrypi, we set "root" in boot.scr
 CMDLINE_ROOTFS = ""
+DISABLE_RPI_BOOT_LOGO = "1"
+CMDLINE:append = " console=tty0"
 
 # u-boot config vars
 UBOOT_FDT_ADDR = "fdt_addr"
