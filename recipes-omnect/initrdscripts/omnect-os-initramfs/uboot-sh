@@ -17,7 +17,7 @@ set_bootloader_env_var()
 {
     local  var_name="$1"
     local var_value="$2"  # empty string to delete variable
-    msg "set_bootloader_env_var" "${var_name}" "${var_value}"
+    debug "set_bootloader_env_var" "${var_name}" "${var_value}"
 
     if [ -n "${var_value}" ];then
         fw_setenv "${var_name}" "${var_value}" || return 1
@@ -26,16 +26,16 @@ set_bootloader_env_var()
     fi
 }
 
-save_fsck_status_base64()
+save_fsck_status()
 {
     local part_name="${1}"
     local source_file="${2}"
     local fsck_res="${3}" #ignored here
-    set_bootloader_env_var omnect_fsck_${part_name} $(base64 -w0 ${source_file})
+    set_bootloader_env_var omnect_fsck_${part_name} $(gzip -9c ${source_file} | base64 -w0 -)
 }
 
-get_fsck_status_base64()
+get_fsck_status()
 {
     local part_name="${1}"
-    get_bootloader_env_var omnect_fsck_${part_name}
+    echo -n $(fw_printenv -n omnect_fsck_${part_name} | base64 -d - | zcat - 2>/dev/null)
 }

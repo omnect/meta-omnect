@@ -22,7 +22,7 @@ SRC_URI:append:rpi4-omnect-lab = "\
 
 # Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
 # swupdate and iot-hub-device-update, the local version must be increased;
-UBOOT_LOCALVERSION = "-2"
+UBOOT_LOCALVERSION = "-4"
 PKGV = "${PV}${UBOOT_LOCALVERSION}"
 
 do_configure:prepend() {

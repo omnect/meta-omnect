@@ -15,7 +15,6 @@ software =
                 result = nil
             else
                 f = io.open(\"/run/omnect-bootloader-update\", \"w\")
-                f:write(image.version)
                 f:close()
                 result = image
             end
