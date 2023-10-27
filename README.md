@@ -295,7 +295,7 @@ In order to trigger the flash mode 3,
     ```
     **Note, *bootloader_env.sh* command requires root permissions.**<br>
     **Note, the urls have to be escaped with \"\".**<br>
-    **Note, on systems without realtime clock the certificate of an url gets not verified.**
+    **Note, on systems without realtime clock the certificate of an url gets not verified.**<br>
     **Note, `flash-mode 3` is restricted to eth0.**
 
 After finishing the flash procedure, the system reboots automatically.
