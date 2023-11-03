@@ -112,7 +112,7 @@ We reflect the used poky version in our version schema. `omnect-os` is versioned
     - [meta-phytec](https://github.com/phytec/meta-phytec) (optional - via dynamic layer, phytec polis support depends on it)
     - [meta-freescale](https://github.com/Freescale/meta-freescale) (optional - via dynamic layer, phytec polis support depends on it)
     - [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git) (optional - via dynamic layer, raspberrypi support depends on it)
-    - meta-welotec????
+    - meta-welotec @ToDo: what about?
 
 
 ## Build
