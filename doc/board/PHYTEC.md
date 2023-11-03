@@ -6,6 +6,8 @@ offically supported
 
 device path emmc: */dev/mmcblk2* <br/> use DIP switch to select emmc as boot device
 
+rootfs size: ???
+
 ## Device Tree Overlays
 Available device tree overlays which can be activated e.g. via
 ```sh

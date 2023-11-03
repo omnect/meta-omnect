@@ -5,6 +5,8 @@ https://www.raspberrypi.org/
 
 officially supported
 
+rootfs size: ???
+
 ### Device Tree Overlays
 Refer to https://github.com/raspberrypi/firmware/blob/master/boot/overlays/README.
 

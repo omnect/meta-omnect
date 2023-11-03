@@ -1,5 +1,8 @@
 # Arrakis-pico-MK3
 
+officially supported
+
+rootfs size: ???
 
 ## Flash device
 ???
