@@ -4,6 +4,8 @@ https://www.phytec.eu/en/produkte/fertige-geraete-oem/phygate-tauri-l/
 
 offically supported
 
+device path emmc: */dev/mmcblk2* <br/> use DIP switch to select emmc as boot device
+
 ## Device Tree Overlays
 Available device tree overlays which can be activated e.g. via
 ```sh
