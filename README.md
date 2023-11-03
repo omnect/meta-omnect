@@ -135,7 +135,7 @@ Set the enviroment variable `OMNECT_RELEASE_IMAGE` to `1` for release builds. Th
 Differences:
 - Release build
   - default firewall config which allows input for established connections only
-  - seriel console is disabled
+  - serial console is disabled
   - ssh login via public key only
 - Developer build
   - default firewall config as in Release build, additionally allow ssh connections
