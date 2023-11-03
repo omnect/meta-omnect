@@ -1,4 +1,9 @@
 # Phygate Tauri-L (phygate-tauri-l-imx8mm-2)
+
+https://www.phytec.eu/en/produkte/fertige-geraete-oem/phygate-tauri-l/
+
+offically supported
+
 ## Device Tree Overlays
 Available device tree overlays which can be activated e.g. via
 ```sh
@@ -13,3 +18,9 @@ sudo reboot
 - imx8mm-phycore-rpmsg.dtbo
 - imx8mm-phycore-no-eth.dtbo
 - imx8mm-phycore-no-spiflash.dtbo
+
+# Phygate Polis (imx8mm-phyboard-polis-4)
+
+https://www.phytec.eu/product-eu/single-board-computer/phyboard-polis/
+
+not officially supported
