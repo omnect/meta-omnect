@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.25.8] Q4 2023
+- iot-hub-device-update: fixed retry handling for swupdate_handler_v2
+
 ## [kirkstone-0.25.7] Q4 2023
 - omnect-os-distro.conf: removed `ext2` and `vfat` from `MACHINE_FEATURES` to
   prevent installation of packagegroup-base-ext2 and packagegroup-base-vfat
