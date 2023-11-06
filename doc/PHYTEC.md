@@ -2,11 +2,20 @@
 
 https://www.phytec.eu/en/produkte/fertige-geraete-oem/phygate-tauri-l/
 
-offically supported
 
 device path emmc: */dev/mmcblk2* <br/> use DIP switch to select emmc as boot device
 
+omnect features:
+-add feature support (dps provisioning (TPM)
+- wifi commissioning
+
 rootfs size: ???
+
+- [meta-phytec](https://github.com/phytec/meta-phytec) (optional - via dynamic layer, phytec polis support depends on it)
+- [meta-freescale](https://github.com/Freescale/meta-freescale) (optional - via dynamic layer, phytec polis support depends on it)
+- [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git) (optional - via dynamic layer, raspberrypi support depends on it)
+
+uart (OS bootloader + linux): /dev/ttymxc2 reserved by os in devel image
 
 ## Device Tree Overlays
 Available device tree overlays which can be activated e.g. via
@@ -23,8 +32,3 @@ sudo reboot
 - imx8mm-phycore-no-eth.dtbo
 - imx8mm-phycore-no-spiflash.dtbo
 
-# Phygate Polis (imx8mm-phyboard-polis-4)
-
-https://www.phytec.eu/product-eu/single-board-computer/phyboard-polis/
-
-not officially supported

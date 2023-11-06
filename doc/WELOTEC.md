@@ -11,6 +11,3 @@ rootfs size: ???
 
 */dev/nvme0n1*
 
-
-??? mention at all
-# Welotec eg500
