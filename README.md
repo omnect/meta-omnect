@@ -94,7 +94,7 @@ Device         Boot   Start      End  Sectors  Size Id Type
 `meta-omnect` is compatible with the current yocto LTS release branch `kirkstone`.
 
 ## Supported Devices
-See [BSP-FEATURE-OVERVIEW.md](./doc/board/BSP-FEATURE-OVERVIEW.md).
+See board specific documents `doc/` folder.
 
 ## Versioning
 We reflect the used poky version in our version schema. `omnect-os` is versioned via `POKY_VERSION.BUILD_NR`, `4.0.x.y` where `x` is poky kirkstone's patch version and `y` is the build number.
@@ -128,10 +128,10 @@ Differences:
 - Release build
   - default firewall config which allows input for established connections only
   - serial console is disabled
-  - ssh login via public key only
+  - local ssh login disabled (alternatively a tunneled ssh connection can be established via [omnect-cli](https://github.com/omnect/omnect-cli#creating-an-ssh-tunnel))
 - Developer build
   - default firewall config as in Release build, additionally allow ssh connections
-  - ssh login via public key and username password
+  - local ssh login enabled
   - includes some useful developer tools
 
 ### Example build via `kas`

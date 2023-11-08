@@ -4,6 +4,8 @@
 - **BSP (dynamic layer):**  
   - [meta-phytec](https://github.com/phytec/meta-phytec)
   - [meta-freescale](https://github.com/Freescale/meta-freescale)
+  - [meta-freescale-distro](https://github.com/Freescale/meta-freescale-distro)
+  - [meta-imx](https://github.com/nxp-imx/meta-imx)
 - **Boot Media:** use DIP switch to switch between sdcard and emmc as boot device. 
 - **Flash internal emmc:**
   - boot *omnect-os* from sdcard
@@ -31,6 +33,7 @@ Available device tree overlays:
 - imx8mm-phycore-rpmsg.dtbo
 - imx8mm-phycore-no-eth.dtbo
 - imx8mm-phycore-no-spiflash.dtbo
+- imx8mm-phygate-tauri-analog-io.dtbo
 
 Activate overlay example:
 ```sh
