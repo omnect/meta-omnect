@@ -4,10 +4,11 @@
 - **BSP (dynamic layer):**  
   - [meta-phytec](https://github.com/phytec/meta-phytec)
   - [meta-freescale](https://github.com/Freescale/meta-freescale)
-- **Boot Media:** 
-  - use DIP switch to switch between sdcard and emmc as boot device. 
-  - use [flash-mode 1](../README.md#flash-mode-1) in order to flash an image from sdcard to emmc
-  - emmc device path is */dev/mmcblk2*.
+- **Boot Media:** use DIP switch to switch between sdcard and emmc as boot device. 
+- **Flash internal emmc:**
+  - boot *omnect-os* from sdcard
+  - use [flash-mode 1](../README.md#flash-mode-1) in order to flash an image from USB to emmc. The nvme device path is */dev/ttymxc2*
+  - use DIP switch to boot from emmc and power on device 
 - **UART:** */dev/ttymxc2* is reserved in *OMNECT-gateway-devel_** images (bootloader + linux). In release images there are no restrictions.
 
 ## Omnect Feature Support:
