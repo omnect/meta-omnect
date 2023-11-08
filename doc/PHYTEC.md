@@ -1,7 +1,7 @@
 # Phygate Tauri-L (phygate-tauri-l-imx8mm-2)
 
 - **Product Page:** https://www.phytec.eu/en/produkte/fertige-geraete-oem/phygate-tauri-l/
-- **BSP (dynamic layer)):**  
+- **BSP (dynamic layer):**  
   - [meta-phytec](https://github.com/phytec/meta-phytec)
   - [meta-freescale](https://github.com/Freescale/meta-freescale)
 - **Boot Media:** 

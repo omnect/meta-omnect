@@ -1,7 +1,8 @@
 # Raspberry Pi 4 (raspberrypi4-64)
 
 - **Product Page:** https://www.raspberrypi.org/
-- **BSP (dynamic layer)):** [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git)
+- **BSP (dynamic layer):** [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git)
+- **UART:** */dev/ttyS0* is reserved in *OMNECT-gateway-devel_** images (bootloader + linux). In release images there are no restrictions.
 
 ## Omnect Feature Support:
 
