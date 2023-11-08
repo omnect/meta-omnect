@@ -6,8 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.25.9] Q4 2023
-- omnect-os-release.conf: remove `ptest` from DISTRO_FEATURES for release image
-- omnect-os-image: install `ptest-pkgs` for non release images
+- removed `ptest` from DISTRO_FEATURES
 
 ## [kirkstone-0.25.8] Q4 2023
 - iot-hub-device-update: fixed retry handling for swupdate_handler_v2
