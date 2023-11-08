@@ -1,12 +1,20 @@
-# Raspberry Pi
-https://www.raspberrypi.org/
+# Raspberry Pi 4 (raspberrypi4-64)
 
-## Raspberry Pi 4 (raspberrypi4-64)
+- **Product Page:** https://www.raspberrypi.org/
+- **BSP (dynamic layer)):** [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git)
 
+## Omnect Feature Support:
 
+| Feature | Availability |
+| ------------------------------------ | :-------------: |
+| **DPS Provisioning**                 | x509            |
+| **OTA**                              | yes             |
+| **Factory Reset**                    | yes             |
+| **Wifi Commissioning via Bluetooth** | yes             |
+| **LTE Support**                      | no              |
 
-rootfs size: ???
+**Note:** More features can easily be enabled by adding appropriate expansion boards, e.g. TPM module or LTE modem.
 
-### Device Tree Overlays
+## Device Tree Overlays
+
 Refer to https://github.com/raspberrypi/firmware/blob/master/boot/overlays/README.
-

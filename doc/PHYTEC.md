@@ -1,29 +1,28 @@
 # Phygate Tauri-L (phygate-tauri-l-imx8mm-2)
 
-https://www.phytec.eu/en/produkte/fertige-geraete-oem/phygate-tauri-l/
+- **Product Page:** https://www.phytec.eu/en/produkte/fertige-geraete-oem/phygate-tauri-l/
+- **BSP (dynamic layer)):**  
+  - [meta-phytec](https://github.com/phytec/meta-phytec)
+  - [meta-freescale](https://github.com/Freescale/meta-freescale)
+- **Boot Media:** 
+  - use DIP switch to switch between sdcard and emmc as boot device. 
+  - use [flash-mode 1](../README.md#flash-mode-1) in order to flash an image from sdcard to emmc
+  - emmc device path is */dev/mmcblk2*.
+- **UART:** */dev/ttymxc2* is reserved in *OMNECT-gateway-devel_** images (bootloader + linux). In release images there are no restrictions.
 
+## Omnect Feature Support:
 
-device path emmc: */dev/mmcblk2* <br/> use DIP switch to select emmc as boot device
-
-omnect features:
--add feature support (dps provisioning (TPM)
-- wifi commissioning
-
-rootfs size: ???
-
-- [meta-phytec](https://github.com/phytec/meta-phytec) (optional - via dynamic layer, phytec polis support depends on it)
-- [meta-freescale](https://github.com/Freescale/meta-freescale) (optional - via dynamic layer, phytec polis support depends on it)
-- [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git) (optional - via dynamic layer, raspberrypi support depends on it)
-
-uart (OS bootloader + linux): /dev/ttymxc2 reserved by os in devel image
+| Feature | Availability |
+| ------------------------------------ | :-------------: |
+| **DPS Provisioning**                 | x509 and TPM    |
+| **OTA**                              | yes             |
+| **Factory Reset**                    | yes             |
+| **Wifi Commissioning via Bluetooth** | no              |
+| **LTE Support**                      | no              |
 
 ## Device Tree Overlays
-Available device tree overlays which can be activated e.g. via
-```sh
-sudo fw_setenv overlays "imx8mm-phygate-tauri-rs232-rs232.dtbo imx8mm-phycore-no-eth.dtbo"
-sudo reboot
 
-```
+Available device tree overlays:
 - imx8mm-phygate-tauri-rs232-rs232.dtbo
 - imx8mm-phygate-tauri-rs232-rs485.dtbo
 - imx8mm-phygate-tauri-rs232-rs485-switchable.dtbo
@@ -32,3 +31,8 @@ sudo reboot
 - imx8mm-phycore-no-eth.dtbo
 - imx8mm-phycore-no-spiflash.dtbo
 
+Activate overlay example:
+```sh
+sudo fw_setenv overlays "imx8mm-phygate-tauri-rs232-rs232.dtbo imx8mm-phycore-no-eth.dtbo"
+sudo reboot
+```
