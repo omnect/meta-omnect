@@ -1,7 +1,7 @@
 # Arrakis-pico-MK3
 
 - **Product Page:** https://www.welotec.com/de/industrie-pcs/
-- **BSP (dynamic layer):** [meta-welotec-bsp](https://github.com/omnect/meta-welotec-bsp)
+- **BSP (dynamic layer):** ToDo
 - **Boot Media:**
   - 1st it is tried to boot *omnect-os* from USB media 
   - 2nd if USB media is not present the internal nvme will be booted.
