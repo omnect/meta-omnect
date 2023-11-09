@@ -107,6 +107,8 @@ We reflect the used poky version in our version schema. `omnect-os` is versioned
   - [meta-virtualization](https://git.yoctoproject.org/meta-virtualization)
   - [poky](https://git.yoctoproject.org/poky)
 
+**Note:** Detailed information can be found in respective readmes
+
 ## Build
 
 For using `omnect-os-update-image` together with `iot-hub-device-update` you have to provide a rsa-key for signing/verifying the update image.
@@ -127,7 +129,7 @@ Set the enviroment variable `OMNECT_RELEASE_IMAGE` to `1` for release builds. Th
 Differences:
 - Release build
   - default firewall config which allows input for established connections only
-  - serial console is disabled
+  - reduced serial console output (only output high priority messages).
   - local ssh login disabled (alternatively a tunneled ssh connection can be established via [omnect-cli](https://github.com/omnect/omnect-cli#creating-an-ssh-tunnel))
 - Developer build
   - default firewall config as in Release build, additionally allow ssh connections

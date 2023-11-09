@@ -9,7 +9,7 @@
 - **Boot Media:** use DIP switch to switch between sdcard and emmc as boot device. 
 - **Flash internal emmc:**
   - boot *omnect-os* from sdcard
-  - use [flash-mode 1](../README.md#flash-mode-1) in order to flash an image from USB to emmc. The emmc device path is */dev/ttymxc2*.
+  - use [flash-mode 1](../README.md#flash-mode-1) in order to flash an image from USB to emmc. The emmc device path is */dev/mmcblk2*.
   - use DIP switch to boot from emmc and power on device 
 - **UART:** */dev/ttymxc2* is reserved in *OMNECT-gateway-devel_** images (bootloader + linux). In release images there are no restrictions.
 
