@@ -8,8 +8,8 @@
 
 | Feature | Availability |
 | ------------------------------------ | :-------------: |
-| **DPS Provisioning**                 | x509            |
-| **OTA**                              | yes             |
+| **Device Provisioning via**          | x509            |
+| **OTA Update**                       | yes             |
 | **Factory Reset**                    | yes             |
 | **Wifi Commissioning via Bluetooth** | yes             |
 | **LTE Support**                      | no              |

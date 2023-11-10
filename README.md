@@ -94,7 +94,7 @@ Device         Boot   Start      End  Sectors  Size Id Type
 `meta-omnect` is compatible with the current yocto LTS release branch `kirkstone`.
 
 ## Supported Devices
-See board specific documents `doc/` folder.
+See board specific documents [doc](/doc/) folder.
 
 ## Versioning
 We reflect the used poky version in our version schema. `omnect-os` is versioned via `POKY_VERSION.BUILD_NR`, `4.0.x.y` where `x` is poky kirkstone's patch version and `y` is the build number.

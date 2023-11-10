@@ -17,8 +17,8 @@
 
 | Feature | Availability |
 | ------------------------------------ | :-------------: |
-| **DPS Provisioning**                 | x509 and TPM    |
-| **OTA**                              | yes             |
+| **Device Provisioning via**          | x509 or TPM     |
+| **OTA Update**                       | yes             |
 | **Factory Reset**                    | yes             |
 | **Wifi Commissioning via Bluetooth** | no              |
 | **LTE Support**                      | no              |
