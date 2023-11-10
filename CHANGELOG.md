@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.26.0] Q4 2023
+- added general cellular support using NetworkManager and ModemManager to control
+  mobile interfaces and connections
+- added LTE test (pseudo-)board rpi4-omnect-lab basing on raspberrypi4-64 and
+  extended with LTE and TPM functionalities
+
 ## [kirkstone-0.25.8] Q4 2023
 - iot-hub-device-update: fixed retry handling for swupdate_handler_v2
 

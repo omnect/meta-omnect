@@ -45,25 +45,36 @@ IMAGE_BASENAME = "omnect-os"
 
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
+EXTRA_PACKAGES_CELLULAR = "\
+    libqmi \
+    libmbim \
+    mobile-broadband-provider-info \
+    networkmanager networkmanager-wwan \
+    modemmanager \
+    usb-modeswitch usb-modeswitch-data \
+"
+
 IMAGE_INSTALL = "\
+    ${@bb.utils.contains('DISTRO_FEATURES', '3g', '${EXTRA_PACKAGES_CELLULAR}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' aziot-edged iotedge kernel-modules', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd-bash-completion', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     bootloader-env \
     coreutils \
+    e2fsprogs-tune2fs \
     iot-hub-device-update \
     iptables \
+    jq \
     kernel-image \
     kmod \
+    less \
     omnect-base-files \
     omnect-first-boot \
     packagegroup-core-ssh-openssh \
+    procps \
     sudo \
     systemd-analyze \
-    e2fsprogs-tune2fs \
-    jq \
-    procps \
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 

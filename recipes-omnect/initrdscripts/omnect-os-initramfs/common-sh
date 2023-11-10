@@ -32,8 +32,10 @@ stderr_fatal() {
 
 run_cmd() {
     msg  "$@"
-    eval "$@" &>/dev/kmsg 2>&1
+    # avoid errors with directly redirecting too long output to /dev/kmsg
+    out=$(eval "$@" 2>&1)
     local result=$?
+    while read l; do echo -n "$l" > /dev/kmsg; done <<<"$out"
     if [ ${result} -ne 0 ]; then msg_error "command \"$@\" failed: ${result}"; return ${result}; fi
     return 0
 }

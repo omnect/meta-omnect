@@ -21,9 +21,6 @@ CMDLINE:append = " console=tty0"
 # u-boot config vars
 UBOOT_FDT_ADDR = "fdt_addr"
 
-# ethernet device name
-OMNECT_ETH0 = "eth0"
-
 # wlan device name
 OMNECT_WLAN0 = "wlan0"
 

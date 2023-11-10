@@ -1,0 +1,8 @@
+# kas config file
+
+header:
+  version: 10
+  includes:
+    - kas/machine/rpi/rpi.yaml
+
+machine: rpi4-omnect-lab
