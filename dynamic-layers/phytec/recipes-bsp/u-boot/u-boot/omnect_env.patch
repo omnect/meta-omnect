@@ -154,7 +154,7 @@ index 67c70da907..dc925ce556 100644
 @@ -214,4 +81,27 @@
  #define CONFIG_USB_MAX_CONTROLLER_COUNT	2
  #define CONFIG_SERIAL_TAG
- 
+
 +#define CONFIG_EXTRA_ENV_SETTINGS \
 +	"boot_script=fatload mmc ${devnum}:1 ${script_addr_r} /boot.scr; source ${script_addr_r}\0" \
 +	"load_fdt_script=fatload mmc ${devnum}:1 ${script_addr_r} /fdt-load.scr; source ${script_addr_r}\0" \
