@@ -55,7 +55,7 @@ EXTRA_PACKAGES_CELLULAR = "\
 "
 
 IMAGE_INSTALL = "\
-    ${@bb.utils.contains('DISTRO_FEATURES', '3g', '${EXTRA_PACKAGES_CELLULAR}', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', '3g', '${EXTRA_PACKAGES_CELLULAR}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' aziot-edged iotedge kernel-modules', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd-bash-completion', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
