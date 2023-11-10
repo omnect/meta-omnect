@@ -100,7 +100,7 @@ See board specific documents [doc](/doc/) folder.
 We reflect the used poky version in our version schema. `omnect-os` is versioned via `POKY_VERSION.BUILD_NR`, `4.0.x.y` where `x` is poky kirkstone's patch version and `y` is the build number.
 
 ## Dependencies
-`meta-omnect` depends on:
+Aside from hardware specific meta layers `meta-omnect` depends on:
   - [meta-openembedded](https://github.com/openembedded/meta-openembedded.git): `meta-filesystems`, `meta-networking`, `meta-oe` and `meta-python`
   - [meta-security](https://git.yoctoproject.org/meta-security)
   - [meta-swupdate](https://github.com/sbabic/meta-swupdate.git)

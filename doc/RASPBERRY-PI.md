@@ -2,7 +2,7 @@
 
 - **Product Page:** https://www.raspberrypi.org/
 - **BSP (dynamic layer):** [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git)
-- **UART:** */dev/ttyS0* is reserved in *OMNECT-gateway-devel_** images (bootloader + linux). In release images there are no restrictions.
+- **UART:** */dev/ttyS0* is reserved for system console in OMNECT-gateway-devel images and for output of critical kernel messages in release images.
 
 ## Omnect Feature Support:
 
