@@ -113,6 +113,7 @@ do_install:append() {
   install -d ${D}${sysconfdir}/omnect/consent/swupdate
   install -m 0770 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
   install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
+  echo "consent ${SOFTWARE_VERSION}" >> ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
 
   # delete adu-swupdate.sh
   rm ${D}${libdir}/adu/adu-swupdate.sh
