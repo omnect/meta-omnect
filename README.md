@@ -223,7 +223,7 @@ Entering omnect flashing mode 1...
 ...
 ```
 **Note1**: The *bootloader_env.sh* command requires root permissions.<br>
-**Note2**: The corresponding platform specific block device paths can be found in the board specific [readme](./doc/board/).<br>
+**Note2**: The corresponding platform specific block device paths can be found in the [doc](/doc/) folder.<br>
 **Note3**: Make sure that the system boots from the same device after the triggered reboot. E.g. if you boot from usb and
 initiate flash mode 1 and trigger reboot, make sure that you boot from usb again. This reboot will enter the initramfs and execute the flash process.<br>
 
