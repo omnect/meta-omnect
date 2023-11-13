@@ -12,6 +12,8 @@ SRC_URI = " \
     file://do-client.service \
 "
 
+PV .= "+${SRCPV}"
+
 S = "${WORKDIR}/git"
 
 DEPENDS = "curl boost cpprest msft-gsl libproxy"

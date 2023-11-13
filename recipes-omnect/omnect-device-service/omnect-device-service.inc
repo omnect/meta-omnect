@@ -6,7 +6,8 @@ SRC_URI += "\
   file://omnect-device-service.tmpfilesd \
 "
 
-PV .= "_${SRCPV}"
+PV .= "+${SRCPV}"
+CVE_PRODUCT = "omnect:${PN}"
 
 # we have to truncate ${PV}, it's to long for do_fetch
 python() {

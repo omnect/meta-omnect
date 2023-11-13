@@ -24,7 +24,7 @@ SRC_URI = " \
 SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
 SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh"
 
-PV = "${SRCPV}"
+PV .= "+${SRCPV}"
 
 S = "${WORKDIR}/git"
 
