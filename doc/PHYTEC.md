@@ -11,7 +11,7 @@
   - boot *omnect-os* from sdcard
   - use [flash-mode 1](../README.md#flash-mode-1) in order to flash an image from USB to emmc. The emmc device path is */dev/mmcblk2*.
   - use DIP switch to boot from emmc and power on device 
-- **UART:** */dev/ttymxc2* is reserved for system console in OMNECT-gateway-devel images and for output of critical kernel messages in release images.
+- **UART:** */dev/ttymxc2* is reserved for system console in OMNECT-gateway-devel images.
 
 ## Omnect Feature Support:
 

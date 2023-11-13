@@ -84,7 +84,7 @@ Device         Boot   Start      End  Sectors  Size Id Type
 - `mmcblkXp8` is the writable `data` partition with ext4 filesystem
 
 **Note1**: The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M and is resized on the first boot to the max available size.<br>
-**Note2**: The size of `rootA` and `rootB` depends on your board and image variant (development or release). Concrete sizes can be found in the board specific [readme](./doc/board/).<br>
+**Note2**: The size of `rootA` and `rootB` depends on your board and image variant (development or release).<br>
 **Note3 (only for images where u-boot is used as OS bootloader)**: There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks. For this purpose, the following configuration variables are used:
 - `OMNECT_PART_OFFSET_UBOOT_ENV1`: offset of 1st u-boot environment bank (in KiB, decimal)
 - `OMNECT_PART_OFFSET_UBOOT_ENV2`: offset of 2nd u-boot environment bank (in KiB, decimal)
