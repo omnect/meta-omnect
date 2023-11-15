@@ -1,6 +1,6 @@
-From 8d666a0f93ce1f5f0d4a8ed56c179c6381c23faf Mon Sep 17 00:00:00 2001
+From 3ac96030ece8f3bb72eac48bec4539f0f13c9d52 Mon Sep 17 00:00:00 2001
 From: JoergZeidler <joerg.zeidler@conplement.de>
-Date: Wed, 11 Oct 2023 09:55:27 +0200
+Date: Fri, 10 Nov 2023 10:47:06 +0100
 Subject: [PATCH] add swupdate user consent handler
 
 ---
@@ -10,9 +10,9 @@ Subject: [PATCH] add swupdate user consent handler
  .../files/history_consent.json                |   6 +
  .../files/request_consent.json                |   4 +
  .../files/user_consent.json                   |   3 +
- .../inc/aduc/swupdate_consent_handler.hpp     |  72 +++
- .../src/swupdate_consent_handler.cpp          | 573 ++++++++++++++++++
- 8 files changed, 701 insertions(+)
+ .../inc/aduc/swupdate_consent_handler.hpp     |  73 +++
+ .../src/swupdate_consent_handler.cpp          | 617 ++++++++++++++++++
+ 8 files changed, 746 insertions(+)
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
@@ -124,10 +124,10 @@ index 0000000..0e0dcd2
 \ No newline at end of file
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp b/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
 new file mode 100644
-index 0000000..7ecb756
+index 0000000..8ea0cf2
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,73 @@
 +/**
 + * @file swupdate_consent_handler.hpp
 + * @brief Defines SWUpdateConsentHandlerImpl.
@@ -191,8 +191,9 @@ index 0000000..7ecb756
 +    std::string ReadValueFromFile(const std::string& filePath);
 +    JSON_Object* ReadJsonDataFile(const std::string& filePath);
 +    bool GetGeneralConsent(void);
++    ADUC_GeneralResult CleanUserConsentAgreed(void);
 +    bool UserConsentAgreed(const std::string& version);
-+    bool AppendArrayRecord(const JSON_Object *root, const char *arrayName, JSON_Value *record);
++    bool AppendArrayRecord(const JSON_Object* root, const char* arrayName, JSON_Value* record);
 +    ADUC_GeneralResult UpdateConsentRequestJsonFile(const std::string& version);
 +    ADUC_GeneralResult CleanConsentRequestJsonFile(void);
 +    ADUC_GeneralResult UpdateConsentHistoryJsonFile(const std::string& version);
@@ -202,10 +203,10 @@ index 0000000..7ecb756
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 0000000..7ad650a
+index 0000000..0f4aee2
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
-@@ -0,0 +1,573 @@
+@@ -0,0 +1,617 @@
 +/**
 + * @file swupdate_consent_handler.cpp
 + * @brief Implementation of ContentHandler API for update content swupdate_consent.
@@ -441,6 +442,40 @@ index 0000000..7ad650a
 +}
 +
 +/**
++ * @brief Clean user consent agreed
++ *
++ * @return ADUC_GeneralResult
++ *
++ */
++ADUC_GeneralResult SWUpdateConsentHandlerImpl::CleanUserConsentAgreed(void)
++{
++    ADUC_GeneralResult result = ADUC_GeneralResult_Failure;
++    JSON_Value* rootValue = json_parse_file(ADUC_SWUPDATE_CONSENT_USER_FILE);
++    JSON_Object* data = json_value_get_object(rootValue);
++
++    Log_Info("clean user consent agreed");
++
++    if (nullptr == data)
++    {
++        Log_Error("No ADUC_SWUPDATE_CONSENT_USER_FILE data file provided, or missing json content");
++    }
++    else
++    {
++        // clean ADUC_SWUPDATE_CONSENT_USER_FILE only if consent available -> prevent file write operation
++        if (json_object_has_value(data, "consent") != 0)
++        {
++            Log_Info("clean ADUC_SWUPDATE_CONSENT_USER_FILE");
++            json_object_remove(data, "consent");
++            json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_USER_FILE);
++        }
++        result = ADUC_GeneralResult_Success;
++        json_value_free(rootValue);
++    }
++
++    return result;
++}
++
++/**
 + * @brief add records to an json array
 + *
 + * @param root  root of the parsed file
@@ -521,6 +556,8 @@ index 0000000..7ad650a
 +    JSON_Value* rootValue = json_parse_file(ADUC_SWUPDATE_CONSENT_REQUEST_FILE);
 +    JSON_Object* data = json_value_get_object(rootValue);
 +
++    Log_Info("clean consent request");
++
 +    if (nullptr == data)
 +    {
 +        Log_Error("No ADUC_SWUPDATE_CONSENT_REQUEST_FILE data file provided");
@@ -534,8 +571,13 @@ index 0000000..7ad650a
 +        }
 +        else
 +        {
-+            json_array_clear(array);
-+            json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_REQUEST_FILE);
++            // clean ADUC_SWUPDATE_CONSENT_REQUEST_FILE only if array is not empty -> prevent file write operation
++            if (json_array_get_count(array) != 0)
++            {
++                Log_Info("clean ADUC_SWUPDATE_CONSENT_REQUEST_FILE");
++                json_array_clear(array);
++                json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_REQUEST_FILE);
++            }
 +            result = ADUC_GeneralResult_Success;
 +        }
 +        json_value_free(rootValue);
@@ -731,11 +773,14 @@ index 0000000..7ad650a
 +            f << installedCriteria << std::endl;
 +            f.close();
 +        }
++        CleanUserConsentAgreed();
++        CleanConsentRequestJsonFile();
 +        result = { ADUC_Result_IsInstalled_Installed };
 +    }
 +    else if (userConsentCriteria == installedCriteria)
 +    {
 +        Log_Info("swupdate consent for Installed criteria %s was installed", installedCriteria.c_str());
++        CleanConsentRequestJsonFile();
 +        result = { ADUC_Result_IsInstalled_Installed };
 +    }
 +    else
@@ -779,7 +824,6 @@ index 0000000..7ad650a
 +    ADUC_Result result = { ADUC_Result_Restore_Success };
 +    return result;
 +}
-\ No newline at end of file
 -- 
 2.34.1
 

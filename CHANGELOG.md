@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added LTE test (pseudo-)board rpi4-omnect-lab basing on raspberrypi4-64 and
   extended with LTE and TPM functionalities
 
+## [kirkstone-0.25.10] Q4 2023
+- documentation: restructured readme files and added vendor specific docu
+
+## [kirkstone-0.25.9] Q4 2023
+- iot-hub-device-update:
+  - added SOFTWARE_VERSION to installed_criteria for user_consent
+  - cleaned up user consent information during is_installed step
+    to prevent outdated consent information from being reported
+
 ## [kirkstone-0.25.8] Q4 2023
 - iot-hub-device-update: fixed retry handling for swupdate_handler_v2
 
