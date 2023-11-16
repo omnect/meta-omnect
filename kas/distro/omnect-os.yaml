@@ -10,7 +10,7 @@ repos:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
     branch: kirkstone
-    commit: 9c5541f7e18a1fac3b8dea71e1ebb8398d58e6ff
+    commit: 7da6cb848bc42b3e6bd5d2b37b52ba75510a6ca0
     layers:
       meta-filesystems:
       meta-networking:
@@ -27,11 +27,11 @@ repos:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     branch: kirkstone
-    commit: 7a85c71f40c4bf445f041fa7aad70733c9cbc0ba
+    commit: 670bbc3e3ddbd308be3c26ab63c5dbcd7b4f7d8b
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     branch: kirkstone
-    commit: 2d8b3cba8ff27c9ec2187a52b6a551fe1dcfaa07
+    commit: 478a91800c4a95c7410dc8ef52e229a81be24b4e
     patches:
       p001:
         repo: "meta-omnect"
