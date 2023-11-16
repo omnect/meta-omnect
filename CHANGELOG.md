@@ -8,8 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [kirkstone-0.26.0] Q4 2023
 - added general cellular support using NetworkManager and ModemManager to control
   mobile interfaces and connections
-- added LTE test (pseudo-)board rpi4-omnect-lab basing on raspberrypi4-64 and
-  extended with LTE and TPM functionalities
+- enabled cellular support for welotec board Arrakis Mk3 pico
 
 ## [kirkstone-0.25.10] Q4 2023
 - documentation: restructured readme files and added vendor specific docu
