@@ -5,8 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.25.9] Q4 2023
+## [kirkstone-0.25.12] Q4 2023
 - removed `ptest` from DISTRO_FEATURES
+
+## [kirkstone-0.25.11] Q4 2023
+- kas:
+  - updated poky to 4.0.14
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-swupdate to latest kirkstone HEAD
+  - updated meta-virtualization to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+  - updated meta-imx to kirkstone-5.15.71-2.2.2
+- u-boot-imx: adapted patches to u-boot-imx 2022.04
+
+## [kirkstone-0.25.10] Q4 2023
+- documentation: restructured readme files and added vendor specific docu
+
+## [kirkstone-0.25.9] Q4 2023
+- iot-hub-device-update:
+  - added SOFTWARE_VERSION to installed_criteria for user_consent
+  - cleaned up user consent information during is_installed step
+    to prevent outdated consent information from being reported
 
 ## [kirkstone-0.25.8] Q4 2023
 - iot-hub-device-update: fixed retry handling for swupdate_handler_v2

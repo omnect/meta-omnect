@@ -7,16 +7,14 @@ This yocto meta layer provides the poky based device management distribution `om
 - [iot-hub-device-update](https://github.com/Azure/iot-hub-device-update)
 - [iot-identity-service](https://github.com/Azure/iot-identity-service)
 - [iotedge](https://github.com/Azure/iotedge)
-- `omnect-os image` - an updatable device image with A/B rootfs update support<br>
-  implicit features:
+- `omnect-os image`: an updatable device image with A/B rootfs update support with the following implicit features:
     - `iot-hub-device-update` and `iot-identity-service` are installed
     - `iot-hub-device-update` is provisioned as module identity via `iot-identity-service`
-    - first boot script `/usr/bin/omnect_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-omnect/recipes-core/systemd/systemd/omnect_first_boot.sh`
-    - factory reset via OS bootloader environment variable `factory-reset`
-      - **note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset), below.
-- `omnect-os update image` - the [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image<br>
-  implicit feature:
-    - updating the bootloader
+    - First boot script `/usr/bin/omnect_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-omnect/recipes-core/systemd/systemd/omnect_first_boot.sh`
+    - Factory reset via OS bootloader environment variable `factory-reset`
+      - **Note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset) below.
+- `omnect-os update image`: the [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image with the following implicit features:
+    - Updating the bootloader
 
 ### `DISTRO_FEATURES`
 `omnect-os` depends on [poky](https://www.yoctoproject.org/software-item/poky/).
@@ -30,7 +28,7 @@ It is built with the default `poky` `DISTRO_FEATURES`.
     - enables a persistent /var/log which is stored in the data partition
 - `flash-mode`
     - provides the possibility to flash complete disk images
-    - please see section *Flash Modes*, below
+    - please see section [Flash Modes](#flash-modes) below
 - `resize-data`
     - expands the data partition to available space on first boot
 - [`wifi-commissioning`](https://github.com/omnect/wifi-commissioning-gatt-service.git)
@@ -85,48 +83,39 @@ Device         Boot   Start      End  Sectors  Size Id Type
 - `mmcblkXp7` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
 - `mmcblkXp8` is the writable `data` partition with ext4 filesystem
 
-The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M and is resized on the first boot to the max available size.
-
-**Only for images where u-boot is used as OS bootloader**: There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks.
-For this purpose, the following configuration variables are used:
-
-- `OMNECT_PART_OFFSET_UBOOT_ENV1`
-    - offset of 1st u-boot environment bank (in KiB, decimal)
-- `OMNECT_PART_OFFSET_UBOOT_ENV2`
-    - offset of 2nd u-boot environment bank (in KiB, decimal)
-- `OMNECT_PART_SIZE_UBOOT_ENV`
-    - size of one u-boot environment bank (in KiB, decimal)
+**Note1**: The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M and is resized on the first boot to the max available size.<br>
+**Note2**: The size of `rootA` and `rootB` depends on your board and image variant (development or release).<br>
+**Note3 (only for images where u-boot is used as OS bootloader)**: There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks. For this purpose, the following configuration variables are used:
+- `OMNECT_PART_OFFSET_UBOOT_ENV1`: offset of 1st u-boot environment bank (in KiB, decimal)
+- `OMNECT_PART_OFFSET_UBOOT_ENV2`: offset of 2nd u-boot environment bank (in KiB, decimal)
+- `OMNECT_PART_SIZE_UBOOT_ENV`: size of one u-boot environment bank (in KiB, decimal)
 
 ## Compatibility
 `meta-omnect` is compatible with the current yocto LTS release branch `kirkstone`.
 
 ## Supported Devices
-See [README.device.md](./README.device.md).
+See board specific documents [doc](/doc/) folder.
 
 ## Versioning
 We reflect the used poky version in our version schema. `omnect-os` is versioned via `POKY_VERSION.BUILD_NR`, `4.0.x.y` where `x` is poky kirkstone's patch version and `y` is the build number.
 
 ## Dependencies
-`meta-omnect` depends on:
-- mandatory:
-    - [meta-openembedded](https://github.com/openembedded/meta-openembedded.git): `meta-filesystems`, `meta-networking`, `meta-oe` and `meta-python`
-    - [meta-security] (https://git.yoctoproject.org/meta-security)
-    - [meta-swupdate](https://github.com/sbabic/meta-swupdate.git)
-    - [meta-virtualization](https://git.yoctoproject.org/meta-virtualization)
-    - [poky](https://git.yoctoproject.org/poky)
-- optional:
-    - [meta-phytec](https://github.com/phytec/meta-phytec) (optional - via dynamic layer, phytec polis support depends on it)
-    - [meta-freescale](https://github.com/Freescale/meta-freescale) (optional - via dynamic layer, phytec polis support depends on it)
-    - [meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi.git) (optional - via dynamic layer, raspberrypi support depends on it)
+Aside from hardware specific meta layers `meta-omnect` depends on:
+  - [meta-openembedded](https://github.com/openembedded/meta-openembedded.git): `meta-filesystems`, `meta-networking`, `meta-oe` and `meta-python`
+  - [meta-security](https://git.yoctoproject.org/meta-security)
+  - [meta-swupdate](https://github.com/sbabic/meta-swupdate.git)
+  - [meta-virtualization](https://git.yoctoproject.org/meta-virtualization)
+  - [poky](https://git.yoctoproject.org/poky)
 
+**Note:** Detailed information can be found in respective readmes
 
 ## Build
 
 For using `omnect-os-update-image` together with `iot-hub-device-update` you have to provide a rsa-key for signing/verifying the update image.
-Note: We currently only support `swupdate` RSA signing.
+**Note**: We currently only support `swupdate` RSA signing.
 Provide the environment variables `SWUPDATE_PASSWORD_FILE` and `SWUPDATE_PRIVATE_KEY`.
- - `SWUPDATE_PASSWORD_FILE` - full path to a file containing the keys password
- - `SWUPDATE_PRIVATE_KEY` - full path of private key file
+ - `SWUPDATE_PASSWORD_FILE`: full path to a file containing the keys password
+ - `SWUPDATE_PRIVATE_KEY`: full path of private key file
 
 Furthermore you have to provide the environment variable `OMNECT_USER_PASSWORD` which sets the password of the default user `omnect`.
 
@@ -140,13 +129,17 @@ Set the enviroment variable `OMNECT_RELEASE_IMAGE` to `1` for release builds. Th
 Differences:
 - Release build
   - default firewall config which allows input for established connections only
+  - reduced serial console output (only output high priority messages).
+  - local ssh login disabled (alternatively a tunneled ssh connection can be established via [omnect-cli](https://github.com/omnect/omnect-cli#creating-an-ssh-tunnel))
 - Developer build
   - default firewall config as in Release build, additionally allow ssh connections
+  - local ssh login enabled
+  - includes some useful developer tools
 
 ### Example build via `kas`
 
 This repository provides [`kas`](https://kas.readthedocs.io/en/latest/) configuration files to build `omnect-os`.
-E.g. if you want to build an `omnect-os` raspberrypi 4 image with `iotedge` support for the omnect-portal (todo link to omnect-portal doku) follow these steps:
+E.g. if you want to build an `omnect-os` raspberry pi 4 image with `iotedge` support follow these steps:
 
 ```sh
 mkdir omnect-os-build
@@ -203,9 +196,10 @@ The flash modes are used to flash the complete disk image including all partitio
 It uses the initramfs context, because in this mode the block device is free for writing images.
 Also, no filesystem is mounted in this state.
 
-There are the following two flash modes:
-- 1: clone disk image from the disk the system is currently running to another disk of the system
-- 2: flash disk image from network to same disk the system is currently running
+There are the following three flash modes:
+  1. clone disk image from the disk the system is currently running to another disk of the system
+  2. flash disk image from network to same disk the system is currently running (in local network via scp)
+  3. flash disk image from network to same disk the system is currently running (by providing a download link to the image)
 
 #### Flash Mode 1
 For the flash mode 1, it is required to specify the destination disk, the current disk image will be cloned to.
@@ -228,11 +222,10 @@ reboot
 Entering omnect flashing mode 1...
 ...
 ```
-**Note, the *bootloader_env.sh* command requires root permissions.**
-**Note, the corresponding platform specific block device paths are defined in [README.device.md](./README.device.md).**
-
-**Note make sure that the system boots from the same device after the triggered reboot. E.g. if you boot from usb and
-initiate flash mode 1 and trigger reboot, make sure that you boot from usb again. This reboot will enter the initramfs and execute the flash process.**
+**Note1**: The *bootloader_env.sh* command requires root permissions.<br>
+**Note2**: The corresponding platform specific block device paths can be found in the [doc](/doc/) folder.<br>
+**Note3**: Make sure that the system boots from the same device after the triggered reboot. E.g. if you boot from usb and
+initiate flash mode 1 and trigger reboot, make sure that you boot from usb again. This reboot will enter the initramfs and execute the flash process.<br>
 
 After flash mode 1 has been finished successfully, the target system will be switched-off.
 The bootloader environment variables *flash-mode* and *flash-mode-devpath* will be deleted automatically.
@@ -250,8 +243,8 @@ In order to trigger the flash mode 2,
     Entering omnect flashing mode 2...
     ...
     ```
-    **Note, *bootloader_env.sh* command requires root permissions.**<br>
-    **Note, `flash-mode 2` is restricted to eth0.**
+    **Note1**: *bootloader_env.sh* command requires root permissions.<br>
+    **Note2**: `flash-mode 2` is restricted to eth0.<br>
 
 2. In the next step, the bmap file and the wic image file have to be transferred from the host system:
     ```sh
@@ -291,10 +284,10 @@ In order to trigger the flash mode 3,
     Entering omnect flashing mode 3... (http://url.to/image.wic.xz)
     ...
     ```
-    **Note, *bootloader_env.sh* command requires root permissions.**<br>
-    **Note, the urls have to be escaped with \"\".**<br>
-    **Note, on systems without realtime clock the certificate of an url gets not verified.**
-    **Note, `flash-mode 3` is restricted to eth0.**
+    **Note1**: *bootloader_env.sh* command requires root permissions.<br>
+    **Note2**: the urls have to be escaped with \"\".<br>
+    **Note3**: on systems without realtime clock the certificate of an url gets not verified.<br>
+    **Note4**: `flash-mode 3` is restricted to eth0.<br>
 
 After finishing the flash procedure, the system reboots automatically.
 The bootloader environment variables *flash-mode*, *flash-mode-url* and
@@ -338,7 +331,6 @@ In the following example, the regular file `/etc/wpa_supplicant/wpa_supplicant-w
 ```sh
 sudo bootloader_env.sh set factory-reset-restore-list '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf;/etc/aziot/identityd/'
 ```
-```
 
 The list of path names is separated by the character `;` and is enclosed by the `'` quotation mark.
 The factory reset is directed to the partitions `etc` and `data`.
@@ -357,9 +349,12 @@ It has the following format:
 <subordinated status>  ::= <unsigned integer> | '-'
 ```
 
-The overall *factory reset status* consists of two parts:
-- *main status*: general processing state; 0 -> wipe mode supported; 1 -> wipe mode unsupported; 2 -> backup/restore failure
-- *subordinated status*: execution exit status, in case of *main status* == 0 (success)
+The overall `factory reset status` consists of two parts:
+- *main status* (general processing state):
+  - 0: wipe mode supported
+  - 1: wipe mode unsupported
+  - 2: backup/restore failure
+- *subordinated status* (execution exit status): in case of *main status* == 0 (success)
 
 In the case of a successfully performed factory reset, the OS bootloader environment variable `factory-reset-status` is set to the value `0:0`.
 
@@ -377,9 +372,8 @@ sudo bootloader_env.sh unset data-mount-options
 sudo reboot
 ```
 
-**Note:** The bootloader environment variable `data-mount-options` should be removed at the end of the debugging session.
-
-**Note:** It is not advised to use sync mount in operational mode.
+**Note1:** The bootloader environment variable `data-mount-options` should be removed at the end of the debugging session.<br>
+**Note2:** It is not advised to use sync mount in operational mode.<br>
 
 # License
 
@@ -391,8 +385,6 @@ The layer is licensed under either of
 at your option if not noted otherwise.
 
 The content of `dynamic-layers/phytec/recipes-kernel/lwb-radio-firmware` is licensed under MIT license ([LICENSE-MIT](dynamic-layers/phytec/recipes-kernel/lwb-radio-firmware/COPYING.MIT)).
-
-The content of `dynamic-layers/phytec/recipes-bsp/imx-mkimage/imx-boot-phytec*` is licensed under MIT license ([LICENSE-MIT](https://git.phytec.de/meta-phytec/tree/COPYING.MIT?h=dunfell)).
 
 # Contribution
 
