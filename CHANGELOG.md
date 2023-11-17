@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.25.11] Q4 2023
+## [kirkstone-0.25.12] Q4 2023
 - kas:
   - updated poky to 4.0.14
   - updated meta-openembedded to latest kirkstone HEAD
@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - updated meta-freescale to latest kirkstone HEAD
   - updated meta-imx to kirkstone-5.15.71-2.2.2
 - u-boot-imx: adapted patches to u-boot-imx 2022.04
+
+## [kirkstone-0.25.11] Q4 2023
+- added journald logging driver to send container logs to systemd journal
 
 ## [kirkstone-0.25.10] Q4 2023
 - documentation: restructured readme files and added vendor specific docu
