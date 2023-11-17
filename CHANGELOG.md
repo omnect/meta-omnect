@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   mobile interfaces and connections
 - enabled cellular support for welotec board Arrakis Mk3 pico
 
+## [kirkstone-0.25.11] Q4 2023
+- added journald logging driver to send container logs to systemd journal
+
 ## [kirkstone-0.25.10] Q4 2023
 - documentation: restructured readme files and added vendor specific docu
 
