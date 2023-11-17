@@ -1,5 +1,5 @@
 diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
-index e028a7fa21..6da0abc12d 100644
+index e028a7fa21..358027a6f6 100644
 --- a/include/configs/phycore_imx8mm.h
 +++ b/include/configs/phycore_imx8mm.h
 @@ -11,8 +11,7 @@
@@ -149,7 +149,7 @@ index e028a7fa21..6da0abc12d 100644
 +		"fi\0" \
 +	"fdt_addr=0x48000000\0" \
 +	"fdto_addr=0x49000000\0" \
-+	"kernel_addr_r=" __stringify(CONFIG_LOADADDR) "\0" \
++	"kernel_addr_r=0x80280000\0" \
 +	"pxefile_addr_r=0x4f800000\0" \
 +	"ramdisk_addr_r=0x49200000\0" \
 +	"scan_boot_script=if test -e mmc ${devnum}:1 /boot.scr; then echo Found U-Boot script; run boot_script; echo SCRIPT FAILED: continuing...; fi\0" \
