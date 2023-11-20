@@ -17,7 +17,4 @@ repos:
     patches:
       p001:
         repo: "meta-omnect"
-        path: "kas/patches/poky_bootimg_efi_wic.patch"
-      p002:
-        repo: "meta-omnect"
-        path: "kas/patches/poky_image_bbclass_rootfs_size_messages.patch"
+        path: "kas/patches/poky_bootimg_efi_wic_and_image_bbclass.patch"
