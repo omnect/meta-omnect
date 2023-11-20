@@ -8,18 +8,6 @@ SRC_URI += "\
     file://omnect_env_rpi.h \
 "
 
-# Note:
-#   U-Boot crashes if a USB endpoint is in state halted during enumeration, and
-#   unfortunately this is the case with the LTE modem Sierra Wireless AirPrime
-#   EM7455 as recently used in the test farm.
-#   As a workaround disable USB in U-Boot as we don't currently need it for
-#   booting and would generally rule out any interference with attached devices.
-#   A question was sent to the U-Boot mailing list concerning this problem,
-#   maybe future versions are capable of handling that.
-SRC_URI:append:raspberrypi4 = "\
-    file://disable-usb.cfg \
-"
-
 # Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
 # swupdate and iot-hub-device-update, the local version must be increased;
 #
