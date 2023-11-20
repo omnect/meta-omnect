@@ -6,7 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.25.13] Q4 2023
-- removed `ptest` from DISTRO_FEATURES
+- removed `ptest` and `qemu-usermode` from DISTRO_FEATURES
+- `do-client`: removed obsolete dependency to `cpprest`
+- `dbus`: corrected build dependency `autoconf-archive-native`
+- `docker`: removed default dependency to `btrfs-tools`
+-
 
 ## [kirkstone-0.25.12] Q4 2023
 - kas:

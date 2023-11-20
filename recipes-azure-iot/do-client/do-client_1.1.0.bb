@@ -16,7 +16,7 @@ PV .= "+${SRCPV}"
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "curl boost cpprest msft-gsl libproxy"
+DEPENDS = "curl boost msft-gsl libproxy"
 
 inherit cmake systemd useradd
 
