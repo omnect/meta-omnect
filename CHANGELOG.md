@@ -14,8 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `docker`: removed default dependency to `btrfs-tools`
   (since the recipe disables the graph driver for btrfs anyway)
 - removed default dependencies on x86-64: `syslinux`, `systemd-boot`
-- correct CVE_PRODUCT entries for usage with class `dependency-track`
+- corrected `CVE_PRODUCT` entries for usage with class `dependency-track`
   via omnect-os-cve.conf
+- corrected `PV`-handling for recipes which only set `git` or `AUTOINC...`
+  as `PV` (exception: azure-blob-storage-file-upload-utility, because it
+  doesn't have an official release)
+
 
 ## [kirkstone-0.25.12] Q4 2023
 - kas:
