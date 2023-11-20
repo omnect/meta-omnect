@@ -68,7 +68,6 @@ IMAGE_INSTALL = "\
     jq \
     kernel-image \
     kmod \
-    less \
     omnect-base-files \
     omnect-first-boot \
     packagegroup-core-ssh-openssh \
