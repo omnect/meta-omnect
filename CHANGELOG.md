@@ -20,7 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   as `PV` (exception: azure-blob-storage-file-upload-utility, because it
   doesn't have an official release)
 
-
 ## [kirkstone-0.25.12] Q4 2023
 - kas:
   - updated poky to 4.0.14
