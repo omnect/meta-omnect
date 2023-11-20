@@ -188,6 +188,45 @@ See [omnect-cli iot-hub-device-update configuration](https://github.com/omnect/o
 ### Set `iot-identity-service` configuration
 See [omnect-cli iot-identity-service configuration](https://github.com/omnect/omnect-cli/blob/main/README.md#identity-configuration).
 
+### Modify set of interfaces considered when detecting online state
+
+This is actually only one prominent case how to preset a special
+configuration in the image, here a systemd environment file that
+allows to define a set of interfaces systemd shall consider during its
+test for the device being online.
+
+It can be copied into `factory` partition as described here:
+[omnect-cli Copy Files into or from Image](https://github.com/omnect/omnect-cli/blob/main/README.md#copy-files-into-or-from-image)
+
+Configuration file `systemd-networkd-wait-online.service` is set up by
+default so that all existing physical network devices i.e., Ethernet, WLAN
+or WWAN are capable of connecting to the internet. This means that the
+device will be determined as online if at least one of those is active.
+
+**Note:** for detailed information about how systemd generally
+determines the device online state have a look at systemd's
+documentation for [service systemd-networkd-wait-online](https://www.freedesktop.org/software/systemd/man/latest/systemd-networkd-wait-online.html#)
+
+To allow for customization the service file uses content of environment
+variable `OMNECT_WAIT_ONLINE_INTERFACES_RUN` if non-empty, otherwise
+the default setting as defined in `OMNECT_WAIT_ONLINE_INTERFACES_BUILD` 
+in the corresponding machine configuration gets set.
+
+This provides the possibility to overwrite the set of online interfaces
+by injecting a systemd environment file into image, e.g.
+`/etc/omnect/systemd-networkd-wait-online.env`: just create a local
+file with the following content and inject it into the factory
+partitions of the image:
+
+```
+OMNECT_WAIT_ONLINE_INTERFACES_RUN=--interface=<interface-name>
+```
+
+Place holder `<interface-name>` needs to be replaced with the real name,
+of course.
+You can also specify multiple interface arguments here which need to be
+either all active for online state, or only one of them if argument
+`--any` is added, too.
 
 ## Usage
 

@@ -101,10 +101,10 @@ def online_ifc_list_to_parameter_list(d, ifclistvar):
         param_list += '--interface={} '.format(i)
     return param_list
 
-ONLINE_INTERFACE_ARGS = "${@online_ifc_list_to_parameter_list(d, 'OMNECT_ONLINE_INTERFACES')}"
+ONLINE_INTERFACE_ARGS = "${@online_ifc_list_to_parameter_list(d, 'OMNECT_WAIT_ONLINE_INTERFACES_BUILD')}"
 
 do_install:append() {
-    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:-${ONLINE_INTERFACE_ARGS}} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES_RUN:-${ONLINE_INTERFACE_ARGS}} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
         ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 
