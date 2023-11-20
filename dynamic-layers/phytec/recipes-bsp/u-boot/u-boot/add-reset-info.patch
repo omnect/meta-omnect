@@ -1,4 +1,4 @@
-From 95072c260ffda6fded564086d20084d82004cfe1 Mon Sep 17 00:00:00 2001
+From 6b15141c292e91c8b566c3b80e5fa4fdf188447c Mon Sep 17 00:00:00 2001
 From: SteffenRumler <steffen.rumler@conplement.de>
 Date: Wed, 14 Sep 2022 14:47:06 +0200
 Subject: [PATCH] add reset info
@@ -14,7 +14,7 @@ Subject: [PATCH] add reset info
  create mode 100644 cmd/rstinfo.c
 
 diff --git a/arch/arm/include/asm/arch-imx8m/imx-regs.h b/arch/arm/include/asm/arch-imx8m/imx-regs.h
-index 352be7adea..379efd8c37 100644
+index 333e57c603..8d90435fc4 100644
 --- a/arch/arm/include/asm/arch-imx8m/imx-regs.h
 +++ b/arch/arm/include/asm/arch-imx8m/imx-regs.h
 @@ -47,7 +47,7 @@
@@ -26,7 +26,7 @@ index 352be7adea..379efd8c37 100644
  #define CCM_BASE_ADDR		0x30380000
  #define SRC_BASE_ADDR		0x30390000
  #define GPC_BASE_ADDR		0x303A0000
-@@ -255,7 +255,14 @@
+@@ -256,7 +256,14 @@
  #define IOMUXC_GPR_GPR1_GPR_ENET1_TX_CLK_SEL_SHIFT 13
  #define IOMUXC_GPR_GPR1_GPR_ENET_QOS_INTF_SEL_MASK 0x70000
  
@@ -43,7 +43,7 @@ index 352be7adea..379efd8c37 100644
  struct iomuxc_gpr_base_regs {
  	u32 gpr[48];
 diff --git a/arch/arm/mach-imx/cpu.c b/arch/arm/mach-imx/cpu.c
-index 7fd58af068..07dbc97313 100644
+index fce63eb192..517d0a420a 100644
 --- a/arch/arm/mach-imx/cpu.c
 +++ b/arch/arm/mach-imx/cpu.c
 @@ -26,6 +26,7 @@
@@ -77,10 +77,10 @@ index 7fd58af068..07dbc97313 100644
  	case 0x00004:
  		return "CSU";
 diff --git a/arch/arm/mach-imx/imx8m/soc.c b/arch/arm/mach-imx/imx8m/soc.c
-index 9789e10f5e..a417a28985 100644
+index 0d2f7a5897..bf6c789f48 100644
 --- a/arch/arm/mach-imx/imx8m/soc.c
 +++ b/arch/arm/mach-imx/imx8m/soc.c
-@@ -586,6 +586,16 @@ static void secure_lockup(void)
+@@ -578,6 +578,16 @@ static void secure_lockup(void)
  }
  #endif
  
@@ -97,7 +97,7 @@ index 9789e10f5e..a417a28985 100644
  int arch_cpu_init(void)
  {
  	struct ocotp_regs *ocotp = (struct ocotp_regs *)OCOTP_BASE_ADDR;
-@@ -639,6 +649,8 @@ int arch_cpu_init(void)
+@@ -631,6 +641,8 @@ int arch_cpu_init(void)
  			writel(0x200, &ocotp->ctrl_clr);
  	}
  
@@ -107,7 +107,7 @@ index 9789e10f5e..a417a28985 100644
  }
  
 diff --git a/cmd/Kconfig b/cmd/Kconfig
-index d4db6e20ec..ca2b1e44db 100644
+index f6bd71451b..2ac781f468 100644
 --- a/cmd/Kconfig
 +++ b/cmd/Kconfig
 @@ -157,6 +157,13 @@ config CMD_REGINFO
@@ -125,12 +125,12 @@ index d4db6e20ec..ca2b1e44db 100644
  	bool "tlv_eeprom"
  	depends on I2C_EEPROM
 diff --git a/cmd/Makefile b/cmd/Makefile
-index c5aafdb357..32233771da 100644
+index 166c652d98..5b4837b7a3 100644
 --- a/cmd/Makefile
 +++ b/cmd/Makefile
-@@ -133,6 +133,7 @@ obj-$(CONFIG_CMD_REISER) += reiser.o
- obj-$(CONFIG_CMD_REMOTEPROC) += remoteproc.o
+@@ -132,6 +132,7 @@ obj-$(CONFIG_CMD_REMOTEPROC) += remoteproc.o
  obj-$(CONFIG_CMD_RNG) += rng.o
+ obj-$(CONFIG_CMD_KASLRSEED) += kaslrseed.o
  obj-$(CONFIG_CMD_ROCKUSB) += rockusb.o
 +obj-$(CONFIG_CMD_RSTINFO) += rstinfo.o
  obj-$(CONFIG_CMD_RTC) += rtc.o

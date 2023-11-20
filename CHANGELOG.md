@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add information about customization of interfaces to be considered
   for online state detection in README.md
 
+## [kirkstone-0.25.12] Q4 2023
+- kas:
+  - updated poky to 4.0.14
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-swupdate to latest kirkstone HEAD
+  - updated meta-virtualization to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+  - updated meta-imx to kirkstone-5.15.71-2.2.2
+- u-boot-imx: adapted patches to u-boot-imx 2022.04
+
 ## [kirkstone-0.25.11] Q4 2023
 - added journald logging driver to send container logs to systemd journal
 
