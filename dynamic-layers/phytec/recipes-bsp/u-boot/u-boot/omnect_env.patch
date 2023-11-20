@@ -1,32 +1,32 @@
 diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
-index 67c70da907..dc925ce556 100644
+index e028a7fa21..358027a6f6 100644
 --- a/include/configs/phycore_imx8mm.h
 +++ b/include/configs/phycore_imx8mm.h
 @@ -11,8 +11,7 @@
  #include <linux/stringify.h>
  #include <asm/arch/imx-regs.h>
-
+ 
 -#include "phycore_rauc_env.h"
 -#include "phycore_fitimage_env.h"
 +#include <configs/omnect_env.h>
-
+ 
  #define CONFIG_SYS_BOOTM_LEN		SZ_64M
- #define CONFIG_SPL_MAX_SIZE		(148 * SZ_1K)
-@@ -38,138 +37,6 @@
-
+ #define CONFIG_SPL_MAX_SIZE		0x26000
+@@ -33,119 +32,6 @@
+ #define CONFIG_SPL_ABORT_ON_RAW_IMAGE
  #endif
-
+ 
 -#define CONFIG_EXTRA_ENV_SETTINGS \
 -	"image=Image\0" \
 -	"console=ttymxc2\0" \
 -	"fdt_addr=0x48000000\0" \
 -	"fdto_addr=0x49000000\0" \
--	"bootcmd_mfg=fastboot 0\0" \
 -	"bootenv_addr=0x49100000\0" \
 -	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
+-	"bootcmd_mfg=fastboot 0\0" \
 -	"ipaddr=192.168.3.11\0" \
 -	"serverip=192.168.3.10\0" \
--	"netmask=255.225.255.0\0" \
+-	"netmask=255.255.255.0\0" \
 -	"ip_dyn=no\0" \
 -	"bootenv=bootenv.txt\0" \
 -	"mmc_load_bootenv=fatload mmc ${mmcdev}:${mmcpart} ${bootenv_addr} ${bootenv}\0" \
@@ -36,7 +36,7 @@ index 67c70da907..dc925ce556 100644
 -	"emmc_dev=2\0" \
 -	"sd_dev=1\0" \
 -	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
--	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
+-	"mmcpart=1\0" \
 -	"mmcroot=2\0" \
 -	"mmcautodetect=yes\0" \
 -	"mmcargs=setenv bootargs console=${console},${baudrate} " \
@@ -53,7 +53,7 @@ index 67c70da907..dc925ce556 100644
 -			"extension apply all; " \
 -		"fi; " \
 -		"if test ${no_overlays} = 0; then " \
--			"for overlay in $overlays; " \
+-			"for overlay in ${overlays}; " \
 -			"do; " \
 -				"if run mmc_load_overlay; then " \
 -					"fdt resize ${filesize}; " \
@@ -90,7 +90,7 @@ index 67c70da907..dc925ce556 100644
 -			"extension apply all; " \
 -		"fi; " \
 -		"if test ${no_overlays} = 0; then " \
--			"for overlay in $overlays; " \
+-			"for overlay in ${overlays}; " \
 -			"do; " \
 -				"if run net_load_overlay; then " \
 -					"fdt resize ${filesize}; " \
@@ -124,37 +124,18 @@ index 67c70da907..dc925ce556 100644
 -	PHYCORE_RAUC_ENV_BOOTLOGIC \
 -	PHYCORE_FITIMAGE_ENV_BOOTLOGIC
 -
--#ifdef CONFIG_IMX_HAB
--#define BOOTCOMMAND_APPEND "reset;"
--#else
--#define BOOTCOMMAND_APPEND ""
--#endif
--
--#define CONFIG_BOOTCOMMAND \
--	"mmc dev ${mmcdev}; if mmc rescan; then " \
--		"env exists dofitboot || setenv dofitboot 0;" \
--		"env exists doraucboot || setenv doraucboot 0;" \
--		"if test ${doraucboot} = 1; then " \
--			"run raucboot; " \
--		"elif run loadimage; then " \
--			"run mmcboot; " \
--		"else run netboot; " \
--		"fi; " \
--	"fi; " \
--	BOOTCOMMAND_APPEND
--
 -#ifdef CONFIG_ENV_WRITEABLE_LIST
 -/* Set environment flag validation to a list of env vars that must be writable */
 -#define CONFIG_ENV_FLAGS_LIST_STATIC RAUC_REQUIRED_WRITABLE_ENV_FLAGS",dofitboot:dw"
 -#endif
 -
  /* Link Definitions */
- #define CONFIG_LOADADDR			0x40480000
- #define CONFIG_SYS_LOAD_ADDR		CONFIG_LOADADDR
-@@ -214,4 +81,27 @@
+ 
+ #define CONFIG_SYS_INIT_RAM_ADDR	0x40000000
+@@ -178,4 +64,27 @@
  #define CONFIG_USB_MAX_CONTROLLER_COUNT	2
  #define CONFIG_SERIAL_TAG
-
+ 
 +#define CONFIG_EXTRA_ENV_SETTINGS \
 +	"boot_script=fatload mmc ${devnum}:1 ${script_addr_r} /boot.scr; source ${script_addr_r}\0" \
 +	"load_fdt_script=fatload mmc ${devnum}:1 ${script_addr_r} /fdt-load.scr; source ${script_addr_r}\0" \
@@ -168,7 +149,7 @@ index 67c70da907..dc925ce556 100644
 +		"fi\0" \
 +	"fdt_addr=0x48000000\0" \
 +	"fdto_addr=0x49000000\0" \
-+	"kernel_addr_r=" __stringify(CONFIG_LOADADDR) "\0" \
++	"kernel_addr_r=0x80280000\0" \
 +	"pxefile_addr_r=0x4f800000\0" \
 +	"ramdisk_addr_r=0x49200000\0" \
 +	"scan_boot_script=if test -e mmc ${devnum}:1 /boot.scr; then echo Found U-Boot script; run boot_script; echo SCRIPT FAILED: continuing...; fi\0" \
