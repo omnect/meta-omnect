@@ -192,8 +192,8 @@ See [omnect-cli iot-identity-service configuration](https://github.com/omnect/om
 
 This is actually only one prominent case how to preset a special
 configuration in the image, here a systemd environment file that
-allows to define a set of interfaces systemd shall consider during its
-test for the device being online.
+allows to define a set of interfaces which systemd shall consider
+during its test for the device being online.
 
 It can be copied into `factory` partition as described here:
 [omnect-cli Copy Files into or from Image](https://github.com/omnect/omnect-cli/blob/main/README.md#copy-files-into-or-from-image)
