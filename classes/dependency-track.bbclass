@@ -54,7 +54,10 @@ python do_dependencytrack_collect() {
     for index, cpe in enumerate(oe.cve_check.get_cpe_ids(name, version)):
         bb.debug(2, f"Collecting package {name}@{version} ({cpe})")
         cpe_split = cpe.split(":")
-        purl = 'pkg:yocto/{}/{}@{}'.format(cpe_split[3],cpe_split[4],version)
+        if '*' == cpe_split[3]:
+            purl = 'pkg:yocto/{}@{}'.format(cpe_split[4],version)
+        else:
+            purl = 'pkg:yocto/{}/{}@{}'.format(cpe_split[3],cpe_split[4],version)
         if not next((c for c in sbom["components"] if c["cpe"] == cpe), None):
             sbom["components"].append({
                 "name": names[index],
