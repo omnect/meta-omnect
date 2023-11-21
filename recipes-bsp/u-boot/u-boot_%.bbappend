@@ -18,6 +18,17 @@ SRC_URI += "\
     file://silent_console.cfg \
     file://omnect_env.h \
 "
+# Note:
+#   U-Boot might crash if a USB endpoint is in state halted during enumeration,
+#   and unfortunately this is the case with the LTE modem Sierra Wireless
+#   AirPrime EM7455 attached to an RPI 4 as recently used in the test farm.
+#   As a workaround disable USB in U-Boot as we don't currently need it for
+#   booting and would generally rule out any interference with attached devices.
+#   A question was sent to the U-Boot mailing list concerning this problem,
+#   maybe future versions are capable of handling that.
+SRC_URI:append = "\
+    file://disable-usb.cfg \
+"
 
 # copy configuration fragment from template, before SRC_URI is checked
 do_fetch:prepend() {

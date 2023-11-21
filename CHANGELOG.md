@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.26.0] Q4 2023
+- added general cellular support using NetworkManager and ModemManager to control
+  mobile interfaces and connections
+- enabled cellular support for welotec board Arrakis Mk3 pico
+- add information about customization of interfaces to be considered
+  for online state detection in README.md
+
 ## [kirkstone-0.25.12] Q4 2023
 - kas:
   - updated poky to 4.0.14

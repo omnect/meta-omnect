@@ -17,4 +17,4 @@ repos:
     patches:
       p001:
         repo: "meta-omnect"
-        path: "kas/patches/poky_bootimg_efi_wic.patch"
+        path: "kas/patches/poky_bootimg_efi_wic_and_image_bbclass.patch"

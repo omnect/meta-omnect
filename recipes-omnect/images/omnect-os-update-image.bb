@@ -23,21 +23,6 @@ do_bootloader_package_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
 do_bootloader_package_extra_depends:omnect_grub = "grub-cfg:do_deploy"
 do_bootloader_package[depends] += "virtual/bootloader:do_deploy virtual/kernel:do_deploy ${do_bootloader_package_extra_depends}"
 
-do_bootloader_package:rpi() {
-    BOOT_FILES="${IMAGE_BOOT_FILES}"
-    mkdir -p ${DEPLOY_DIR_IMAGE}/boot-partition/overlays
-    for entry in ${BOOT_FILES} ; do
-        # Split entry at optional ';' to enable file renaming for the destination
-        DEPLOY_FILE=$(IFS=";"; set -- $entry; echo $1)
-        DEST_FILENAME=$(IFS=";"; set -- $entry; echo $2)
-        [ -f "${DEPLOY_DIR_IMAGE}/$entry" ] && DEST_FILENAME=${DEST_FILENAME:-${DEPLOY_FILE}}
-        cp ${DEPLOY_DIR_IMAGE}/${DEPLOY_FILE} ${DEPLOY_DIR_IMAGE}/boot-partition/${DEST_FILENAME}
-    done
-    # Notice: config.txt should not be overwritten via swupdate, content is costumer specific!
-    mv ${DEPLOY_DIR_IMAGE}/boot-partition/config.txt ${DEPLOY_DIR_IMAGE}/boot-partition/config.txt.omnect
-    tar -czvf boot-partition-update.tar.gz -C ${DEPLOY_DIR_IMAGE}/boot-partition .
-}
-
 do_bootloader_package() {
     echo "unexpected usage of default do_bootloader_package function"
     exit 1
