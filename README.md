@@ -207,10 +207,11 @@ device will be determined as online if at least one of those is active.
 determines the device online state have a look at systemd's
 documentation for [service systemd-networkd-wait-online](https://www.freedesktop.org/software/systemd/man/latest/systemd-networkd-wait-online.html#)
 
-To allow for customization the service file uses content of environment
-variable `OMNECT_WAIT_ONLINE_INTERFACES_RUN` if non-empty, otherwise
-the default setting as defined in `OMNECT_WAIT_ONLINE_INTERFACES_BUILD` 
-in the corresponding machine configuration gets set.
+To allow for customization the service file uses the content of
+environment variable `OMNECT_WAIT_ONLINE_INTERFACES_RUN` if non-empty,
+otherwise the default setting as defined in
+`OMNECT_WAIT_ONLINE_INTERFACES_BUILD` in the corresponding machine
+configuration gets set.
 
 This provides the possibility to overwrite the set of online interfaces
 by injecting a systemd environment file into image, e.g.
