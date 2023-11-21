@@ -19,7 +19,7 @@ SRC_URI += " \
 # Note: `UBOOT_LOCALVERSION` should be also increased on change of variables
 #   `APPEND`,
 #   `OMNECT_UBOOT_WRITEABLE_ENV_FLAGS`
-UBOOT_LOCALVERSION = "-5"
+UBOOT_LOCALVERSION = "-6"
 PKGV = "${PV}${UBOOT_LOCALVERSION}"
 
 inherit omnect_uboot_configure_env
