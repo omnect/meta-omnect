@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.27.0] Q4 2023
 - added class `dependency-track` to create a sbom with target packages
-- removed `ptest` from DISTRO_FEATURES
+- removed `ptest` and `gobject-introspection` from DISTRO_FEATURES
 - removed `serial` and `qemu-usermode` from MACHINE_FEATURES
 - tauri/polis: don't install `imx-m4-demos`
 - `do-client`: removed obsolete dependency to `cpprest`
