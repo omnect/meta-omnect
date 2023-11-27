@@ -4,6 +4,9 @@ WKS_FILES:${MACHINE} = "${WKS_FILE}"
 # don't use class wic-helper from meta-phytec
 IMAGE_CLASSES:remove = " wic-helper wic-imx8-helper"
 
+# don't install imx-m4-demos
+MACHINE_EXTRA_RRECOMMENDS:remove = "imx-m4-demos"
+
 # install kernel-devicetree to 'root' partition instead of 'boot'
 IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
     ${KERNEL_DEVICETREE_FN} \
