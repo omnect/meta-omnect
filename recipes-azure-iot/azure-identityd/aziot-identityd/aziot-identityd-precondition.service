@@ -14,6 +14,8 @@ ConditionPathExists=|/run/omnect-device-service/omnect_validate_update
 ConditionPathExists=|/run/omnect-device-service/omnect_validate_update_failed
 ConditionPathExists=|/run/omnect-device-service/omnect_bootloader_updated
 
+ConditionFileNotEmpty=|!/etc/aziot/identityd/config.d/00-super.toml
+
 [Service]
 Type=oneshot
 ExecStart=@@AZIOTCLI@@ config apply
