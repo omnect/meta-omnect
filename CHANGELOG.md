@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - distro config based on `nodistro` instead of `poky`
 - eg500: configured systemd hardware watchdog
 - kas: updated meta-phytec to latest kirkstone HEAD
+- u-boot-imx: adapted omnect-env patch to meta-phytec update
 
 ## [kirkstone-0.27.1] Q4 2023
 - eg500: wwan interface added to online interface list defined in variable
