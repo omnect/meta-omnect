@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - eg500: configured systemd hardware watchdog
 - kas: updated meta-phytec to latest kirkstone HEAD
 
+## [kirkstone-0.27.1] Q4 2023
+- eg500: wwan interface added to online interface list defined in variable
+  OMNECT_WAIT_ONLINE_INTERFACES_BUILD
 
 ## [kirkstone-0.27.0] Q4 2023
 - added class `dependency-track` to create a sbom with target packages
