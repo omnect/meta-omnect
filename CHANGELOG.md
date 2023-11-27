@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.28.0] Q4 2023
 - distro config based on `nodistro` instead of `poky`
+- eg500: configured systemd hardware watchdog
+
 
 ## [kirkstone-0.27.0] Q4 2023
 - added class `dependency-track` to create a sbom with target packages
