@@ -17,6 +17,9 @@ repos:
     commit: "0eb8e67aa6833df0cde29833568a70e65c21d7e5"
     layers:
       meta:
-
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/oe_bootimg_efi_wic_and_image_bbclass.patch"
 env:
   OE_VERSION: "4.0.14"
