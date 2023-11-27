@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.27.0] Q4 2023
+- added class `dependency-track` to create a sbom with target packages
+- removed `ptest` and `gobject-introspection` from DISTRO_FEATURES
+- removed `serial` and `qemu-usermode` from MACHINE_FEATURES
+- tauri/polis: don't install `imx-m4-demos`
+- `do-client`: removed obsolete dependency to `cpprest`
+- `dbus`: corrected build dependency `autoconf-archive-native`
+- `docker`: removed default dependency to `btrfs-tools`
+  (since the recipe disables the graph driver for btrfs anyway)
+- removed default dependencies on x86-64: `syslinux`, `systemd-boot`
+- corrected `CVE_PRODUCT` entries for usage with class `dependency-track`
+  via omnect-os-cve.conf
+- corrected `PV`-handling for recipes which only set `git` or `AUTOINC...`
+  as `PV` (exception: azure-blob-storage-file-upload-utility, because it
+  doesn't have an official release)
+
 ## [kirkstone-0.26.0] Q4 2023
 - added general cellular support using NetworkManager and ModemManager to control
   mobile interfaces and connections

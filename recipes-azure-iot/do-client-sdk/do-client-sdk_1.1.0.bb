@@ -7,7 +7,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ee51f94efd0db5b258b5b1b8107fea02"
 
 SRC_URI = "git://github.com/microsoft/do-client.git;protocol=https;tag=v1.1.0;branch=main"
-PV = "${SRCPV}"
+
+PV .= "+${SRCPV}"
 
 S = "${WORKDIR}/git"
 

@@ -5,7 +5,9 @@ SRC_URI += "\
   file://iot-identity-service-identityd.template.toml \
 "
 
-PV .= "_${SRCPV}"
+PV .= "+${SRCPV}"
+CVE_PRODUCT = "omnect:${PN}"
+
 
 # we have to truncate ${PV}, it's to long for do_fetch
 python() {

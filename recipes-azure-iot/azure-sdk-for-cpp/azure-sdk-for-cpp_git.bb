@@ -3,11 +3,12 @@ HOMEPAGE = "https://github.com/Azure/azure-sdk-for-cpp.git"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=e74f78882cab57fd1cc4c5482b9a214a"
 
-SRC_URI = "git://github.com/Azure/azure-sdk-for-cpp.git;protocol=https;tag=azure-storage-blobs_12.2.1;branch=main \
+AZURE_SDK_FOR_CPP_VERSION="azure-storage-blobs_12.2.1"
+SRC_URI = "git://github.com/Azure/azure-sdk-for-cpp.git;protocol=https;tag=${AZURE_SDK_FOR_CPP_VERSION};branch=main \
            file://fix_linking_for_dependents.patch \
            file://workaround-deprecated-declarations-openssl3.patch \
            "
-PV = "${SRCPV}"
+PV = "${AZURE_SDK_FOR_CPP_VERSION}+${SRCPV}"
 
 S = "${WORKDIR}/git"
 
