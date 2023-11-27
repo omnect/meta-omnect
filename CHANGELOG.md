@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - initramfs:
   - fixed fsck vfat handling
   - added fsck error status to kmsg
+  - fixed fsck.json content for u-boot devices
 
 ## [kirkstone-0.27.1] Q4 2023
 - eg500: wwan interface added to online interface list defined in variable
