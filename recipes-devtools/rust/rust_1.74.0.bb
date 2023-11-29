@@ -1,6 +1,9 @@
 require recipes-devtools/rust/rust-target.inc
-require rust-sources.inc
+require ${LAYERDIR_core}/recipes-devtools/rust/rust-source.inc
+require rust-source.inc
 require rust-snapshots.inc
+
+LIC_FILES_CHKSUM = "file://COPYRIGHT;md5=c2cccf560306876da3913d79062a54b9"
 
 INSANE_SKIP:${PN}:class-native = "already-stripped"
 
