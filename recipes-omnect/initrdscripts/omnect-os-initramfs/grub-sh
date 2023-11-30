@@ -7,7 +7,7 @@ test_and_mount_boot()
 {
     if ! mountpoint -q ${ROOTFS_DIR}/boot; then
         mkdir -p ${ROOTFS_DIR}/boot
-        run_cmd fsck.vfat -y /dev/omnect/boot
+        check_fs "boot"
         mount -t vfat /dev/omnect/boot ${ROOTFS_DIR}/boot && msg "mounted ${ROOTFS_DIR}/boot"  || return 1
     fi
 }

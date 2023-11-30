@@ -7,7 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: kirkstone
-    commit: 63e8330e1a380ea90781aec8bea95713e142e44e
+    commit: c4fe1f51105f9d5489021f03f494a9d2d49ad5e7
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: kirkstone
