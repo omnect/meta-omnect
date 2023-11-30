@@ -1,8 +1,4 @@
-require ${LAYERDIR_core}/recipes-devtools/rust/rust-source.inc
 require rust-source.inc
-require recipes-devtools/rust/libstd-rs.inc
+require libstd-rs.inc
 
-# libstd moved from src/libstd to library/std in 1.47+
-S = "${RUSTSRC}/library/std"
-
-BBCLASSEXTEND = "nativesdk"
+LIC_FILES_CHKSUM = "file://../../COPYRIGHT;md5=c2cccf560306876da3913d79062a54b9"

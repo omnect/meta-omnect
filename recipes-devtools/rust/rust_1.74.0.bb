@@ -1,5 +1,4 @@
-require recipes-devtools/rust/rust-target.inc
-require ${LAYERDIR_core}/recipes-devtools/rust/rust-source.inc
+require rust-target.inc
 require rust-source.inc
 require rust-snapshots.inc
 
