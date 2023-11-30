@@ -16,7 +16,6 @@ FLASH_MODE_X_PACKAGES = " \
 "
 
 GRUB_SUPPORT_PACKAGES = " \
-    dosfstools \
     grub-cfg \
     grub-editenv \
     grub-env \
@@ -36,6 +35,7 @@ UBOOT_SUPPORT_PACKAGES = " \
 PACKAGE_INSTALL = "\
     base-passwd \
     coreutils \
+    dosfstools \
     e2fsprogs \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
@@ -58,5 +58,11 @@ PACKAGE_INSTALL = "\
 
 PACKAGE_INSTALL:append:omnect_grub = " ${GRUB_SUPPORT_PACKAGES}"
 PACKAGE_INSTALL:append:omnect_uboot = " ${UBOOT_SUPPORT_PACKAGES}"
+
+IMAGE_PREPROCESS_COMMAND:append = "add_fsck_vfat_support;"
+add_fsck_vfat_support() {
+    ln -sf /usr/sbin/fsck.fat ${IMAGE_ROOTFS}/sbin/
+    ln -sf /usr/sbin/fsck.vfat ${IMAGE_ROOTFS}/sbin/
+}
 
 inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'omnect_user', '', d)}

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.27.2] Q4 2023
+- initramfs:
+  - added dosfstools for u-boot devices to fix fsck vfat handling
+  - added fsck error status to kmsg
+  - fixed fsck.json content for u-boot devices
+
 ## [kirkstone-0.27.1] Q4 2023
 - eg500: wwan interface added to online interface list defined in variable
   OMNECT_WAIT_ONLINE_INTERFACES_BUILD

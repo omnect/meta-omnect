@@ -48,7 +48,7 @@ run_cmd_stdout() {
     return 0
 }
 
-# check ext4 filesystem
+# check filesystem
 # re-format partition in the case of uncorrectable fsck errors or enforced flag
 check_fs()
 {
@@ -66,6 +66,7 @@ check_fs()
 
     if [ ${fsck_res} -ne 0 ]; then
         save_fsck_status "${label}" "/tmp/fsck_out" "${fsck_res}"
+        msg_error "command \"fsck -y /dev/omnect/${label}\" failed: ${fsck_res}"
     fi
 
     if [ ${fsck_res} -eq 2 ]; then
