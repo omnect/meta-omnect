@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.27.2] Q4 2023
 - initramfs:
-  - fixed fsck vfat handling
+  - added dosfstools for u-boot devices to fix fsck vfat handling
   - added fsck error status to kmsg
   - fixed fsck.json content for u-boot devices
 
