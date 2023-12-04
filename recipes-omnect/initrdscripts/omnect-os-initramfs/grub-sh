@@ -46,9 +46,13 @@ save_fsck_status()
     if [ ! "${part_name}" = "boot" ]; then
         test_and_mount_boot || return 1
         gzip -9c ${source_file} | base64 -w0 - > ${ROOTFS_DIR}/boot/fsck.${part_name}
+        # umount ${ROOTFS_DIR}/boot because of recursive call by check_fs "boot"
+        run_cmd umount ${ROOTFS_DIR}/boot
     elif [ ! "${fsck_res}" = "2" ]; then
         test_and_mount_boot || return 1
         set_bootloader_env_var omnect_fsck_boot $(gzip -9c ${source_file} | base64 -w0 -) || set_bootloader_env_var omnect_fsck_boot $(echo "fsck output to big" | gzip - | base64 -w0 -)
+        # umount ${ROOTFS_DIR}/boot because of recursive call by check_fs "boot"
+        run_cmd umount ${ROOTFS_DIR}/boot
     else
         msg "handled fsck error for boot partition; can not save fsck state"
     fi
