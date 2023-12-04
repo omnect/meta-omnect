@@ -59,30 +59,27 @@ run_bmap_tool() {
     # wait until scp is complete, resp. uncompress+verify wic image before writing
     run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
         /home/omnect/wic.xz /home/omnect/wic || return 1
-    vfat_grub_dd_workaround "/dev/omnect/boot"
+    vfat_dd_handling "/dev/omnect/boot"
     run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
         /home/omnect/wic /dev/omnect/rootblk || return 1
 }
 
-vfat_grub_dd_workaround()
+vfat_dd_handling()
 {
     local dest="${1}"
-    local machine_features=$(grep ^MACHINE_FEATURES= /etc/os-release | awk -F'"' '{print $2}')
 
+    # grub:
     # we encountered situations where the device could not boot after
     # flash-mode-2 and could boot if flash-mode-2 did run again.
     # it also could be fixed by manually copying the to be flashed
     # grub binary bootx64.efi again. (in the error case checksums
     # of bootx64.efi on the device and in the wic image differed.)
 
-    # ATTENTION: this workaround makes it impossible to boot it
-    # flash-mode-2 is not finished, e.g. device is shutdown waiting
-    # for wic.bmap and wic.xz
+    # u-boot:
+    # we encountered situations where the boot partition has errors
+    # after flash-mode-2 with bmaptool.
 
-    if [[ " ${machine_features} " =~ " grub " ]]; then
-        dd if=/dev/zero of=${dest} bs=@@OMNECT_PART_SIZE_BOOT@@K count=1
-    fi
-
+    dd if=/dev/zero of=${dest} bs=@@OMNECT_PART_SIZE_BOOT@@K count=1
 }
 
 # deploy WIC image via network to (same) active block device

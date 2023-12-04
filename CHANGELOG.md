@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - u-boot-imx: adapted omnect-env patch to meta-phytec update
 - aziot-identity-precondition: handle if 00-super.toml is non-existent or empty
 
+## [kirkstone-0.27.3] Q4 2023
+- initramfs:
+  - flash-mode-2: fixed filesystem problems of boot partition for u-boot devices
+  - welotec eg500: fixed factory-reset mode in case boot partition fsck return an error
+
 ## [kirkstone-0.27.2] Q4 2023
 - initramfs:
   - added dosfstools for u-boot devices to fix fsck vfat handling
