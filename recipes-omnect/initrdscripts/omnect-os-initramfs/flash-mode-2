@@ -59,12 +59,12 @@ run_bmap_tool() {
     # wait until scp is complete, resp. uncompress+verify wic image before writing
     run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
         /home/omnect/wic.xz /home/omnect/wic || return 1
-    vfat_dd_workaround "/dev/omnect/boot"
+    vfat_dd_handling "/dev/omnect/boot"
     run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
         /home/omnect/wic /dev/omnect/rootblk || return 1
 }
 
-vfat_dd_workaround()
+vfat_dd_handling()
 {
     local dest="${1}"
 
@@ -76,8 +76,8 @@ vfat_dd_workaround()
     # of bootx64.efi on the device and in the wic image differed.)
 
     # u-boot:
-    # we encountered situations where the device during fsck.vfat handling repair
-    # the partition.
+    # we encountered situations where the boot partition has errors
+    # after flash-mode-2 with bmaptool.
 
     dd if=/dev/zero of=${dest} bs=@@OMNECT_PART_SIZE_BOOT@@K count=1
 }
