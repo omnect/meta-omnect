@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [kirkstone-0.28.1] Q4 2023
 - rust: updated to 1.74.0
+- wifi-commissioning-gatt-service: updated to 0.3.9
 
 ## [kirkstone-0.28.0] Q4 2023
 - distro config based on `nodistro` instead of `poky`
