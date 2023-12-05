@@ -3,7 +3,7 @@
 What is omnect device management?: https://lp.conplement.de/omnect-devicemanagement
 
 ## Features
-This yocto meta layer provides the poky based device management distribution `omnect-os`. It includes recipes for:
+This yocto meta layer provides the device management distribution `omnect-os`. It includes recipes for:
 - [iot-hub-device-update](https://github.com/Azure/iot-hub-device-update)
 - [iot-identity-service](https://github.com/Azure/iot-identity-service)
 - [iotedge](https://github.com/Azure/iotedge)
@@ -17,8 +17,8 @@ This yocto meta layer provides the poky based device management distribution `om
     - Updating the bootloader
 
 ### `DISTRO_FEATURES`
-`omnect-os` depends on [poky](https://www.yoctoproject.org/software-item/poky/).
-It is built with the default `poky` `DISTRO_FEATURES`.
+`omnect-os` is built with yocto [`DISTRO_FEATURES`](https://docs.yoctoproject.org/ref-manual/features.html#distro-features) = `debuginfod ipv4 ipv6 polkit seccomp zeroconf`.
+Depending on `MACHINE_FEATURES` we also set `3g`, `bluetooth` and `wifi`.
 
 `meta-omnect` adds the following `DISTRO_FEATURES`:
 - `iotedge`
@@ -97,15 +97,16 @@ Device         Boot   Start      End  Sectors  Size Id Type
 See board specific documents [doc](/doc/) folder.
 
 ## Versioning
-We reflect the used poky version in our version schema. `omnect-os` is versioned via `POKY_VERSION.BUILD_NR`, `4.0.x.y` where `x` is poky kirkstone's patch version and `y` is the build number.
+We reflect the used yocto version in our version schema. `omnect-os` is versioned `4.0.x.y` where `x` is yocto kirkstone's patch version and `y` is the build number.
 
 ## Dependencies
 Aside from hardware specific meta layers `meta-omnect` depends on:
+  - [bitbake](https://git.openembedded.org/bitbake)
+  - [openembedded-core](https://git.openembedded.org/openembedded-core)
   - [meta-openembedded](https://github.com/openembedded/meta-openembedded.git): `meta-filesystems`, `meta-networking`, `meta-oe` and `meta-python`
   - [meta-security](https://git.yoctoproject.org/meta-security)
   - [meta-swupdate](https://github.com/sbabic/meta-swupdate.git)
   - [meta-virtualization](https://git.yoctoproject.org/meta-virtualization)
-  - [poky](https://git.yoctoproject.org/poky)
 
 **Note:** Detailed information can be found in respective readmes
 
