@@ -1,5 +1,5 @@
 diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
-index e028a7fa21..358027a6f6 100644
+index acfe7b20fe..358027a6f6 100644
 --- a/include/configs/phycore_imx8mm.h
 +++ b/include/configs/phycore_imx8mm.h
 @@ -11,8 +11,7 @@
@@ -12,7 +12,7 @@ index e028a7fa21..358027a6f6 100644
  
  #define CONFIG_SYS_BOOTM_LEN		SZ_64M
  #define CONFIG_SPL_MAX_SIZE		0x26000
-@@ -33,119 +32,6 @@
+@@ -33,121 +32,6 @@
  #define CONFIG_SPL_ABORT_ON_RAW_IMAGE
  #endif
  
@@ -20,6 +20,7 @@ index e028a7fa21..358027a6f6 100644
 -	"image=Image\0" \
 -	"console=ttymxc2\0" \
 -	"fdt_addr=0x48000000\0" \
+-	"fdt_high=0xffffffffffffffff\0" \
 -	"fdto_addr=0x49000000\0" \
 -	"bootenv_addr=0x49100000\0" \
 -	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
@@ -28,6 +29,7 @@ index e028a7fa21..358027a6f6 100644
 -	"serverip=192.168.3.10\0" \
 -	"netmask=255.255.255.0\0" \
 -	"ip_dyn=no\0" \
+-	"prepare_mcore=setenv mcore_clk clk-imx8mm.mcore_booted;\0" \
 -	"bootenv=bootenv.txt\0" \
 -	"mmc_load_bootenv=fatload mmc ${mmcdev}:${mmcpart} ${bootenv_addr} ${bootenv}\0" \
 -	"mtdparts=30bb0000.spi:3840k(u-boot),128k(env),128k(env_redund),-(none)\0" \
@@ -39,7 +41,7 @@ index e028a7fa21..358027a6f6 100644
 -	"mmcpart=1\0" \
 -	"mmcroot=2\0" \
 -	"mmcautodetect=yes\0" \
--	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+-	"mmcargs=setenv bootargs ${mcore_clk} console=${console},${baudrate} " \
 -		"root=/dev/mmcblk${mmcdev}p${mmcroot} fsck.repair=yes rootwait rw \0" \
 -	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
 -	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
@@ -77,7 +79,7 @@ index e028a7fa21..358027a6f6 100644
 -			"echo WARN: Cannot load the DT; " \
 -		"fi;\0 " \
 -	"nfsroot=/nfs\0" \
--	"netargs=setenv bootargs console=${console},${baudrate} root=/dev/nfs ip=${nfsip} " \
+-	"netargs=setenv bootargs ${mcore_clk} console=${console},${baudrate} root=/dev/nfs ip=${nfsip} " \
 -		"nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
 -	"net_load_bootenv=${get_cmd} ${bootenv_addr} ${bootenv}\0" \
 -	"net_load_overlay=${get_cmd} ${fdto_addr} ${overlay}\0" \
@@ -132,7 +134,7 @@ index e028a7fa21..358027a6f6 100644
  /* Link Definitions */
  
  #define CONFIG_SYS_INIT_RAM_ADDR	0x40000000
-@@ -178,4 +64,27 @@
+@@ -180,4 +64,27 @@
  #define CONFIG_USB_MAX_CONTROLLER_COUNT	2
  #define CONFIG_SERIAL_TAG
  

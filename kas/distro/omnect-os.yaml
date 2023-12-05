@@ -3,7 +3,7 @@
 header:
   version: 10
   includes:
-    - kas/distro/poky.yaml
+    - kas/distro/oe.yaml
 
 repos:
   meta-omnect:
