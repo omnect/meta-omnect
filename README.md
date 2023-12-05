@@ -108,7 +108,6 @@ Aside from hardware specific meta layers `meta-omnect` depends on:
   - [meta-swupdate](https://github.com/sbabic/meta-swupdate.git)
   - [meta-virtualization](https://git.yoctoproject.org/meta-virtualization)
 
-
 **Note:** Detailed information can be found in respective readmes
 
 ## Build
