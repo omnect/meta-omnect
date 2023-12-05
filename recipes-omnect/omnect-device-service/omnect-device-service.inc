@@ -25,19 +25,21 @@ LIC_FILES_CHKSUM = " \
 
 DEPENDS += "\
     azure-iot-sdk-c \
+    modemmanager \
     pkgconfig-native \
 "
 
 RDEPENDS:${PN} += "\
     aziot-identityd\
     ca-certificates\
+    modemmanager \
     polkit \
     sudo \
 "
 RDEPENDS:${PN}:append:omnect_grub = " grub-editenv"
 RDEPENDS:${PN}:append:omnect_uboot = " u-boot-fw-utils"
 
-inherit omnect-device-service omnect_rust_azure-iot-sdk_deps systemd
+inherit omnect-device-service omnect_rust_azure-iot-sdk_deps omnect_rust_modemmanager_deps systemd
 
 CARGO_BUILD_FLAGS:append:omnect_grub = " --features=bootloader_grub"
 CARGO_BUILD_FLAGS:append:omnect_uboot = " --features=bootloader_uboot"
