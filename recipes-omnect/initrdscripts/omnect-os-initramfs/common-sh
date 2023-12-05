@@ -54,7 +54,6 @@ check_fs()
 {
     local label=$1  # label
     local fsck_res=0
-    local fsck_content=0
     local kmsg_ratelimit=$(cat /proc/sys/kernel/printk_devkmsg)
 
     msg "check_fs /dev/omnect/${label}"
@@ -63,9 +62,8 @@ check_fs()
     # regular boot; fsck handles unclean state (i.e.; not unmounted)
     fsck -y /dev/omnect/${label} &> /tmp/fsck_out
     fsck_res=$?
-    fsck_content=$(</tmp/fsck_out)
     msg "fsck result for \"${label}\" is ${fsck_res}"
-    msg "${fsck_content}"
+    msg "$(</tmp/fsck_out)"
 
     if [ ${fsck_res} -ne 0 ]; then
         save_fsck_status "${label}" "/tmp/fsck_out" "${fsck_res}"
