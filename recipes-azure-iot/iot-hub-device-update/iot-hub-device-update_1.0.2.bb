@@ -107,12 +107,12 @@ do_install:append() {
 
   # user_consent
   install -d ${D}${sysconfdir}/omnect/consent
-  install -m 0770 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json ${D}${sysconfdir}/omnect/consent/
-  install -m 0770 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json ${D}${sysconfdir}/omnect/consent/
-  install -m 0770 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json ${D}${sysconfdir}/omnect/consent/
+  install -m 0660 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json ${D}${sysconfdir}/omnect/consent/
+  install -m 0660 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json ${D}${sysconfdir}/omnect/consent/
+  install -m 0660 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json ${D}${sysconfdir}/omnect/consent/
   install -d ${D}${sysconfdir}/omnect/consent/swupdate
-  install -m 0770 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
-  install -m 0770 -o adu -g adu /dev/null ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
+  install -m 0660 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
+  install -m 0660 -o adu -g adu /dev/null ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
   echo "consent ${SOFTWARE_VERSION}" >> ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
 
   # delete adu-swupdate.sh
