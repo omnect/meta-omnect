@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.28.5] Q4 2023
+- cargo_common.bbclass: disabled creating path overrides
+  (generated path overrides clashes with rust offline builds,
+  so we used an own patch mechanism anyway;
+  the current used rust version 1.74.0 warns about altered dependencies by
+  path overrides and buggy behavior of the crate graph)
+
 ## [kirkstone-0.28.4] Q4 2023
 - iot-hub-device-update:
   - corrected file permissions on files required by consent handler at build
