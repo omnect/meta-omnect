@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   so we used an own patch mechanism anyway;
   the current used rust version 1.74.0 warns about altered dependencies by
   path overrides and buggy behavior of the crate graph)
+- omnect-device-service: updated to 0.14.11
 
 ## [kirkstone-0.28.4] Q4 2023
 - iot-hub-device-update:
