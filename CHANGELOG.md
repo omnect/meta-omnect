@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.28.6] Q4 2023
+- cargo_common.bbclass: disabled creating path overrides
+  (generated path overrides clashes with rust offline builds,
+  so we used an own patch mechanism anyway;
+  the current used rust version 1.74.0 warns about altered dependencies by
+  path overrides and buggy behavior of the crate graph)
+- omnect-device-service: updated to 0.14.11
+- iot-client-template-rs: removed
+
 ## [kirkstone-0.28.5] Q4 2023
 - iot-identity-service: updated to 1.4.7
 - iotedge: updated to 1.4.27

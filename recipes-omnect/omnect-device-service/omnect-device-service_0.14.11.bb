@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.14.9"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.14.11"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "7f09aa78a7ccbb4c85294db2fcb5c10393926ecc"
+SRCREV = "72c830c6a7d748c337251aaea94a4e5aa57bff5b"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -73,6 +73,7 @@ SRC_URI += " \
     crate://crates.io/enum_dispatch/0.3.12 \
     crate://crates.io/enumflags2/0.7.8 \
     crate://crates.io/enumflags2_derive/0.7.8 \
+    crate://crates.io/env_logger/0.10.1 \
     crate://crates.io/env_logger/0.8.4 \
     crate://crates.io/equivalent/1.0.1 \
     crate://crates.io/errno/0.3.8 \
@@ -134,6 +135,7 @@ SRC_URI += " \
     crate://crates.io/inotify/0.9.6 \
     crate://crates.io/instant/0.1.12 \
     crate://crates.io/io-lifetimes/1.0.11 \
+    crate://crates.io/is-terminal/0.4.9 \
     crate://crates.io/itertools/0.10.5 \
     crate://crates.io/itoa/1.0.9 \
     crate://crates.io/js-sys/0.3.66 \
@@ -151,7 +153,6 @@ SRC_URI += " \
     crate://crates.io/log-panics/2.1.0 \
     crate://crates.io/log/0.4.20 \
     crate://crates.io/memchr/2.6.4 \
-    crate://crates.io/memoffset/0.6.5 \
     crate://crates.io/memoffset/0.7.1 \
     crate://crates.io/mime/0.3.17 \
     crate://crates.io/minimal-lexical/0.2.1 \
@@ -160,7 +161,6 @@ SRC_URI += " \
     crate://crates.io/mockall/0.11.4 \
     crate://crates.io/mockall_derive/0.11.4 \
     crate://crates.io/network-interface/0.1.6 \
-    crate://crates.io/nix/0.24.3 \
     crate://crates.io/nix/0.26.4 \
     crate://crates.io/nom/7.1.3 \
     crate://crates.io/normalize-line-endings/0.3.0 \
@@ -305,75 +305,75 @@ SRC_URI += " \
     crate://crates.io/zvariant/3.15.0 \
     crate://crates.io/zvariant_derive/3.15.0 \
     crate://crates.io/zvariant_utils/1.0.1 \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-client-async;destsuffix=aziot-cert-client-async \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-common-http;destsuffix=aziot-cert-common-http \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-common;destsuffix=aziot-cert-common \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-certd-config;destsuffix=aziot-certd-config \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-identity-client-async;destsuffix=aziot-identity-client-async \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-identity-common-http;destsuffix=aziot-identity-common-http \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-identity-common;destsuffix=aziot-identity-common \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-identityd-config;destsuffix=aziot-identityd-config \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-key-client-async;destsuffix=aziot-key-client-async \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-key-common-http;destsuffix=aziot-key-common-http \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-key-common;destsuffix=aziot-key-common \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-keyd-config;destsuffix=aziot-keyd-config \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=cert-renewal;destsuffix=cert-renewal \
-    git://git@github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=http-common;destsuffix=http-common \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-client-async;destsuffix=aziot-cert-client-async \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-common-http;destsuffix=aziot-cert-common-http \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-common;destsuffix=aziot-cert-common \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-certd-config;destsuffix=aziot-certd-config \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-identity-client-async;destsuffix=aziot-identity-client-async \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-identity-common-http;destsuffix=aziot-identity-common-http \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-identity-common;destsuffix=aziot-identity-common \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-identityd-config;destsuffix=aziot-identityd-config \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-key-client-async;destsuffix=aziot-key-client-async \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-key-common-http;destsuffix=aziot-key-common-http \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-key-common;destsuffix=aziot-key-common \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-keyd-config;destsuffix=aziot-keyd-config \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=cert-renewal;destsuffix=cert-renewal \
+    git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=http-common;destsuffix=http-common \
     git://github.com/omnect/azure-iot-sdk-sys.git;protocol=https;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
     git://github.com/omnect/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
     git://github.com/omnect/eis-utils.git;protocol=https;nobranch=1;name=eis-utils;destsuffix=eis-utils \
 "
 
 SRCREV_FORMAT .= "_aziot-cert-client-async"
-SRCREV_aziot-cert-client-async = "1.4.1"
+SRCREV_aziot-cert-client-async = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-cert-client-async"
 SRCREV_FORMAT .= "_aziot-cert-common"
-SRCREV_aziot-cert-common = "1.4.1"
+SRCREV_aziot-cert-common = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-cert-common"
 SRCREV_FORMAT .= "_aziot-cert-common-http"
-SRCREV_aziot-cert-common-http = "1.4.1"
+SRCREV_aziot-cert-common-http = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-cert-common-http"
 SRCREV_FORMAT .= "_aziot-certd-config"
-SRCREV_aziot-certd-config = "1.4.1"
+SRCREV_aziot-certd-config = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-certd-config"
 SRCREV_FORMAT .= "_aziot-identity-client-async"
-SRCREV_aziot-identity-client-async = "1.4.1"
+SRCREV_aziot-identity-client-async = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-identity-client-async"
 SRCREV_FORMAT .= "_aziot-identity-common"
-SRCREV_aziot-identity-common = "1.4.1"
+SRCREV_aziot-identity-common = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-identity-common"
 SRCREV_FORMAT .= "_aziot-identity-common-http"
-SRCREV_aziot-identity-common-http = "1.4.1"
+SRCREV_aziot-identity-common-http = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-identity-common-http"
 SRCREV_FORMAT .= "_aziot-identityd-config"
-SRCREV_aziot-identityd-config = "1.4.1"
+SRCREV_aziot-identityd-config = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-identityd-config"
 SRCREV_FORMAT .= "_aziot-key-client-async"
-SRCREV_aziot-key-client-async = "1.4.1"
+SRCREV_aziot-key-client-async = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-key-client-async"
 SRCREV_FORMAT .= "_aziot-key-common"
-SRCREV_aziot-key-common = "1.4.1"
+SRCREV_aziot-key-common = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-key-common"
 SRCREV_FORMAT .= "_aziot-key-common-http"
-SRCREV_aziot-key-common-http = "1.4.1"
+SRCREV_aziot-key-common-http = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-key-common-http"
 SRCREV_FORMAT .= "_aziot-keyd-config"
-SRCREV_aziot-keyd-config = "1.4.1"
+SRCREV_aziot-keyd-config = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.11.5"
+SRCREV_azure-iot-sdk = "0.11.6"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk-sys"
 SRCREV_FORMAT .= "_cert-renewal"
-SRCREV_cert-renewal = "1.4.1"
+SRCREV_cert-renewal = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/cert-renewal"
 SRCREV_FORMAT .= "_eis-utils"
-SRCREV_eis-utils = "0.3.0"
+SRCREV_eis-utils = "0.3.2"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/eis-utils"
 SRCREV_FORMAT .= "_http-common"
-SRCREV_http-common = "1.4.1"
+SRCREV_http-common = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/http-common"
 
 # FIXME: update generateme with the real MD5 of the license file

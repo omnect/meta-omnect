@@ -23,7 +23,7 @@ eis-utils = { path = "${WORKDIR}/eis-utils" }
 [patch.'https://github.com/omnect/azure-iot-sdk-sys']
 azure-iot-sdk-sys = { path = "${WORKDIR}/azure-iot-sdk-sys" }
 
-[patch.'https://git@github.com/Azure/iot-identity-service.git']
+[patch.'https://github.com/Azure/iot-identity-service.git']
 aziot-cert-client-async = { path = "${WORKDIR}/aziot-cert-client-async/cert/aziot-cert-client-async" }
 aziot-cert-common = { path = "${WORKDIR}/aziot-cert-client-async/cert/aziot-cert-common" }
 aziot-cert-common-http = { path = "${WORKDIR}/aziot-cert-client-async/cert/aziot-cert-common-http" }
