@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the current used rust version 1.74.0 warns about altered dependencies by
   path overrides and buggy behavior of the crate graph)
 - omnect-device-service: updated to 0.14.11
+- iot-client-template-rs: removed
 
 ## [kirkstone-0.28.5] Q4 2023
 - iot-identity-service: updated to 1.4.7
