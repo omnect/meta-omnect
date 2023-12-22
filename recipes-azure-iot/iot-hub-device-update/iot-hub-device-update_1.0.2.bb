@@ -112,8 +112,6 @@ do_install:append() {
   install -m 0660 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json ${D}${sysconfdir}/omnect/consent/
   install -d ${D}${sysconfdir}/omnect/consent/swupdate
   install -m 0660 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
-  install -m 0660 -o adu -g adu /dev/null ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
-  echo "consent ${SOFTWARE_VERSION}" >> ${D}${sysconfdir}/omnect/consent/swupdate/installed_criteria
 
   # delete adu-swupdate.sh
   rm ${D}${libdir}/adu/adu-swupdate.sh
@@ -157,7 +155,6 @@ FILES:${PN} += " \
   ${sysconfdir}/omnect/consent/history_consent.json \
   ${sysconfdir}/omnect/consent/request_consent.json \
   ${sysconfdir}/omnect/consent/swupdate/user_consent.json \
-  ${sysconfdir}/omnect/consent/swupdate/installed_criteria \
   "
 
 GROUPADD_PARAM:${PN} += " \

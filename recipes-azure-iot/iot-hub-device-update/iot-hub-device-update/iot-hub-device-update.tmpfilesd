@@ -7,7 +7,3 @@ z /etc/adu/du-config.json 0444 adu adu -
 z /etc/adu/du-diagnostics-config.json 0444 adu adu -
 z /etc/omnect/consent/*.json 0660 adu adu -
 z /etc/omnect/consent/swupdate/*.json 0660 adu adu -
-
-# TODO remove this file, since it is redundant to /etc/sw-versions and
-# should not be changed by a process anyway, e.g. not even through systemd tmpfiles.d
-z /etc/omnect/consent/swupdate/installed_criteria 0660 adu adu -

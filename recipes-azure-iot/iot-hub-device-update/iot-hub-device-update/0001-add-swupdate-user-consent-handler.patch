@@ -1,18 +1,18 @@
-From 3ac96030ece8f3bb72eac48bec4539f0f13c9d52 Mon Sep 17 00:00:00 2001
+From 6ff15ae5598caca76774e647c2488b2b40dd5de0 Mon Sep 17 00:00:00 2001
 From: JoergZeidler <joerg.zeidler@conplement.de>
-Date: Fri, 10 Nov 2023 10:47:06 +0100
+Date: Fri, 22 Dec 2023 11:28:31 +0100
 Subject: [PATCH] add swupdate user consent handler
 
 ---
  src/extensions/step_handlers/CMakeLists.txt   |   1 +
- .../swupdate_consent_handler/CMakeLists.txt   |  37 ++
+ .../swupdate_consent_handler/CMakeLists.txt   |  41 ++
  .../files/consent_conf.json                   |   5 +
  .../files/history_consent.json                |   6 +
  .../files/request_consent.json                |   4 +
  .../files/user_consent.json                   |   3 +
  .../inc/aduc/swupdate_consent_handler.hpp     |  73 +++
- .../src/swupdate_consent_handler.cpp          | 617 ++++++++++++++++++
- 8 files changed, 746 insertions(+)
+ .../src/swupdate_consent_handler.cpp          | 599 ++++++++++++++++++
+ 8 files changed, 732 insertions(+)
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
@@ -35,10 +35,10 @@ index e2b9bb5..3922b42 100644
  # Note: add more update content handler extensions here.
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
 new file mode 100644
-index 0000000..d13749b
+index 0000000..72d460d
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,41 @@
 +cmake_minimum_required (VERSION 3.5)
 +
 +set (target_name omnect_swupdate_consent_1)
@@ -74,6 +74,10 @@ index 0000000..d13749b
 +            aduc::string_utils
 +            Parson::parson
 +            )
++
++target_compile_definitions (
++    ${target_name}
++    PRIVATE ADUC_VERSION_FILE="${ADUC_VERSION_FILE}")
 +
 +install (TARGETS ${target_name} LIBRARY DESTINATION ${ADUC_EXTENSIONS_INSTALL_FOLDER})
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json b/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
@@ -203,10 +207,10 @@ index 0000000..8ea0cf2
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 0000000..0f4aee2
+index 0000000..344cc4e
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
-@@ -0,0 +1,617 @@
+@@ -0,0 +1,599 @@
 +/**
 + * @file swupdate_consent_handler.cpp
 + * @brief Implementation of ContentHandler API for update content swupdate_consent.
@@ -227,7 +231,6 @@ index 0000000..0f4aee2
 +
 +#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/etc/omnect/consent/consent_conf.json"
 +#define ADUC_SWUPDATE_CONSENT_USER_FILE "/etc/omnect/consent/swupdate/user_consent.json"
-+#define ADUC_SWUPDATE_CONSENT_INSTALLED_CRITERIA_FILE "/etc/omnect/consent/swupdate/installed_criteria"
 +#define ADUC_SWUPDATE_CONSENT_REQUEST_FILE "/etc/omnect/consent/request_consent.json"
 +#define ADUC_SWUPDATE_CONSENT_HISTORY_FILE "/etc/omnect/consent/history_consent.json"
 +
@@ -661,7 +664,6 @@ index 0000000..0f4aee2
 + */
 +ADUC_Result SWUpdateConsentHandlerImpl::Download(const tagADUC_WorkflowData* workflowData)
 +{
-+    std::fstream f;
 +    bool consent = false;
 +    ADUC_WorkflowHandle workflowHandle = workflowData->WorkflowHandle;
 +    char* installedCriteria_workflow = workflow_get_installed_criteria(workflowData->WorkflowHandle);
@@ -706,12 +708,6 @@ index 0000000..0f4aee2
 +    CleanConsentRequestJsonFile();
 +    Log_Info("swupdate user consent succeeded");
 +
-+    // open and clear file
-+    f.open(ADUC_SWUPDATE_CONSENT_INSTALLED_CRITERIA_FILE, std::fstream::out | std::fstream::trunc);
-+    // write data
-+    f << installedCriteria << std::endl;
-+    f.close();
-+
 +    workflow_free_string(installedCriteria_workflow);
 +    return ADUC_Result{ ADUC_Result_Download_Success };
 +}
@@ -755,29 +751,19 @@ index 0000000..0f4aee2
 + */
 +ADUC_Result SWUpdateConsentHandlerImpl::IsInstalled(const tagADUC_WorkflowData* workflowData)
 +{
-+    std::fstream f;
 +    ADUC_Result result = { ADUC_Result_IsInstalled_NotInstalled };
 +    char* installedCriteria_workflow = workflow_get_installed_criteria(workflowData->WorkflowHandle);
 +    std::string installedCriteria = ValueOrEmpty(installedCriteria_workflow);
-+    std::string userConsentCriteria = ReadValueFromFile(ADUC_SWUPDATE_CONSENT_INSTALLED_CRITERIA_FILE);
++    std::string version = ReadValueFromFile(ADUC_VERSION_FILE);
 +
 +    if (true == GetGeneralConsent())
 +    {
 +        Log_Info("consent for swupdate is available in configuration file");
-+
-+        if (userConsentCriteria != installedCriteria)
-+        {
-+            // open and clear file
-+            f.open(ADUC_SWUPDATE_CONSENT_INSTALLED_CRITERIA_FILE, std::fstream::out | std::fstream::trunc);
-+            // write data
-+            f << installedCriteria << std::endl;
-+            f.close();
-+        }
 +        CleanUserConsentAgreed();
 +        CleanConsentRequestJsonFile();
 +        result = { ADUC_Result_IsInstalled_Installed };
 +    }
-+    else if (userConsentCriteria == installedCriteria)
++    else if (version == installedCriteria)
 +    {
 +        Log_Info("swupdate consent for Installed criteria %s was installed", installedCriteria.c_str());
 +        CleanConsentRequestJsonFile();
@@ -788,7 +774,7 @@ index 0000000..0f4aee2
 +        Log_Info(
 +            "swupdate consent Installed criteria %s was not installed, the current criteria is %s",
 +            installedCriteria.c_str(),
-+            userConsentCriteria.c_str());
++            version.c_str());
 +    }
 +    workflow_free_string(installedCriteria_workflow);
 +    return result;
