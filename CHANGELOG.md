@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.28.7] Q1 2024
+## [kirkstone-0.28.8] Q1 2024
 - kas:
   - updated bitbake to tag ref yocto-4.0.15
   - updated openebedded-core to tag ref yocto-4.0.15
@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - updated meta-freescale to latest kirkstone HEAD
   - updated meta-raspberrypi to latest kirkstone HEAD
 - u-boot-imx: adapted omnect-env.patch to u-boot-imx 2022.04
+
+## [kirkstone-0.28.7] Q1 2024
+- iot-hub-device-update: use /etc/sw-versions file for swupdate_consent_handler
+- omnect-device-service: updated to 0.14.12
 
 ## [kirkstone-0.28.6] Q4 2023
 - cargo_common.bbclass: disabled creating path overrides
