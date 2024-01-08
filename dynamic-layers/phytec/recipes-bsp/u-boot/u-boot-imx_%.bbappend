@@ -2,7 +2,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot:${LAYERDIR_omnect}/recipes-bsp/u-b
 
 SRC_URI += " \
     file://add-reset-info.patch \
-    file://omnect_env.patch \
     file://silent_console_early.patch \
     file://enable_generic_console_fs_cmds.cfg \
     file://enable-reset-info-cmd-fragment.cfg \
@@ -13,6 +12,9 @@ SRC_URI += " \
     file://omnect_env.h \
     file://omnect_env_phycore_imx8mm.h \
 "
+
+# file://omnect_env.patch
+
 # Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
 # swupdate and iot-hub-device-update, the local version must be increased;
 #
