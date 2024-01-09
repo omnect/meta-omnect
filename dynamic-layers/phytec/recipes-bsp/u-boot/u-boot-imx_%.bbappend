@@ -13,6 +13,7 @@ SRC_URI += " \
     file://omnect_env.h \
     file://omnect_env_phycore_imx8mm.h \
 "
+
 # Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
 # swupdate and iot-hub-device-update, the local version must be increased;
 #
