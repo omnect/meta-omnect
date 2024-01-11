@@ -48,20 +48,23 @@ run_bmap_tool() {
     run_cmd chown omnect:omnect /home/omnect/wic.xz || return 1
 
     # bmap file must be copied with scp
-    msg "please run  scp <your-bmap-file> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.bmap)"
+    msg "please run  scp <your-bmap-file> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.bmap"
     while true; do
         if [ -f /home/omnect/wic.bmap ]; then break; fi
         sleep 1
     done
 
-    msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.xz)"
+    msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.xz"
     export PATH
     # wait until scp is complete, resp. uncompress+verify wic image before writing
+    msg "verifying input wic.xz ..."
     run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
         /home/omnect/wic.xz /home/omnect/wic || return 1
+    msg "successfully verified input wic.xz; start flashing ..."
     vfat_dd_handling "/dev/omnect/boot"
     run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
         /home/omnect/wic /dev/omnect/rootblk || return 1
+    msg "successfully flashed input wic.xz"
 }
 
 vfat_dd_handling()
