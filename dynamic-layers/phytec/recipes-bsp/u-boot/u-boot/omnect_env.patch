@@ -1,5 +1,5 @@
 diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
-index acfe7b20fe..358027a6f6 100644
+index 177b627857..5a1479979e 100644
 --- a/include/configs/phycore_imx8mm.h
 +++ b/include/configs/phycore_imx8mm.h
 @@ -11,8 +11,7 @@
@@ -12,7 +12,7 @@ index acfe7b20fe..358027a6f6 100644
  
  #define CONFIG_SYS_BOOTM_LEN		SZ_64M
  #define CONFIG_SPL_MAX_SIZE		0x26000
-@@ -33,121 +32,6 @@
+@@ -33,119 +32,6 @@
  #define CONFIG_SPL_ABORT_ON_RAW_IMAGE
  #endif
  
@@ -24,7 +24,6 @@ index acfe7b20fe..358027a6f6 100644
 -	"fdto_addr=0x49000000\0" \
 -	"bootenv_addr=0x49100000\0" \
 -	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
--	"bootcmd_mfg=fastboot 0\0" \
 -	"ipaddr=192.168.3.11\0" \
 -	"serverip=192.168.3.10\0" \
 -	"netmask=255.255.255.0\0" \
@@ -130,11 +129,10 @@ index acfe7b20fe..358027a6f6 100644
 -/* Set environment flag validation to a list of env vars that must be writable */
 -#define CONFIG_ENV_FLAGS_LIST_STATIC RAUC_REQUIRED_WRITABLE_ENV_FLAGS",dofitboot:dw"
 -#endif
--
+ 
  /* Link Definitions */
  
- #define CONFIG_SYS_INIT_RAM_ADDR	0x40000000
-@@ -180,4 +64,27 @@
+@@ -179,4 +65,27 @@
  #define CONFIG_USB_MAX_CONTROLLER_COUNT	2
  #define CONFIG_SERIAL_TAG
  

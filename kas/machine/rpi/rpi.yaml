@@ -7,4 +7,4 @@ repos:
   ext/meta-raspberrypi:
     url: "https://github.com/agherzan/meta-raspberrypi.git"
     branch: kirkstone
-    commit: 59a6a1b5dd1e21189adec49c61eae04ed3e70338
+    commit: c40c6e21ed498aacd7ad83f73f79454e7ec728d6
