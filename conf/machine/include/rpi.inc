@@ -16,7 +16,8 @@ OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 # overwrite CMDLINE_ROOTFS from meta-raspberrypi, we set "root" in boot.scr
 CMDLINE_ROOTFS = ""
 DISABLE_RPI_BOOT_LOGO = "1"
-CMDLINE:append = " console=tty0"
+# prepend before uart console to prioritize serial console output of stdout
+CMDLINE:prepend:pn-rpi-cmdline = "console=tty0 "
 
 # u-boot config vars
 UBOOT_FDT_ADDR = "fdt_addr"
