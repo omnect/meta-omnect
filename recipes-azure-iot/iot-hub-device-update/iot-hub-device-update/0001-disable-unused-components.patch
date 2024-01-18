@@ -1,0 +1,98 @@
+From 29e1b1ea73a1064153607170d82753054bff5c9e Mon Sep 17 00:00:00 2001
+From: JoergZeidler <joerg.zeidler@conplement.de>
+Date: Thu, 18 Jan 2024 07:34:53 +0100
+Subject: [PATCH] disable unused components
+
+---
+ .../diagnostics_workflow/CMakeLists.txt                   | 2 +-
+ .../diagnostics_workflow/src/diagnostics_workflow.c       | 8 ++++----
+ src/diagnostics_component/utils/CMakeLists.txt            | 2 +-
+ src/extensions/CMakeLists.txt                             | 2 +-
+ src/extensions/content_downloaders/CMakeLists.txt         | 2 +-
+ src/extensions/download_handlers/CMakeLists.txt           | 2 +-
+ 6 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
+index 8500827..71b9cec 100644
+--- a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
++++ b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
+@@ -16,7 +16,7 @@ find_package (Parson REQUIRED)
+ target_link_aziotsharedutil (${target_name} PRIVATE)
+ 
+ if (NOT WIN32)
+-    target_link_libraries (${target_name} PRIVATE diagnostic_utils::file_upload_utility)
++#     target_link_libraries (${target_name} PRIVATE diagnostic_utils::file_upload_utility)
+ endif ()
+ 
+ target_link_libraries (
+diff --git a/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c b/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
+index 5c232a1..8751a29 100644
+--- a/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
++++ b/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
+@@ -11,7 +11,7 @@
+ #include <aduc/logging.h>
+ #include <aduc/string_c_utils.h>
+ 
+-#if defined(_WIN32)
++// #if defined(_WIN32)
+ typedef struct tagBlobStorageInfo
+ {
+     STRING_HANDLE virtualDirectoryPath; //!< Virtual hierarchy for the blobs
+@@ -27,9 +27,9 @@ static bool FileUploadUtility_UploadFilesToContainer(
+ 
+     return false;
+ }
+-#else
+-#    include <file_upload_utility.h>
+-#endif
++// #else
++// #    include <file_upload_utility.h>
++// #endif
+ 
+ #include <diagnostics_config_utils.h>
+ #include <diagnostics_devicename.h>
+diff --git a/src/diagnostics_component/utils/CMakeLists.txt b/src/diagnostics_component/utils/CMakeLists.txt
+index 2952f34..811a22f 100644
+--- a/src/diagnostics_component/utils/CMakeLists.txt
++++ b/src/diagnostics_component/utils/CMakeLists.txt
+@@ -2,5 +2,5 @@ cmake_minimum_required (VERSION 3.5)
+ 
+ add_subdirectory (config_utils)
+ add_subdirectory (file_info_utils)
+-add_subdirectory (file_upload_utils)
++# add_subdirectory (file_upload_utils)
+ add_subdirectory (operation_id_utils)
+diff --git a/src/extensions/CMakeLists.txt b/src/extensions/CMakeLists.txt
+index e7bcad3..65e9225 100644
+--- a/src/extensions/CMakeLists.txt
++++ b/src/extensions/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ add_subdirectory (content_downloaders)
+ if (NOT WIN32)
+-    add_subdirectory (component_enumerators/examples/contoso_component_enumerator)
++#     add_subdirectory (component_enumerators/examples/contoso_component_enumerator)
+ endif ()
+ add_subdirectory (download_handlers)
+ add_subdirectory (extension_manager)
+diff --git a/src/extensions/content_downloaders/CMakeLists.txt b/src/extensions/content_downloaders/CMakeLists.txt
+index d9978f0..69b3c4a 100644
+--- a/src/extensions/content_downloaders/CMakeLists.txt
++++ b/src/extensions/content_downloaders/CMakeLists.txt
+@@ -1,4 +1,4 @@
+ cmake_minimum_required (VERSION 3.5)
+ 
+-add_subdirectory (curl_downloader)
++# add_subdirectory (curl_downloader)
+ add_subdirectory (deliveryoptimization_downloader)
+diff --git a/src/extensions/download_handlers/CMakeLists.txt b/src/extensions/download_handlers/CMakeLists.txt
+index 850c103..bc0bb06 100644
+--- a/src/extensions/download_handlers/CMakeLists.txt
++++ b/src/extensions/download_handlers/CMakeLists.txt
+@@ -1,3 +1,3 @@
+ add_subdirectory (download_handler_factory)
+ add_subdirectory (download_handler_plugin)
+-add_subdirectory (plugin_examples)
++# add_subdirectory (plugin_examples)
+-- 
+2.34.1
+

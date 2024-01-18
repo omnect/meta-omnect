@@ -4,23 +4,22 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
 SRC_URI = " \
-  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.0.2;nobranch=1 \
-  file://connection-status-handler.patch \
-  file://eis-utils-cert-chain-buffer.patch \
-  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
-  file://linux_platform_layer.patch \
+  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.1.0;nobranch=1 \
   file://0001-add-swupdate-user-consent-handler.patch \
+  file://0001-disable-unused-components.patch \
+  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://0001-eis-utils-verbose-connection-string.patch', '', d)} \
+  file://0001-linux-platform-layer.patch \
   file://0001-retry-handling-on-failed-update-validation.patch \
-  file://workaround-deprecated-declarations-openssl3.patch \
+  file://0001-sd-notify.patch \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
   file://du-config.json \
   file://du-diagnostics-config.json \
+  file://eis-utils-cert-chain-buffer.patch \
   file://iot-hub-device-update.tmpfilesd \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
 "
-
 SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
 SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh"
 
@@ -29,9 +28,7 @@ PV .= "+${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS = " \
-  azure-blob-storage-file-upload-utility \
   azure-iot-sdk-c \
-  azure-sdk-for-cpp \
   boost \
   do-client-sdk \
   jq-native \
@@ -49,12 +46,11 @@ RDEPENDS:${PN} = " \
 inherit aziot cmake systemd
 
 EXTRA_OECMAKE += "-DADUC_LOG_FOLDER=/var/log/aduc-logs"
-EXTRA_OECMAKE += "-DADUC_CONTENT_HANDLERS=microsoft/swupdate"
 EXTRA_OECMAKE += "-DADUC_INSTALL_DAEMON=OFF"
 EXTRA_OECMAKE += "-DADUC_PLATFORM_LAYER=linux"
 EXTRA_OECMAKE += "-DADUC_VERSION_FILE=/etc/sw-versions"
 EXTRA_OECMAKE += "-DADUC_EXTENSIONS_INSTALL_FOLDER=${libdir}/adu/extensions"
-
+EXTRA_OECMAKE += "-DADUC_STEP_HANDLERS:STRING=microsoft/swupdate_v2,omnect/swupdate_consent_v1"
 EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MANUFACTURER='${ADU_MANUFACTURER}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MODEL='${ADU_MODEL}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MANUFACTURER='${ADU_DEVICEPROPERTIES_MANUFACTURER}'"
@@ -62,9 +58,6 @@ EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${ADU_DEVICEPROPERTIES_MODEL}'"
 
 # omnect adaptions (linux_platform_layer.patch)
 EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
-
-# temporary fix to compile iot-hub-device-update, should be removed if iot-hub-device-update adapts to new gcc version
-EXTRA_OECMAKE += "-DADUC_WARNINGS_AS_ERRORS=OFF"
 
 do_install:append() {
   # adu configuration
@@ -86,9 +79,9 @@ do_install:append() {
   install -m 0444 -o adu -g adu ${WORKDIR}/du-diagnostics-config.json ${D}${sysconfdir}/adu/
 
   # enable user adu to exec adu-shell
-  chgrp adu ${D}${libdir}/adu/adu-shell
+  chgrp adu ${D}${bindir}/adu-shell
   # enable user adu to reboot with adu-shell
-  chmod 04550 ${D}${libdir}/adu/adu-shell
+  chmod 04550 ${D}${bindir}/adu-shell
 
   # create tmpfiles.d entry to (re)create dir + permissions
   install -m 0644 -D ${WORKDIR}/iot-hub-device-update.tmpfilesd ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
@@ -114,7 +107,7 @@ do_install:append() {
   install -m 0660 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
 
   # delete adu-swupdate.sh
-  rm ${D}${libdir}/adu/adu-swupdate.sh
+  rm ${D}${bindir}/adu-swupdate.sh
 }
 
 do_install:append:omnect_grub() {

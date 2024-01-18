@@ -1,10 +1,10 @@
-From 6ff15ae5598caca76774e647c2488b2b40dd5de0 Mon Sep 17 00:00:00 2001
+From 1cc1d347adbaff43a6f1cfcc1d1d58015947ad14 Mon Sep 17 00:00:00 2001
 From: JoergZeidler <joerg.zeidler@conplement.de>
-Date: Fri, 22 Dec 2023 11:28:31 +0100
+Date: Wed, 17 Jan 2024 10:58:34 +0100
 Subject: [PATCH] add swupdate user consent handler
 
 ---
- src/extensions/step_handlers/CMakeLists.txt   |   1 +
+ CMakeLists.txt                                |   2 +-
  .../swupdate_consent_handler/CMakeLists.txt   |  41 ++
  .../files/consent_conf.json                   |   5 +
  .../files/history_consent.json                |   6 +
@@ -12,7 +12,7 @@ Subject: [PATCH] add swupdate user consent handler
  .../files/user_consent.json                   |   3 +
  .../inc/aduc/swupdate_consent_handler.hpp     |  73 +++
  .../src/swupdate_consent_handler.cpp          | 599 ++++++++++++++++++
- 8 files changed, 732 insertions(+)
+ 8 files changed, 732 insertions(+), 1 deletion(-)
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
@@ -21,21 +21,22 @@ Subject: [PATCH] add swupdate user consent handler
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
  create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 
-diff --git a/src/extensions/step_handlers/CMakeLists.txt b/src/extensions/step_handlers/CMakeLists.txt
-index e2b9bb5..3922b42 100644
---- a/src/extensions/step_handlers/CMakeLists.txt
-+++ b/src/extensions/step_handlers/CMakeLists.txt
-@@ -3,6 +3,7 @@ add_subdirectory (script_handler)
- add_subdirectory (simulator_handler)
- add_subdirectory (swupdate_handler)
- add_subdirectory (swupdate_handler_v2)
-+add_subdirectory (swupdate_consent_handler)
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 15b2c9e..54b6a43 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -200,7 +200,7 @@ set (
+     ADUC_STEP_HANDLER_NAME_TO_DIRECOTRY_MAP
+     "microsoft/apt,apt_handler" "microsoft/script,script_handler"
+     "microsoft/simulator,simulator_handler" "microsoft/swupdate_v2,swupdate_handler_v2"
+-    "microsoft/wim,wim_handler")
++    "microsoft/wim,wim_handler" "omnect/swupdate_consent_v1,swupdate_consent_handler")
  
- #
- # Note: add more update content handler extensions here.
+ if (WIN32)
+     set (
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
 new file mode 100644
-index 0000000..72d460d
+index 0000000..3f9afef
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
 @@ -0,0 +1,41 @@
@@ -45,14 +46,14 @@ index 0000000..72d460d
 +
 +set (SOURCE_ALL src/swupdate_consent_handler.cpp)
 +
-+#
-+# Create a shared library.
-+#
-+add_library (${target_name} SHARED ${SOURCE_ALL})
++
++add_library (${target_name} MODULE)
 +
 +add_library (aduc::${target_name} ALIAS ${target_name})
 +
 +find_package (Parson REQUIRED)
++
++target_sources (${target_name} PRIVATE src/swupdate_consent_handler.cpp)
 +
 +target_include_directories (
 +    ${target_name}

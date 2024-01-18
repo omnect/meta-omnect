@@ -1,39 +1,38 @@
-From 0050c72e39d1a0bbb1195ee914eb3ccf62df95ab Mon Sep 17 00:00:00 2001
-From: Joerg Zeidler <joerg.zeidler@conplement.de>
-Date: Fri, 11 Nov 2022 11:43:48 +0100
-Subject: [PATCH] use ADUC_STORAGE_PATH for DeviceInfo_GetTotalStorage
+From fa414156d8a76e05ec036f137433d2f217387c87 Mon Sep 17 00:00:00 2001
+From: JoergZeidler <joerg.zeidler@conplement.de>
+Date: Mon, 15 Jan 2024 15:03:09 +0100
+Subject: [PATCH] linux platform layer
 
 ---
- CMakeLists.txt                                              | 6 ++++++
- src/platform_layers/linux_platform_layer/CMakeLists.txt     | 3 ++-
- .../linux_platform_layer/src/linux_device_info_exports.cpp  | 2 +-
- 3 files changed, 9 insertions(+), 2 deletions(-)
+ CMakeLists.txt                                               | 5 +++++
+ src/platform_layers/linux_platform_layer/CMakeLists.txt      | 3 ++-
+ .../linux_platform_layer/src/linux_device_info_exports.cpp   | 2 +-
+ 3 files changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7eafac67..0a2f8e20 100644
+index 15b2c9e..878e267 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -353,6 +353,12 @@ set (
+@@ -381,6 +381,11 @@ set (
      "syslog"
      CACHE STRING "The syslog group.")
  
 +set (
 +    ADUC_STORAGE_PATH
 +    "/"
-+    CACHE STRING "Path to mounted storage which will be considered to compute total storage"
-+)
++    CACHE STRING "Path to mounted storage which will be considered to compute total storage")
 +
  set (
      ADUC_IOT_HUB_PROTOCOL
      "IotHub_Protocol_from_Config"
 diff --git a/src/platform_layers/linux_platform_layer/CMakeLists.txt b/src/platform_layers/linux_platform_layer/CMakeLists.txt
-index 99536dda..6c6a5d38 100644
+index 40d57d1..000e530 100644
 --- a/src/platform_layers/linux_platform_layer/CMakeLists.txt
 +++ b/src/platform_layers/linux_platform_layer/CMakeLists.txt
-@@ -48,7 +48,8 @@ target_compile_definitions (
+@@ -47,7 +47,8 @@ target_compile_definitions (
+             ADUC_DEVICEINFO_MODEL="${ADUC_DEVICEINFO_MODEL}"
              ADUC_FILE_GROUP="${ADUC_FILE_GROUP}"
              ADUC_FILE_USER="${ADUC_FILE_USER}"
-             ADUC_DEVICEINFO_MODEL="${ADUC_DEVICEINFO_MODEL}"
 -            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}")
 +            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}"
 +            ADUC_STORAGE_PATH="${ADUC_STORAGE_PATH}")
@@ -41,10 +40,10 @@ index 99536dda..6c6a5d38 100644
  if (ADUC_BUILD_UNIT_TESTS)
      add_subdirectory (tests)
 diff --git a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
-index 5d308964..8ba756c5 100644
+index 5a6ab62..b3837bb 100644
 --- a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
 +++ b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
-@@ -403,7 +403,7 @@ static char* DeviceInfo_GetTotalStorage()
+@@ -449,7 +449,7 @@ static char* DeviceInfo_GetTotalStorage()
      {
      };
  

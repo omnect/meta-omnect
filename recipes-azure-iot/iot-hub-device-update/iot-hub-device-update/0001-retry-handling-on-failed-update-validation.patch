@@ -1,31 +1,38 @@
-From 828bcd3e74bfbd3df518cf824ce824f2b06b5d18 Mon Sep 17 00:00:00 2001
-From: Kas User <kas@example.com>
-Date: Fri, 3 Nov 2023 15:04:02 +0000
+From baff4988f43be94a33ec721d52ea743fd4c16516 Mon Sep 17 00:00:00 2001
+From: JoergZeidler <joerg.zeidler@conplement.de>
+Date: Mon, 15 Jan 2024 16:41:04 +0100
 Subject: [PATCH] retry handling on failed update-validation
 
 ---
- .../result_codes.json                         |  4 ++
- src/adu_workflow/src/agent_workflow.c         | 41 ++++++++++++++++++-
+ .../result_codes.json                         |  6 ++-
+ src/adu_workflow/src/agent_workflow.c         | 40 ++++++++++++++++++-
  .../src/swupdate_handler_v2.cpp               | 31 ++++++++++++++
- 3 files changed, 75 insertions(+), 1 deletion(-)
+ 3 files changed, 75 insertions(+), 2 deletions(-)
 
 diff --git a/scripts/error_code_generator_defs/result_codes.json b/scripts/error_code_generator_defs/result_codes.json
-index 36ce7352..4d02404b 100644
+index 6fc707c..11d4e4b 100644
 --- a/scripts/error_code_generator_defs/result_codes.json
 +++ b/scripts/error_code_generator_defs/result_codes.json
-@@ -337,6 +337,10 @@
-               {
-                 "name": "ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_UNKNOWNEXCEPTION",
-                 "value": 767
-+              },
-+              {
-+                "name": "ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION",
-+                "value": 800
-               }
-             ]
-           },
+@@ -369,6 +369,10 @@
+                             "name": "ADUC_ERC_SWUPDATE_HANDLER_APPLY_FAILED_TO_GET_CONFIG_INSTANCE",
+                             "value": 769
+                         },
++                        {
++                            "name": "ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION",
++                            "value": 800
++                        },
+                         {
+                             "name": "ADUC_ERC_SWUPDATE_HANDLER_CANCEL_FAILURE",
+                             "value": 1024
+@@ -1461,4 +1465,4 @@
+             "name": "ADUC_FACILITY_UNUSED_F"
+         }
+     ]
+-}
++}
+\ No newline at end of file
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index 23ad8a40..c39e9a5a 100644
+index 3eb5fa4..f71a636 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
 @@ -14,7 +14,9 @@
@@ -38,7 +45,7 @@ index 23ad8a40..c39e9a5a 100644
  
  #include <time.h>
  
-@@ -427,9 +429,31 @@ void ADUC_Workflow_HandlePropertyUpdate(
+@@ -418,9 +420,31 @@ void ADUC_Workflow_HandlePropertyUpdate(
      ADUC_WorkflowData* currentWorkflowData, const unsigned char* propertyUpdateValue, bool forceUpdate)
  {
      ADUC_WorkflowHandle nextWorkflow;
@@ -69,8 +76,8 @@ index 23ad8a40..c39e9a5a 100644
 +
      workflow_set_force_update(nextWorkflow, forceUpdate);
  
-     if (IsAducResultCodeFailure(result.ResultCode))
-@@ -494,6 +518,22 @@ void ADUC_Workflow_HandlePropertyUpdate(
+     ADUC_Result_t rootkeyErc = RootKeyUtility_GetReportingErc();
+@@ -491,6 +515,21 @@ void ADUC_Workflow_HandlePropertyUpdate(
  
                  Log_Debug("Retry %s is applicable", newRetryToken);
  
@@ -80,7 +87,6 @@ index 23ad8a40..c39e9a5a 100644
 +                FILE* fp;
 +
 +                Log_Debug("Retry: '%s' detected.", omnectValidateUpdateFailedFilePath);
-+
 +                if ((NULL == omnectUpdateRetryFilePath) || (NULL == (fp = fopen(omnectUpdateRetryFilePath, "w"))))
 +                {
 +                    Log_Error("Cannot create '%s'", omnectUpdateRetryFilePath);
@@ -93,7 +99,7 @@ index 23ad8a40..c39e9a5a 100644
                  // Sets both cancellation type to Retry and updates the current retry token
                  workflow_update_retry_deployment(currentWorkflowData->WorkflowHandle, newRetryToken);
  
-@@ -964,7 +1004,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
+@@ -971,7 +1010,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
                      // Reset workflow state to process deployment and transfer
                      // the deferred workflow to current.
                      workflow_update_for_replacement(workflowData->WorkflowHandle);
@@ -102,12 +108,12 @@ index 23ad8a40..c39e9a5a 100644
                  else
                  {
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-index db5c6c57..2bbc4906 100644
+index 2d60fa7..bc5b92c 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
 +++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-@@ -300,12 +300,43 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -332,12 +332,43 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
      memset(&fileEntity, 0, sizeof(fileEntity));
-     int fileCount = workflow_get_update_files_count(workflowHandle);
+     size_t fileCount = workflow_get_update_files_count(workflowHandle);
      ADUC_Result result = SWUpdate_Handler_DownloadScriptFile(workflowHandle);
 +    bool retry = false;
 +    std::ifstream omnectValidateUpdateFailedFilePath("/run/omnect-device-service/omnect_validate_update_failed");
@@ -149,3 +155,6 @@ index db5c6c57..2bbc4906 100644
      // Determine whether to continue downloading the rest.
      installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
      result = IsInstalled(workflowData);
+-- 
+2.34.1
+
