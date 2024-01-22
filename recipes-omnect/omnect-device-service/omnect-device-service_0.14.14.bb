@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.14.13"
-SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=update-sdk"
-SRCREV = "3232378c4497a4648e4ac2d3b626c8c8aa8e5fa1"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.14.14"
+SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1"
+SRCREV = "5bb6abcc750f48260b3e11d31f56a8700d99e328"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -42,7 +42,7 @@ SRC_URI += " \
     crate://crates.io/base64/0.21.7 \
     crate://crates.io/bindgen/0.63.0 \
     crate://crates.io/bitflags/1.3.2 \
-    crate://crates.io/bitflags/2.4.1 \
+    crate://crates.io/bitflags/2.4.2 \
     crate://crates.io/block-buffer/0.10.4 \
     crate://crates.io/blocking/1.5.1 \
     crate://crates.io/bumpalo/3.14.0 \
@@ -72,7 +72,7 @@ SRC_URI += " \
     crate://crates.io/enum_dispatch/0.3.12 \
     crate://crates.io/enumflags2/0.7.8 \
     crate://crates.io/enumflags2_derive/0.7.8 \
-    crate://crates.io/env_logger/0.10.1 \
+    crate://crates.io/env_logger/0.10.2 \
     crate://crates.io/env_logger/0.8.4 \
     crate://crates.io/equivalent/1.0.1 \
     crate://crates.io/errno/0.3.8 \
@@ -105,14 +105,14 @@ SRC_URI += " \
     crate://crates.io/getrandom/0.2.12 \
     crate://crates.io/gimli/0.28.1 \
     crate://crates.io/glob/0.3.1 \
-    crate://crates.io/h2/0.3.23 \
+    crate://crates.io/h2/0.3.24 \
     crate://crates.io/hashbrown/0.12.3 \
     crate://crates.io/hashbrown/0.14.3 \
     crate://crates.io/headers-core/0.2.0 \
     crate://crates.io/headers/0.3.9 \
     crate://crates.io/heck/0.4.1 \
     crate://crates.io/hermit-abi/0.1.19 \
-    crate://crates.io/hermit-abi/0.3.3 \
+    crate://crates.io/hermit-abi/0.3.4 \
     crate://crates.io/hex/0.4.3 \
     crate://crates.io/home/0.5.9 \
     crate://crates.io/http-body/0.4.6 \
@@ -147,7 +147,7 @@ SRC_URI += " \
     crate://crates.io/linked-hash-map/0.5.6 \
     crate://crates.io/linked_hash_set/0.1.4 \
     crate://crates.io/linux-raw-sys/0.3.8 \
-    crate://crates.io/linux-raw-sys/0.4.12 \
+    crate://crates.io/linux-raw-sys/0.4.13 \
     crate://crates.io/lock_api/0.4.11 \
     crate://crates.io/log-panics/2.1.0 \
     crate://crates.io/log/0.4.20 \
@@ -171,8 +171,8 @@ SRC_URI += " \
     crate://crates.io/object/0.32.2 \
     crate://crates.io/once_cell/1.19.0 \
     crate://crates.io/openssl-macros/0.1.1 \
-    crate://crates.io/openssl-sys/0.9.98 \
-    crate://crates.io/openssl/0.10.62 \
+    crate://crates.io/openssl-sys/0.9.99 \
+    crate://crates.io/openssl/0.10.63 \
     crate://crates.io/ordered-stream/0.2.0 \
     crate://crates.io/parking/2.2.0 \
     crate://crates.io/parking_lot/0.12.1 \
@@ -182,7 +182,7 @@ SRC_URI += " \
     crate://crates.io/pin-project-lite/0.2.13 \
     crate://crates.io/pin-utils/0.1.0 \
     crate://crates.io/piper/0.2.1 \
-    crate://crates.io/pkg-config/0.3.28 \
+    crate://crates.io/pkg-config/0.3.29 \
     crate://crates.io/polling/2.8.0 \
     crate://crates.io/polling/3.3.2 \
     crate://crates.io/ppv-lite86/0.2.17 \
@@ -190,15 +190,15 @@ SRC_URI += " \
     crate://crates.io/predicates-tree/1.0.9 \
     crate://crates.io/predicates/2.1.5 \
     crate://crates.io/proc-macro-crate/1.3.1 \
-    crate://crates.io/proc-macro2/1.0.76 \
+    crate://crates.io/proc-macro2/1.0.78 \
     crate://crates.io/quote/1.0.35 \
     crate://crates.io/rand/0.8.5 \
     crate://crates.io/rand_chacha/0.3.1 \
     crate://crates.io/rand_core/0.6.4 \
     crate://crates.io/redox_syscall/0.4.1 \
-    crate://crates.io/regex-automata/0.4.3 \
+    crate://crates.io/regex-automata/0.4.4 \
     crate://crates.io/regex-syntax/0.8.2 \
-    crate://crates.io/regex/1.10.2 \
+    crate://crates.io/regex/1.10.3 \
     crate://crates.io/rustc-demangle/0.1.23 \
     crate://crates.io/rustc-hash/1.1.0 \
     crate://crates.io/rustix/0.37.27 \
@@ -215,12 +215,12 @@ SRC_URI += " \
     crate://crates.io/serde_with/2.3.3 \
     crate://crates.io/serde_with_macros/2.3.3 \
     crate://crates.io/sha1/0.10.6 \
-    crate://crates.io/shlex/1.2.0 \
+    crate://crates.io/shlex/1.3.0 \
     crate://crates.io/signal-hook-registry/1.4.1 \
     crate://crates.io/signal-hook-tokio/0.3.1 \
     crate://crates.io/signal-hook/0.3.17 \
     crate://crates.io/slab/0.4.9 \
-    crate://crates.io/smallvec/1.12.0 \
+    crate://crates.io/smallvec/1.13.1 \
     crate://crates.io/socket2/0.4.10 \
     crate://crates.io/socket2/0.5.5 \
     crate://crates.io/static_assertions/1.1.0 \
@@ -256,11 +256,11 @@ SRC_URI += " \
     crate://crates.io/try-lock/0.2.5 \
     crate://crates.io/typenum/1.17.0 \
     crate://crates.io/uds_windows/1.1.0 \
-    crate://crates.io/unicode-bidi/0.3.14 \
+    crate://crates.io/unicode-bidi/0.3.15 \
     crate://crates.io/unicode-ident/1.0.12 \
     crate://crates.io/unicode-normalization/0.1.22 \
     crate://crates.io/url/2.5.0 \
-    crate://crates.io/uuid/1.6.1 \
+    crate://crates.io/uuid/1.7.0 \
     crate://crates.io/vcpkg/0.2.15 \
     crate://crates.io/version_check/0.9.4 \
     crate://crates.io/waker-fn/1.1.1 \
@@ -360,7 +360,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.11.7"
+SRCREV_azure-iot-sdk = "0.11.8"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.0"

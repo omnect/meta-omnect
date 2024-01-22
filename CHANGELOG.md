@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.28.11] Q1 2024
-- omnect-device-service update to 0.14.13:
+- omnect-device-service update to 0.14.14:
   - prolonging watchdog timeout while validating firmware update
-  - configurable azure-iot-sdk-c do_work frequency via enironment variable AZURE_SDK_DO_WORK_FREQUENCY_IN_MS [1..100]
+  - configurable azure-iot-sdk-c do_work frequency via environment variable AZURE_SDK_DO_WORK_FREQUENCY_IN_MS [1..100]
 
 ## [kirkstone-0.28.10] Q1 2024
 - rpi: prioritize serial console over tty0
