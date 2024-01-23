@@ -22,6 +22,13 @@ do_install:append() {
     ln -rs ${D}${systemd_system_unitdir}/wifi-commissioning-gatt@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wifi-commissioning-gatt@${OMNECT_WLAN0}.service
 }
 
+# for post process handling we deploy PV
+inherit deploy
+do_deploy() {
+    echo "${PV}" > "${DEPLOYDIR}/wifi-commissioning-gatt-service.version"
+}
+addtask do_deploy after do_compile before do_build
+
 FILES:${PN} += "\
     ${systemd_system_unitdir}/wifi-commissioning-gatt@.service \
 "

@@ -67,6 +67,14 @@ do_install:append:omnect_uboot() {
     install -m 0640 -D ${S}/sudo/omnect-device-service-uboot ${D}${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env
 }
 
+# for post process handling we deploy PV
+inherit deploy
+do_deploy() {
+    echo "${PV}" > "${DEPLOYDIR}/omnect-device-service.version"
+}
+addtask do_deploy after do_compile before do_build
+
+
 pkg_postinst:${PN}() {
     sed -i    "s/@@UID@@/$(id -u omnect_device_service)/"                                           $D${sysconfdir}/aziot/keyd/config.d/omnect-device-service.toml
     sed -i -e "s/@@UID@@/$(id -u omnect_device_service)/" -e "s/@@NAME@@/omnect-device-service/"    $D${sysconfdir}/aziot/identityd/config.d/omnect-device-service.toml
