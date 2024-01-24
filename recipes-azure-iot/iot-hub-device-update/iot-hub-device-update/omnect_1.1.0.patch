@@ -1,28 +1,5 @@
-From 1cc1d347adbaff43a6f1cfcc1d1d58015947ad14 Mon Sep 17 00:00:00 2001
-From: JoergZeidler <joerg.zeidler@conplement.de>
-Date: Wed, 17 Jan 2024 10:58:34 +0100
-Subject: [PATCH] add swupdate user consent handler
-
----
- CMakeLists.txt                                |   2 +-
- .../swupdate_consent_handler/CMakeLists.txt   |  41 ++
- .../files/consent_conf.json                   |   5 +
- .../files/history_consent.json                |   6 +
- .../files/request_consent.json                |   4 +
- .../files/user_consent.json                   |   3 +
- .../inc/aduc/swupdate_consent_handler.hpp     |  73 +++
- .../src/swupdate_consent_handler.cpp          | 599 ++++++++++++++++++
- 8 files changed, 732 insertions(+), 1 deletion(-)
- create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
- create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
- create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
- create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json
- create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json
- create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
- create mode 100644 src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
-
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 15b2c9e..54b6a43 100644
+index 15b2c9e..032175c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -200,7 +200,7 @@ set (
@@ -34,6 +11,248 @@ index 15b2c9e..54b6a43 100644
  
  if (WIN32)
      set (
+@@ -381,6 +381,11 @@ set (
+     "syslog"
+     CACHE STRING "The syslog group.")
+ 
++set (
++    ADUC_STORAGE_PATH
++    "/"
++    CACHE STRING "Path to mounted storage which will be considered to compute total storage")
++
+ set (
+     ADUC_IOT_HUB_PROTOCOL
+     "IotHub_Protocol_from_Config"
+diff --git a/scripts/error_code_generator_defs/result_codes.json b/scripts/error_code_generator_defs/result_codes.json
+index 6fc707c..11d4e4b 100644
+--- a/scripts/error_code_generator_defs/result_codes.json
++++ b/scripts/error_code_generator_defs/result_codes.json
+@@ -369,6 +369,10 @@
+                             "name": "ADUC_ERC_SWUPDATE_HANDLER_APPLY_FAILED_TO_GET_CONFIG_INSTANCE",
+                             "value": 769
+                         },
++                        {
++                            "name": "ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION",
++                            "value": 800
++                        },
+                         {
+                             "name": "ADUC_ERC_SWUPDATE_HANDLER_CANCEL_FAILURE",
+                             "value": 1024
+@@ -1461,4 +1465,4 @@
+             "name": "ADUC_FACILITY_UNUSED_F"
+         }
+     ]
+-}
++}
+\ No newline at end of file
+diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
+index 3eb5fa4..f71a636 100644
+--- a/src/adu_workflow/src/agent_workflow.c
++++ b/src/adu_workflow/src/agent_workflow.c
+@@ -14,7 +14,9 @@
+ 
+ #define __STDC_FORMAT_MACROS
+ #include <inttypes.h> // PRIu64
++#include <stdio.h>
+ #include <stdlib.h>
++#include <unistd.h>
+ 
+ #include <time.h>
+ 
+@@ -418,9 +420,31 @@ void ADUC_Workflow_HandlePropertyUpdate(
+     ADUC_WorkflowData* currentWorkflowData, const unsigned char* propertyUpdateValue, bool forceUpdate)
+ {
+     ADUC_WorkflowHandle nextWorkflow;
++    const char omnectValidateUpdateFailedFilePath[FILENAME_MAX] =
++        "/run/omnect-device-service/omnect_validate_update_failed";
++    const char* serviceRuntimeDir = getenv("RUNTIME_DIRECTORY"); // created by deviceupdate-agent.service
++    const char* omnectUpdateRetryFileName = "/omnect_update_retry";
++    char* omnectUpdateRetryFilePath = NULL;
+ 
+     ADUC_Result result = workflow_init((const char*)propertyUpdateValue, true /* shouldValidate */, &nextWorkflow);
+ 
++    if (NULL == serviceRuntimeDir)
++    {
++        Log_Error("RUNTIME_DIRECTORY was not found.");
++        return;
++    }
++
++    if (NULL
++        != (omnectUpdateRetryFilePath = malloc(strlen(serviceRuntimeDir) + strlen(omnectUpdateRetryFileName) + 1)))
++    {
++        strcpy(omnectUpdateRetryFilePath, serviceRuntimeDir);
++        strcat(omnectUpdateRetryFilePath, omnectUpdateRetryFileName);
++    }
++    else
++    {
++        Log_Error("Cannot allocate omnectUpdateRetryFilePath.");
++    }
++
+     workflow_set_force_update(nextWorkflow, forceUpdate);
+ 
+     ADUC_Result_t rootkeyErc = RootKeyUtility_GetReportingErc();
+@@ -491,6 +515,21 @@ void ADUC_Workflow_HandlePropertyUpdate(
+ 
+                 Log_Debug("Retry %s is applicable", newRetryToken);
+ 
++                // If omnect_validate_update_failed file barrier is present and an update retry was
++                // triggered by cloud, we create omnect_update_retry file in order to try to install
++                // the update again.
++                FILE* fp;
++
++                Log_Debug("Retry: '%s' detected.", omnectValidateUpdateFailedFilePath);
++                if ((NULL == omnectUpdateRetryFilePath) || (NULL == (fp = fopen(omnectUpdateRetryFilePath, "w"))))
++                {
++                    Log_Error("Cannot create '%s'", omnectUpdateRetryFilePath);
++                }
++                else
++                {
++                    fclose(fp);
++                }
++
+                 // Sets both cancellation type to Retry and updates the current retry token
+                 workflow_update_retry_deployment(currentWorkflowData->WorkflowHandle, newRetryToken);
+ 
+@@ -971,7 +1010,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
+                     // Reset workflow state to process deployment and transfer
+                     // the deferred workflow to current.
+                     workflow_update_for_replacement(workflowData->WorkflowHandle);
+-
+                 }
+                 else
+                 {
+diff --git a/src/communication_managers/iothub_communication_manager/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
+index 9707b06..5f47727 100644
+--- a/src/communication_managers/iothub_communication_manager/CMakeLists.txt
++++ b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
+@@ -29,7 +29,8 @@ target_link_libraries (
+             aduc::eis_utils
+             aduc::logging
+             aduc::retry_utils
+-            aduc::url_utils)
++            aduc::url_utils
++            systemd)
+ 
+ target_link_libraries (${target_name} PRIVATE libaducpal)
+ 
+diff --git a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
+index 6397fea..c7c1bae 100644
+--- a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
++++ b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
+@@ -39,6 +39,8 @@
+ #include <stdlib.h> // strtol
+ #include <sys/stat.h>
+ 
++#include <systemd/sd-daemon.h>
++
+ /**
+  * @brief A pointer to ADUC_ClientHandle data. This must be initialize by the component that creates the IoT Hub connection.
+  */
+@@ -59,6 +61,11 @@ static IOTHUB_CLIENT_DEVICE_TWIN_CALLBACK g_device_twin_callback = NULL;
+  */
+ static bool g_iothub_client_initialized = false;
+ 
++/**
++ * @brief A boolean indicates whether the IoT Hub client was once authenticated to iothub.
++ */
++static bool g_iothub_client_authenticated_once = false;
++
+ /**
+  * @brief An additional data context used the caller.
+  */
+@@ -215,6 +222,11 @@ void IoTHub_CommunicationManager_ConnectionStatus_Callback(
+     case IOTHUB_CLIENT_CONNECTION_AUTHENTICATED:
+         g_last_authenticated_time = now_time;
+         g_authentication_retries = 0;
++        if (false == g_iothub_client_authenticated_once)
++        {
++            sd_notify(0, "READY=1");
++            g_iothub_client_authenticated_once = true;
++        }
+         break;
+     case IOTHUB_CLIENT_CONNECTION_UNAUTHENTICATED:
+         if (g_last_authenticated_time >= g_first_unauthenticated_time)
+diff --git a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
+index 8500827..71b9cec 100644
+--- a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
++++ b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
+@@ -16,7 +16,7 @@ find_package (Parson REQUIRED)
+ target_link_aziotsharedutil (${target_name} PRIVATE)
+ 
+ if (NOT WIN32)
+-    target_link_libraries (${target_name} PRIVATE diagnostic_utils::file_upload_utility)
++#     target_link_libraries (${target_name} PRIVATE diagnostic_utils::file_upload_utility)
+ endif ()
+ 
+ target_link_libraries (
+diff --git a/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c b/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
+index 5c232a1..8751a29 100644
+--- a/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
++++ b/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
+@@ -11,7 +11,7 @@
+ #include <aduc/logging.h>
+ #include <aduc/string_c_utils.h>
+ 
+-#if defined(_WIN32)
++// #if defined(_WIN32)
+ typedef struct tagBlobStorageInfo
+ {
+     STRING_HANDLE virtualDirectoryPath; //!< Virtual hierarchy for the blobs
+@@ -27,9 +27,9 @@ static bool FileUploadUtility_UploadFilesToContainer(
+ 
+     return false;
+ }
+-#else
+-#    include <file_upload_utility.h>
+-#endif
++// #else
++// #    include <file_upload_utility.h>
++// #endif
+ 
+ #include <diagnostics_config_utils.h>
+ #include <diagnostics_devicename.h>
+diff --git a/src/diagnostics_component/utils/CMakeLists.txt b/src/diagnostics_component/utils/CMakeLists.txt
+index 2952f34..811a22f 100644
+--- a/src/diagnostics_component/utils/CMakeLists.txt
++++ b/src/diagnostics_component/utils/CMakeLists.txt
+@@ -2,5 +2,5 @@ cmake_minimum_required (VERSION 3.5)
+ 
+ add_subdirectory (config_utils)
+ add_subdirectory (file_info_utils)
+-add_subdirectory (file_upload_utils)
++# add_subdirectory (file_upload_utils)
+ add_subdirectory (operation_id_utils)
+diff --git a/src/extensions/CMakeLists.txt b/src/extensions/CMakeLists.txt
+index e7bcad3..65e9225 100644
+--- a/src/extensions/CMakeLists.txt
++++ b/src/extensions/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ add_subdirectory (content_downloaders)
+ if (NOT WIN32)
+-    add_subdirectory (component_enumerators/examples/contoso_component_enumerator)
++#     add_subdirectory (component_enumerators/examples/contoso_component_enumerator)
+ endif ()
+ add_subdirectory (download_handlers)
+ add_subdirectory (extension_manager)
+diff --git a/src/extensions/content_downloaders/CMakeLists.txt b/src/extensions/content_downloaders/CMakeLists.txt
+index d9978f0..69b3c4a 100644
+--- a/src/extensions/content_downloaders/CMakeLists.txt
++++ b/src/extensions/content_downloaders/CMakeLists.txt
+@@ -1,4 +1,4 @@
+ cmake_minimum_required (VERSION 3.5)
+ 
+-add_subdirectory (curl_downloader)
++# add_subdirectory (curl_downloader)
+ add_subdirectory (deliveryoptimization_downloader)
+diff --git a/src/extensions/download_handlers/CMakeLists.txt b/src/extensions/download_handlers/CMakeLists.txt
+index 850c103..bc0bb06 100644
+--- a/src/extensions/download_handlers/CMakeLists.txt
++++ b/src/extensions/download_handlers/CMakeLists.txt
+@@ -1,3 +1,3 @@
+ add_subdirectory (download_handler_factory)
+ add_subdirectory (download_handler_plugin)
+-add_subdirectory (plugin_examples)
++# add_subdirectory (plugin_examples)
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
 new file mode 100644
 index 0000000..3f9afef
@@ -811,6 +1030,91 @@ index 0000000..344cc4e
 +    ADUC_Result result = { ADUC_Result_Restore_Success };
 +    return result;
 +}
--- 
-2.34.1
-
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
+index 2d60fa7..bc5b92c 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
++++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
+@@ -332,12 +332,43 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+     memset(&fileEntity, 0, sizeof(fileEntity));
+     size_t fileCount = workflow_get_update_files_count(workflowHandle);
+     ADUC_Result result = SWUpdate_Handler_DownloadScriptFile(workflowHandle);
++    bool retry = false;
++    std::ifstream omnectValidateUpdateFailedFilePath("/run/omnect-device-service/omnect_validate_update_failed");
++    const char* runtimeDir = std::getenv("RUNTIME_DIRECTORY");
++    std::string omnectUpdateRetryFileName("/omnect_update_retry");
+ 
+     if (IsAducResultCodeFailure(result.ResultCode))
+     {
+         goto done;
+     }
+ 
++    if (NULL == runtimeDir)
++    {
++        Log_Error("Update validation on new boot part failed. Rebooted to old boot part.");
++    }
++    else
++    {
++        std::ifstream omnectUpdateRetryFilePath(std::string(runtimeDir) + omnectUpdateRetryFileName);
++        retry = omnectUpdateRetryFilePath.good();
++    }
++
++    // We return with an error in case we just booted into here after an update validation
++    // failed on the new partition. We do this in order to step into update failed state
++    // which also shows up in ADU cloud and offers triggering an update retry.
++    // If the cloud triggered a retry we ignore omnect_validate_update_failed flag.
++    if (omnectValidateUpdateFailedFilePath.good())
++    {
++        if (!retry)
++        {
++            result = { ADUC_Result_Failure };
++            Log_Error("Update validation on new boot part failed. Rebooted to old boot part.");
++            result.ExtendedResultCode = ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION;
++            goto done;
++        }
++
++        Log_Info("Retry update after failed update vailidation.");
++    }
++
+     // Determine whether to continue downloading the rest.
+     installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
+     result = IsInstalled(workflowData);
+diff --git a/src/platform_layers/linux_platform_layer/CMakeLists.txt b/src/platform_layers/linux_platform_layer/CMakeLists.txt
+index 40d57d1..000e530 100644
+--- a/src/platform_layers/linux_platform_layer/CMakeLists.txt
++++ b/src/platform_layers/linux_platform_layer/CMakeLists.txt
+@@ -47,7 +47,8 @@ target_compile_definitions (
+             ADUC_DEVICEINFO_MODEL="${ADUC_DEVICEINFO_MODEL}"
+             ADUC_FILE_GROUP="${ADUC_FILE_GROUP}"
+             ADUC_FILE_USER="${ADUC_FILE_USER}"
+-            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}")
++            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}"
++            ADUC_STORAGE_PATH="${ADUC_STORAGE_PATH}")
+ 
+ if (ADUC_BUILD_UNIT_TESTS)
+     add_subdirectory (tests)
+diff --git a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
+index 5a6ab62..b3837bb 100644
+--- a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
++++ b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
+@@ -449,7 +449,7 @@ static char* DeviceInfo_GetTotalStorage()
+     {
+     };
+ 
+-    if (statvfs("/", &buf) == -1)
++    if (statvfs(ADUC_STORAGE_PATH, &buf) == -1)
+     {
+         Log_Error("statvfs failed, error: %d", errno);
+         return nullptr;
+diff --git a/src/utils/eis_utils/src/eis_coms.c b/src/utils/eis_utils/src/eis_coms.c
+index dba6c64..cb25857 100644
+--- a/src/utils/eis_utils/src/eis_coms.c
++++ b/src/utils/eis_utils/src/eis_coms.c
+@@ -140,7 +140,7 @@ typedef struct tagEIS_HTTP_WORKLOAD_CONTEXT
+ /**
+  * @brief Maximum amount of bytes for any EIS response
+  */
+-#define EIS_RESP_SIZE_MAX 4096
++#define EIS_RESP_SIZE_MAX 16384
+ 
+ //
+ // HTTP Functions

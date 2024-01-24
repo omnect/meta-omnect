@@ -5,20 +5,14 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
 SRC_URI = " \
   git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.1.0;nobranch=1 \
-  file://0001-add-swupdate-user-consent-handler.patch \
-  file://0001-disable-unused-components.patch \
-  ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://0001-eis-utils-verbose-connection-string.patch', '', d)} \
-  file://0001-linux-platform-layer.patch \
-  file://0001-retry-handling-on-failed-update-validation.patch \
-  file://0001-sd-notify.patch \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
   file://du-config.json \
   file://du-diagnostics-config.json \
-  file://eis-utils-cert-chain-buffer.patch \
   file://iot-hub-device-update.tmpfilesd \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
+  file://omnect_1.1.0.patch \
 "
 SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
 SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh"
