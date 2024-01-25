@@ -16,6 +16,10 @@ repos:
       meta-networking:
       meta-oe:
       meta-python:
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/meta-openembedded_nspr_do_not_install_perl_to_image.patch"
   # we need meta-tpm independend of feature/tpm.yaml to be able
   # to build iot-identity-service
   ext/meta-security:
