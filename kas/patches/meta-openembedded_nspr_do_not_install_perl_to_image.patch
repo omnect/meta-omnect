@@ -1,0 +1,43 @@
+diff --git a/meta-oe/recipes-support/nspr/nspr_4.29.bb b/meta-oe/recipes-support/nspr/nspr_4.29.bb
+index b60de08d2..288c1b1d7 100644
+--- a/meta-oe/recipes-support/nspr/nspr_4.29.bb
++++ b/meta-oe/recipes-support/nspr/nspr_4.29.bb
+@@ -30,7 +30,7 @@ CVE_PRODUCT = "netscape_portable_runtime"
+ 
+ S = "${WORKDIR}/nspr-${PV}/nspr"
+ 
+-RDEPENDS:${PN}-dev += "perl"
++# RDEPENDS:${PN}-dev += "perl"
+ TARGET_CC_ARCH += "${LDFLAGS}"
+ 
+ TESTS = " \
+@@ -166,9 +166,9 @@ do_compile:prepend() {
+ 	oe_runmake CROSS_COMPILE=1 CFLAGS="-DXP_UNIX ${BUILD_CFLAGS}" LDFLAGS="" CC="${BUILD_CC}" -C config export
+ }
+ 
+-do_compile:append() {
+-	oe_runmake -C pr/tests
+-}
++# do_compile:append() {
++# 	oe_runmake -C pr/tests
++# }
+ 
+ do_install:append() {
+     install -D ${WORKDIR}/nspr.pc.in ${D}${libdir}/pkgconfig/nspr.pc
+@@ -180,11 +180,11 @@ do_install:append() {
+     -e 's:OEEXECPREFIX:${exec_prefix}:g' \
+     ${D}${libdir}/pkgconfig/nspr.pc
+ 
+-    mkdir -p ${D}${libdir}/nspr/tests
+-    install -m 0755 ${S}/pr/tests/runtests.pl ${D}${libdir}/nspr/tests
+-    install -m 0755 ${S}/pr/tests/runtests.sh ${D}${libdir}/nspr/tests
+-    cd ${B}/pr/tests
+-    install -m 0755 ${TESTS} ${D}${libdir}/nspr/tests
++    # mkdir -p ${D}${libdir}/nspr/tests
++    # install -m 0755 ${S}/pr/tests/runtests.pl ${D}${libdir}/nspr/tests
++    # install -m 0755 ${S}/pr/tests/runtests.sh ${D}${libdir}/nspr/tests
++    # cd ${B}/pr/tests
++    # install -m 0755 ${TESTS} ${D}${libdir}/nspr/tests
+ 
+     # delete compile-et.pl and perr.properties from ${bindir} because these are
+     # only used to generate prerr.c and prerr.h files from prerr.et at compile
