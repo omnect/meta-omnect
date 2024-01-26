@@ -74,7 +74,6 @@ do_deploy() {
 }
 addtask do_deploy after do_compile before do_build
 
-
 pkg_postinst:${PN}() {
     sed -i    "s/@@UID@@/$(id -u omnect_device_service)/"                                           $D${sysconfdir}/aziot/keyd/config.d/omnect-device-service.toml
     sed -i -e "s/@@UID@@/$(id -u omnect_device_service)/" -e "s/@@NAME@@/omnect-device-service/"    $D${sysconfdir}/aziot/identityd/config.d/omnect-device-service.toml
