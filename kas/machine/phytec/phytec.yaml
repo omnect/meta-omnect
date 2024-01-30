@@ -8,6 +8,10 @@ repos:
     url: "https://github.com/phytec/meta-phytec"
     branch: kirkstone
     commit: 8e80cb45e2671de7a38686466c037395872f4d5b
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/meta-phytec_layerdir.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: kirkstone
@@ -27,6 +31,10 @@ repos:
     layers:
       meta-bsp:
       meta-sdk:
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/meta-imx_meta-bsp_layerdir.patch"
 
 env:
   ACCEPT_FSL_EULA: "0"

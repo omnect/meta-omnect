@@ -3,7 +3,8 @@ omnect_uboot_configure_env() {
     cp -f ${WORKDIR}/omnect_env.h ${S}/include/configs/
 
     # set omnect_u-boot_version
-    sed -i -e "s|^#define OMNECT_ENV_BOOTLOADER_VERSION$|#define OMNECT_ENV_BOOTLOADER_VERSION \"omnect_u-boot_version=${PKGV}\\\0\"|g" ${S}/include/configs/omnect_env.h
+    OMNECT_BOOTLOADER_VERSION=$(cat ${WORKDIR}/omnect_bootloader_version)
+    sed -i -e "s|^#define OMNECT_ENV_BOOTLOADER_VERSION$|#define OMNECT_ENV_BOOTLOADER_VERSION \"omnect_u-boot_version=${OMNECT_BOOTLOADER_VERSION}\\\0\"|g" ${S}/include/configs/omnect_env.h
 
     # set omnect-bootargs
     if [ -n "${APPEND}" ]; then

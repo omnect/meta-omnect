@@ -8,3 +8,7 @@ repos:
     url: "https://github.com/agherzan/meta-raspberrypi.git"
     branch: kirkstone
     commit: c40c6e21ed498aacd7ad83f73f79454e7ec728d6
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/meta-raspberrypi_layerdir.patch"

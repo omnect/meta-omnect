@@ -1,0 +1,10 @@
+diff --git a/conf/layer.conf b/conf/layer.conf
+index a14101de..23762ded 100644
+--- a/conf/layer.conf
++++ b/conf/layer.conf
+@@ -36,3 +36,5 @@ BBFILES_DYNAMIC += " \
+ "
+ 
+ BBMASK:mx8m-nxp-bsp:append = " meta-imx/meta-bsp/recipes-graphics/imx-gpu-apitrace/imx-gpu-apitrace_10.0.0.bb"
++
++LAYERDIR_phytec = "${LAYERDIR}"

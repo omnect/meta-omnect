@@ -68,3 +68,8 @@ MACHINE_FEATURES:remove = " \
     nxp8987 \
     optee \
 "
+
+# force bootloader version checksum to be old, when sure it's 100% binary compatible
+# OMNECT_BOOTLOADER_CHECKSUM_compatible_`newchecksum`:pn-u-boot-imx = "`oldchecksum`"
+# e.g.
+#OMNECT_BOOTLOADER_CHECKSUM_compatible_f414b02b674d20091b8276e22503b7efef6cb506c0c4c6b25496d681da57ef8e:pn-u-boot-imx = "ebe0e595a3efb112b7495a14f9562d89d00041390f26a9ad4985435687bf2313"

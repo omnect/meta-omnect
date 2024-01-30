@@ -26,7 +26,7 @@ software =
             copy1 : {
                 images: (
                     {
-                        name = "@@SOFTWARE_NAME@@"
+                        name = "@@SOFTWARE_NAME@@";
                         filename = "@@DISTRO@@-@@MACHINE@@.ext4.gz";
                         sha256 = "$swupdate_get_sha256(@@DISTRO@@-@@MACHINE@@.ext4.gz)";
                         type = "raw";
@@ -38,7 +38,7 @@ software =
             copy2 : {
                 images: (
                     {
-                        name = "@@SOFTWARE_NAME@@"
+                        name = "@@SOFTWARE_NAME@@";
                         filename = "@@DISTRO@@-@@MACHINE@@.ext4.gz";
                         sha256 = "$swupdate_get_sha256(@@DISTRO@@-@@MACHINE@@.ext4.gz)";
                         type = "raw";
@@ -50,11 +50,11 @@ software =
             bootloader : {
                 images: (
                     {
-                        name = "bootloader"
+                        name = "bootloader";
                         hook = "check_bootloader_version";
                         filename = "imx-boot";
                         sha256 = "$swupdate_get_sha256(imx-boot)";
-                        version = "$swupdate_get_pkgvar(u-boot-imx@PKGV)";
+                        version = "@@OMNECT_BOOTLOADER_VERSION@@";
                         type = "raw";
                         device = "/dev/omnect/rootblk";
                         offset = "33K";
@@ -62,9 +62,9 @@ software =
                 );
                 files: (
                     {
-                        name = "boot-partition"
+                        name = "boot-partition";
                         hook = "check_bootloader_version";
-                        version = "$swupdate_get_pkgvar(u-boot-imx@PKGV)";
+                        version = "@@OMNECT_BOOTLOADER_VERSION@@";
                         filename = "boot-partition-update.tar.gz";
                         type = "archive";
                         compressed = "zlib";
@@ -72,7 +72,7 @@ software =
                         path = "/";
                         sha256 = "$swupdate_get_sha256(boot-partition-update.tar.gz)";
                         device = "/dev/omnect/boot";
-                        filesystem = "vfat"
+                        filesystem = "vfat";
                     }
                 );
             };

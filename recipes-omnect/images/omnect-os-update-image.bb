@@ -23,6 +23,17 @@ do_bootloader_package_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
 do_bootloader_package_extra_depends:omnect_grub = "grub-cfg:do_deploy"
 do_bootloader_package[depends] += "virtual/bootloader:do_deploy virtual/kernel:do_deploy ${do_bootloader_package_extra_depends}"
 
+# set OMNECT_BOOTLOADER_VERSION for swupdate description
+do_swuimage:prepend() {
+    try:
+        with open( d.getVar("DEPLOY_DIR_IMAGE") + "/bootloader_version", "r") as f:
+            d.setVar('OMNECT_BOOTLOADER_VERSION', f.read())
+            bb.debug(1, "OMNECT_BOOTLOADER_VERISON: %s" % d.getVar("OMNECT_BOOTLOADER_VERSION"))
+    except:
+        bb.fatal("Unable to get \"OMNECT_BOOTLOADER_VERSION\"")
+}
+
+
 do_bootloader_package() {
     echo "unexpected usage of default do_bootloader_package function"
     exit 1

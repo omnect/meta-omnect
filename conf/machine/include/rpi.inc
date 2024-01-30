@@ -1,4 +1,11 @@
+require rpi_firmware_settings.inc
+
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot"
+# since u-boot is a file for rpi devices and part of IMAGE_BOOT_FILES, it is not in rootfs
+# and not referenced in the wks file
+# -> so it doesn't get added to dependency-track sbom
+# we add an extra image dependency in this case
+DEPENDS:pn-omnect-os-image:append = " virtual/bootloader"
 
 # mask u_boot bbappend from meta-raspberrypi, we handle fw_env.conf in swupdates libubootenv
 BBMASK += "/meta-raspberrypi/recipes-bsp/u-boot/u-boot_%.bbappend"
@@ -6,18 +13,8 @@ BBMASK += "/meta-raspberrypi/recipes-bsp/u-boot/u-boot_%.bbappend"
 # u-boot to be able to switch between A/B updates
 RPI_USE_U_BOOT = "1"
 
-# enable serial interface
-ENABLE_UART = "1"
-
 # initramfs type
 OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
-
-# build cmdline.txt
-# overwrite CMDLINE_ROOTFS from meta-raspberrypi, we set "root" in boot.scr
-CMDLINE_ROOTFS = ""
-DISABLE_RPI_BOOT_LOGO = "1"
-# prepend before uart console to prioritize serial console output of stdout
-CMDLINE:prepend:pn-rpi-cmdline = "console=tty0 "
 
 # u-boot config vars
 UBOOT_FDT_ADDR = "fdt_addr"
@@ -32,3 +29,8 @@ SYSTEMD_RebootWatchdogSec   = "15"
 
 # this machine uses uboot
 MACHINEOVERRIDES:prepend = "omnect_uboot:"
+
+# force bootloader version checksum to be old, when sure it's 100% binary compatible
+# OMNECT_BOOTLOADER_CHECKSUM_compatible_`newchecksum`:pn-u-boot = "`oldchecksum`"
+# e.g.
+#OMNECT_BOOTLOADER_CHECKSUM_compatible_f414b02b674d20091b8276e22503b7efef6cb506c0c4c6b25496d681da57ef8e:pn-u-boot = "ebe0e595a3efb112b7495a14f9562d89d00041390f26a9ad4985435687bf2313"

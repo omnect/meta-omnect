@@ -8,24 +8,18 @@ SRC_URI += "\
     file://omnect_env_rpi.h \
 "
 
-# Appends a string to the name of the local version of the U-Boot image; e.g. "-1"; if you like to update the bootloader via
-# swupdate and iot-hub-device-update, the local version must be increased;
-#
-# Note: `UBOOT_LOCALVERSION` should be also increased on change of variables
-#   `APPEND`,
-#   `OMNECT_UBOOT_WRITEABLE_ENV_FLAGS`
-#
-# Note: also changes which affect the content of the boot partition, e.g.
-# `CMDLINE_*` in rpi-cmdline.bb should be reflected with an increase of
-# `UBOOT_LOCALVERSION` to force an update of the entire bootloader
-# (proprietary rpi bootloader + u-boot)
-UBOOT_LOCALVERSION = "-6"
-PKGV = "${PV}${UBOOT_LOCALVERSION}"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot_%.bbappend"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot/*"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/u-boot_%.bbappend"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/files/*"
+# we have to update the raspberrypi firmware if basic configuration of the bsp changes
+# per convention such changes should be made in the following file:
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/conf/machine/include/rpi_firmware_settings.inc"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/bootfiles/*"
+
+# we don't use fw_env.config from meta-raspberrypi
+OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/files/fw_env.config"
 
 do_configure:prepend() {
     cp -f ${WORKDIR}/omnect_env_rpi.h ${S}/include/configs/omnect_env_machine.h
-}
-
-do_deploy:append() {
-  echo "${PKGV}" > ${DEPLOYDIR}/bootloader_version
 }
