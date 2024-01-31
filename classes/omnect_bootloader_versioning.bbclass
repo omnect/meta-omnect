@@ -2,7 +2,6 @@ python  do_bootloader_checksum() {
     import glob
     import hashlib
 
-
     checksum_files = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_FILES").split(" ")
     checksum_files_ignore = []
     checksum_files_ignore_str = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE")
@@ -57,14 +56,12 @@ python  do_bootloader_checksum() {
     bb.debug(2, "checksum_list: %s" % checksum_list)
     bb.debug(2, "checksum_files: %s" % checksum_files)
     bb.debug(2, "checksum_files_ignore; %s" % checksum_files_ignore)
-
 }
 
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE is not part of the recipe or bbclass files
 # (set in machine config files)
 do_bootloader_checksum[vardeps] = "OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE"
 addtask do_bootloader_checksum after do_unpack before do_configure
-
 
 do_deploy:append() {
     install -m 0644 -D ${WORKDIR}/omnect_bootloader_version ${DEPLOYDIR}/bootloader_version
