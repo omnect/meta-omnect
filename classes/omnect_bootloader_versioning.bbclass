@@ -1,5 +1,4 @@
-
-python bootloader_checksum() {
+python  do_bootloader_checksum() {
     import glob
     import hashlib
 
@@ -36,10 +35,12 @@ python bootloader_checksum() {
     version_checksum = m.hexdigest()
 
     # check if we should override version_checksum
-    version_checksum_override = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_compatible_" + version_checksum)
+    version_checksum_override = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE")
     if version_checksum_override:
-        bb.debug(1, "overriding version_checksum %s -> %s" % (version_checksum,version_checksum_override))
-        version_checksum = version_checksum_override
+        version_checksum_override_list = version_checksum_override.split(" ",1)
+        if version_checksum_override_list[0] == version_checksum:
+            bb.debug(1, "overriding version_checksum %s -> %s" % (version_checksum,version_checksum_override_list[1]))
+            version_checksum = version_checksum_override_list[1]
 
     omnect_bootloader_version = d.getVar("PV") + "-" + version_checksum
     d.setVar("OMNECT_BOOTLOADER_VERSION", omnect_bootloader_version)
@@ -59,10 +60,13 @@ python bootloader_checksum() {
 
 }
 
-do_configure[prefuncs] += "bootloader_checksum"
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE is not part of the recipe or bbclass files
+# (set in machine config files)
+do_bootloader_checksum[vardeps] = "OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE"
+addtask do_bootloader_checksum after do_unpack before do_configure
+
 
 do_deploy:append() {
     install -m 0644 -D ${WORKDIR}/omnect_bootloader_version ${DEPLOYDIR}/bootloader_version
 }
-
 addtask do_deploy after do_compile before do_build

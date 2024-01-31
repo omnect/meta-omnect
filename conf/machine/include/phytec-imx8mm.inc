@@ -70,6 +70,6 @@ MACHINE_FEATURES:remove = " \
 "
 
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
-# OMNECT_BOOTLOADER_CHECKSUM_compatible_`newchecksum`:pn-u-boot-imx = "`oldchecksum`"
-# e.g.
-#OMNECT_BOOTLOADER_CHECKSUM_compatible_f414b02b674d20091b8276e22503b7efef6cb506c0c4c6b25496d681da57ef8e:pn-u-boot-imx = "ebe0e595a3efb112b7495a14f9562d89d00041390f26a9ad4985435687bf2313"
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "<newchecksum> <oldchecksum>"
+# e.g.:
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "2cf3dd5f692d9ed563f06ecf80d0cb566ddc165fa01a37b4eba663dc7b7b9087 ebe0e595a3efb112b7495a14f9562d89d00041390f26a9ad4985435687bf2311"
