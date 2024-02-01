@@ -593,6 +593,20 @@ InstallUpdate() {
                             bootloader_env.sh set omnect_bootloader_updated 1
                             ret_val=$?
                         fi
+                    else
+                      # check if bootloader should be updated.
+                        mkdir -p /tmp/omnect-swupdate
+                        cd /tmp/omnect-swupdate
+                        cpio -idv < "${image_file}"
+                        cd -
+                        bootloader_version_dev=$(bootloader_env.sh get omnect_u-boot_version)
+                        # very dirty: get last version from sw-description
+                        bootloader_version_swu=$(grep -i "version = "  /tmp/omnect-swupdate/sw-description | tail -1 | awk -F' = ' '{print $2}' | awk -F '"' '{print $2}')
+                        if [ "${bootloader_version_dev}" = "$bootloader_version_swu}" ]; then
+                          ret_val=0
+                        fi
+
+                        rm -r /tmp/omnect-swupdate
                     fi
                 fi
             fi
