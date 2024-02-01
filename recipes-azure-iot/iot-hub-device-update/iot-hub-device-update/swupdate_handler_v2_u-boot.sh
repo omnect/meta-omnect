@@ -581,18 +581,21 @@ InstallUpdate() {
             # Generated RSA public key from private key using command:
             # openssl rsa -in ${WORKDIR}/priv.pem -out ${WORKDIR}/public.pem -outform PEM -pubout
 
+            ret_val=255
             if [[ ${public_key_file} != "" ]]; then
                 swupdate -v -i "${image_file}" -k "${public_key_file}" -e ${selection} &>> "${swupdate_log_file}"
-                if [ $? -eq 0 ]; then
+                ret_val=$?
+                if [ ${ret_val} -eq 0 ]; then
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,bootloader &>> "${swupdate_log_file}"
-                    if [ $? -eq 0 ]; then
+                    ret_val=$?
+                    if [ ${ret_val} -eq 0 ]; then
                         if [ -f "/run/omnect-bootloader-update" ]; then
                             bootloader_env.sh set omnect_bootloader_updated 1
+                            ret_val=$?
                         fi
                     fi
                 fi
             fi
-            ret_val=$?
 
             if [[ $ret_val -eq 0 ]]; then
                 resultCode=600
