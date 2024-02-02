@@ -586,6 +586,7 @@ InstallUpdate() {
                 swupdate -v -i "${image_file}" -k "${public_key_file}" -e ${selection} &>> "${swupdate_log_file}"
                 ret_val=$?
                 if [ ${ret_val} -eq 0 ]; then
+                    rm -f /run/omnect-bootloader-update-not-necessary
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,bootloader &>> "${swupdate_log_file}"
                     ret_val=$?
                     if [ ${ret_val} -eq 0 ]; then
@@ -594,19 +595,10 @@ InstallUpdate() {
                             ret_val=$?
                         fi
                     else
-                      # check if bootloader should be updated.
-                        mkdir -p /tmp/omnect-swupdate
-                        cd /tmp/omnect-swupdate
-                        cpio -idv < "${image_file}"
-                        cd -
-                        bootloader_version_dev=$(bootloader_env.sh get omnect_u-boot_version)
-                        # very dirty: get last version from sw-description
-                        bootloader_version_swu=$(grep -i "version = "  /tmp/omnect-swupdate/sw-description | tail -1 | awk -F' = ' '{print $2}' | awk -F '"' '{print $2}')
-                        if [ "${bootloader_version_dev}" = "$bootloader_version_swu}" ]; then
-                          ret_val=0
+                        if [ -f "/run/omnect-bootloader-update-not-necessary" ]; then
+                            ret_val=0
+                            rm /run/omnect-bootloader-update-not-necessary
                         fi
-
-                        rm -r /tmp/omnect-swupdate
                     fi
                 fi
             fi
