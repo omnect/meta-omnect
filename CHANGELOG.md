@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.29.0] Q1 2024
+- omnect_bootloader_versioning.bbclass:
+  - introduced new bootloader versioning scheme
+    (computed checksum suffix of changes on recipe files)
+  - mechanism to override new checksum suffix with old one
+    (use, if you're sure that the binary artefact itself didn't change)
+- omnect-update-image:
+  - adapted sw-description to changes in bootloader
+    versioning scheme
+  - sw-description: `check_bootloader_version` hook creates file
+    `/tmp/omnect-bootloader-update-not-necessary` if no bootloader update is
+    not necessary
+- iot-hub-device-update swupdate handler v2 scripts:
+  - fixed error in return value handling (every error on rootA/B install was
+    ignored)
+  - correct return value of bootloader update if bootloader update is not
+    necessary
+- rpi: refactored config so that bootloader relevant configuration is in an
+  extra file (bootloader config is part of the bootloader artefacts here)
+- phytec: u-boot-imx: disabled usb (and therefor necessary android_boot_image)
+
 ## [kirkstone-0.28.15] Q1 2024
 - updated omnect-device-service to 0.14.15 which fixes a systemd watchdog issue
 
