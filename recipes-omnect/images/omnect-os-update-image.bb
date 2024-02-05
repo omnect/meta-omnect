@@ -33,7 +33,6 @@ do_swuimage:prepend() {
         bb.fatal("Unable to get \"OMNECT_BOOTLOADER_VERSION\"")
 }
 
-
 do_bootloader_package() {
     echo "unexpected usage of default do_bootloader_package function"
     exit 1
