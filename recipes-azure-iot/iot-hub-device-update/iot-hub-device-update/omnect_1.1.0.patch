@@ -427,7 +427,7 @@ index 0000000..8ea0cf2
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 0000000..344cc4e
+index 0000000..891e09b
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 @@ -0,0 +1,599 @@
@@ -938,7 +938,7 @@ index 0000000..344cc4e
 + */
 +ADUC_Result SWUpdateConsentHandlerImpl::Install(const tagADUC_WorkflowData* workflowData)
 +{
-+    Log_Info("swupdate consent Install succeeded");
++    Log_Info("SWUpdate consent doesn't require a specific operation to install. (no-op) ");
 +    UNREFERENCED_PARAMETER(workflowData);
 +    return ADUC_Result{ ADUC_Result_Install_Success };
 +}
@@ -949,7 +949,7 @@ index 0000000..344cc4e
 + */
 +ADUC_Result SWUpdateConsentHandlerImpl::Apply(const tagADUC_WorkflowData* workflowData)
 +{
-+    Log_Info("swupdate consent Apply succeeded");
++    Log_Info("SWUpdate consent doesn't require a specific operation to apply. (no-op) ");
 +    UNREFERENCED_PARAMETER(workflowData);
 +    return ADUC_Result{ ADUC_Result_Apply_Success };
 +}
@@ -960,7 +960,7 @@ index 0000000..344cc4e
 + */
 +ADUC_Result SWUpdateConsentHandlerImpl::Cancel(const tagADUC_WorkflowData* workflowData)
 +{
-+    Log_Info("swupdate consent Cancel succeeded");
++    Log_Info("SWUpdate consent doesn't require a specific operation to cancel. (no-op) ");
 +    UNREFERENCED_PARAMETER(workflowData);
 +    return ADUC_Result{ ADUC_Result_Cancel_Success };
 +}
@@ -1025,7 +1025,7 @@ index 0000000..344cc4e
 + */
 +ADUC_Result SWUpdateConsentHandlerImpl::Restore(const tagADUC_WorkflowData* workflowData)
 +{
-+    Log_Info("swupdate consent Restore succeeded");
++    Log_Info("SWUpdate consent doesn't require a specific operation to restore. (no-op) ");
 +    UNREFERENCED_PARAMETER(workflowData);
 +    ADUC_Result result = { ADUC_Result_Restore_Success };
 +    return result;
