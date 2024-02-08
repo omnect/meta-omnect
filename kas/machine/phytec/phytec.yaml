@@ -6,24 +6,24 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    branch: kirkstone
-    commit: 8e80cb45e2671de7a38686466c037395872f4d5b
+    branch: "kirkstone"
+    commit: "d5a55ea6d58f3b8a24a9d82077ea2b7080c5de4b"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
-    branch: kirkstone
-    commit: 47e0b467d8555e38a996b731977d9eed9ab02051
+    branch: "kirkstone"
+    commit: "710e55d529c86d15a93c4421365ef62eb601a49b"
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-freescale_layerdir.patch"
   ext/meta-freescale-distro:
     url: "https://github.com/Freescale/meta-freescale-distro.git"
-    branch: kirkstone
-    commit: d5bbb487b2816dfc74984a78b67f7361ce404253
+    branch: "kirkstone"
+    commit: "d5bbb487b2816dfc74984a78b67f7361ce404253"
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
-    branch: kirkstone-5.15.71-2.2.2
-    commit: ca68ab5d25322b51f54564275c84ab8de3c74ea6
+    branch: "kirkstone-5.15.71-2.2.2"
+    commit: "ca68ab5d25322b51f54564275c84ab8de3c74ea6"
     layers:
       meta-bsp:
       meta-sdk:
