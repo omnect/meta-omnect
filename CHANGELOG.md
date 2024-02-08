@@ -15,13 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - adapted sw-description to changes in bootloader
     versioning scheme
   - sw-description: `check_bootloader_version` hook creates file
-    `/tmp/omnect-bootloader-update-not-necessary` if no bootloader update is
+    `/tmp/omnect-bootloader-update-not-necessary` if a bootloader update is
     not necessary
 - iot-hub-device-update swupdate handler v2 scripts:
   - fixed error in return value handling (every error on rootA/B install was
     ignored)
-  - correct return value of bootloader update if bootloader update is not
-    necessary
+  - fixed return value handling if bootloader update is not necessary
 - rpi: refactored config so that bootloader relevant configuration is in an
   extra file (bootloader config is part of the bootloader artefacts here)
 - phytec: u-boot-imx: disabled usb (and therefor necessary android_boot_image)
