@@ -55,10 +55,10 @@ EXTRA_OECMAKE += "-DADUC_PLATFORM_LAYER=linux"
 EXTRA_OECMAKE += "-DADUC_VERSION_FILE=/etc/sw-versions"
 EXTRA_OECMAKE += "-DADUC_EXTENSIONS_INSTALL_FOLDER=${libdir}/adu/extensions"
 
-EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MANUFACTURER='${ADU_MANUFACTURER}'"
-EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MODEL='${ADU_MODEL}'"
-EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MANUFACTURER='${ADU_DEVICEPROPERTIES_MANUFACTURER}'"
-EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${ADU_DEVICEPROPERTIES_MODEL}'"
+EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MANUFACTURER='${OMNECT_ADU_MANUFACTURER}'"
+EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MODEL='${OMNECT_ADU_MODEL}'"
+EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MANUFACTURER='${OMNECT_ADU_DEVICEPROPERTIES_MANUFACTURER}'"
+EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${OMNECT_ADU_DEVICEPROPERTIES_MODEL}'"
 
 # omnect adaptions (linux_platform_layer.patch)
 EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
@@ -69,11 +69,11 @@ EXTRA_OECMAKE += "-DADUC_WARNINGS_AS_ERRORS=OFF"
 do_install:append() {
   # adu configuration
   install -d ${D}${sysconfdir}/adu
-  jq  --arg adu_deviceproperties_manufacturer "${ADU_DEVICEPROPERTIES_MANUFACTURER}" \
-      --arg adu_deviceproperties_model "${ADU_DEVICEPROPERTIES_MODEL}" \
-      --arg adu_deviceproperties_compatibility_id "${ADU_DEVICEPROPERTIES_COMPATIBILITY_ID}" \
-      --arg adu_manufacturer "${ADU_MANUFACTURER}" \
-      --arg adu_model "${ADU_MODEL}" \
+  jq  --arg adu_deviceproperties_manufacturer "${OMNECT_ADU_DEVICEPROPERTIES_MANUFACTURER}" \
+      --arg adu_deviceproperties_model "${OMNECT_ADU_DEVICEPROPERTIES_MODEL}" \
+      --arg adu_deviceproperties_compatibility_id "${OMNECT_ADU_DEVICEPROPERTIES_COMPATIBILITY_ID}" \
+      --arg adu_manufacturer "${OMNECT_ADU_MANUFACTURER}" \
+      --arg adu_model "${OMNECT_ADU_MODEL}" \
       '.manufacturer = $adu_manufacturer |
       .model = $adu_model |
       .agents[].manufacturer = $adu_deviceproperties_manufacturer |

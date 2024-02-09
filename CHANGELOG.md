@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - kas: welotec:
   - renamed `MACHINE` `eg500` to `arrakis-pico`
   - converted from using meta-welotec-bsp to meta-yocto-bsp (from poky)
+- renamed yocto vars `ADU_*` to `OMNECT_ADU_*` since these are no upstream variables
 
 ## [kirkstone-0.28.15] Q1 2024
 - updated omnect-device-service to 0.14.15 which fixes a systemd watchdog issue
