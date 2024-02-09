@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.28.16] Q1 2024
+- kernel: set default cpu freq governor to schedutil
+- kas:
+  - updated bitbake to tag ref yocto-4.0.16
+  - updated openebedded-core to tag ref yocto-4.0.16
+    (https://downloads.yoctoproject.org/releases/yocto/yocto-4.0.16/RELEASENOTES)
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+  - updated meta-raspberrypi to latest kirkstone HEAD
+
 ## [kirkstone-0.28.15] Q1 2024
 - updated omnect-device-service to 0.14.15 which fixes a systemd watchdog issue
 
