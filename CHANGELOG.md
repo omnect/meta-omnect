@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.28.16] Q1 2024
+- omnect-device-service: fix file permissions for ssh certificate and authorized_principle settings
+
 ## [kirkstone-0.28.15] Q1 2024
 - updated omnect-device-service to 0.14.15 which fixes a systemd watchdog issue
 
