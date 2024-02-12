@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     (computed checksum suffix of changes on recipe files)
   - mechanism to override new checksum suffix with old one
     (use, if you're sure that the binary artefact itself didn't change)
+  - write input files and corresponding checksums to
+    `omnect_bootoader_checksums.txt`
 - omnect-update-image:
   - adapted sw-description to changes in bootloader
     versioning scheme

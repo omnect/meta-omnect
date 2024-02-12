@@ -1,12 +1,15 @@
 python  do_bootloader_checksum() {
     import glob
     import hashlib
+    from pathlib import Path
 
     checksum_files = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_FILES").split(" ")
     checksum_files_ignore = []
     checksum_files_ignore_str = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE")
     if checksum_files_ignore_str:
         checksum_files_ignore = checksum_files_ignore_str.split(" ")
+
+    checksums_file_out = Path(d.getVar("WORKDIR") + "/omnect_bootoader_checksums.txt").open('w')
 
     used_checksum_file_list = []
     checksum_list = []
@@ -25,6 +28,8 @@ python  do_bootloader_checksum() {
                     digest = hashlib.file_digest(f, "sha256")
                     used_checksum_file_list.append(checksum_glob_file)
                     checksum_list.append(digest.digest())
+                    checksums_file_out.write("%s %s\n" % (checksum_glob_file,digest.hexdigest()))
+
             except OSError:
                 bb.fatal("Unable to open \"%s\"" % (checksum_glob_file))
 
@@ -65,5 +70,6 @@ addtask do_bootloader_checksum after do_unpack before do_configure
 
 do_deploy:append() {
     install -m 0644 -D ${WORKDIR}/omnect_bootloader_version ${DEPLOYDIR}/bootloader_version
+    install -m 0644 -D ${WORKDIR}/omnect_bootoader_checksums.txt ${DEPLOYDIR}/
 }
 addtask do_deploy after do_compile before do_build
