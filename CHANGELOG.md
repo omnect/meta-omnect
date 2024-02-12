@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - converted from using meta-welotec-bsp to meta-yocto-bsp (from poky)
 - renamed yocto vars `ADU_*` to `OMNECT_ADU_*` since these are no upstream variables
 
+## [kirkstone-0.28.16] Q1 2024
+- kernel: set default cpu freq governor to schedutil
+- kas:
+  - updated bitbake to tag ref yocto-4.0.16
+  - updated openebedded-core to tag ref yocto-4.0.16
+    (https://downloads.yoctoproject.org/releases/yocto/yocto-4.0.16/RELEASENOTES)
+  - updated meta-openembedded to latest kirkstone HEAD
+  - updated meta-phytec to latest kirkstone HEAD
+  - updated meta-freescale to latest kirkstone HEAD
+  - updated meta-raspberrypi to latest kirkstone HEAD
+
 ## [kirkstone-0.28.15] Q1 2024
 - updated omnect-device-service to 0.14.15 which fixes a systemd watchdog issue
 
