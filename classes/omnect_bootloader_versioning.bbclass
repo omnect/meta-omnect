@@ -21,6 +21,11 @@
 #   bootloader version with the current computed checksum compatible to a
 #   previous bootloader version checksum, e.g. changes in input files were only
 #   formatting. The Format is "<new checksum><:space:><old checksum>".
+# - `OMNECT_BOOTLOADER_CHECKSUM_EXPECTED` - expected checksum, if this variables
+#   content is different from the computed checksum, the build will fail
+#   note: if `OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE` is set, this var should be
+#         set to <old checksum>
+
 
 python  do_bootloader_checksum() {
     import glob
@@ -70,6 +75,12 @@ python  do_bootloader_checksum() {
             bb.debug(1, "overriding version_checksum %s -> %s" % (version_checksum,version_checksum_override_list[1]))
             version_checksum = version_checksum_override_list[1]
 
+    version_checksum_expected = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_EXPECTED")
+    if not version_checksum_expected:
+        bb.fatal("OMNECT_BOOTLOADER_CHECKSUM_EXPECTED not set; computed checksum is: \"%s\"" % version_checksum)
+    if version_checksum_expected != version_checksum:
+        bb.fatal("expected bootloader checksum (OMNECT_BOOTLOADER_CHECKSUM_EXPECTED): \"%s\" is different from computed: \"%s\"" % (version_checksum_expected, version_checksum))
+
     omnect_bootloader_version = d.getVar("PV") + "-" + version_checksum
     d.setVar("OMNECT_BOOTLOADER_VERSION", omnect_bootloader_version)
     bootloader_version_file = d.getVar("WORKDIR") + "/omnect_bootloader_version"
@@ -89,7 +100,7 @@ python  do_bootloader_checksum() {
 
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE is not part of the recipe or bbclass files
 # (set in machine config files)
-do_bootloader_checksum[vardeps] = "OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE"
+do_bootloader_checksum[vardeps] = "OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE OMNECT_BOOTLOADER_CHECKSUM_EXPECTED"
 addtask do_bootloader_checksum after do_unpack before do_configure
 
 do_deploy:append() {
