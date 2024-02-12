@@ -1,3 +1,27 @@
+# This class is used to compute a checksum over all input files of the
+# bootloader artefact used in wic image resp. swupdate image.
+# This checksum is appended to the upstream bootloader version
+# (e.g. u-boot,u-boot-imx, grub).
+#
+# Note: Input files can be located out of upstream bootloader context,
+# e.g. the raspberry-pi bootloader artefact contains u-boot + rpi bootfiles
+# + rpi firmware config files.
+#
+# This class writes two files to `DEPLOYDIR`:
+# - bootloader_version - contains full bootloader version string
+# - omnect_bootoader_checksums.txt - list of used input files and their
+#   corresponding sha256 checksums
+#
+# This class uses the following environment variables:
+# - `OMNECT_BOOTLOADER_CHECKSUM_FILES` - list of input files (full path),
+#   wildcards are allowed
+# - `OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE` - list of files removed from
+#   `OMNECT_BOOTLOADER_CHECKSUM_FILES`, wildcards are not allowed
+# - `OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE` - use this if you want to mark the
+#   bootloader version with the current computed checksum compatible to a
+#   previous bootloader version checksum, e.g. changes in input files were only
+#   formatting. The Format is "<old checksum><:space:><new checksum>".
+
 python  do_bootloader_checksum() {
     import glob
     import hashlib
