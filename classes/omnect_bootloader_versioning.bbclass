@@ -20,7 +20,7 @@
 # - `OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE` - use this if you want to mark the
 #   bootloader version with the current computed checksum compatible to a
 #   previous bootloader version checksum, e.g. changes in input files were only
-#   formatting. The Format is "<old checksum><:space:><new checksum>".
+#   formatting. The Format is "<new checksum><:space:><old checksum>".
 
 python  do_bootloader_checksum() {
     import glob
