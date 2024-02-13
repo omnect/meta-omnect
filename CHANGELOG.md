@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - converted from using meta-welotec-bsp to meta-yocto-bsp (from poky)
 - renamed yocto vars `ADU_*` to `OMNECT_ADU_*` since these are no upstream variables
 
+## [kirkstone-0.28.18] Q1 2024
+- omnect-device-service: fixed file permissions for ssh certificate and authorized_principle settings
+
 ## [kirkstone-0.28.17] Q1 2024
 - iot-hub-device-update: updated to 1.1.0
 
