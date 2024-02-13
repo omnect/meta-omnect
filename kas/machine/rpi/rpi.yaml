@@ -7,7 +7,7 @@ repos:
   ext/meta-raspberrypi:
     url: "https://github.com/agherzan/meta-raspberrypi.git"
     branch: "kirkstone"
-    commit: "e6d2ff0b0cbb925157c95b07327c2a7dc145fabe"
+    commit: "ab5815a2ca0a460398878f77a7e39bc1a6dfe0bf"
     patches:
       p001:
         repo: "meta-omnect"
