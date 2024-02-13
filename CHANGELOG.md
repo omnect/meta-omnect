@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [kirkstone-0.29.0] Q1 2024
+## [kirkstone-0.30.0] Q1 2024
 - omnect_bootloader_versioning.bbclass:
   - introduced new bootloader versioning scheme
     (computed checksum suffix of changes on recipe files)
@@ -27,6 +27,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   extra file (bootloader config is part of the bootloader artefacts here)
 - phytec: u-boot-imx: disabled usb (and therefor necessary android_boot_image)
 - kas: updated meta-raspberrypi to latest kirkstone HEAD
+
+## [kirkstone-0.29.0] Q1 2024
+- kas: welotec:
+  - renamed `MACHINE` `eg500` to `arrakis-pico`
+  - converted from using meta-welotec-bsp to meta-yocto-bsp (from poky)
+- renamed yocto vars `ADU_*` to `OMNECT_ADU_*` since these are no upstream variables
 
 ## [kirkstone-0.28.18] Q1 2024
 - omnect-device-service: fixed file permissions for ssh certificate and authorized_principle settings
