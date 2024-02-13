@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [kirkstone-0.28.18] Q1 2024
-- omnect-device-service: fix file permissions for ssh certificate and authorized_principle settings
+- omnect-device-service: fixed file permissions for ssh certificate and authorized_principle settings
 
 ## [kirkstone-0.28.17] Q1 2024
 - iot-hub-device-update: updated to 1.1.0
