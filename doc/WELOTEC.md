@@ -1,14 +1,14 @@
-# Arrakis-pico-MK3
+# Arrakis-pico-MK3 (arrakis-pico)
 
 - **Product Page:** https://www.welotec.com/de/industrie-pcs/
-- **BSP (dynamic layer):** ToDo
+- **BSP (dynamic layer):** [meta-yocto-bsp](https://git.yoctoproject.org/poky/tree/meta-yocto-bsp)
 - **Boot Media:**
-  - 1st it is tried to boot *omnect-os* from USB media 
+  - 1st it is tried to boot *omnect-os* from USB media
   - 2nd if USB media is not present the internal nvme will be booted.
 - **Flash internal nvme:**
   - boot *omnect-os* from USB
   - use [flash-mode 1](../README.md#flash-mode-1) in order to flash an image from USB to nvme. The nvme device path is */dev/nvme0n1*
-  - remove USB media and power on device 
+  - remove USB media and power on device
 
 ## Omnect Feature Support:
 
