@@ -82,7 +82,6 @@ python  do_bootloader_checksum() {
         bb.fatal("expected bootloader checksum (OMNECT_BOOTLOADER_CHECKSUM_EXPECTED): \"%s\" is different from computed: \"%s\"" % (version_checksum_expected, version_checksum))
 
     omnect_bootloader_version = d.getVar("PV") + "-" + version_checksum
-    d.setVar("OMNECT_BOOTLOADER_VERSION", omnect_bootloader_version)
     bootloader_version_file = d.getVar("WORKDIR") + "/omnect_bootloader_version"
     try:
         with open( bootloader_version_file, "w" ) as f:
