@@ -9,7 +9,7 @@
 #
 # This class writes two files to `DEPLOYDIR`:
 # - bootloader_version - contains full bootloader version string
-# - omnect_bootoader_checksums.txt - list of used input files and their
+# - omnect_bootloader_checksums.txt - list of used input files and their
 #   corresponding sha256 checksums
 #
 # This class uses the following environment variables:
