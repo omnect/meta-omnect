@@ -97,8 +97,8 @@ python  do_bootloader_checksum() {
     bb.debug(2, "checksum_files_ignore; %s" % checksum_files_ignore)
 }
 
-# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE is not part of the recipe or bbclass files
-# (set in machine config files)
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE and OMNECT_BOOTLOADER_CHECKSUM_EXPECTED
+# are not part of the recipe or bbclass files (set in machine config files)
 do_bootloader_checksum[vardeps] = "OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE OMNECT_BOOTLOADER_CHECKSUM_EXPECTED"
 addtask do_bootloader_checksum after do_unpack before do_configure
 
