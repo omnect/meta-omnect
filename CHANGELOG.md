@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - fixed return value handling if bootloader update is not necessary
 - rpi: refactored config so that bootloader relevant configuration is in an
   extra file (bootloader config is part of the bootloader artefacts here)
-- phytec: u-boot-imx: disabled usb (and therefor necessary android_boot_image)
+- phytec: u-boot-imx: disabled usb (and therefore necessary android_boot_image)
 - kas: updated meta-raspberrypi to latest kirkstone HEAD
 
 ## [kirkstone-0.29.0] Q1 2024
