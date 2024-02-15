@@ -121,6 +121,28 @@ index 3eb5fa4..f71a636 100644
                  }
                  else
                  {
+diff --git a/src/agent/src/main.c b/src/agent/src/main.c
+index 934066c..0a2ac43 100644
+--- a/src/agent/src/main.c
++++ b/src/agent/src/main.c
+@@ -812,7 +812,7 @@ done:
+  */
+ void ShutdownAgent()
+ {
+-    Log_Warn("Agent is shutting down.");
++    Log_Info("Agent is shutting down.");
+     ADUC_D2C_Messaging_Uninit();
+ #ifdef ADUC_COMMAND_HELPER_H
+     UninitializeCommandListenerThread();
+@@ -831,7 +831,7 @@ void ShutdownAgent()
+  */
+ void OnShutdownSignal(int sig)
+ {
+-    Log_Warn("Shutdown signal detected: %s", sig);
++    Log_Warn("Shutdown signal detected: %d", sig);
+     ADUC_ShutdownService_RequestShutdown();
+ }
+ 
 diff --git a/src/communication_managers/iothub_communication_manager/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
 index 9707b06..5f47727 100644
 --- a/src/communication_managers/iothub_communication_manager/CMakeLists.txt

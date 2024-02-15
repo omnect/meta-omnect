@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [kirkstone-0.30.2] Q1 2024
+- iot-hub-device-update:
+  - fixed crash in signal handler
+  - don't log misleading "ShutdownAgent" log when registering handler
+
 ## [kirkstone-0.30.1] Q1 2024
 - omnect_bootloader_versioning.bbclass: sort order of glob result(s) in
   `OMNECT_BOOTLOADER_CHECKSUM_FILES` because computed checksum is order
