@@ -121,6 +121,28 @@ index 3eb5fa4..f71a636 100644
                  }
                  else
                  {
+diff --git a/src/agent/src/main.c b/src/agent/src/main.c
+index 934066c..0a2ac43 100644
+--- a/src/agent/src/main.c
++++ b/src/agent/src/main.c
+@@ -812,7 +812,7 @@ done:
+  */
+ void ShutdownAgent()
+ {
+-    Log_Warn("Agent is shutting down.");
++    Log_Info("Agent is shutting down.");
+     ADUC_D2C_Messaging_Uninit();
+ #ifdef ADUC_COMMAND_HELPER_H
+     UninitializeCommandListenerThread();
+@@ -831,7 +831,7 @@ void ShutdownAgent()
+  */
+ void OnShutdownSignal(int sig)
+ {
+-    Log_Warn("Shutdown signal detected: %s", sig);
++    Log_Warn("Shutdown signal detected: %d", sig);
+     ADUC_ShutdownService_RequestShutdown();
+ }
+ 
 diff --git a/src/communication_managers/iothub_communication_manager/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
 index 9707b06..5f47727 100644
 --- a/src/communication_managers/iothub_communication_manager/CMakeLists.txt
@@ -1105,6 +1127,19 @@ index 5a6ab62..b3837bb 100644
      {
          Log_Error("statvfs failed, error: %d", errno);
          return nullptr;
+diff --git a/src/utils/c_utils/src/string_c_utils.c b/src/utils/c_utils/src/string_c_utils.c
+index af0adaf..dcca418 100644
+--- a/src/utils/c_utils/src/string_c_utils.c
++++ b/src/utils/c_utils/src/string_c_utils.c
+@@ -45,7 +45,7 @@ bool LoadBufferWithFileContents(const char* filePath, char* strBuffer, const siz
+         goto done;
+     }
+ 
+-    const long fileSize = bS.st_size;
++    const long long fileSize = bS.st_size;
+     if (fileSize == 0 || fileSize > strBuffSize)
+     {
+         goto done;
 diff --git a/src/utils/eis_utils/src/eis_coms.c b/src/utils/eis_utils/src/eis_coms.c
 index dba6c64..cb25857 100644
 --- a/src/utils/eis_utils/src/eis_coms.c
@@ -1118,3 +1153,25 @@ index dba6c64..cb25857 100644
  
  //
  // HTTP Functions
+diff --git a/src/utils/extension_utils/src/extension_utils.c b/src/utils/extension_utils/src/extension_utils.c
+index f63aa42..0f0ae38 100644
+--- a/src/utils/extension_utils/src/extension_utils.c
++++ b/src/utils/extension_utils/src/extension_utils.c
+@@ -265,7 +265,7 @@ static bool RegisterHandlerExtension(
+         goto done;
+     }
+ 
+-    long fileSize = bS.st_size;
++    long long fileSize = bS.st_size;
+     if (!ADUC_HashUtils_GetFileHash(handlerFilePath, SHA256, &hash))
+     {
+         goto done;
+@@ -483,7 +483,7 @@ bool RegisterExtension(const char* extensionDir, const char* extensionFilePath)
+         goto done;
+     }
+ 
+-    long fileSize = bS.st_size;
++    long long fileSize = bS.st_size;
+ 
+     if (!ADUC_HashUtils_GetFileHash(extensionFilePath, SHA256, &hash))
+     {
