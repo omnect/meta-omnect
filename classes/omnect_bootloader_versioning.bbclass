@@ -30,6 +30,7 @@
 python  do_bootloader_checksum() {
     import glob
     import hashlib
+    import os
     from pathlib import Path
 
     checksum_files = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_FILES").split(" ")
@@ -44,7 +45,8 @@ python  do_bootloader_checksum() {
     checksum_list = []
 
     for checksum_file in checksum_files:
-        checksum_glob_files = glob.glob(checksum_file)
+        # we have to sort since the result of glob is non deterministic on different machines
+        checksum_glob_files = sorted(glob.glob(checksum_file))
         if checksum_file and not checksum_glob_files:
             bb.fatal("couldn't handle checksum_file: %s" % checksum_file)
 

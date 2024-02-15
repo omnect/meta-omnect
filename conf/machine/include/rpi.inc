@@ -38,4 +38,4 @@ MACHINEOVERRIDES:prepend = "omnect_uboot:"
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "40bd1ec28dff7e6c3ed030462c1fa39f21f001738184412b852856accef25f1b"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "850c937bc7930570a2405143ce28f1112e75066af557664b2569e27d470a9462"
