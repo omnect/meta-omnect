@@ -30,6 +30,14 @@ SRC_URI:append = "\
     file://disable-usb.cfg \
 "
 
+# we do not include u-boot upstream recipe, because
+# updates in openembedded_core should be handled by `PV` increase
+OMNECT_BOOTLOADER_CHECKSUM_FILES = "${OMNECT_THISDIR_SAVED}/u-boot_%.bbappend"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/u-boot-scr.bb"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/u-boot/*"
+
+OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE = "${OMNECT_THISDIR_SAVED}/u-boot/.gitignore"
+
 # copy configuration fragment from template, before SRC_URI is checked
 do_fetch:prepend() {
     import os
@@ -38,6 +46,7 @@ do_fetch:prepend() {
     os.system("cp " + cfg_file_template + " " + cfg_file)
 }
 
+inherit omnect_bootloader_versioning
 inherit omnect_fw_env_config
 inherit omnect_uboot_configure_env
 

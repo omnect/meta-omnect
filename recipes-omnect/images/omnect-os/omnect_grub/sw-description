@@ -8,7 +8,7 @@ software =
 			copy1 : {
 				images: (
 					{
-						name = "@@SOFTWARE_NAME@@"
+						name = "@@SOFTWARE_NAME@@";
 						filename = "@@DISTRO@@-@@MACHINE@@.ext4.gz";
 						sha256 = "$swupdate_get_sha256(@@DISTRO@@-@@MACHINE@@.ext4.gz)";
 						type = "raw";
@@ -20,11 +20,11 @@ software =
 			copy2 : {
 				images: (
 					{
-						name = "@@SOFTWARE_NAME@@"
+						name = "@@SOFTWARE_NAME@@";
 						filename = "@@DISTRO@@-@@MACHINE@@.ext4.gz";
 						sha256 = "$swupdate_get_sha256(@@DISTRO@@-@@MACHINE@@.ext4.gz)";
 						type = "raw";
-						compressed = true
+						compressed = true;
 						device = "/dev/omnect/rootB";
 					}
 				);
@@ -32,9 +32,9 @@ software =
             bootloader : {
                 files: (
                     {
-                        name = "boot-partition"
+                        name = "boot-partition";
                         hook = "check_bootloader_version";
-                        version = "$swupdate_get_pkgvar(grub-efi@PKGV)";
+                        version = "@@OMNECT_BOOTLOADER_VERSION@@";
                         filename = "boot-partition-update.tar.gz";
                         type = "archive";
                         compressed = "zlib";
@@ -42,7 +42,7 @@ software =
                         path = "/";
                         sha256 = "$swupdate_get_sha256(boot-partition-update.tar.gz)";
                         device = "/dev/omnect/boot";
-                        filesystem = "vfat"
+                        filesystem = "vfat";
                     }
                 );
             };
@@ -56,12 +56,13 @@ software =
             swupdate.trace(\"bootloader_version: \" .. bootloader_version)
             swupdate.trace(\"image.version: \" .. image.version)
             if bootloader_version == image.version then
+                f = io.open(\"/run/omnect-bootloader-update-not-necessary\", \"w\")
                 result = nil
             else
                 f = io.open(\"/run/omnect-bootloader-update\", \"w\")
-                f:close()
                 result = image
             end
+            f:close()
             return true, result
         end
         ";

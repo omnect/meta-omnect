@@ -1,0 +1,10 @@
+diff --git a/conf/layer.conf b/conf/layer.conf
+index d7ad4ed..14489b5 100644
+--- a/conf/layer.conf
++++ b/conf/layer.conf
+@@ -38,3 +38,5 @@ BBFILES_DYNAMIC += " \
+ 
+ DEFAULT_TEST_SUITES:remove:rpi = "parselogs"
+ DEFAULT_TEST_SUITES:append:rpi = " parselogs_rpi"
++
++LAYERDIR_raspberrypi = "${LAYERDIR}"
