@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iot-hub-device-update:
   - fixed crash in signal handler
   - don't log misleading "ShutdownAgent" log when registering handler
+  - fixed build for 32bit systems
 
 ## [kirkstone-0.30.1] Q1 2024
 - omnect_bootloader_versioning.bbclass: sort order of glob result(s) in
