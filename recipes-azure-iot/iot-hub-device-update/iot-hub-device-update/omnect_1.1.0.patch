@@ -46,7 +46,7 @@ index 6fc707c..11d4e4b 100644
 +}
 \ No newline at end of file
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index 3eb5fa4..2709dfc 100644
+index 3eb5fa4..fae84d7 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
 @@ -14,7 +14,9 @@
@@ -113,19 +113,27 @@ index 3eb5fa4..2709dfc 100644
                  // Sets both cancellation type to Retry and updates the current retry token
                  workflow_update_retry_deployment(currentWorkflowData->WorkflowHandle, newRetryToken);
  
-@@ -538,11 +577,6 @@ void ADUC_Workflow_HandlePropertyUpdate(
+@@ -538,11 +577,15 @@ void ADUC_Workflow_HandlePropertyUpdate(
  
                      Log_Debug("deferral not needed. Processing '%s' now", workflow_peek_id(nextWorkflow));
  
 -                    workflow_transfer_data(
 -                        currentWorkflowData->WorkflowHandle /* wfTarget */, nextWorkflow /* wfSource */);
--
++                    // Hint: disable transfer data workflow to use the handle new workflow.
++                    // During retry tests, we saw that the transfer data workflow is not working as expected to
++                    // get the current workflow in the swupdate_handler_v2.
+ 
 -                    ADUC_Workflow_HandleUpdateAction(currentWorkflowData);
 -                    goto done;
++                    // workflow_transfer_data(
++                    //     currentWorkflowData->WorkflowHandle /* wfTarget */, nextWorkflow /* wfSource */);
++
++                    // ADUC_Workflow_HandleUpdateAction(currentWorkflowData);
++                    // goto done;
                  }
  
                  // Fall through to handle new workflow
-@@ -971,7 +1005,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
+@@ -971,7 +1014,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
                      // Reset workflow state to process deployment and transfer
                      // the deferred workflow to current.
                      workflow_update_for_replacement(workflowData->WorkflowHandle);
