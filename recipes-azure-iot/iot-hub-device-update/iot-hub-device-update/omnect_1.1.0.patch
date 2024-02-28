@@ -46,7 +46,7 @@ index 6fc707c..11d4e4b 100644
 +}
 \ No newline at end of file
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index 3eb5fa4..fae84d7 100644
+index 3eb5fa4..247bfa7 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
 @@ -14,7 +14,9 @@
@@ -113,15 +113,17 @@ index 3eb5fa4..fae84d7 100644
                  // Sets both cancellation type to Retry and updates the current retry token
                  workflow_update_retry_deployment(currentWorkflowData->WorkflowHandle, newRetryToken);
  
-@@ -538,11 +577,15 @@ void ADUC_Workflow_HandlePropertyUpdate(
+@@ -538,11 +577,17 @@ void ADUC_Workflow_HandlePropertyUpdate(
  
                      Log_Debug("deferral not needed. Processing '%s' now", workflow_peek_id(nextWorkflow));
  
 -                    workflow_transfer_data(
 -                        currentWorkflowData->WorkflowHandle /* wfTarget */, nextWorkflow /* wfSource */);
-+                    // Hint: disable transfer data workflow to use the handle new workflow.
-+                    // During retry tests, we saw that the transfer data workflow is not working as expected to
-+                    // get the current workflow in the swupdate_handler_v2.
++                    // We don't use reuse currentWorkflowData.
++                    // currentWorkflow is current resp. **old** workflow before cloud updated with nextWorkflow (**current** incoming).
++                    // workflow_transfer_data only works if version to update is equal in currentWorkflow and nextWorkflow.
++                    // Thus we disable copying transfer data between workflows and don't use currentWorkflow (**old**).
++                    // Thus we use nextWorkflow (**current** incoming).
  
 -                    ADUC_Workflow_HandleUpdateAction(currentWorkflowData);
 -                    goto done;
@@ -133,7 +135,7 @@ index 3eb5fa4..fae84d7 100644
                  }
  
                  // Fall through to handle new workflow
-@@ -971,7 +1014,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
+@@ -971,7 +1016,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
                      // Reset workflow state to process deployment and transfer
                      // the deferred workflow to current.
                      workflow_update_for_replacement(workflowData->WorkflowHandle);
@@ -1073,16 +1075,10 @@ index 0000000..891e09b
 +    return result;
 +}
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-index 2d60fa7..e5523d2 100644
+index 2d60fa7..e56d0f0 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
 +++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-@@ -326,20 +326,49 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
-     Log_Info("SWUpdate handler v2 download task begin.");
- 
-     ADUC_WorkflowHandle workflowHandle = workflowData->WorkflowHandle;
--    char* installedCriteria = nullptr;
-     char* workFolder = workflow_get_workfolder(workflowData->WorkflowHandle);
-     ADUC_FileEntity fileEntity;
+@@ -332,12 +332,43 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
      memset(&fileEntity, 0, sizeof(fileEntity));
      size_t fileCount = workflow_get_update_files_count(workflowHandle);
      ADUC_Result result = SWUpdate_Handler_DownloadScriptFile(workflowHandle);
@@ -1124,11 +1120,9 @@ index 2d60fa7..e5523d2 100644
 +    }
 +
      // Determine whether to continue downloading the rest.
--    installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
+     installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
      result = IsInstalled(workflowData);
- 
-     if (result.ResultCode == ADUC_Result_IsInstalled_Installed)
-@@ -348,6 +377,16 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -348,6 +379,16 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
          goto done;
      }
  
@@ -1145,14 +1139,6 @@ index 2d60fa7..e5523d2 100644
      result = { ADUC_Result_Download_Success };
  
      for (int i = 0; i < fileCount; i++)
-@@ -385,7 +424,6 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
- done:
-     workflow_free_string(workFolder);
-     ADUC_FileEntity_Uninit(&fileEntity);
--    workflow_free_string(installedCriteria);
-     Log_Info("SWUpdate_Handler download task end.");
-     return result;
- }
 diff --git a/src/platform_layers/linux_platform_layer/CMakeLists.txt b/src/platform_layers/linux_platform_layer/CMakeLists.txt
 index 40d57d1..000e530 100644
 --- a/src/platform_layers/linux_platform_layer/CMakeLists.txt
