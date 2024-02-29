@@ -24,8 +24,8 @@ OMNECT_WLAN0 = "wlan0"
 
 # configure hardware watchdog
 # the maximum watchdog deadline depends on the hardware capabilities
-SYSTEMD_RuntimeWatchdogSec  = "10"
-SYSTEMD_RebootWatchdogSec   = "180"
+SYSTEMD_RuntimeWatchdogSec  = "15"
+SYSTEMD_RebootWatchdogSec   = "15"
 
 # this machine uses uboot
 MACHINEOVERRIDES:prepend = "omnect_uboot:"
