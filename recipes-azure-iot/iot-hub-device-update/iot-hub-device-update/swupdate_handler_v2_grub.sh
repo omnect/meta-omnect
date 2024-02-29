@@ -603,7 +603,7 @@ CheckIsInstalledState() {
 }
 
 #
-# Implementation of 'IsInstallable' function, for the reference Yocto Image.
+# Implementation of 'IsInstallable' function, for an omnect-os image.
 #
 # Design Goal:
 #   Determine whether the specified 'installedCriteria' (parameter $1) is met.
