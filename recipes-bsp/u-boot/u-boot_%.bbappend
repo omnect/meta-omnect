@@ -37,6 +37,9 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/u-boot-scr.bb"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/u-boot/*"
 
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE = "${OMNECT_THISDIR_SAVED}/u-boot/.gitignore"
+# don't include files which are generated on build:
+OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${OMNECT_THISDIR_SAVED}/u-boot/redundant-env-fragment.cfg"
+
 
 # copy configuration fragment from template, before SRC_URI is checked
 do_fetch:prepend() {
