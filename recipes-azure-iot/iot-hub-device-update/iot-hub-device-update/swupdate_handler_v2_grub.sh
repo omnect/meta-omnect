@@ -487,42 +487,54 @@ function is_installed() {
 
 #
 # A helper function that compares two software versions.
-# If version1 newer than version2 -> return 1
-# If version1 older than version2 -> return 2
-# If version1 equal version2 -> return 0
+#
+# version number schema:
+# - based on Major.Minor.Patch.Buildnumber
+# - based only on digits
+#
+# If version1 newer than version2           -> return 1
+# If version1 older than version2           -> return 2
+# If version1 equal version2                -> return 3
+# Illegal format in version1 or version2    -> return 0
 #
 # Usage: version_comp $version1 $version2
 #
 # shellcheck disable=SC2034
 function version_comp () {
-    if [[ $1 == $2 ]]
+
+    local regex='^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$'
+    local -a v1
+    local -a v2
+
+    if [[ "$1" =~ $regex ]]
     then
-        return 0
+        v1=("${BASH_REMATCH[@]}")
+        if [[ "$2" =~ $regex ]]
+        then
+            v2=("${BASH_REMATCH[@]}")
+        else
+            return 0    # version format illegal
+        fi
+    else
+        return 0        # version format illegal
     fi
-    local IFS=.
-    local i ver1=($1) ver2=($2)
-    # fill empty fields in ver1 with zeros
-    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+
+    for ((i=1; i<=4; i++))
     do
-        ver1[i]=0
-    done
-    for ((i=0; i<${#ver1[@]}; i++))
-    do
-        if [[ -z ${ver2[i]} ]]
+        # remove leading zeros
+        v1[i]=$(echo ${v1[i]} | sed 's/^0*//')
+        v2[i]=$(echo ${v2[i]} | sed 's/^0*//')
+
+        if ((v1[i] > v2[i]))
         then
-            # fill empty fields in ver2 with zeros
-            ver2[i]=0
+            return 1    # newer
         fi
-        if ((10#${ver1[i]} > 10#${ver2[i]}))
+        if ((v1[i] < v2[i]))
         then
-            return 1
-        fi
-        if ((10#${ver1[i]} < 10#${ver2[i]}))
-        then
-            return 2
+            return 2    # older
         fi
     done
-    return 0
+    return 3            # same
 }
 
 #
@@ -560,10 +572,14 @@ function is_installable() {
             rc=0    # software version is older
             make_swupdate_handler_erc 202 erc
             rd="Image not installable. Downgrade not allowed!"
-        else
+        elif [[ $comp_res -eq "3" ]]; then
             rc=0    # software version is equal
-            make_swupdate_handler_erc 200 erc
+            make_swupdate_handler_erc 203 erc
             rd="Image not installable. Software already installed!"
+        else
+            rc=0    # version format illegal
+            make_swupdate_handler_erc 200 erc
+            rd="Image not installable. Illegal version format!"
         fi
     fi
 }
