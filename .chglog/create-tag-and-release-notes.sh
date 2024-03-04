@@ -6,7 +6,7 @@ set -e
 yocto_release=$(yq '.env.OE_VERSION' kas/distro/oe.yaml)
 
 # set prod subscription
-az account set --subscription "b94a1716-806f-4b00-b17c-8924be76e728"
+az account set --subscription "subscription-id"
 
 # get number of existing releases based on current yocto-version
 release_incr=$(az storage blob list --account-name omnectsharedprodst --container-name release-notes --prefix release-notes-"${yocto_release}"v  --num-results "*" --query "length(@)")
