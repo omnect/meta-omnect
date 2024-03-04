@@ -543,8 +543,8 @@ function is_installable() {
     local -n rc=$3  # name reference for resultCode
     local -n erc=$4 # name reference for extendedResultCode
     local -n rd=$5  # name reference for resultDetails
-    local current_version=$(cat $software_version_file | head -n1 | awk '{print $2;}')
-    local new_version=$(echo $1 | head -n1 | awk '{print $2;}')
+    local current_version=$(awk '{print $2; exit}' $software_version_file)
+    local new_version=$(awk '{print $2; exit}' <<< "$1")
 
     if ! [[ -f $2 ]]; then
         rc=0
