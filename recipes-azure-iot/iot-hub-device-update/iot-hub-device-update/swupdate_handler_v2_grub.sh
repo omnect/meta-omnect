@@ -502,29 +502,25 @@ function is_installed() {
 # shellcheck disable=SC2034
 function version_comp () {
 
-    local regex='^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$'
+    local regex='^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$'
     local -a v1
     local -a v2
 
     if [[ "$1" =~ $regex ]]
     then
         v1=("${BASH_REMATCH[@]}")
-        if [[ "$2" =~ $regex ]]
-        then
-            v2=("${BASH_REMATCH[@]}")
-        else
-            return 0    # version format illegal
-        fi
+    else
+        return 0        # version format illegal
+    fi
+    if [[ "$2" =~ $regex ]]
+    then
+        v2=("${BASH_REMATCH[@]}")
     else
         return 0        # version format illegal
     fi
 
     for ((i=1; i<=4; i++))
     do
-        # remove leading zeros
-        v1[i]=$(echo ${v1[i]} | sed 's/^0*//')
-        v2[i]=$(echo ${v2[i]} | sed 's/^0*//')
-
         if ((v1[i] > v2[i]))
         then
             return 1    # newer
