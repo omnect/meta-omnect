@@ -1,0 +1,17 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index c916bec0..3b59af53 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -53,8 +53,8 @@ members = [
+ 
+ # Don't let panics from callbacks cross FFI boundary
+ 
+-[profile.dev]
+-panic = "abort"
++#[profile.dev]
++#panic = "abort"
+ 
+-[profile.release]
+-panic = "abort"
++#[profile.release]
++#panic = "abort"

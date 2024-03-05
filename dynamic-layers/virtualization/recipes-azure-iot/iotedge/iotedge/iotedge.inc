@@ -5,9 +5,12 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 CARGO_SRC_DIR = "edgelet/iotedge"
 CARGO_WORKSPACE_ROOT = "edgelet"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:${THISDIR}/../:"
 
-SRC_URI += "file://apply_doesnt_restart_services.patch"
+SRC_URI += " \
+    file://apply_doesnt_restart_services.patch \
+    file://dont_force_panic_abort_strategy.patch \
+"
 
 DEPENDS += "openssl"
 RDEPENDS:${PN} += "aziot-identityd"
