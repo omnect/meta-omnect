@@ -1,8 +1,8 @@
 diff --git a/edgelet/Cargo.toml b/edgelet/Cargo.toml
-index f936b90440..28caf3f5ab 100644
+index f936b90..01f8121 100644
 --- a/edgelet/Cargo.toml
 +++ b/edgelet/Cargo.toml
-@@ -14,8 +14,34 @@ members = [
+@@ -14,8 +14,8 @@ members = [
      "support-bundle",
  ]
  
@@ -15,29 +15,3 @@ index f936b90440..28caf3f5ab 100644
 -panic = 'abort'
 +#[profile.release]
 +#panic = 'abort'
-+
-+# omnect_rust_iot-identity-service_deps.bbclass:
-+[patch.'https://github.com/Azure/iot-identity-service']
-+aziot-cert-client-async = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/cert/aziot-cert-client-async" }
-+aziot-cert-common = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/cert/aziot-cert-common" }
-+aziot-cert-common-http = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/cert/aziot-cert-common-http" }
-+aziot-certd-config = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/cert/aziot-certd-config" }
-+aziot-identity-client-async = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/identity/aziot-identity-client-async" }
-+aziot-identity-common = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/identity/aziot-identity-common" }
-+aziot-identity-common-http = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/identity/aziot-identity-common-http" }
-+aziot-identityd-config = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/identity/aziot-identityd-config" }
-+aziot-key-client = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/key/aziot-key-client" }
-+aziot-key-client-async = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/key/aziot-key-client-async" }
-+aziot-key-common = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/key/aziot-key-common" }
-+aziot-key-common-http = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/key/aziot-key-common-http" }
-+aziot-key-openssl-engine = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/key/aziot-key-openssl-engine" }
-+aziot-keyd-config = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/key/aziot-keyd-config" }
-+aziot-keys-common = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/key/aziot-keys-common" }
-+aziotctl-common = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/aziotctl/aziotctl-common" }
-+aziot-tpmd-config = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/tpm/aziot-tpmd-config" }
-+cert-renewal = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/cert/cert-renewal" }
-+http-common = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/http-common" }
-+logger = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/logger" }
-+test-common = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/test-common" }
-+# for config-common we patch iotedge so that it uses the same branch as the rest
-+config-common = { path = "/yocto-build/build/tmp-glibc/work/cortexa72-omnect-linux/aziot-edged/1.4.27-r0/aziot-cert-client-async/config-common" }
