@@ -502,6 +502,8 @@ function is_installed() {
 # shellcheck disable=SC2034
 function version_comp () {
 
+    # regex: four groups, dot separated, only digits, remove leading 0
+    # e.g. https://regex101.com/r/rhe1hM/1
     local regex='^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$'
     local -a v1
     local -a v2
