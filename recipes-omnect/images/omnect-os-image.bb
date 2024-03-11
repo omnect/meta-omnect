@@ -74,6 +74,7 @@ IMAGE_INSTALL = "\
     procps \
     sudo \
     systemd-analyze \
+    omnect-health-check \
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 

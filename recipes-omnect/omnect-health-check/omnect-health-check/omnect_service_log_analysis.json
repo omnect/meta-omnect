@@ -1,0 +1,36 @@
+{
+    "default-ratings": [
+	{
+	    "condition": ".exitstatus == \"SEGV\" or .exitstatus == \"ABRT\"",
+	    "rating": "red"
+	},
+	{
+	    "condition": ".exitstatus == \"HUP\"",
+	    "rating": "yellow"
+	},
+	{
+	    "condition": ".exitstatus == \"0\"",
+	    "rating": "ignored"
+	}
+    ],
+    "services": [
+	{
+	    "service": "omnect-device-service"
+	},
+	{
+	    "service": "aziot-identityd"
+	},
+	{
+	    "service": "aziot-certd"
+	},
+	{
+	    "service": "aziot-keyd"
+	},
+	{
+	    "service": "aziot-tpmd"
+	},
+	{
+	    "service": "deviceupdate-agent"
+	}
+    ]
+}

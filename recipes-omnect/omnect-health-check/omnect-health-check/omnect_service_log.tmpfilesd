@@ -1,0 +1,5 @@
+# FIXME: this needs to be changed to something reasonable not allowing
+# everybody to tamper with generated files; maybe introduce a new group for
+# that stuff, make the directory group writable ony and add all services to it
+# that shall be monitored
+d /run/omnect_health_log 0777 daemon daemon -
