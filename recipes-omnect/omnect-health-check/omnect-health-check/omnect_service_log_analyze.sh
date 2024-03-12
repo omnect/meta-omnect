@@ -20,27 +20,6 @@ CFGFILEPATH="${CFGDIR}/${CFGFILE}"
 : ${LOGDIR:=/run/omnect_health_log}
 : ${ANALYSISDIR:=/run/omnect_health_log}
 
-# get exit-log entries considered errors:
-# jq 'del(.infos[] | select(.exitcode == "exited" or .exitcode == "killed")) | . += {"rating": "red"}' /run/omnect_health_log/omnect-device-service.exit-log
-
-# get exit-log entries considered warnings only:
-# jq 'del(.infos[] | select(.exitcode == "killed" | not)) | . += {"rating": "yellow"}' /run/omnect_health_log/omnect-device-service.exit-log
-
-# rate all entries
-# jq '(.infos[] | select(.exitcode == "killed")) += { "rating": "yellow"} | (.infos[] | select(.exitcode == "exited")) += { "rating": "ignored" } | (.infos[] | select(.exitcode != "killed" and .exitcode != "exited")) += {"rating": "red" }' /run/omnect_health_log/omnect-device-service.exit-log
-# better rate everything not yet rated "red":
-# <  /run/omnect_health_log/omnect-device-service.exit-log jq '(.infos[] | select(.exitcode == "killed")) += { "rating": "yellow"} | (.infos[] | select(.exitcode == "exited")) += { "rating": "ignored" } | (.infos[] | select(has("rating") | not)) += {"rating": "red" }'
-
-# < omnect-device-service.analysis jq 'del(.infos[] | select(.rating != "yellow"))'
-# < omnect-device-service.analysis jq 'del(.infos[] | select(.rating != "red"))'
-
-# < omnect-device-service.analysis jq 'del(.infos[] | select(.rating != "red")) | del(.infos[].rating) | (. += { rating: "red"})'
-# < omnect-device-service.analysis jq 'del(.infos[] | select(.rating != "yellow")) | del(.infos[].rating) | (. += { rating: "yellow"})'
-# < omnect-device-service.analysis jq 'del(.infos[] | select(.rating != "ignored")) | del(.infos[].rating) | (. += { rating: "ignored"})' > omnect-device-service.analysis.ignored
-
-# compute timestamp of system start:
-# (set -vx; now=$(date +%s); ups=$(set -- $(cat /proc/uptime); echo $1); ups=${ups%%.*}; upsince=$((now - ups)); date -d "@$upsince")
-
 if [ ! -r "$CFGFILEPATH" ]; then
     warn "no configuration file (${CFGFILEPATH}) found, don't know what to do."
     exit 0
