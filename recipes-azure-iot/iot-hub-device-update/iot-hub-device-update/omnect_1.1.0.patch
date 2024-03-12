@@ -46,7 +46,7 @@ index 6fc707c..11d4e4b 100644
 +}
 \ No newline at end of file
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index 3eb5fa4..f71a636 100644
+index 3eb5fa4..c8401df 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
 @@ -14,7 +14,9 @@
@@ -59,12 +59,67 @@ index 3eb5fa4..f71a636 100644
  
  #include <time.h>
  
-@@ -418,9 +420,31 @@ void ADUC_Workflow_HandlePropertyUpdate(
+@@ -35,6 +37,10 @@
+ 
+ #include <pthread.h>
+ 
++#include <sys/inotify.h>
++#define INOTIFY_EVENT_SIZE      ( sizeof (struct inotify_event) )
++#define INOTIFY_EVENT_BUF_LEN   ( 1024 * ( INOTIFY_EVENT_SIZE + 16 ) )
++
+ // fwd decl
+ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_Result result, bool isAsync);
+ 
+@@ -340,6 +346,45 @@ void ADUC_Workflow_DoWork(ADUC_WorkflowData* workflowData)
+ 
+ void ADUC_Workflow_HandleStartupWorkflowData(ADUC_WorkflowData* currentWorkflowData)
+ {
++    char buffer[INOTIFY_EVENT_BUF_LEN];
++    const char omnectValidateUpdateCompleteBarrier[FILENAME_MAX] = "/run/omnect-device-service/omnect_validate_update_complete_barrier\0";
++    if (access(omnectValidateUpdateCompleteBarrier, F_OK) == 0) {
++        Log_Info("Startup during update validation. Stalling workflow until \"%s\" gets deleted.", omnectValidateUpdateCompleteBarrier);
++
++        int fd = inotify_init();
++        if ( fd >= 0 ) {
++            int wd = inotify_add_watch(fd, omnectValidateUpdateCompleteBarrier, IN_DELETE_SELF);
++            if ( wd >= 0)
++            {
++                // blocking read until file gets deleted
++                ssize_t length = read( fd, buffer, INOTIFY_EVENT_BUF_LEN );
++                if (length >= 0)
++                {
++                    Log_Info("Update validation succeeded, continuing workflow.");
++                }
++                else
++                {
++                    Log_Error("Read inotify event failed");
++                    //todo can not return error ... exit with error?
++                }
++
++                inotify_rm_watch(fd,wd);
++            }
++            else
++            {
++                Log_Error("inotify_add_watch() failed");
++                 //todo can not return error ... exit with error?
++            }
++
++            close(fd);
++        }
++        else
++        {
++            Log_Error("inotify_init() failed");
++            //todo can not return error ... exit with error?
++        }
++    }
++
+     if (currentWorkflowData == NULL)
+     {
+         Log_Info("No update content. Ignoring.");
+@@ -418,9 +463,29 @@ void ADUC_Workflow_HandlePropertyUpdate(
      ADUC_WorkflowData* currentWorkflowData, const unsigned char* propertyUpdateValue, bool forceUpdate)
  {
      ADUC_WorkflowHandle nextWorkflow;
-+    const char omnectValidateUpdateFailedFilePath[FILENAME_MAX] =
-+        "/run/omnect-device-service/omnect_validate_update_failed";
 +    const char* serviceRuntimeDir = getenv("RUNTIME_DIRECTORY"); // created by deviceupdate-agent.service
 +    const char* omnectUpdateRetryFileName = "/omnect_update_retry";
 +    char* omnectUpdateRetryFilePath = NULL;
@@ -91,29 +146,27 @@ index 3eb5fa4..f71a636 100644
      workflow_set_force_update(nextWorkflow, forceUpdate);
  
      ADUC_Result_t rootkeyErc = RootKeyUtility_GetReportingErc();
-@@ -491,6 +515,21 @@ void ADUC_Workflow_HandlePropertyUpdate(
+@@ -491,6 +556,19 @@ void ADUC_Workflow_HandlePropertyUpdate(
  
                  Log_Debug("Retry %s is applicable", newRetryToken);
  
-+                // If omnect_validate_update_failed file barrier is present and an update retry was
-+                // triggered by cloud, we create omnect_update_retry file in order to try to install
-+                // the update again.
 +                FILE* fp;
 +
-+                Log_Debug("Retry: '%s' detected.", omnectValidateUpdateFailedFilePath);
++                // create omnectUpdateRetryFilePath to message swupdate handler v2 we're in state "retry"
 +                if ((NULL == omnectUpdateRetryFilePath) || (NULL == (fp = fopen(omnectUpdateRetryFilePath, "w"))))
 +                {
-+                    Log_Error("Cannot create '%s'", omnectUpdateRetryFilePath);
++                    Log_Error("Cannot create '%s'.", omnectUpdateRetryFilePath);
 +                }
 +                else
 +                {
++                    Log_Info("Created '%s'.", omnectUpdateRetryFilePath);
 +                    fclose(fp);
 +                }
 +
                  // Sets both cancellation type to Retry and updates the current retry token
                  workflow_update_retry_deployment(currentWorkflowData->WorkflowHandle, newRetryToken);
  
-@@ -971,7 +1010,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
+@@ -971,7 +1049,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
                      // Reset workflow state to process deployment and transfer
                      // the deferred workflow to current.
                      workflow_update_for_replacement(workflowData->WorkflowHandle);
@@ -1053,10 +1106,10 @@ index 0000000..891e09b
 +    return result;
 +}
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-index 2d60fa7..bc5b92c 100644
+index 2d60fa7..7b3694f 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
 +++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-@@ -332,12 +332,43 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -332,12 +332,47 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
      memset(&fileEntity, 0, sizeof(fileEntity));
      size_t fileCount = workflow_get_update_files_count(workflowHandle);
      ADUC_Result result = SWUpdate_Handler_DownloadScriptFile(workflowHandle);
@@ -1084,6 +1137,10 @@ index 2d60fa7..bc5b92c 100644
 +    // failed on the new partition. We do this in order to step into update failed state
 +    // which also shows up in ADU cloud and offers triggering an update retry.
 +    // If the cloud triggered a retry we ignore omnect_validate_update_failed flag.
++    //
++    // Reason we need this handling is that upstream code doesn't save a state
++    // between reboots.
++    // More background info: https://github.com/Azure/iot-hub-device-update/issues/460
 +    if (omnectValidateUpdateFailedFilePath.good())
 +    {
 +        if (!retry)
