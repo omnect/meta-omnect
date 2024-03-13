@@ -46,74 +46,10 @@ index 6fc707c..11d4e4b 100644
 +}
 \ No newline at end of file
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index 3eb5fa4..247bfa7 100644
+index 3eb5fa4..85ba479 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
-@@ -14,7 +14,9 @@
- 
- #define __STDC_FORMAT_MACROS
- #include <inttypes.h> // PRIu64
-+#include <stdio.h>
- #include <stdlib.h>
-+#include <unistd.h>
- 
- #include <time.h>
- 
-@@ -418,9 +420,31 @@ void ADUC_Workflow_HandlePropertyUpdate(
-     ADUC_WorkflowData* currentWorkflowData, const unsigned char* propertyUpdateValue, bool forceUpdate)
- {
-     ADUC_WorkflowHandle nextWorkflow;
-+    const char omnectValidateUpdateFailedFilePath[FILENAME_MAX] =
-+        "/run/omnect-device-service/omnect_validate_update_failed";
-+    const char* serviceRuntimeDir = getenv("RUNTIME_DIRECTORY"); // created by deviceupdate-agent.service
-+    const char* omnectUpdateRetryFileName = "/omnect_update_retry";
-+    char* omnectUpdateRetryFilePath = NULL;
- 
-     ADUC_Result result = workflow_init((const char*)propertyUpdateValue, true /* shouldValidate */, &nextWorkflow);
- 
-+    if (NULL == serviceRuntimeDir)
-+    {
-+        Log_Error("RUNTIME_DIRECTORY was not found.");
-+        return;
-+    }
-+
-+    if (NULL
-+        != (omnectUpdateRetryFilePath = malloc(strlen(serviceRuntimeDir) + strlen(omnectUpdateRetryFileName) + 1)))
-+    {
-+        strcpy(omnectUpdateRetryFilePath, serviceRuntimeDir);
-+        strcat(omnectUpdateRetryFilePath, omnectUpdateRetryFileName);
-+    }
-+    else
-+    {
-+        Log_Error("Cannot allocate omnectUpdateRetryFilePath.");
-+    }
-+
-     workflow_set_force_update(nextWorkflow, forceUpdate);
- 
-     ADUC_Result_t rootkeyErc = RootKeyUtility_GetReportingErc();
-@@ -491,6 +515,21 @@ void ADUC_Workflow_HandlePropertyUpdate(
- 
-                 Log_Debug("Retry %s is applicable", newRetryToken);
- 
-+                // If omnect_validate_update_failed file barrier is present and an update retry was
-+                // triggered by cloud, we create omnect_update_retry file in order to try to install
-+                // the update again.
-+                FILE* fp;
-+
-+                Log_Debug("Retry: '%s' detected.", omnectValidateUpdateFailedFilePath);
-+                if ((NULL == omnectUpdateRetryFilePath) || (NULL == (fp = fopen(omnectUpdateRetryFilePath, "w"))))
-+                {
-+                    Log_Error("Cannot create '%s'", omnectUpdateRetryFilePath);
-+                }
-+                else
-+                {
-+                    fclose(fp);
-+                }
-+
-                 // Sets both cancellation type to Retry and updates the current retry token
-                 workflow_update_retry_deployment(currentWorkflowData->WorkflowHandle, newRetryToken);
- 
-@@ -538,11 +577,17 @@ void ADUC_Workflow_HandlePropertyUpdate(
+@@ -538,11 +538,17 @@ void ADUC_Workflow_HandlePropertyUpdate(
  
                      Log_Debug("deferral not needed. Processing '%s' now", workflow_peek_id(nextWorkflow));
  
@@ -135,7 +71,25 @@ index 3eb5fa4..247bfa7 100644
                  }
  
                  // Fall through to handle new workflow
-@@ -971,7 +1016,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
+@@ -672,7 +678,17 @@ void ADUC_Workflow_HandleUpdateAction(ADUC_WorkflowData* workflowData)
+     if (workflow_isequal_id(workflowData->WorkflowHandle, workflowData->LastCompletedWorkflowId)
+         && !workflow_get_force_update(workflowData->WorkflowHandle))
+     {
++        char* updateId = workflow_get_expected_update_id_string(workflowData->WorkflowHandle);
+         Log_Debug("Ignoring duplicate deployment %s, action %d", workflowData->LastCompletedWorkflowId, desiredAction);
++
++        // Use Case:
++        // An update was successfully installed on the device. The update itself is already present and active.
++        // In case token expiry connection refresh handling (after about 40 minutes), the device agent will automatically change the operation state
++        // in the module twin to state "6" -> "in Progress" in the background.
++        // Via this ignore duplicate handling, this state won't change later by the agent and we have to manually set the state
++        // back to idle.
++        ADUC_Workflow_SetInstalledUpdateIdAndGoToIdle(workflowData, updateId);
++        free(updateId);
+         goto done;
+     }
+ 
+@@ -971,7 +987,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
                      // Reset workflow state to process deployment and transfer
                      // the deferred workflow to current.
                      workflow_update_for_replacement(workflowData->WorkflowHandle);
@@ -1075,17 +1029,18 @@ index 0000000..891e09b
 +    return result;
 +}
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-index 2d60fa7..e56d0f0 100644
+index 2d60fa7..a40b74a 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
 +++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-@@ -332,12 +332,43 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -332,12 +332,50 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
      memset(&fileEntity, 0, sizeof(fileEntity));
      size_t fileCount = workflow_get_update_files_count(workflowHandle);
      ADUC_Result result = SWUpdate_Handler_DownloadScriptFile(workflowHandle);
 +    bool retry = false;
 +    std::ifstream omnectValidateUpdateFailedFilePath("/run/omnect-device-service/omnect_validate_update_failed");
-+    const char* runtimeDir = std::getenv("RUNTIME_DIRECTORY");
-+    std::string omnectUpdateRetryFileName("/omnect_update_retry");
++    char* runtimeDir = std::getenv("RUNTIME_DIRECTORY");
++    std::string omnectFailedFileName = "/omnect_failed_state";
++    std::string omnectFailedFilePath;
  
      if (IsAducResultCodeFailure(result.ResultCode))
      {
@@ -1094,35 +1049,41 @@ index 2d60fa7..e56d0f0 100644
  
 +    if (NULL == runtimeDir)
 +    {
-+        Log_Error("Update validation on new boot part failed. Rebooted to old boot part.");
++        Log_Error("RUNTIME_DIRECTORY was not found.");
 +    }
 +    else
 +    {
-+        std::ifstream omnectUpdateRetryFilePath(std::string(runtimeDir) + omnectUpdateRetryFileName);
-+        retry = omnectUpdateRetryFilePath.good();
++        omnectFailedFilePath = runtimeDir + omnectFailedFileName;
 +    }
 +
 +    // We return with an error in case we just booted into here after an update validation
 +    // failed on the new partition. We do this in order to step into update failed state
 +    // which also shows up in ADU cloud and offers triggering an update retry.
-+    // If the cloud triggered a retry we ignore omnect_validate_update_failed flag.
++    // In case we already signal the failed state, then we expect that retry or a new update will be present.
 +    if (omnectValidateUpdateFailedFilePath.good())
 +    {
-+        if (!retry)
++        std::ifstream omnectCheckFailedFilePath(omnectFailedFilePath);
++        if (0 == omnectCheckFailedFilePath.good())
 +        {
++            std::ofstream omnectFailedFile(omnectFailedFilePath);
++            if (0 == omnectFailedFile.good())
++            {
++                Log_Error("Cannot create '%s'", omnectFailedFilePath);
++            }
++
 +            result = { ADUC_Result_Failure };
 +            Log_Error("Update validation on new boot part failed. Rebooted to old boot part.");
 +            result.ExtendedResultCode = ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION;
 +            goto done;
 +        }
 +
-+        Log_Info("Retry update after failed update vailidation.");
++        Log_Info("New update after failed update vailidation.");
 +    }
 +
      // Determine whether to continue downloading the rest.
      installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
      result = IsInstalled(workflowData);
-@@ -348,6 +379,16 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -348,6 +386,16 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
          goto done;
      }
  
