@@ -84,7 +84,7 @@ case "$1" in
 	    output_logentry "$SERVICE_STARTLOGFILE_1ST" "$timestamp" "$2"
 	fi
 	# output_logentry is always appending
-	: > "SERVICE_STARTTLOGFILE"
+	: > "$SERVICE_STARTTLOGFILE"
 	output_logentry "$SERVICE_STARTLOGFILE" "$timestamp" "$2"
     ;;
     stop)
