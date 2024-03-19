@@ -26,11 +26,14 @@ LIC_FILES_CHKSUM = " \
 DEPENDS += "\
     azure-iot-sdk-c \
     pkgconfig-native \
+    modemmanager \
 "
+# TODO remove modemmanager, resp. merge after https://github.com/omnect/meta-omnect/pull/410
 
 RDEPENDS:${PN} += "\
-    aziot-identityd\
-    ca-certificates\
+    aziot-identityd \
+    bash \
+    ca-certificates \
     polkit \
     sudo \
 "
@@ -44,8 +47,8 @@ CARGO_BUILD_FLAGS:append:omnect_uboot = " --features=bootloader_uboot"
 
 do_install:append() {
     install -m 0644 -D ${S}/systemd/omnect-device-service.service ${D}${systemd_system_unitdir}/omnect-device-service.service
-    sed -i -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/omnect-device-service.service
     install -m 0644 -D ${S}/systemd/omnect-device-service.timer ${D}${systemd_system_unitdir}/omnect-device-service.timer
+    install -m 0755 -D ${S}/systemd/omnect-device-service.exec_stop_post.sh ${D}${bindir}/omnect-device-service.exec_stop_post.sh
     install -m 0644 -D ${S}/polkit/omnect-device-service.rules ${D}${datadir}/polkit-1/rules.d/omnect-device-service.rules
     install -m 0640 -D ${S}/sudo/omnect-device-service ${D}${sysconfdir}/sudoers.d/omnect-device-service
 
@@ -78,6 +81,7 @@ SYSTEMD_SERVICE:${PN} = " \
 "
 
 FILES:${PN} += "\
+    ${bindir}/omnect-device-service.exec_stop_post.sh \
     ${datadir}/polkit-1/rules.d/omnect-device-service.rules \
     ${libdir}/tmpfiles.d/omnect-device-service.conf \
     ${sysconfdir}/sudoers.d/omnect-device-service \
