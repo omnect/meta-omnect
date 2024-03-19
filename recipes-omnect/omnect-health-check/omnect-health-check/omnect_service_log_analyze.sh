@@ -35,7 +35,7 @@ for ((n=0; n < nentries; n++)); do
     servicelog="$LOGDIR/${service}.exit-log"
     hasratings=$(jq ".services[$n] | has(\".ratings\")" "$CFGFILEPATH")
     if [ ! -r "$servicelog" ]; then
-	msg "[${strrating[$rating]}]\t$service"
+	print_rating $rating "$service" "$ME"
 	continue
     fi
     if $hasratings; then
@@ -49,13 +49,12 @@ for ((n=0; n < nentries; n++)); do
     elif [ $rating -lt 1 -a $(jq '.infos | map(select(.rating == "yellow")) | length' "${servicelog}.rated") -gt 0 ]; then
 	rating=1
     fi
-    msg "[${strrating[$rating]}]\t$service"
+    print_rating $rating "$service" "$ME"
     if [ $rating -gt $overall_rating ]; then
 	overall_rating=$rating
     fi
 done
 
-msg "Overall rating: ${strrating[$overall_rating]}"
+# print_rating "" "omnect_service_log_analyze" "$ME"
 
 exit $overall_rating
-

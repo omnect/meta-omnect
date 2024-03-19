@@ -18,10 +18,13 @@
 	    "service": "omnect-device-service"
 	},
 	{
-	    "service": "aziot-identityd"
+	    "service": "aziot-certd"
 	},
 	{
-	    "service": "aziot-certd"
+	    "service": "aziot-edged"
+	},
+	{
+	    "service": "aziot-identityd"
 	},
 	{
 	    "service": "aziot-keyd"
