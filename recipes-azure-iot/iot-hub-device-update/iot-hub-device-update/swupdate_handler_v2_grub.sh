@@ -437,6 +437,12 @@ while [[ $1 != "" ]]; do
         $ret 0
         ;;
 
+    --*)
+	error "unrecognized option \"$1\""
+        print_help
+        $ret 1
+	;;
+
     *) # preserve positional arguments
         PARAMS="$PARAMS $1"
         shift
