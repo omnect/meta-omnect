@@ -7,8 +7,8 @@ repos:
   ext/meta-yocto-bsp:
     url: "https://git.yoctoproject.org/poky"
     branch: kirkstone
-    # yocto 4.0.16
-    commit: 54af8c5e80ebf63707ef4e51cc9d374f716da603
+    # yocto 4.0.17
+    commit: 6d1a878bbf24c66f7186b270f823fcdf82e35383
     layers:
       meta-yocto-bsp:
     patches:
