@@ -25,13 +25,20 @@ if [ ! -r "$CFGFILEPATH" ]; then
     exit 0
 fi
 
+# allow to select tests via command line
+check_services="$*"
+
 # remember overall rating
 strrating=("GREEN" "YELLOW" "RED")
 overall_rating=0
 nentries=$(jq '.services | length' "$CFGFILEPATH")
+[ "$check_services" ] || check_services=$(jq -r '[ .services[].service ] | join(" ")' "$CFGFILEPATH")
 for ((n=0; n < nentries; n++)); do
     rating=0
-    eval service=$(jq ".services[$n].service" "$CFGFILEPATH")
+
+    service=$(jq -r ".services[$n].service" "$CFGFILEPATH")
+    [ "$(echo $check_services | grep -w "$service")" ] || continue
+    
     servicelog="$LOGDIR/${service}.exit-log"
     hasratings=$(jq ".services[$n] | has(\".ratings\")" "$CFGFILEPATH")
     if [ ! -r "$servicelog" ]; then
