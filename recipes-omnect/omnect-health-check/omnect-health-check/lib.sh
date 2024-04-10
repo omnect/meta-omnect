@@ -68,6 +68,30 @@ do_rate_cmd() {
     do_rate $? "$1"
 }
 
+check_command_arg() {
+    local cmd="$1"
+
+    # first argument must be either "check" or "get-infos"
+    case "X$1" in
+	Xcheck | Xget-infos)
+	;;
+	X)
+	    fatal "no command given"
+	    exit 1
+	    ;;
+	*)
+	    fatal "unrecognized command \"$1\""
+	    exit 1
+	    ;;
+    esac
+}
+
+print_info_header() {
+    local title="${1:-$ME}"
+    local rating="${2:-$overall_rating}"
+    echo "---[ ${title}:${strrating[$rating]} ]---"
+}
+
 get_overall_rating() {
     return $overall_rating
 }

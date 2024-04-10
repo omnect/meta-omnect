@@ -16,10 +16,13 @@ SRC_URI = "\
 	file://omnect_health__system_running.sh \
 	file://omnect_health__timesync.sh \
 	file://omnect_health_check.sh \
+	file://omnect_health_checks.json \
 	file://omnect_service_log.sh \
 	file://omnect_service_log.tmpfilesd \
 	file://omnect_service_log_analysis.json \
 "
+
+RDEPENDS:${PN} = "bash"
 
 do_install() {
     # tpmfiles.d
@@ -40,6 +43,7 @@ do_install() {
     install -m 0755 -D ${WORKDIR}/omnect_service_log.sh            ${D}/${sbindir}/omnect_service_log.sh
 
     install -m 0644 -D ${WORKDIR}/omnect_service_log_analysis.json ${D}/${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json
+    install -m 0644 -D ${WORKDIR}/omnect_health_checks.json ${D}/${sysconfdir}/omnect/health_check/omnect_health_checks.json
 
     install -m 0755 -D ${WORKDIR}/check_coredumps.sh               ${D}/${sysconfdir}/omnect/health_check/checks.d/15-check_coredumps.sh
     install -m 0755 -D ${WORKDIR}/check_services.sh                ${D}/${sysconfdir}/omnect/health_check/checks.d/20-check_services.sh
@@ -57,6 +61,7 @@ FILES:${PN} = "\
 	${sbindir}/omnect_health__timesync.sh \
 	${sbindir}/omnect_service_log.sh \
 	${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json \
+	${sysconfdir}/omnect/health_check/omnect_health_checks.json \
 	${sysconfdir}/omnect/health_check/checks.d/10-check_system_running.sh \
 	${sysconfdir}/omnect/health_check/checks.d/11-check_timesync.sh \
 	${sysconfdir}/omnect/health_check/checks.d/15-check_coredumps.sh \
