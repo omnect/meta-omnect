@@ -114,10 +114,9 @@ case "$1" in
 	fi
     ;;
     stop)
+	# output_logentry is always appending
 	# FIXME: do we need to take care of log file rotation or removal?
 	output_logentry "$SERVICE_EXITLOGFILE" "$timestamp" "$2" "$3" "$4" "$5"
-	    output_exitinfo "$SERVICE_EXITINFOFILE_1ST" "$timestamp" "$2" "$3" "$4" "$5"
-	fi
 	output_exitinfo "$SERVICE_EXITINFOFILE" "$timestamp" "$2" "$3" "$4" "$5"
 	if [ ! -r "$SERVICE_EXITINFOFILE_1ST" ]; then
 	    cp -a "$SERVICE_EXITINFOFILE" "$SERVICE_EXITINFOFILE_1ST"

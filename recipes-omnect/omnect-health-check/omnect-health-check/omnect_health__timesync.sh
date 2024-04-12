@@ -3,7 +3,7 @@
 
 . lib.sh
 
-checkit() {
+function checkit() {
     local retval
     
     # we use timedatectl to place variables into environment to be checked
@@ -27,7 +27,7 @@ checkit() {
     return $retval
 }
 
-do_check() {
+function do_check() {
     local retval
 
     checkit
@@ -38,7 +38,7 @@ do_check() {
     return $retval
 }
 
-do_get_infos() {
+function do_get_infos() {
     local retval rating
 
     checkit
@@ -53,9 +53,9 @@ do_get_infos() {
     return $retval
 }
 
-command="$1"
+command="${1:-check}"
+[ "$1" ] && shift
 check_command_arg "$command"
-shift
 
 # first argument must be either "check" or "get-infos"
 case "$command" in

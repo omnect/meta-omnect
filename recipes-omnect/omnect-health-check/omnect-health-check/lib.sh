@@ -4,30 +4,30 @@
 
 ME="${0##*/}"
 
-print() {
+function print() {
     echo -e "$@"
 }
 
-msg() {
+function msg() {
     print "${ME}: ${@}"
 }
 
-warn() {
+function warn() {
     echo -e "${ME}: WARNING: ${@}" >&2
 }
 
-error() {
+function error() {
     echo -e "${ME}: ERROR: ${@}" >&2
 }
 
-fatal() {
+function fatal() {
     echo -e "${ME}: FATAL ERROR: ${@}" >&2
 }
 
 strrating=("GREEN" "YELLOW" "RED")
 overall_rating=0
 
-print_rating() {
+function print_rating() {
     local rating="${1:-${overall_rating}}"
     local info="$2"
     local file="$3"
@@ -40,7 +40,7 @@ print_rating() {
     print "${str}${extrainfo}"
 }
 
-do_rate() {
+function do_rate() {
     local rating="$1"
     local hint="$2"
 
@@ -60,15 +60,16 @@ do_rate() {
     esac
 }
 
-do_rate_cmd() {
+function do_rate_cmd() {
     local ret
     
     "$@"
-    
-    do_rate $? "$1"
+    ret=$?
+    do_rate $ret "$1"
+    return $ret
 }
 
-check_command_arg() {
+function check_command_arg() {
     local cmd="$1"
 
     # first argument must be either "check" or "get-infos"
@@ -86,12 +87,12 @@ check_command_arg() {
     esac
 }
 
-print_info_header() {
+function print_info_header() {
     local title="${1:-$ME}"
     local rating="${2:-$overall_rating}"
     echo "---[ ${title}:${strrating[$rating]} ]---"
 }
 
-get_overall_rating() {
+function get_overall_rating() {
     return $overall_rating
 }

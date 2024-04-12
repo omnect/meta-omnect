@@ -20,7 +20,7 @@ CFGFILEPATH="${CFGDIR}/${CFGFILE}"
 : ${LOGDIR:=/run/omnect_health_log}
 : ${ANALYSISDIR:=/run/omnect_health_log}
 
-do_check() {
+function do_check() {
     nentries=$(jq '.services | length' "$CFGFILEPATH")
     [ "$check_services" ] || check_services=$(jq -r '[ .services[].service ] | join(" ")' "$CFGFILEPATH")
     for ((n=0; n < nentries; n++)); do
@@ -52,7 +52,7 @@ do_check() {
     return $overall_rating
 }
 
-do_get_infos() {
+function do_get_infos() {
     nentries=$(jq '.services | length' "$CFGFILEPATH")
     [ "$check_services" ] || check_services=$(jq -r '[ .services[].service ] | join(" ")' "$CFGFILEPATH")
     for ((n=0; n < nentries; n++)); do
@@ -81,9 +81,14 @@ do_get_infos() {
 	do_rate "$rating"
 	print_info_header "${ME}(${service})" "$rating"
 	if [ "$rating" != 0 ]; then
-	    journalctl -b0 -l --no-pager -u "${service}.service"
+	    if [ -r /var/run/omnect_health_log/${service}.exit-info ]; then
+		cat /var/run/omnect_health_log/${service}.exit-info
+	    else
+		journalctl -b0 -l --no-pager -u "${service}.service"
+	    fi
 	fi
     done
+    get_overall_rating
 }
 
 if [ ! -r "$CFGFILEPATH" ]; then
@@ -91,9 +96,9 @@ if [ ! -r "$CFGFILEPATH" ]; then
     exit 0
 fi
 
-command="$1"
+command="${1:-check}"
+[ "$1" ] && shift
 check_command_arg "$command"
-shift
 
 # allow to select tests via command line
 check_services="$*"

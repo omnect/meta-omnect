@@ -3,7 +3,7 @@
 
 . lib.sh
 
-checkit() {
+function checkit() {
     local up now rating since sinces cores
     
     # at first find out time span we want to have core dumps for as we inly want
@@ -14,38 +14,40 @@ checkit() {
     sinces=$((now - up))
     since="$(date -d '@'"$sinces" +"%Y-%m-%d %H:%M:%S")"
     
-    cores=$(coredumpctl -q --json pretty --since "$since" | jq -r '. | map(.exe) | unique | join(",\n")')
+    # cores=$(coredumpctl -q --json pretty --since "$since" | jq -r '. | map(.exe) | unique | join(",\n")')
+    cores=$(coredumpctl -q --since "$since")
     
     if [ "${cores}" ]; then
 	rating=2
     fi
+    echo "${cores}"
     do_rate $rating
     return $rating
 }
 
-do_check() {
-    checkit
+function do_check() {
+    checkit > /dev/null
     print_rating "" "coredumps" "$ME"
     return $overall_rating
 }
 
-do_get_infos() {
-    local retval
+function do_get_infos() {
+    local cores retval
     
-    checkit
+    cores=$(checkit)
     retval=$?
 
     print_info_header
     if [ $retval != 0 ]; then
-	coredumpctl -r
+	echo "$cores"
     fi
     
     return $retval
 }
 
-command="$1"
+command="${1:-check}"
+[ "$1" ] && shift
 check_command_arg "$command"
-shift
 
 # first argument must be either "check" or "get-infos"
 case "$command" in
