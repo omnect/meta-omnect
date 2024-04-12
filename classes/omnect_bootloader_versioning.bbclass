@@ -59,7 +59,7 @@ python  do_bootloader_checksum() {
                     digest = hashlib.file_digest(f, "sha256")
                     used_checksum_file_list.append(checksum_glob_file)
                     checksum_list.append(digest.digest())
-                    checksums_file_out.write("%s %s\n" % (checksum_glob_file,digest.hexdigest()))
+                    checksums_file_out.write("%s %s\n" % (digest.hexdigest(),checksum_glob_file))
 
             except OSError:
                 bb.fatal("Unable to open \"%s\"" % (checksum_glob_file))
