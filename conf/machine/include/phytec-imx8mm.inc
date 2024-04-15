@@ -77,4 +77,4 @@ MACHINE_FEATURES:remove = " \
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot-imx - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "dacfe099af454be4c566e8fcfd9abca56df91a16465c78b7557512f548ff9cc2"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "ee033b1ea51fc251384d62e4b35950eeec90173502f7a36b4406cb4807b18241"

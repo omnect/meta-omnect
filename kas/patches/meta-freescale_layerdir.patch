@@ -1,8 +1,8 @@
 diff --git a/conf/layer.conf b/conf/layer.conf
-index a3c8af2c..903a96bb 100644
+index 5ff2839d..f9dfa02d 100644
 --- a/conf/layer.conf
 +++ b/conf/layer.conf
-@@ -54,3 +54,5 @@ BBFILES_DYNAMIC += " \
+@@ -57,3 +57,5 @@ BBFILES_DYNAMIC += " \
      virtualization-layer:${LAYERDIR}/dynamic-layers/virtualization-layer/*/*/*.bb \
      virtualization-layer:${LAYERDIR}/dynamic-layers/virtualization-layer/*/*/*.bbappend \
  "
