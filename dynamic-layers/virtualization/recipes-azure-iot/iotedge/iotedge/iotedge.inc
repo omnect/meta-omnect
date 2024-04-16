@@ -12,7 +12,7 @@ SRC_URI += "file://apply_doesnt_restart_services.patch"
 DEPENDS += "openssl"
 RDEPENDS:${PN} += "aziot-identityd"
 
-inherit features_check omnect_rust_iot-identity-service_deps
+inherit features_check omnect_rust
 
 export OPENSSL_DIR = "${STAGING_EXECPREFIXDIR}"
 export IOTEDGE_CONNECT_MANAGEMENT_URI = "unix:///var/run/iotedge/mgmt.sock"

@@ -46,7 +46,7 @@ index 6fc707cf..11d4e4b4 100644
 +}
 \ No newline at end of file
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index 3eb5fa40..c7500e4d 100644
+index 3eb5fa40..7e6e3abc 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
 @@ -35,6 +35,10 @@
@@ -83,7 +83,7 @@ index 3eb5fa40..c7500e4d 100644
 +                else
 +                {
 +                    Log_Error("Read inotify event failed");
-+                    //todo can not return error ... exit with error?
++                    exit(1);
 +                }
 +
 +                inotify_rm_watch(fd,wd);
@@ -91,7 +91,7 @@ index 3eb5fa40..c7500e4d 100644
 +            else
 +            {
 +                Log_Error("inotify_add_watch() failed");
-+                 //todo can not return error ... exit with error?
++                exit(1);
 +            }
 +
 +            close(fd);
@@ -99,7 +99,7 @@ index 3eb5fa40..c7500e4d 100644
 +        else
 +        {
 +            Log_Error("inotify_init() failed");
-+            //todo can not return error ... exit with error?
++            exit(1);
 +        }
 +    }
 +
