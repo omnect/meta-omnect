@@ -14,7 +14,7 @@ export IOTEDGE_CONNECT_WORKLOAD_URI = "unix:///var/run/iotedge/workload.sock"
 export IOTEDGE_LISTEN_MANAGEMENT_URI = "fd://aziot-edged.mgmt.socket"
 export IOTEDGE_LISTEN_WORKLOAD_URI = "fd://aziot-edged.workload.socket"
 
-inherit aziot features_check omnect_rust_iot-identity-service_deps systemd
+inherit aziot features_check omnect_rust systemd
 
 do_install () {
     # binaries
