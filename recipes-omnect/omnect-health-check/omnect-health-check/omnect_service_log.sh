@@ -44,7 +44,7 @@ function output_logentry() {
     local exitcode="$5"
     local exitstatus="$6"
     
-    if [ -r  "${outputfile}" ]; then
+    if [ -r "${outputfile}" ]; then
 	# append new entry in existing file
 	jq '.infos += [{ timestamp: "'"$timestamp"'"'"${result:+, result: \"$result\"}""${exitcode:+, exitcode: \"$exitcode\"}""${exitstatus:+, exitstatus: \"$exitstatus\"}"' }]' < "$outputfile" > "${outputfile}.tmp"
 	mv  "${outputfile}.tmp" "${outputfile}"
@@ -91,33 +91,33 @@ esac
 [ $# -lt $EXPECTED_PARAMS ] && fatal "too few parameters ($# < $EXPECTED_PARAMS)" && usage 1
 [ $# -gt $EXPECTED_PARAMS ] && warn "additional parameters ignored"
 
+SERVICE="$2"
+
 if [ ! -d "$SERVICE_EXITLOGDIR" ]; then
     mkdir "$SERVICE_EXITLOGDIR" \
 	|| fatal "couldn't create directory \"$SERVICE_EXITLOGDIR\""
 fi
 
-SERVICE_EXITLOGFILE="$SERVICE_EXITLOGDIR/$2$STOP_POSTFIX"
-SERVICE_EXITINFOFILE="$SERVICE_EXITLOGDIR/$2$STOP_INFOPOSTFIX"
-SERVICE_EXITINFOFILE_1ST="$SERVICE_EXITLOGDIR/$2$STOP_1ST_INFOPOSTFIX"
-SERVICE_STARTLOGFILE="$SERVICE_EXITLOGDIR/$2$START_POSTFIX"
-SERVICE_STARTLOGFILE_1ST="$SERVICE_EXITLOGDIR/$2$START_1ST_POSTFIX"
+SERVICE_EXITLOGFILE="$SERVICE_EXITLOGDIR/$SERVICE$STOP_POSTFIX"
+SERVICE_EXITINFOFILE="$SERVICE_EXITLOGDIR/$SERVICE$STOP_INFOPOSTFIX"
+SERVICE_EXITINFOFILE_1ST="$SERVICE_EXITLOGDIR/$SERVICE$STOP_1ST_INFOPOSTFIX"
+SERVICE_STARTLOGFILE="$SERVICE_EXITLOGDIR/$SERVICE$START_POSTFIX"
+SERVICE_STARTLOGFILE_1ST="$SERVICE_EXITLOGDIR/$SERVICE$START_1ST_POSTFIX"
 
 timestamp=$(date +%Y-%m-%dT%H:%M:%SZ)
 
 case "$1" in
     start)
-	# output_logentry is always appending
-	: > "$SERVICE_STARTLOGFILE"
-	output_logentry "$SERVICE_STARTLOGFILE" "$timestamp" "$2"
+	output_logentry "$SERVICE_STARTLOGFILE" "$timestamp" "$SERVICE"
 	if [ ! -r "$SERVICE_STARTLOGFILE_1ST" ]; then
 	    cp -a "$SERVICE_STARTLOGFILE" "$SERVICE_STARTLOGFILE_1ST"
 	fi
     ;;
     stop)
-	# output_logentry is always appending
 	# FIXME: do we need to take care of log file rotation or removal?
-	output_logentry "$SERVICE_EXITLOGFILE" "$timestamp" "$2" "$3" "$4" "$5"
-	output_exitinfo "$SERVICE_EXITINFOFILE" "$timestamp" "$2" "$3" "$4" "$5"
+	output_logentry "$SERVICE_EXITLOGFILE" "$timestamp" "$SERVICE" "$3" "$4" "$5"
+	omnect_health__services.sh check "$SERVICE" > /dev/null
+	output_exitinfo "$SERVICE_EXITINFOFILE" "$timestamp" "$SERVICE" "$3" "$4" "$5"
 	if [ ! -r "$SERVICE_EXITINFOFILE_1ST" ]; then
 	    cp -a "$SERVICE_EXITINFOFILE" "$SERVICE_EXITINFOFILE_1ST"
 	fi

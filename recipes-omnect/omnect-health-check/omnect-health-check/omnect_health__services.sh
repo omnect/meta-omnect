@@ -21,6 +21,8 @@ CFGFILEPATH="${CFGDIR}/${CFGFILE}"
 : ${ANALYSISDIR:=/run/omnect_health_log}
 
 function do_check() {
+    local jquery nentries service hasratings rating servicelog
+    
     nentries=$(jq '.services | length' "$CFGFILEPATH")
     [ "$check_services" ] || check_services=$(jq -r '[ .services[].service ] | join(" ")' "$CFGFILEPATH")
     for ((n=0; n < nentries; n++)); do
@@ -30,20 +32,38 @@ function do_check() {
 	[ "$(echo $check_services | grep -w "$service")" ] || continue
 	
 	servicelog="$LOGDIR/${service}.exit-log"
-	hasratings=$(jq ".services[$n] | has(\".ratings\")" "$CFGFILEPATH")
 	if [ ! -r "$servicelog" ]; then
 	    print_rating $rating "$service" "$ME"
 	    continue
 	fi
+
+	hasratings=$(jq ".services[$n] | has(\".ratings\")" "$CFGFILEPATH")
 	if $hasratings; then
 	    jquery=$(jq '.services[] | if (has("ratings")) then .ratings else empty end | map("(.infos[] | select(" + .condition + ")) += { \"rating\": \"" + .rating + "\"}") | join(" | ") ' ${CFGFILEPATH})
 	else
 	    jquery=$(jq 'if (has("default-ratings")) then ."default-ratings" else empty end | map("(.infos[] | select(" + .condition + ")) += { \"rating\": \"" + .rating + "\"}") | join(" | ") | . + " | (.infos[] | select(has(\"rating\") | not)) += { \"rating\": \"red\" }"' ${CFGFILEPATH})
 	fi
-	eval jq $jquery "$servicelog" > "${servicelog}.rated"
-	if [ $(jq '.infos | map(select(.rating == "red")) | length' "${servicelog}.rated") -gt 0 ]; then
+
+	# re-rate in case of ...
+	#   a) new entries, or
+	#   b) newer configuration file which might change the (overall)
+	#      outcome
+	# NOTE:
+	#   (re-)rating will normally happen after generation of new entries
+	#   initiated by omnect_service_log.sh via systemd StopPost hook
+	if [    ! -r "${servicelog}.rated" \
+	     -o "$CFGFILEPATH" -nt "${servicelog}" \
+	     -o "${servicelog}" -nt "${servicelog}.rated" \
+	   ]; then
+	    eval jq $jquery "$servicelog" > "${servicelog}.rated"
+	    mv "${servicelog}.rated" "$servicelog"
+	    # create empty anew to remember when we last rated all entries
+	    : > "${servicelog}.rated"
+	fi
+
+	if [ $(jq '.infos | map(select(.rating == "red")) | length' "${servicelog}") -gt 0 ]; then
 	    rating=2
-	elif [ $rating -lt 1 -a $(jq '.infos | map(select(.rating == "yellow")) | length' "${servicelog}.rated") -gt 0 ]; then
+	elif [ $rating -lt 1 -a $(jq '.infos | map(select(.rating == "yellow")) | length' "${servicelog}") -gt 0 ]; then
 	    rating=1
 	fi
 	print_rating $rating "$service" "$ME"
@@ -53,6 +73,8 @@ function do_check() {
 }
 
 function do_get_infos() {
+    local nentries service rating servicelog
+    
     nentries=$(jq '.services | length' "$CFGFILEPATH")
     [ "$check_services" ] || check_services=$(jq -r '[ .services[].service ] | join(" ")' "$CFGFILEPATH")
     for ((n=0; n < nentries; n++)); do
@@ -62,30 +84,22 @@ function do_get_infos() {
 	[ "$(echo $check_services | grep -w "$service")" ] || continue
 	
 	servicelog="$LOGDIR/${service}.exit-log"
-	hasratings=$(jq ".services[$n] | has(\".ratings\")" "$CFGFILEPATH")
 	if [ ! -r "$servicelog" ]; then
 	    print_info_header "${ME}(${service})" "$rating"
 	    continue
 	fi
-	if $hasratings; then
-	    jquery=$(jq '.services[] | if (has("ratings")) then .ratings else empty end | map("(.infos[] | select(" + .condition + ")) += { \"rating\": \"" + .rating + "\"}") | join(" | ") ' ${CFGFILEPATH})
-	else
-	    jquery=$(jq 'if (has("default-ratings")) then ."default-ratings" else empty end | map("(.infos[] | select(" + .condition + ")) += { \"rating\": \"" + .rating + "\"}") | join(" | ") | . + " | (.infos[] | select(has(\"rating\") | not)) += { \"rating\": \"red\" }"' ${CFGFILEPATH})
-	fi
-	eval jq $jquery "$servicelog" > "${servicelog}.rated"
-	if [ $(jq '.infos | map(select(.rating == "red")) | length' "${servicelog}.rated") -gt 0 ]; then
+
+	if [ $(jq '.infos | map(select(.rating == "red")) | length' "${servicelog}") -gt 0 ]; then
 	    rating=2
-	elif [ $rating -lt 1 -a $(jq '.infos | map(select(.rating == "yellow")) | length' "${servicelog}.rated") -gt 0 ]; then
+	elif [ $rating -lt 1 -a $(jq '.infos | map(select(.rating == "yellow")) | length' "${servicelog}") -gt 0 ]; then
 	    rating=1
 	fi
 	do_rate "$rating"
 	print_info_header "${ME}(${service})" "$rating"
-	if [ "$rating" != 0 ]; then
-	    if [ -r /var/run/omnect_health_log/${service}.exit-info ]; then
+	if [    "$rating" != 0
+	     -a -r /var/run/omnect_health_log/${service}.exit-info
+	   ]; then
 		cat /var/run/omnect_health_log/${service}.exit-info
-	    else
-		journalctl -b0 -l --no-pager -u "${service}.service"
-	    fi
 	fi
     done
     get_overall_rating

@@ -10,7 +10,7 @@
 	},
 	{
 	    "condition": ".exitstatus == \"0\"",
-	    "rating": "ignored"
+	    "rating": "green"
 	}
     ],
     "services": [
