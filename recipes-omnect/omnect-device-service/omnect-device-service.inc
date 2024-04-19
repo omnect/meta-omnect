@@ -24,28 +24,31 @@ LIC_FILES_CHKSUM = " \
 "
 
 DEPENDS += "\
+    ${@bb.utils.contains('MACHINE_FEATURES', '3g', 'modemmanager', '', d)} \
     azure-iot-sdk-c \
     pkgconfig-native \
 "
 
 RDEPENDS:${PN} += "\
-    aziot-identityd\
-    ca-certificates\
+    aziot-identityd \
+    bash \
+    ca-certificates \
     polkit \
     sudo \
 "
 RDEPENDS:${PN}:append:omnect_grub = " grub-editenv"
 RDEPENDS:${PN}:append:omnect_uboot = " u-boot-fw-utils"
 
-inherit omnect-device-service omnect_rust_azure-iot-sdk_deps systemd
+inherit omnect-device-service omnect_rust omnect_rust_azure-iot-sdk_deps systemd
 
 CARGO_BUILD_FLAGS:append:omnect_grub = " --features=bootloader_grub"
 CARGO_BUILD_FLAGS:append:omnect_uboot = " --features=bootloader_uboot"
+CARGO_BUILD_FLAGS:append = "${@bb.utils.contains('MACHINE_FEATURES', '3g', ',modem_info', '', d)}"
 
 do_install:append() {
     install -m 0644 -D ${S}/systemd/omnect-device-service.service ${D}${systemd_system_unitdir}/omnect-device-service.service
-    sed -i -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service/' ${D}${systemd_system_unitdir}/omnect-device-service.service
     install -m 0644 -D ${S}/systemd/omnect-device-service.timer ${D}${systemd_system_unitdir}/omnect-device-service.timer
+    install -m 0755 -D ${S}/systemd/omnect-device-service.exec_stop_post.sh ${D}${bindir}/omnect-device-service.exec_stop_post.sh
     install -m 0644 -D ${S}/polkit/omnect-device-service.rules ${D}${datadir}/polkit-1/rules.d/omnect-device-service.rules
     install -m 0640 -D ${S}/sudo/omnect-device-service ${D}${sysconfdir}/sudoers.d/omnect-device-service
 
@@ -78,6 +81,7 @@ SYSTEMD_SERVICE:${PN} = " \
 "
 
 FILES:${PN} += "\
+    ${bindir}/omnect-device-service.exec_stop_post.sh \
     ${datadir}/polkit-1/rules.d/omnect-device-service.rules \
     ${libdir}/tmpfiles.d/omnect-device-service.conf \
     ${sysconfdir}/sudoers.d/omnect-device-service \
