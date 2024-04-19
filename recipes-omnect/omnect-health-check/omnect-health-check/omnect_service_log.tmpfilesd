@@ -1,5 +1,7 @@
-# FIXME: this needs to be changed to something reasonable not allowing
-# everybody to tamper with generated files; maybe introduce a new group for
-# that stuff, make the directory group writable only and add all services to it
-# that shall be monitored
-d /run/omnect_health_log 0777 daemon daemon -
+# Note:
+#   the log directory below can only be written by privileged prozesses, so
+#   any scripts wanting to do so need suitable permissions.
+#   as currently only omnect_service_log.sh is writing to this directory and
+#   only in the context of systemd hooks (PreStart/StopPost) it is sufficient
+#   to instruct systemd to let it run privileged.
+d /run/omnect_health_log 0775 root root -
