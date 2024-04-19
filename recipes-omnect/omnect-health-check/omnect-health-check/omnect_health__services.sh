@@ -9,9 +9,9 @@
 # be processed.
 #
 # An additional requirement is to have multiple files with specifications of
-# log entry 
+# log entry
 
-. lib.sh
+. healthchecklib.sh
 
 : ${CFGDIR:=/etc/omnect/health_check}
 : ${CFGFILE:=omnect_service_log_analysis.json}
@@ -22,7 +22,7 @@ CFGFILEPATH="${CFGDIR}/${CFGFILE}"
 
 function do_check() {
     local jquery nentries service hasratings rating servicelog
-    
+
     nentries=$(jq '.services | length' "$CFGFILEPATH")
     [ "$check_services" ] || check_services=$(jq -r '[ .services[].service ] | join(" ")' "$CFGFILEPATH")
     for ((n=0; n < nentries; n++)); do
@@ -30,7 +30,7 @@ function do_check() {
 
 	service=$(jq -r ".services[$n].service" "$CFGFILEPATH")
 	[ "$(echo $check_services | grep -w "$service")" ] || continue
-	
+
 	servicelog="$LOGDIR/${service}.exit-log"
 	if [ ! -r "$servicelog" ]; then
 	    print_rating $rating "$service" "$ME"
@@ -74,7 +74,7 @@ function do_check() {
 
 function do_get_infos() {
     local nentries service rating servicelog
-    
+
     nentries=$(jq '.services | length' "$CFGFILEPATH")
     [ "$check_services" ] || check_services=$(jq -r '[ .services[].service ] | join(" ")' "$CFGFILEPATH")
     for ((n=0; n < nentries; n++)); do
@@ -82,7 +82,7 @@ function do_get_infos() {
 
 	service=$(jq -r ".services[$n].service" "$CFGFILEPATH")
 	[ "$(echo $check_services | grep -w "$service")" ] || continue
-	
+
 	servicelog="$LOGDIR/${service}.exit-log"
 	if [ ! -r "$servicelog" ]; then
 	    print_info_header "${ME}(${service})" "$rating"

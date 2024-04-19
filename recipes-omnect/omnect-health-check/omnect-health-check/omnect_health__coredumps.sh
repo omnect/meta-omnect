@@ -1,11 +1,11 @@
 #!/bin/sh
 #
 
-. lib.sh
+. healthchecklib.sh
 
 function checkit() {
     local up now rating since sinces cores
-    
+
     # at first find out time span we want to have core dumps for as we inly want
     # to consider those that happened during this system run
     rating=0
@@ -13,10 +13,10 @@ function checkit() {
     up=$(set -- $(cat /proc/uptime); echo ${1%.*})
     sinces=$((now - up))
     since="$(date -d '@'"$sinces" +"%Y-%m-%d %H:%M:%S")"
-    
+
     # cores=$(coredumpctl -q --json pretty --since "$since" | jq -r '. | map(.exe) | unique | join(",\n")')
     cores=$(coredumpctl -q --since "$since")
-    
+
     if [ "${cores}" ]; then
 	rating=2
     fi
@@ -33,7 +33,7 @@ function do_check() {
 
 function do_get_infos() {
     local cores retval
-    
+
     cores=$(checkit)
     retval=$?
 
@@ -41,7 +41,7 @@ function do_get_infos() {
     if [ $retval != 0 ]; then
 	echo "$cores"
     fi
-    
+
     return $retval
 }
 

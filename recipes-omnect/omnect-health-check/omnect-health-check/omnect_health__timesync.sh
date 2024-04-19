@@ -1,11 +1,11 @@
 #!/bin/sh
 #
 
-. lib.sh
+. healthchecklib.sh
 
 function checkit() {
     local retval
-    
+
     # we use timedatectl to place variables into environment to be checked
     # afterward, but only use NTP variables as not all variables are properly
     # escaped for directly using it in that way
@@ -32,7 +32,7 @@ function do_check() {
 
     checkit
     retval=$?
-    
+
     print_rating "" "timesync" "$ME"
 
     return $retval
@@ -44,7 +44,7 @@ function do_get_infos() {
     checkit
     retval=$?
     rating=$(get_overall_rating)
-    
+
     print_info_header
     if [ $retval != 0 ]; then
 	journalctl -b0 --no-pager -l -u systemd-timesyncd.service

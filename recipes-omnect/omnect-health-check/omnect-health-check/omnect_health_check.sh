@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. lib.sh
+. healthchecklib.sh
 
 CFGFILE=omnect_health_checks.json
 CFGFILEDIR=/etc/omnect/health_check

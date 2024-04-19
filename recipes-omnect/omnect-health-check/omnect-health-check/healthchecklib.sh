@@ -62,7 +62,7 @@ function do_rate() {
 
 function do_rate_cmd() {
     local ret
-    
+
     "$@"
     ret=$?
     do_rate $ret "$1"

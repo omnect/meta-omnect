@@ -442,7 +442,7 @@ while [[ $1 != "" ]]; do
         print_help
         $ret 1
 	;;
-    
+
     *) # preserve positional arguments
         PARAMS="$PARAMS $1"
         shift

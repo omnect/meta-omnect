@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "\
 "
 
 SRC_URI = "\
-	file://lib.sh \
+	file://healthchecklib.sh \
 	file://omnect_health__coredumps.sh \
 	file://omnect_health__services.sh \
 	file://omnect_health__system_running.sh \
@@ -30,7 +30,7 @@ do_install() {
     # FIXME: the shell helper library should really be located somewhere else,
     #        probably all of the health check stuff shoul reside in a dedicated
     #        folder
-    install -m 0755 -D ${WORKDIR}/lib.sh                           ${D}/${sbindir}/lib.sh
+    install -m 0755 -D ${WORKDIR}/healthchecklib.sh                ${D}/${sbindir}/healthchecklib.sh
     install -m 0755 -D ${WORKDIR}/omnect_health_check.sh           ${D}/${sbindir}/omnect_health_check.sh
     install -m 0755 -D ${WORKDIR}/omnect_health__coredumps.sh      ${D}/${sbindir}/omnect_health__coredumps.sh
     install -m 0755 -D ${WORKDIR}/omnect_health__services.sh       ${D}/${sbindir}/omnect_health__services.sh
@@ -43,7 +43,7 @@ do_install() {
 }
 
 FILES:${PN} = "\
-	${sbindir}/lib.sh \
+	${sbindir}/healthchecklib.sh \
 	${sbindir}/omnect_health_check.sh \
 	${sbindir}/omnect_health__coredumps.sh \
 	${sbindir}/omnect_health__services.sh \
