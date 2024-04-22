@@ -71,3 +71,70 @@ get_fsck_status()
     fi
     echo -n "${return}"
 }
+
+
+rootblk_dev_generate_dev_omnect() {
+    local search_rootblk=("/dev/sda" "/dev/nvme0n1p")
+    local rootblk=""
+    local rootpart=${bootparam_rootpart}
+    local part=""
+
+    [ -z "${bootparam_rootpart}" ] && msg "no rootpart set" && return 1
+
+    mkdir -p /dev/omnect
+    cd /dev/omnect
+
+    # get rootblk via kernel param ... if not set, we search
+    rootblk=${bootparam_rootblk}
+    msg "env rootblk=${bootparam_rootblk}"
+    if [ -z "${rootblk}" ]; then
+        for i in "${search_rootblk[@]}"
+        do
+            msg "probing \"${i}${rootpart}\""
+            # we wait for max 2sec - make it configurable?
+            local sleep_cnt=0
+            while [ ! -b "${i}${rootpart}" ] && [ ${sleep_cnt} -le 20 ]; do
+                debug "waiting for \"${i}${rootpart}\""
+                sleep 0.1
+                sleep_cnt=$((${sleep_cnt}+1))
+            done
+
+            if [ -b "${i}${rootpart}" ]; then
+                rootblk="${i}"
+                msg "found \"${rootblk}\""
+                break;
+            fi
+        done
+    else
+        while [ ! -b "${rootblk}1" ]; do
+            debug "waiting for rootblk=${rootblk}"
+            om 0.1
+        done
+    fi
+
+    if [ ! -b ${rootblk} ]; then
+        part="p"
+        rootblk=${rootblk%p*}
+        if [ ! -b ${rootblk} ]; then
+            msg_fatal "failed to detect root blk device" && return 1
+        fi
+    fi
+
+    debug part=${part}
+    debug rootblk=${rootblk}
+
+    ln -sf ${rootblk} rootblk
+    ln -sf ${rootblk}${part}1 boot
+    ln -sf ${rootblk}${part}2 rootA
+    ln -sf ${rootblk}${part}3 rootB
+    ln -sf ${rootblk}${part}${rootpart} rootCurrent
+    ln -sf ${rootblk}${part}4 factory
+    ln -sf ${rootblk}${part}5 cert
+    ln -sf ${rootblk}${part}6 etc
+    ln -sf ${rootblk}${part}7 data
+
+    # save so next boot has bootparam_rootblk and we can skip search
+    if [ -z "${bootparam_rootblk}" ]; then
+        set_bootloader_env_var "omnect_rootblk" "${rootblk}${part}"
+    fi
+}

@@ -93,10 +93,10 @@ _timestamp=
 # that we use to tell swupdate which partition to target.
 if [[ $(readlink -f /dev/omnect/rootCurrent) == $(readlink -f /dev/omnect/rootA) ]]; then
     selection="stable,copy2"
-    update_part=omnect-os-rootB
+    update_part=3
 else
     selection="stable,copy1"
-    update_part=omnect-os-rootA
+    update_part=2
 fi
 
 update_timestamp() {
