@@ -6,19 +6,32 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.17.1"
-SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "b7d3a4184ea45ae4f510da345c5fe0a42f73a113"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.18.1"
+SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=actix_use_uds"
+SRCREV = "f4c605d78c5afd524dac4894382249bc15cea4c1"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-
+PV:append = ".AUTOINC+f4c605d78c"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
 SRC_URI += " \
+    crate://crates.io/actix-codec/0.5.2 \
+    crate://crates.io/actix-http/3.6.0 \
+    crate://crates.io/actix-macros/0.2.4 \
+    crate://crates.io/actix-router/0.5.2 \
+    crate://crates.io/actix-rt/2.9.0 \
+    crate://crates.io/actix-server/2.3.0 \
+    crate://crates.io/actix-service/2.0.2 \
+    crate://crates.io/actix-utils/3.0.1 \
+    crate://crates.io/actix-web-codegen/4.2.2 \
+    crate://crates.io/actix-web/4.5.1 \
     crate://crates.io/addr2line/0.21.0 \
     crate://crates.io/adler/1.0.2 \
+    crate://crates.io/ahash/0.8.11 \
     crate://crates.io/aho-corasick/1.1.3 \
+    crate://crates.io/alloc-no-stdlib/2.0.4 \
+    crate://crates.io/alloc-stdlib/0.2.2 \
     crate://crates.io/android-tzdata/0.1.1 \
     crate://crates.io/android_system_properties/0.1.5 \
     crate://crates.io/anyhow/1.0.82 \
@@ -47,9 +60,12 @@ SRC_URI += " \
     crate://crates.io/bitflags/2.5.0 \
     crate://crates.io/block-buffer/0.10.4 \
     crate://crates.io/blocking/1.5.1 \
+    crate://crates.io/brotli-decompressor/2.5.1 \
+    crate://crates.io/brotli/3.5.0 \
     crate://crates.io/bumpalo/3.16.0 \
     crate://crates.io/byteorder/1.5.0 \
     crate://crates.io/bytes/1.6.0 \
+    crate://crates.io/bytestring/1.3.1 \
     crate://crates.io/cc/1.0.94 \
     crate://crates.io/cexpr/0.6.0 \
     crate://crates.io/cfg-if/1.0.0 \
@@ -57,9 +73,12 @@ SRC_URI += " \
     crate://crates.io/chrono/0.4.38 \
     crate://crates.io/clang-sys/1.7.0 \
     crate://crates.io/concurrent-queue/2.4.0 \
+    crate://crates.io/convert_case/0.4.0 \
+    crate://crates.io/cookie/0.16.2 \
     crate://crates.io/core-foundation-sys/0.8.6 \
     crate://crates.io/cp_r/0.5.1 \
     crate://crates.io/cpufeatures/0.2.12 \
+    crate://crates.io/crc32fast/1.4.0 \
     crate://crates.io/crossbeam-channel/0.5.12 \
     crate://crates.io/crossbeam-utils/0.8.19 \
     crate://crates.io/crypto-common/0.1.6 \
@@ -67,11 +86,13 @@ SRC_URI += " \
     crate://crates.io/darling_core/0.20.8 \
     crate://crates.io/darling_macro/0.20.8 \
     crate://crates.io/derivative/2.2.0 \
+    crate://crates.io/derive_more/0.99.17 \
     crate://crates.io/difflib/0.4.0 \
     crate://crates.io/digest/0.10.7 \
     crate://crates.io/dotenvy/0.15.7 \
     crate://crates.io/downcast/0.11.0 \
     crate://crates.io/either/1.11.0 \
+    crate://crates.io/encoding_rs/0.8.34 \
     crate://crates.io/enum_dispatch/0.3.13 \
     crate://crates.io/enumflags2/0.7.9 \
     crate://crates.io/enumflags2_derive/0.7.9 \
@@ -88,6 +109,7 @@ SRC_URI += " \
     crate://crates.io/fastrand/1.9.0 \
     crate://crates.io/fastrand/2.0.2 \
     crate://crates.io/filetime/0.2.23 \
+    crate://crates.io/flate2/1.0.28 \
     crate://crates.io/float-cmp/0.9.0 \
     crate://crates.io/fnv/1.0.7 \
     crate://crates.io/foreign-types-shared/0.1.1 \
@@ -143,9 +165,11 @@ SRC_URI += " \
     crate://crates.io/itertools/0.10.5 \
     crate://crates.io/itertools/0.12.1 \
     crate://crates.io/itoa/1.0.11 \
+    crate://crates.io/jobserver/0.1.30 \
     crate://crates.io/js-sys/0.3.69 \
     crate://crates.io/kqueue-sys/1.0.4 \
     crate://crates.io/kqueue/1.0.8 \
+    crate://crates.io/language-tags/0.3.2 \
     crate://crates.io/lazy_static/1.4.0 \
     crate://crates.io/lazycell/1.3.0 \
     crate://crates.io/libc/0.2.153 \
@@ -154,6 +178,8 @@ SRC_URI += " \
     crate://crates.io/linked_hash_set/0.1.4 \
     crate://crates.io/linux-raw-sys/0.3.8 \
     crate://crates.io/linux-raw-sys/0.4.13 \
+    crate://crates.io/local-channel/0.1.5 \
+    crate://crates.io/local-waker/0.1.4 \
     crate://crates.io/lock_api/0.4.11 \
     crate://crates.io/log-panics/2.1.0 \
     crate://crates.io/log/0.4.21 \
@@ -191,6 +217,7 @@ SRC_URI += " \
     crate://crates.io/parking/2.2.0 \
     crate://crates.io/parking_lot/0.12.1 \
     crate://crates.io/parking_lot_core/0.9.9 \
+    crate://crates.io/paste/1.0.14 \
     crate://crates.io/peeking_take_while/0.1.2 \
     crate://crates.io/percent-encoding/2.3.1 \
     crate://crates.io/pin-project-lite/0.2.14 \
@@ -205,7 +232,7 @@ SRC_URI += " \
     crate://crates.io/predicates/2.1.5 \
     crate://crates.io/prettyplease/0.2.19 \
     crate://crates.io/proc-macro-crate/1.3.1 \
-    crate://crates.io/proc-macro2/1.0.80 \
+    crate://crates.io/proc-macro2/1.0.81 \
     crate://crates.io/quote/1.0.36 \
     crate://crates.io/rand/0.8.5 \
     crate://crates.io/rand_chacha/0.3.1 \
@@ -216,6 +243,7 @@ SRC_URI += " \
     crate://crates.io/regex/1.10.4 \
     crate://crates.io/rustc-demangle/0.1.23 \
     crate://crates.io/rustc-hash/1.1.0 \
+    crate://crates.io/rustc_version/0.4.0 \
     crate://crates.io/rustix/0.37.27 \
     crate://crates.io/rustix/0.38.32 \
     crate://crates.io/rustversion/1.0.15 \
@@ -223,10 +251,12 @@ SRC_URI += " \
     crate://crates.io/same-file/1.0.6 \
     crate://crates.io/scopeguard/1.2.0 \
     crate://crates.io/sd-notify/0.4.1 \
-    crate://crates.io/serde/1.0.197 \
-    crate://crates.io/serde_derive/1.0.197 \
-    crate://crates.io/serde_json/1.0.115 \
+    crate://crates.io/semver/1.0.22 \
+    crate://crates.io/serde/1.0.198 \
+    crate://crates.io/serde_derive/1.0.198 \
+    crate://crates.io/serde_json/1.0.116 \
     crate://crates.io/serde_repr/0.1.19 \
+    crate://crates.io/serde_urlencoded/0.7.1 \
     crate://crates.io/serde_with/2.3.3 \
     crate://crates.io/serde_with_macros/2.3.3 \
     crate://crates.io/sha1/0.10.6 \
@@ -244,7 +274,7 @@ SRC_URI += " \
     crate://crates.io/strum/0.24.1 \
     crate://crates.io/strum_macros/0.24.3 \
     crate://crates.io/syn/1.0.109 \
-    crate://crates.io/syn/2.0.59 \
+    crate://crates.io/syn/2.0.60 \
     crate://crates.io/systemd-zbus/0.1.1 \
     crate://crates.io/tempfile/3.10.1 \
     crate://crates.io/termcolor/1.4.1 \
@@ -317,6 +347,11 @@ SRC_URI += " \
     crate://crates.io/zbus/3.14.1 \
     crate://crates.io/zbus_macros/3.14.1 \
     crate://crates.io/zbus_names/2.6.1 \
+    crate://crates.io/zerocopy-derive/0.7.32 \
+    crate://crates.io/zerocopy/0.7.32 \
+    crate://crates.io/zstd-safe/7.1.0 \
+    crate://crates.io/zstd-sys/2.0.10+zstd.1.5.6 \
+    crate://crates.io/zstd/0.13.1 \
     crate://crates.io/zvariant/3.15.2 \
     crate://crates.io/zvariant_derive/3.15.2 \
     crate://crates.io/zvariant_utils/1.0.1 \
@@ -334,8 +369,8 @@ SRC_URI += " \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-keyd-config;destsuffix=aziot-keyd-config \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=cert-renewal;destsuffix=cert-renewal \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=http-common;destsuffix=http-common \
+    git://github.com/janzachmann/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
     git://github.com/omnect/azure-iot-sdk-sys.git;protocol=https;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
-    git://github.com/omnect/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
     git://github.com/omnect/eis-utils.git;protocol=https;nobranch=1;name=eis-utils;destsuffix=eis-utils \
     git://github.com/omnect/modemmanager-sys.git;protocol=https;nobranch=1;name=modemmanager-sys;destsuffix=modemmanager-sys \
     git://github.com/omnect/modemmanager.git;protocol=https;nobranch=1;name=modemmanager;destsuffix=modemmanager \
@@ -378,7 +413,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.11.11"
+SRCREV_azure-iot-sdk = "builder-pattern"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.0"
