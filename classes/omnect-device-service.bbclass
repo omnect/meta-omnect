@@ -3,12 +3,12 @@ inherit aziot useradd
 GROUPADD_PARAM:${PN} += " \
   -r adu; \
   -r omnect_device_service; \
-  -r omnect_device_socket; \
+  -r -g 10000 omnect_device_socket; \
   -r ssh_tunnel_user; \
 "
 
 # omnect-device-service.socket user and group
-USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -g omnect_device_socket omnect_device_socket;"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -u 10000 -g 10000 omnect_device_socket;"
 
 # omnect-device-service needs groups rights for
 # adu - editing adu consent file
