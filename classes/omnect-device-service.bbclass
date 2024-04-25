@@ -1,7 +1,7 @@
 inherit aziot useradd
 
-# we create an omnect_device_socket user and group with static ids 10000.
-# the uid/gid can be used by containers (or other programs) on all image variants and versions
+# we create an omnect_device_socket user and group with static uid/gid 10000.
+# they can be used by containers (or other programs) on all image variants and versions
 # to get required socket permissions 
 GROUPADD_PARAM:${PN} += " \
   -r adu; \
