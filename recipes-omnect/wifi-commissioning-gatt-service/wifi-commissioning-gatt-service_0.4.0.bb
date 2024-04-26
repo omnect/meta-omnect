@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get wifi-commissioning-gatt-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.3.10"
-SRC_URI += "git://github.com/omnect/wifi-commissioning-gatt-service;protocol=https;nobranch=1;branch=main"
-SRCREV = "5dda21d464b8c9fdec9ec820eb47ad2f382753f3"
+# SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.4.0"
+SRC_URI += "git://git@github.com/omnect/wifi-commissioning-gatt-service.git;protocol=ssh;nobranch=1;branch=main"
+SRCREV = "9018a9972036ac6b51d60516408d4677880cd380"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
