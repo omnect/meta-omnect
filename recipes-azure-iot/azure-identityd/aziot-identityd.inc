@@ -75,6 +75,16 @@ export USER_AZIOTKS = "aziotks"
 export USER_AZIOTTPM = "aziottpm"
 export SOCKET_DIR = "/run/aziot"
 
+fill_placeholders() {
+    local file="$1"
+    sed -i -e 's|@user_aziotid@|${USER_AZIOTID}|' \
+           -e 's|@user_aziotks@|${USER_AZIOTKS}|' \
+           -e 's|@user_aziotcs@|${USER_AZIOTCS}|' \
+           -e 's|@user_aziottpm@|${USER_AZIOTTPM}|' \
+           -e 's|@socket_dir@|${SOCKET_DIR}|' \
+           "$file"
+}
+
 do_install() {
     # tpmfiles.d
     install -d ${D}${libdir}/tmpfiles.d
@@ -126,12 +136,8 @@ do_install() {
         -e '/Environment=\(.*\)$/d' \
         ${D}${systemd_system_unitdir}/aziot-certd.service
     install -m 0644     ${S}/cert/aziot-certd/aziot-certd.socket.in ${D}${systemd_system_unitdir}/aziot-certd.socket
-    sed -i -e 's|@user_aziotid@|${USER_AZIOTID}|' \
-	   -e 's|@user_aziotks@|${USER_AZIOTKS}|' \
-	   -e 's|@user_aziotcs@|${USER_AZIOTCS}|' \
-	   -e 's|@user_aziottpm@|${USER_AZIOTTPM}|' \
-	   -e 's|@socket_dir@|${SOCKET_DIR}|' \
-	${D}${systemd_system_unitdir}/aziot-certd.service ${D}${systemd_system_unitdir}/aziot-certd.socket
+    fill_placeholders ${D}${systemd_system_unitdir}/aziot-certd.service
+    fill_placeholders ${D}${systemd_system_unitdir}/aziot-certd.socket
 
     # enable identity service to create cert "device-id" (e.g. for x509 dps provisioning)
     install -m 0600 -o aziotcs -g aziotcs ${WORKDIR}/iot-identity-service-certd.template.toml ${D}${sysconfdir}/aziot/certd/config.d/aziotid.toml
@@ -145,12 +151,8 @@ do_install() {
         -e 's/^Requires=\(.*\)$/Requires=\1 network-online.target/' \
         ${D}${systemd_system_unitdir}/aziot-identityd.service
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.socket.in ${D}${systemd_system_unitdir}/aziot-identityd.socket
-    sed -i -e 's|@user_aziotid@|${USER_AZIOTID}|' \
-	   -e 's|@user_aziotks@|${USER_AZIOTKS}|' \
-	   -e 's|@user_aziotcs@|${USER_AZIOTCS}|' \
-	   -e 's|@user_aziottpm@|${USER_AZIOTTPM}|' \
-	   -e 's|@socket_dir@|${SOCKET_DIR}|' \
-	${D}${systemd_system_unitdir}/aziot-identityd.service ${D}${systemd_system_unitdir}/aziot-identityd.socket
+    fill_placeholders ${D}${systemd_system_unitdir}/aziot-identityd.service
+    fill_placeholders ${D}${systemd_system_unitdir}/aziot-identityd.socket
 
     install -m 0644     ${S}/key/aziot-keyd/aziot-keyd.service.in ${D}${systemd_system_unitdir}/aziot-keyd.service
     sed -i \
@@ -160,12 +162,8 @@ do_install() {
         -e '/Environment=\(.*\)$/d' \
         ${D}${systemd_system_unitdir}/aziot-keyd.service
     install -m 0644     ${S}/key/aziot-keyd/aziot-keyd.socket.in ${D}${systemd_system_unitdir}/aziot-keyd.socket
-    sed -i -e 's|@user_aziotid@|${USER_AZIOTID}|' \
-	   -e 's|@user_aziotks@|${USER_AZIOTKS}|' \
-	   -e 's|@user_aziotcs@|${USER_AZIOTCS}|' \
-	   -e 's|@user_aziottpm@|${USER_AZIOTTPM}|' \
-	   -e 's|@socket_dir@|${SOCKET_DIR}|' \
-	${D}${systemd_system_unitdir}/aziot-keyd.service ${D}${systemd_system_unitdir}/aziot-keyd.socket
+    fill_placeholders ${D}${systemd_system_unitdir}/aziot-keyd.service
+    fill_placeholders ${D}${systemd_system_unitdir}/aziot-keyd.socket
 
     if ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', 'true', 'false', d)}; then
         install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.service.in ${D}${systemd_system_unitdir}/aziot-tpmd.service
@@ -176,12 +174,8 @@ do_install() {
             -e '/Environment=\(.*\)$/d' \
             ${D}${systemd_system_unitdir}/aziot-tpmd.service
         install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.socket.in ${D}${systemd_system_unitdir}/aziot-tpmd.socket
-        sed -i -e 's|@user_aziotid@|${USER_AZIOTID}|' \
-	       -e 's|@user_aziotks@|${USER_AZIOTKS}|' \
-	       -e 's|@user_aziotcs@|${USER_AZIOTCS}|' \
-	       -e 's|@user_aziottpm@|${USER_AZIOTTPM}|' \
-	       -e 's|@socket_dir@|${SOCKET_DIR}|' \
-	    ${D}${systemd_system_unitdir}/aziot-tpmd.service ${D}${systemd_system_unitdir}/aziot-tpmd.socket
+        fill_placeholders ${D}${systemd_system_unitdir}/aziot-tpmd.service
+        fill_placeholders ${D}${systemd_system_unitdir}/aziot-tpmd.socket
     fi
 
     # libaziot-key-openssl-engine-shared
