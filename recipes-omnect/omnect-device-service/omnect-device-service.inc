@@ -86,3 +86,6 @@ FILES:${PN} += "\
     ${sysconfdir}/sudoers.d/omnect-device-service \
     ${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env \
 "
+
+# prevent stripping symbols
+INHIBIT_PACKAGE_STRIP = "1"

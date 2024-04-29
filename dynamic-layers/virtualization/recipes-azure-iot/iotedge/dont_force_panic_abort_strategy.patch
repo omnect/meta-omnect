@@ -1,0 +1,17 @@
+diff --git a/edgelet/Cargo.toml b/edgelet/Cargo.toml
+index f936b90..01f8121 100644
+--- a/edgelet/Cargo.toml
++++ b/edgelet/Cargo.toml
+@@ -14,8 +14,8 @@ members = [
+     "support-bundle",
+ ]
+ 
+-[profile.dev]
+-panic = 'abort'
++#[profile.dev]
++#panic = 'abort'
+ 
+-[profile.release]
+-panic = 'abort'
++#[profile.release]
++#panic = 'abort'
