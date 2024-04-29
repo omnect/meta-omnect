@@ -20,4 +20,4 @@
 | **Wifi Commissioning via Bluetooth** | no              |
 | **LTE Support** [^1]                 | experimental    |
 
-[^1]: for details concerning LTE configuration see [LTE documentation](LTE.md)
+[^1]: in [LTE documentation](LTE.md) you can find more details concerning configuration
