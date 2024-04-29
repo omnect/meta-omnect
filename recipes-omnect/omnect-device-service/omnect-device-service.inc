@@ -61,6 +61,7 @@ CARGO_BUILD_FLAGS:append:omnect_uboot = " --features=bootloader_uboot"
 
 do_install:append() {
     install -m 0644 -D ${S}/systemd/omnect-device-service.service ${D}${systemd_system_unitdir}/omnect-device-service.service
+    install -m 0644 -D ${S}/systemd/omnect-device-service.socket ${D}${systemd_system_unitdir}/omnect-device-service.socket
     install -m 0644 -D ${S}/systemd/omnect-device-service.timer ${D}${systemd_system_unitdir}/omnect-device-service.timer
     install -m 0755 -D ${S}/systemd/omnect-device-service.exec_stop_post.sh ${D}${bindir}/omnect-device-service.exec_stop_post.sh
     install -m 0644 -D ${S}/polkit/omnect-device-service.rules ${D}${datadir}/polkit-1/rules.d/omnect-device-service.rules
@@ -114,6 +115,7 @@ pkg_postinst:${PN}() {
 
 SYSTEMD_SERVICE:${PN} = " \
     omnect-device-service.service \
+    omnect-device-service.socket \
     omnect-device-service.timer \
 "
 
