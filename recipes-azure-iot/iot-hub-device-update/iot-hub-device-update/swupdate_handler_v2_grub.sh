@@ -723,7 +723,7 @@ InstallUpdate() {
                 ret_val=$?
                 if [ ${ret_val} -eq 0 ]; then
                     # workaround for update from image without set bootloader version
-                    [ -f /boot/EFI/BOOT/bootloader_version ] || echo > /boot/EFI/BOOT/bootloader_version
+                    [ -f /boot/EFI/BOOT/omnect_bootloader_version ] || echo > /boot/EFI/BOOT/omnect_bootloader_version
                     rm -f /run/omnect-bootloader-update-not-necessary
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,bootloader &>> "${swupdate_log_file}"
                     ret_val=$?

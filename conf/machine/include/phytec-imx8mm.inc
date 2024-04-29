@@ -69,6 +69,7 @@ MACHINE_FEATURES:remove = " \
     optee \
 "
 
+OMNECT_BOOTLOADER = "u-boot-imx"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "<newchecksum> <oldchecksum>"
 # e.g.:

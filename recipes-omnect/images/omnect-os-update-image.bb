@@ -26,7 +26,7 @@ do_bootloader_package[depends] += "virtual/bootloader:do_deploy virtual/kernel:d
 # set OMNECT_BOOTLOADER_VERSION for swupdate description
 do_swuimage:prepend() {
     try:
-        with open( d.getVar("DEPLOY_DIR_IMAGE") + "/bootloader_version", "r") as f:
+        with open( d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version", "r") as f:
             d.setVar('OMNECT_BOOTLOADER_VERSION', f.read())
             bb.debug(1, "OMNECT_BOOTLOADER_VERISON: %s" % d.getVar("OMNECT_BOOTLOADER_VERSION"))
     except:
@@ -60,7 +60,7 @@ do_bootloader_package:phytec-imx8mm() {
 do_bootloader_package:omnect_grub() {
     mkdir -p ${WORKDIR}/EFI/BOOT
     cp ${DEPLOY_DIR_IMAGE}/grub-efi-bootx64.efi ${WORKDIR}/EFI/BOOT/bootx64.efi
-    cp ${DEPLOY_DIR_IMAGE}/bootloader_version   ${WORKDIR}/EFI/BOOT/bootloader_version
+    cp ${DEPLOY_DIR_IMAGE}/omnect_bootloader_version   ${WORKDIR}/EFI/BOOT/omnect_bootloader_version
     cp ${DEPLOY_DIR_IMAGE}/grub.cfg             ${WORKDIR}/EFI/BOOT/grub.cfg
     cd ${WORKDIR}
     tar cfz boot-partition-update.tar.gz EFI/BOOT/*
