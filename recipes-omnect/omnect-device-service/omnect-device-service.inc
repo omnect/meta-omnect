@@ -6,21 +6,6 @@ SRC_URI += "\
   file://omnect-device-service.tmpfilesd \
 "
 
-# health-check stuff
-SRC_URI += "\
-	file://healthchecklib.sh \
-	file://omnect_health__coredumps.sh \
-	file://omnect_health__services.sh \
-	file://omnect_health__system_running.sh \
-	file://omnect_health__timesync.sh \
-	file://omnect_health_check.sh \
-	file://omnect_health_checks.json \
-	file://omnect_service_log.sh \
-	file://omnect_service_log.tmpfilesd \
-	file://omnect_service_log_analysis.json \
-"
-
-
 PV .= "+${SRCPV}"
 CVE_PRODUCT = "omnect:${PN}"
 
@@ -82,22 +67,19 @@ do_install:append() {
     # tpmfiles.d
     install -d ${D}${libdir}/tmpfiles.d
 
-    # create tmpfiles.d entry to (re)create dir + permissions
-    install -m 0644 -D ${WORKDIR}/omnect_service_log.tmpfilesd     ${D}${libdir}/tmpfiles.d/omnect_service_log.conf
-
     # FIXME: the shell helper library should really be located somewhere else,
     #        probably all of the health check stuff shoul reside in a dedicated
     #        folder
-    install -m 0755 -D ${WORKDIR}/healthchecklib.sh                ${D}/${sbindir}/healthchecklib.sh
-    install -m 0755 -D ${WORKDIR}/omnect_health_check.sh           ${D}/${sbindir}/omnect_health_check.sh
-    install -m 0755 -D ${WORKDIR}/omnect_health__coredumps.sh      ${D}/${sbindir}/omnect_health__coredumps.sh
-    install -m 0755 -D ${WORKDIR}/omnect_health__services.sh       ${D}/${sbindir}/omnect_health__services.sh
-    install -m 0755 -D ${WORKDIR}/omnect_health__system_running.sh ${D}/${sbindir}/omnect_health__system_running.sh
-    install -m 0755 -D ${WORKDIR}/omnect_health__timesync.sh       ${D}/${sbindir}/omnect_health__timesync.sh
-    install -m 0755 -D ${WORKDIR}/omnect_service_log.sh            ${D}/${sbindir}/omnect_service_log.sh
+    install -m 0755 -D ${S}/healthcheck/healthchecklib.sh                ${D}/${sbindir}/healthchecklib.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health_check.sh           ${D}/${sbindir}/omnect_health_check.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__coredumps.sh      ${D}/${sbindir}/omnect_health__coredumps.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__services.sh       ${D}/${sbindir}/omnect_health__services.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__system_running.sh ${D}/${sbindir}/omnect_health__system_running.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__timesync.sh       ${D}/${sbindir}/omnect_health__timesync.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_service_log.sh            ${D}/${sbindir}/omnect_service_log.sh
 
-    install -m 0644 -D ${WORKDIR}/omnect_service_log_analysis.json ${D}/${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json
-    install -m 0644 -D ${WORKDIR}/omnect_health_checks.json ${D}/${sysconfdir}/omnect/health_check/omnect_health_checks.json
+    install -m 0644 -D ${S}/healthcheck/omnect_service_log_analysis.json ${D}/${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json
+    install -m 0644 -D ${S}/healthcheck/omnect_health_checks.json ${D}/${sysconfdir}/omnect/health_check/omnect_health_checks.json
 }
 
 do_install:append:omnect_grub() {
@@ -138,5 +120,4 @@ FILES:${PN} += "\
 	${sbindir}/omnect_service_log.sh \
 	${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json \
 	${sysconfdir}/omnect/health_check/omnect_health_checks.json \
-	${libdir}/tmpfiles.d/omnect_service_log.conf \
 "
