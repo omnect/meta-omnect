@@ -1,0 +1,11 @@
+[connection]
+id=cellular
+type=gsm
+autoconnect=true
+
+[ipv4]      
+method=auto 
+           
+[ipv6]     
+addr-gen-mode=stable-privacy
+method=auto                 
