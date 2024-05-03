@@ -12,4 +12,4 @@ repos:
     layers:
       meta-yocto-bsp:
 
-machine: arrakis-pico
+machine: "genericx86-64"
