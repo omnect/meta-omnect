@@ -6,8 +6,9 @@ header:
 repos:
   ext/meta-raspberrypi:
     url: "https://github.com/agherzan/meta-raspberrypi.git"
-    branch: "kirkstone"
-    commit: "9dc6673d41044f1174551120ce63501421dbcd85"
+    # doesnt have a scarthgap branch yet
+    branch: "master"
+    commit: "1879cb831f4ea3e532cb5ce9fa0f32be917e8fa3"
     patches:
       p001:
         repo: "meta-omnect"
