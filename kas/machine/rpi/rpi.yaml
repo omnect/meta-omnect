@@ -13,3 +13,8 @@ repos:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-raspberrypi_layerdir.patch"
+
+local_conf_header:
+  meta-omnect_machine_rpi_rpi: |
+    # TODO scarthgap: we should handle that via env var opt in
+    LICENSE_FLAGS_ACCEPTED += "synaptics-killswitch"

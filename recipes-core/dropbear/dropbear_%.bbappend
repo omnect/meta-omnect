@@ -1,2 +1,3 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-SRC_URI += "file://Fix-inappropriate-fifo-truncate.patch"
+# TODO scarthgap
+# SRC_URI += "file://Fix-inappropriate-fifo-truncate.patch"
