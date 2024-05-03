@@ -1,7 +1,7 @@
-diff --git a/meta-oe/recipes-support/nspr/nspr_4.29.bb b/meta-oe/recipes-support/nspr/nspr_4.29.bb
-index b60de08d2..288c1b1d7 100644
---- a/meta-oe/recipes-support/nspr/nspr_4.29.bb
-+++ b/meta-oe/recipes-support/nspr/nspr_4.29.bb
+diff --git a/meta-oe/recipes-support/nspr/nspr_4.35.bb b/meta-oe/recipes-support/nspr/nspr_4.35.bb
+index f8d329398..5db8e2624 100644
+--- a/meta-oe/recipes-support/nspr/nspr_4.35.bb
++++ b/meta-oe/recipes-support/nspr/nspr_4.35.bb
 @@ -30,7 +30,7 @@ CVE_PRODUCT = "netscape_portable_runtime"
  
  S = "${WORKDIR}/nspr-${PV}/nspr"

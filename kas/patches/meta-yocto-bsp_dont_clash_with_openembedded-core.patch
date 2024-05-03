@@ -1,9 +1,9 @@
 diff --git a/oe-init-build-env b/oe-init-build-env
 deleted file mode 100755
-index 38333ab858..0000000000
+index 82382f2707..0000000000
 --- a/oe-init-build-env
 +++ /dev/null
-@@ -1,53 +0,0 @@
+@@ -1,59 +0,0 @@
 -#!/bin/sh
 -
 -# OE Build Environment Setup Script
@@ -53,6 +53,12 @@ index 38333ab858..0000000000
 -    unset OEROOT
 -    return 1
 -}
+-
+-# Generate an initial configuration for VSCode and the yocto-bitbake plugin.
+-if command -v code > /dev/null && [ ! -d "$OEROOT/.vscode" ]; then
+-    oe-setup-vscode "$OEROOT" "$BUILDDIR"
+-fi
+-
 -unset OEROOT
 -
 -[ -z "$BUILDDIR" ] || cd "$BUILDDIR"

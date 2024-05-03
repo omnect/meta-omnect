@@ -146,7 +146,8 @@ python () {
 
 inherit omnect_user
 
-inherit logging
+# TODO scarthgap
+#inherit logging
 
 # positive test for packages, i.e. check if installed
 check_installed_packages() {
