@@ -6,35 +6,54 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    branch: "kirkstone"
-    commit: "43e3c945388892b8e20e13b8864406610012cc59"
+    branch: "scarthgap"
+    commit: "f77a92e7ebb352874ad5cf565a7652b87a6f2f23"
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-phytec_layerdir.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
-    branch: "kirkstone"
-    commit: "1aa79a0c9b7d6d8af626b2d39a1d518d70d28205"
+    branch: "scarthgap"
+    commit: "41b923e59e048b9b2942ff737a4ddac386954c62"
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-freescale_layerdir.patch"
   ext/meta-freescale-distro:
     url: "https://github.com/Freescale/meta-freescale-distro.git"
-    branch: "kirkstone"
-    commit: "d5bbb487b2816dfc74984a78b67f7361ce404253"
-  ext/meta-imx:
-    url: "https://github.com/nxp-imx/meta-imx.git"
-    branch: "kirkstone-5.15.71-2.2.2"
-    commit: "ca68ab5d25322b51f54564275c84ab8de3c74ea6"
+    branch: "scarthgap"
+    commit: "158cc55b6ee30d09957b380859dba52c0f6af68d"
+  # ext/meta-imx:
+  #   url: "https://github.com/nxp-imx/meta-imx.git"
+  #   # no scarthgap yet
+  #   # branch: "kirkstone-5.15.71-2.2.2"
+  #   # commit: "ca68ab5d25322b51f54564275c84ab8de3c74ea6"
+  #   branch: "nanbield-6.6.3-1.0.0"
+  #   commit: "773c0049c3b35af8f5b5bdf8da78a6236a4fc184"
+  #   layers:
+  #     # meta-bsp:
+  #     # meta-sdk:
+  #     meta-imx-bsp:
+  #     meta-imx-sdk:
+  #   patches:
+  #     p001:
+  #       repo: "meta-omnect"
+  #       # path: "kas/patches/meta-imx_meta-bsp_layerdir.patch"
+  #       path: "kas/patches/meta-imx_compability+layerdir.patch"
+  ext/meta-yocto:
+    url: "https://git.yoctoproject.org/meta-yocto"
+    branch: "scarthgap"
+    commit: "f5e9f8ebd65e5a814ec45122e4176bc5407ea946"
     layers:
-      meta-bsp:
-      meta-sdk:
-    patches:
-      p001:
-        repo: "meta-omnect"
-        path: "kas/patches/meta-imx_meta-bsp_layerdir.patch"
-
+      meta-poky:
+  ext/meta-arm:
+    url: "https://git.yoctoproject.org/meta-arm"
+    branch: "scarthgap"
+    # yocto-5.0
+    commit: "8aa8a1f17f5b64bc691544f989f04fc83df98adb"
+    layers:
+      meta-arm:
+      meta-arm-toolchain:
 env:
   ACCEPT_FSL_EULA: "0"
