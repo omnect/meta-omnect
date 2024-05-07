@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:${THISDIR}/${PN}:${THISDIR}/omnect-health-check:"
+FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:${THISDIR}/${PN}:"
 
 SRC_URI += "\
   file://iot-identity-service-keyd.template.toml \
