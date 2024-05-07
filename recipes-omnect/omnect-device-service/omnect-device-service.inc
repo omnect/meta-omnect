@@ -64,9 +64,6 @@ do_install:append() {
 
 # health-check stuff
 do_install:append() {
-    # tpmfiles.d
-    install -d ${D}${libdir}/tmpfiles.d
-
     # FIXME: the shell helper library should really be located somewhere else,
     #        probably all of the health check stuff shoul reside in a dedicated
     #        folder
