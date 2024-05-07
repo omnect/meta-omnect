@@ -27,8 +27,9 @@ addr-gen-mode=stable-privacy
 method=auto
 ```
 
-For devices with LTE functionality this generic configuration is
+For devices with LTE functionality such a generic configuration is
 already part of the omnect OS image.
+(see actual [configuration file](..//recipes-connectivity/networkmanager/files/cellular.generic))
 
 However, it might not work with a chosen SIM card due to the fact that
 the parameters used for identifying the correct connection settings -
