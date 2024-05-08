@@ -3,7 +3,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += " \
 	file://NetworkManager.conf \
 "
-
+# todo: we configure PACKAGECONFIG of networkmanager in distro conf as well: move it heres
 PACKAGECONFIG:append = " modemmanager"
 PACKAGECONFIG:remove = " dnsmasq"
 
