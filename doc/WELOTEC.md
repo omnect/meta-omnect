@@ -18,4 +18,6 @@
 | **OTA Update**                       | yes             |
 | **Factory Reset**                    | yes             |
 | **Wifi Commissioning via Bluetooth** | no              |
-| **LTE Support**                      | experimental    |
+| **LTE Support** [^1]                 | experimental    |
+
+[^1]: in [LTE documentation](LTE.md) you can find more details concerning configuration
