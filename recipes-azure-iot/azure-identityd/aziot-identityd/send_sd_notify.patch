@@ -1,8 +1,8 @@
 diff --git a/Cargo.lock b/Cargo.lock
-index 232d951..ed52970 100644
+index ec72a8e..6ea2a1a 100644
 --- a/Cargo.lock
 +++ b/Cargo.lock
-@@ -266,6 +266,7 @@ dependencies = [
+@@ -305,6 +305,7 @@ dependencies = [
   "openssl2",
   "percent-encoding",
   "regex",
@@ -10,9 +10,9 @@ index 232d951..ed52970 100644
   "serde",
   "serde_json",
   "tokio",
-@@ -2200,6 +2201,12 @@ version = "1.1.0"
- source = "registry+https://github.com/rust-lang/crates.io-index"
- checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
+@@ -2241,6 +2242,12 @@ dependencies = [
+  "serde_derive",
+ ]
  
 +[[package]]
 +name = "sd-notify"
@@ -21,7 +21,7 @@ index 232d951..ed52970 100644
 +checksum = "621e3680f3e07db4c9c2c3fb07c6223ab2fab2e54bd3c04c3ae037990f428c32"
 +
  [[package]]
- name = "serde"
+ name = "serde_derive"
  version = "1.0.164"
 diff --git a/identity/aziot-identityd/Cargo.toml b/identity/aziot-identityd/Cargo.toml
 index fd0eb3d..e940e38 100644
@@ -36,7 +36,7 @@ index fd0eb3d..e940e38 100644
  serde_json = "1.0"
  tokio = { version = "1", features = ["parking_lot", "time"] }
 diff --git a/identity/aziot-identityd/aziot-identityd.service.in b/identity/aziot-identityd/aziot-identityd.service.in
-index 42adf6f..e9f3b9d 100644
+index 7e261fd..ecf47ac 100644
 --- a/identity/aziot-identityd/aziot-identityd.service.in
 +++ b/identity/aziot-identityd/aziot-identityd.service.in
 @@ -4,6 +4,7 @@ Requires=aziot-identityd.socket
@@ -48,10 +48,10 @@ index 42adf6f..e9f3b9d 100644
  ExecStart=@libexecdir@/aziot-identity-service/aziot-identityd
  KillMode=process
 diff --git a/identity/aziot-identityd/src/lib.rs b/identity/aziot-identityd/src/lib.rs
-index f6ed80f..62cb9ff 100644
+index 534f2ca..9afc68c 100644
 --- a/identity/aziot-identityd/src/lib.rs
 +++ b/identity/aziot-identityd/src/lib.rs
-@@ -158,6 +158,8 @@ pub async fn main(
+@@ -159,6 +159,8 @@ pub async fn main(
  
      let service = http::Service { api };
  
