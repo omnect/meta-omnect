@@ -7,7 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "kirkstone"
-    commit: "43e3c945388892b8e20e13b8864406610012cc59"
+    commit: "caf3e9f02bf2086cf64baf8fa427bda5e10d0b1d"
     patches:
       p001:
         repo: "meta-omnect"
@@ -15,7 +15,7 @@ repos:
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: "kirkstone"
-    commit: "1aa79a0c9b7d6d8af626b2d39a1d518d70d28205"
+    commit: "f2255c8dd63c7a694b0af7df72355933f7e87955"
     patches:
       p001:
         repo: "meta-omnect"

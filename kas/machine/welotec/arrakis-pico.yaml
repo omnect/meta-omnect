@@ -5,15 +5,11 @@ header:
 
 repos:
   ext/meta-yocto-bsp:
-    url: "https://git.yoctoproject.org/poky"
+    url: "https://git.yoctoproject.org/meta-yocto"
     branch: kirkstone
-    # yocto 4.0.17
-    commit: 6d1a878bbf24c66f7186b270f823fcdf82e35383
+    # yocto 4.0.18
+    commit: "70d8f77cf21e92d2f610d1b73f24d3faf6d96982"
     layers:
       meta-yocto-bsp:
-    patches:
-      p001:
-        repo: "meta-omnect"
-        path: "kas/patches/meta-yocto-bsp_dont_clash_with_openembedded-core.patch"
 
 machine: arrakis-pico
