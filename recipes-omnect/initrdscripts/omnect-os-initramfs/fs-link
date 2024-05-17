@@ -1,0 +1,26 @@
+#!/bin/bash
+
+fs_link_enabled() {
+    return 0
+}
+
+run_fs_link() {
+
+    FS_LINK_FILE="/rootfs/etc/omnect/create-fs-links.txt"
+    msg "omnect-os initramfs fs link"
+
+    if ls ${FS_LINK_FILE} 1> /dev/null 2>&1; then
+        while read -r source destination ignore; do
+            [[ "$source" =~ ^\#.* ]] && continue
+            run_cmd ln -sf $source /rootfs/$destination
+        done < ${FS_LINK_FILE}
+    fi
+    return 0
+
+}
+
+fs_link_run() {
+    add_module_post_hook on_exit
+    run_fs_link
+    return=${?}
+}
