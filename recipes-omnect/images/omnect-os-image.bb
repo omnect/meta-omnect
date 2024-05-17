@@ -77,9 +77,7 @@ IMAGE_INSTALL = "\
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 
-IMAGE_INSTALL:omnect_uboot += "\
-    bootloader-versioned \
-"
+IMAGE_INSTALL:append:omnect_uboot = " bootloader-versioned"
 
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
