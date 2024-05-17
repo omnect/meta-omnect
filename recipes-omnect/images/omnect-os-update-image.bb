@@ -19,7 +19,7 @@ DEPENDS += "virtual/bootloader"
 addtask do_bootloader_package before do_swuimage
 
 do_bootloader_package_extra_depends = ""
-do_bootloader_package_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
+do_bootloader_package_extra_depends:omnect_uboot = "u-boot-scr:do_deploy bootloader-versioned:do_deploy"
 do_bootloader_package_extra_depends:omnect_grub = "grub-cfg:do_deploy"
 do_bootloader_package[depends] += "virtual/bootloader:do_deploy virtual/kernel:do_deploy ${do_bootloader_package_extra_depends}"
 
