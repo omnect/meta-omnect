@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# following variables need to be replaced during build with suitable values
+# for the target as defined in identically named bitbake variables:
+: ${VERSION_MAGIC:="@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC@@"}
+: ${PARAMSIZE:="@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_PARAMSIZE@@"}
+: ${IMAGEOFFSET:="@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGEOFFSET@@"}
+: ${IMAGESIZE:="@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGESIZE@@"}
+: ${TYPE:="@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_TYPE@@"}
+: ${BOOTLOADER_LOCATION:="@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_LOCATION@@"}
+
+# set some defaults if parameters above were set to empty string
+: ${IMAGEOFFSET:=0}
+
+set -e
+
+function get_bootloader_version() {
+    local path="$1"
+    local startoffset="$2"
+    local size="$3"
+    local negoffset="$4"
+    local magicstr="$5"
+    local nmagicbytes amagicbytes versionheader off verstr count i
+    local versionheader aversionheader
+    
+    off=$((startoffset + size - negoffset))
+    if [ $off -lt 0 ]; then
+	echo "FATAL: invalid parameters for version offset calculation (startoffset=${startoffset}, size=${size}, negoffset=${negoffset})" >&2
+	exit 1
+    fi
+
+    # calculate number of magic bytes
+    nmagicbytes=$(set -- $magicstr; echo $#)
+    amagicbytes=($(set -- $magicstr; echo $*))
+
+    # read magic bytes plus length byte from "file"
+    count=$((nmagicbytes + 1))
+    versionheader=$(dd if="$path" bs=1 skip=$off count=$count 2>/dev/null | hexdump -ve '/1 "%02x "')
+    aversionheader=($(set -- $versionheader; echo $*))
+
+    # compare magic
+    for ((i=0; i < ${nmagicbytes}; i++)); do
+	[ "${amagicbytes[$i]}" = "${aversionheader[$i]}" ] && continue
+
+	unset aversionheader[$nmagicbytes]
+	echo "FATAL: header magic mismatch - read \"${aversionheader[*]}\", expected \"${amagicbytes[*]}\"" >&2
+	exit 1
+    done
+
+    off=$((off + nmagicbytes + 1))
+    count=$(printf "%u" "0x${aversionheader[${nmagicbytes}]}")
+    
+    # finally read and output magic bytes
+    dd if="$path" bs=1 skip=$off count=${count} 2>/dev/null
+}
+
+# version location seen from end-of-file
+negoffset="${PARAMSIZE}"
+magicstr="${VERSION_MAGIC}"
+
+case "${TYPE}" in
+    file)
+	path="${BOOTLOADER_LOCATION}"
+	if [ ! -r "$path" ]; then
+	    echo "FATAL: cannot find/read boot loader binary file \"$path\"." >&2
+	    exit 1
+	fi
+	offset=0
+	size=$(stat -c "%s" "$path")
+	;;
+    flash)
+	path="/dev/omnect/rootblk"
+	offset="${IMAGEOFFSET}"
+	size="${IMAGESIZE}"
+	;;
+    *)
+	echo "FATAL: no or unrecognized bootloader type (\"${TYPE}\")" >&2
+	exit 1
+esac
+
+version=$(get_bootloader_version "${path}" "${offset}" "${size}" "${negoffset}" "${magicstr}")
+echo "$version"
+
+exit 0
