@@ -26,7 +26,7 @@ do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
 # we add boot.scr to the image on condition
 do_rootfs_extra_depends = ""
-do_rootfs_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
+do_rootfs_extra_depends:omnect_uboot = "u-boot-scr:do_deploy bootloader-versioned:do_deploy"
 do_rootfs[depends] += "${do_rootfs_extra_depends}"
 IMAGE_BOOT_FILES:append:omnect_uboot = " boot.scr"
 IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
@@ -61,6 +61,7 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     bootloader-env \
+    bootloader-versioned \
     coreutils \
     e2fsprogs-tune2fs \
     iot-hub-device-update \
