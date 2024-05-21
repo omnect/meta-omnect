@@ -39,6 +39,9 @@
 #  - OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGEOFFSET
 #    only used for type "flash" and only to find correct bootloader location
 #    (and hence version information location) during runtime
+#  - OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGEGZ
+#    is set to any value a gzipped version is created, too, during image
+#    creation bootloader.bin.versioned.gz is also created
 #  - OMNECT_BOOTLOADER_EMBEDDED_VERSION_LOCATION
 #    defines the run-time location of the bootloader and is a file path for
 #    type "file"; in case boot loader is part of flash it is assumed that it
@@ -72,6 +75,7 @@ python omnect_uboot_embed_version() {
     import glob
     import os
     import shutil
+    import gzip
     from pathlib import Path
 
     # read the previously calculated version information
@@ -93,6 +97,7 @@ python omnect_uboot_embed_version() {
     version_file = "bootloader.bin"
     version_paramsize = d.getVar("OMNECT_BOOTLOADER_EMBEDDED_VERSION_PARAMSIZE")
     version_imagesize = d.getVar("OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGESIZE")
+    version_imagegz   = d.getVar("OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGEGZ")
     version_magic = d.getVar("OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC")
     version_fillbyte = d.getVar("OMNECT_BOOTLOADER_EMBEDDED_VERSION_FILLBYTE")
 
@@ -171,6 +176,12 @@ python omnect_uboot_embed_version() {
         if written_length < version_imagesize:
             # fill up to desired length
             f.write(version_fillbyte * (version_imagesize - written_length))
+
+    if version_type != "file" and version_imagegz != None and version_imagegz != "":
+        with open(version_file_new, 'rb') as f_in:
+            with open(version_file_new + '.gz', 'wb') as f_out:
+                with gzip.GzipFile(version_file_new, 'wb', fileobj=f_out) as f_out:
+                    shutil.copyfileobj(f_in, f_out)
 }
 
 do_compile() {
