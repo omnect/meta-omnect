@@ -12,6 +12,11 @@ RDEPENDS:${PN} += "bash"
 
 SRC_URI = "file://omnect_get_bootloader_version.sh.template"
 
+OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGEOFFSET ?= ""
+OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGESIZE ?= ""
+OMNECT_BOOTLOADER_EMBEDDED_VERSION_LOCATION ?= ""
+OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGESIZE ?= ""
+
 do_compile:append() {
     cp "${WORKDIR}/omnect_get_bootloader_version.sh.template" "${WORKDIR}/omnect_get_bootloader_version.sh"
     sed -i -e 's,@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC@@,${OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC},g' \
