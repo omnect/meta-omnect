@@ -79,7 +79,7 @@ IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 # images and files that will be included in the .swu image
 SWUPDATE_IMAGES = "omnect-os boot-partition-update"
-SWUPDATE_IMAGES:append:phytec-imx8mm = " imx-boot"
+SWUPDATE_IMAGES:append:phytec-imx8mm = " bootloader.versioned.bin.gz"
 
 
 SWUPDATE_IMAGES_FSTYPES[omnect-os] = ".ext4.gz"
