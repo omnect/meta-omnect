@@ -108,7 +108,7 @@ rootblk_dev_generate_dev_omnect() {
     else
         while [ ! -b "${rootblk}1" ]; do
             debug "waiting for rootblk=${rootblk}"
-            om 0.1
+            sleep 0.1
         done
     fi
 
