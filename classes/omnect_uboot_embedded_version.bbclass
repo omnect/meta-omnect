@@ -196,6 +196,9 @@ do_deploy[prefuncs] += "omnect_uboot_embed_version"
 
 do_deploy() {
     install -m 0644 -D ${WORKDIR}/bootloader.bin.versioned ${DEPLOYDIR}/bootloader.versioned.bin
+    if [ -r ${WORKDIR}/bootloader.bin.versioned.gz ]; then
+        install -m 0644 -D ${WORKDIR}/bootloader.bin.versioned.gz ${DEPLOYDIR}/bootloader.versioned.bin.gz
+    fi
 }
 
 addtask do_deploy after do_compile before do_build
