@@ -53,7 +53,7 @@ software =
                     {
                         name = "bootloader";
                         hook = "check_bootloader_version";
-                        filename = "";
+                        filename = "bootloader.versioned.bin.gz";
                         sha256 = "$swupdate_get_sha256(bootloader.versioned.bin.gz)";
                         version = "@@OMNECT_BOOTLOADER_VERSION@@";
                         type = "raw";
