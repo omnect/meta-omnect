@@ -9,6 +9,7 @@ LIC_FILES_CHKSUM="\
 inherit deploy omnect_uboot_embedded_version
 
 RDEPENDS:${PN} += "bash"
+DEPENDS = "virtual/bootloader"
 
 SRC_URI = "file://omnect_get_bootloader_version.sh.template"
 
