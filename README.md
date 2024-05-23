@@ -210,9 +210,7 @@ documentation for [service systemd-networkd-wait-online](https://www.freedesktop
 
 To allow for customization the service file uses the content of
 environment variable `OMNECT_WAIT_ONLINE_INTERFACES_RUN` if non-empty,
-otherwise the default setting as defined in
-`OMNECT_WAIT_ONLINE_INTERFACES_BUILD` in the corresponding machine
-configuration gets set.
+otherwise the default setting `--any` gets set.
 
 This provides the possibility to overwrite the set of online interfaces
 by injecting a systemd environment file into image, e.g.

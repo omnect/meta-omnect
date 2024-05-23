@@ -87,24 +87,8 @@ do_install:append:phyboard-polis-imx8mm-4() {
     enable_hardware_watchdog
 }
 
-
-def online_ifc_list_to_parameter_list(d, ifclistvar):
-    param_list = ''
-    ifclist = d.getVar(ifclistvar)
-    if ifclist == None:
-        bb.warn('No online interfaces defined in variable {}!'.format(ifclistvar))
-        return param_list
-    interfaces = ifclist.split(':')
-    if len(interfaces) > 1:
-        param_list = '--any '
-    for i in interfaces:
-        param_list += '--interface={} '.format(i)
-    return param_list
-
-ONLINE_INTERFACE_ARGS = "${@online_ifc_list_to_parameter_list(d, 'OMNECT_WAIT_ONLINE_INTERFACES_BUILD')}"
-
 do_install:append() {
-    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES_RUN:-${ONLINE_INTERFACE_ARGS}} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES_RUN:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
         ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 
