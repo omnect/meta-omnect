@@ -18,7 +18,7 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES:raspberrypi4-64 += "${LAYERDIR_omnect}/conf/mac
 # also embedding bootloader version influences u-boot binary, so file below has
 # also to be taken into account for version checksumming
 # NOTE:
-#   next and previous additions need to be tagged with raspberrypi4-64
+#   next and previous additions need to be overridden for raspberrypi4-64
 #   because any devices derived from it can have different settings here
 OMNECT_BOOTLOADER_CHECKSUM_FILES:raspberrypi4-64 += "${LAYERDIR_omnect}/conf/machine/include/rpi_bootloader_embedded_version.inc"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/dynamic-layers/raspberrypi/recipes-bsp/rpi-bootfiles/*"
