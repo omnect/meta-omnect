@@ -93,10 +93,10 @@ _timestamp=
 # that we use to tell swupdate which partition to target.
 if [[ $(readlink -f /dev/omnect/rootCurrent) == $(readlink -f /dev/omnect/rootA) ]]; then
     selection="stable,copy2"
-    update_part=omnect-os-rootB
+    update_part=3
 else
     selection="stable,copy1"
-    update_part=omnect-os-rootA
+    update_part=2
 fi
 
 update_timestamp() {
@@ -723,7 +723,7 @@ InstallUpdate() {
                 ret_val=$?
                 if [ ${ret_val} -eq 0 ]; then
                     # workaround for update from image without set bootloader version
-                    [ -f /boot/EFI/BOOT/bootloader_version ] || echo > /boot/EFI/BOOT/bootloader_version
+                    [ -f /boot/EFI/BOOT/omnect_bootloader_version ] || echo > /boot/EFI/BOOT/omnect_bootloader_version
                     rm -f /run/omnect-bootloader-update-not-necessary
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,bootloader &>> "${swupdate_log_file}"
                     ret_val=$?

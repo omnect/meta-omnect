@@ -64,17 +64,17 @@ do_install:append:mx8mm-nxp-bsp () {
 }
 
 do_install:append:omnect_grub () {
-    install -m 0755 -D ${WORKDIR}/grub-sh            ${D}/init.d/11-bootloader_sh
+    install -m 0755 -D ${WORKDIR}/grub-sh            ${D}/init.d/09-bootloader_sh
 }
 
 do_install:append:omnect_uboot () {
-    install -m 0755 -D ${WORKDIR}/uboot-sh           ${D}/init.d/11-bootloader_sh
+    install -m 0755 -D ${WORKDIR}/uboot-sh           ${D}/init.d/09-bootloader_sh
 }
 
 FILES:${PN} = "\
     /init.d/05-common_sh \
+    /init.d/09-bootloader_sh \
     /init.d/10-rootblk_dev \
-    /init.d/11-bootloader_sh \
     /init.d/86-factory_reset \
     /init.d/87-flash_mode_1 \
     /init.d/89-fs_mount \

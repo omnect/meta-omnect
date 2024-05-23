@@ -208,7 +208,6 @@ run_flash_mode_1() {
         echo "Configuring grub"
         run_cmd_stdout mkdir -p /tmp/boot
         run_cmd_stdout mount ${blk_dev_dst}${p}1 /tmp/boot
-        cp /etc/omnect/grub.cfg /tmp/boot/EFI/BOOT/grub.cfg
         cp /etc/omnect/grubenv.in /tmp/boot/EFI/BOOT/grubenv
         run_cmd_stdout umount /tmp/boot
     else

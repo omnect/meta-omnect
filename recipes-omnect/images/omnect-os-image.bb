@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "\
 "
 # we need the bootloader version in the *testdata.json artifact
 def omnect_create_bootloader_version(d):
-    path = d.getVar('DEPLOY_DIR_IMAGE') + '/bootloader_version'
+    path = d.getVar('DEPLOY_DIR_IMAGE') + '/omnect_bootloader_version'
     str = ""
     try:
         str = open(path, 'r').read().split()[0]

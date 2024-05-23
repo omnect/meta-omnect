@@ -10,10 +10,16 @@ SRC_URI = "\
     file://grub.cfg.in \
 "
 
+DEPENDS = "grub-native"
+
 do_compile() {
     sed -e "s/@@APPEND@@/${APPEND}/g" \
         -e "s#@@OMNECT_ROOT_DEVICE@@#${OMNECT_ROOT_DEVICE}#g" \
         ${WORKDIR}/grub.cfg.in > ${WORKDIR}/grub.cfg
+
+    [ ${OMNECT_RELEASE_IMAGE} -eq 1 ] && sed -ie "s/^timeout=\(.\)/timeout=0/g" ${WORKDIR}/grub.cfg
+
+    grub-script-check ${WORKDIR}/grub.cfg
 }
 
 # do install used when installing into initramfs (used by flash-mode-1)
