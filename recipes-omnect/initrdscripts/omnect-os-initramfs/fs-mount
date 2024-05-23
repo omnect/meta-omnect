@@ -23,7 +23,7 @@ run_fs_mount()
     mnt_opts_default="defaults,noatime,nodiratime,async"
 
     # mount rootfs
-    mount_partition "ext4" "${bootparam_root}" "${ROOTFS_DIR}" "${mnt_opts_default},ro" || return 1
+    mount_partition "ext4" "/dev/omnect/rootCurrent" "${ROOTFS_DIR}" "${mnt_opts_default},ro" || return 1
     # bind mount rootfs without overlay under /mnt/rootCurrent
     run_cmd mount --bind ${ROOTFS_DIR} ${ROOTFS_DIR}/mnt/rootCurrent
     run_cmd mount --make-private ${ROOTFS_DIR}/mnt/rootCurrent

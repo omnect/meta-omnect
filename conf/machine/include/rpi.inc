@@ -30,6 +30,7 @@ SYSTEMD_RebootWatchdogSec   = "15"
 # this machine uses uboot
 MACHINEOVERRIDES:prepend = "omnect_uboot:"
 
+OMNECT_BOOTLOADER="u-boot"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot = "<newchecksum> <oldchecksum>"
 # e.g.:

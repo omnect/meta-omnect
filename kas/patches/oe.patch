@@ -1,40 +1,3 @@
-diff --git a/meta/classes/image.bbclass b/meta/classes/image.bbclass
-index 00413d56d1..cef10c5fde 100644
---- a/meta/classes/image.bbclass
-+++ b/meta/classes/image.bbclass
-@@ -529,27 +529,27 @@ def get_rootfs_size(d):
-     size_kb = oe.utils.directory_size(d.getVar("IMAGE_ROOTFS")) / 1024
-
-     base_size = size_kb * overhead_factor
--    bb.debug(1, '%f = %d * %f' % (base_size, size_kb, overhead_factor))
-+    bb.verbnote('%f = %d * %f' % (base_size, size_kb, overhead_factor))
-     base_size2 = max(base_size, rootfs_req_size) + rootfs_extra_space
--    bb.debug(1, '%f = max(%f, %d)[%f] + %d' % (base_size2, base_size, rootfs_req_size, max(base_size, rootfs_req_size), rootfs_extra_space))
-+    bb.verbnote('%f = max(%f, %d)[%f] + %d' % (base_size2, base_size, rootfs_req_size, max(base_size, rootfs_req_size), rootfs_extra_space))
-
-     base_size = base_size2
-     if base_size != int(base_size):
-         base_size = int(base_size + 1)
-     else:
-         base_size = int(base_size)
--    bb.debug(1, '%f = int(%f)' % (base_size, base_size2))
-+    bb.verbnote('%f = int(%f)' % (base_size, base_size2))
-
-     base_size_saved = base_size
-     base_size += rootfs_alignment - 1
-     base_size -= base_size % rootfs_alignment
--    bb.debug(1, '%d = aligned(%d)' % (base_size, base_size_saved))
-+    bb.verbnote('%d = aligned(%d) [max: %d]' % (base_size, base_size_saved, int(rootfs_maxsize)))
-
-     # Do not check image size of the debugfs image. This is not supposed
-     # to be deployed, etc. so it doesn't make sense to limit the size
-     # of the debug.
-     if (d.getVar('IMAGE_BUILDING_DEBUGFS') or "") == "true":
--        bb.debug(1, 'returning debugfs size %d' % (base_size))
-+        bb.verbnote('returning debugfs size %d' % (base_size))
-         return base_size
-
-     # Check the rootfs size against IMAGE_ROOTFS_MAXSIZE (if set)
 diff --git a/scripts/lib/wic/plugins/source/bootimg-efi.py b/scripts/lib/wic/plugins/source/bootimg-efi.py
 index a2b9f4c893..355cd1b417 100644
 --- a/scripts/lib/wic/plugins/source/bootimg-efi.py
@@ -171,21 +134,11 @@ index a2b9f4c893..355cd1b417 100644
 +        grubenv_install_cmd = "install -m 0644 -D %s %s/EFI/BOOT/grubenv" % (omnect_grubenv_file, hdddir)
 +        exec_cmd(grubenv_install_cmd)
 +        deploy_dir_img = get_bitbake_var("DEPLOY_DIR_IMAGE")
-+        bootloader_version_install_cmd = "install -m 0644 -D %s/bootloader_version %s/EFI/BOOT/bootloader_version" % (deploy_dir_img, hdddir)
++        bootloader_version_install_cmd = "install -m 0644 -D %s/omnect_bootloader_version %s/EFI/BOOT/omnect_bootloader_version" % (deploy_dir_img, hdddir)
 +        exec_cmd(bootloader_version_install_cmd)
 
          if get_bitbake_var("IMAGE_EFI_BOOT_FILES"):
              for src_path, dst_path in cls.install_task:
-diff --git a/meta/conf/layer.conf b/meta/conf/layer.conf
-index 1f329c3efe..f906531327 100644
---- a/meta/conf/layer.conf
-+++ b/meta/conf/layer.conf
-@@ -123,3 +123,5 @@ SSTATE_EXCLUDEDEPS_SYSROOT += ".*->autoconf-archive-native"
- # Avoid empty path entries
- BITBAKEPATH := "${@os.path.dirname(bb.utils.which(d.getVar('PATH'),'bitbake'))}"
- PATH := "${@'${BITBAKEPATH}:' if '${BITBAKEPATH}' != '' else ''}${HOSTTOOLS_DIR}"
-+
-+LAYERDIR_core = "${LAYERDIR}"
 diff --git a/meta/classes/cargo_common.bbclass b/meta/classes/cargo_common.bbclass
 index c1bc142d85..362498610d 100644
 --- a/meta/classes/cargo_common.bbclass
@@ -209,3 +162,50 @@ index c1bc142d85..362498610d 100644
  
  	cat <<- EOF >> ${CARGO_HOME}/config
  
+diff --git a/meta/classes/image.bbclass b/meta/classes/image.bbclass
+index 00413d56d1..cef10c5fde 100644
+--- a/meta/classes/image.bbclass
++++ b/meta/classes/image.bbclass
+@@ -529,27 +529,27 @@ def get_rootfs_size(d):
+     size_kb = oe.utils.directory_size(d.getVar("IMAGE_ROOTFS")) / 1024
+
+     base_size = size_kb * overhead_factor
+-    bb.debug(1, '%f = %d * %f' % (base_size, size_kb, overhead_factor))
++    bb.verbnote('%f = %d * %f' % (base_size, size_kb, overhead_factor))
+     base_size2 = max(base_size, rootfs_req_size) + rootfs_extra_space
+-    bb.debug(1, '%f = max(%f, %d)[%f] + %d' % (base_size2, base_size, rootfs_req_size, max(base_size, rootfs_req_size), rootfs_extra_space))
++    bb.verbnote('%f = max(%f, %d)[%f] + %d' % (base_size2, base_size, rootfs_req_size, max(base_size, rootfs_req_size), rootfs_extra_space))
+
+     base_size = base_size2
+     if base_size != int(base_size):
+         base_size = int(base_size + 1)
+     else:
+         base_size = int(base_size)
+-    bb.debug(1, '%f = int(%f)' % (base_size, base_size2))
++    bb.verbnote('%f = int(%f)' % (base_size, base_size2))
+
+     base_size_saved = base_size
+     base_size += rootfs_alignment - 1
+     base_size -= base_size % rootfs_alignment
+-    bb.debug(1, '%d = aligned(%d)' % (base_size, base_size_saved))
++    bb.verbnote('%d = aligned(%d) [max: %d]' % (base_size, base_size_saved, int(rootfs_maxsize)))
+
+     # Do not check image size of the debugfs image. This is not supposed
+     # to be deployed, etc. so it doesn't make sense to limit the size
+     # of the debug.
+     if (d.getVar('IMAGE_BUILDING_DEBUGFS') or "") == "true":
+-        bb.debug(1, 'returning debugfs size %d' % (base_size))
++        bb.verbnote('returning debugfs size %d' % (base_size))
+         return base_size
+
+     # Check the rootfs size against IMAGE_ROOTFS_MAXSIZE (if set)
+diff --git a/meta/conf/layer.conf b/meta/conf/layer.conf
+index 1f329c3efe..f906531327 100644
+--- a/meta/conf/layer.conf
++++ b/meta/conf/layer.conf
+@@ -123,3 +123,5 @@ SSTATE_EXCLUDEDEPS_SYSROOT += ".*->autoconf-archive-native"
+ # Avoid empty path entries
+ BITBAKEPATH := "${@os.path.dirname(bb.utils.which(d.getVar('PATH'),'bitbake'))}"
+ PATH := "${@'${BITBAKEPATH}:' if '${BITBAKEPATH}' != '' else ''}${HOSTTOOLS_DIR}"
++
++LAYERDIR_core = "${LAYERDIR}"
