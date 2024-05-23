@@ -14,13 +14,14 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/files/*"
 # we have to update the raspberrypi firmware if basic configuration of the bsp changes
 # per convention such changes should be made in the following file:
-OMNECT_BOOTLOADER_CHECKSUM_FILES:raspberrypi4-64 += "${LAYERDIR_omnect}/conf/machine/include/rpi_firmware_settings.inc"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${@'${LAYERDIR_omnect}/conf/machine/include/rpi_firmware_settings.inc' if bb.utils.filter('MACHINE', 'raspberrypi3 raspberrypi4-64', d) != '' else ''}"
 # also embedding bootloader version influences u-boot binary, so file below has
 # also to be taken into account for version checksumming
 # NOTE:
-#   next and previous additions need to be overridden for raspberrypi4-64
-#   because any devices derived from it can have different settings here
-OMNECT_BOOTLOADER_CHECKSUM_FILES:raspberrypi4-64 += "${LAYERDIR_omnect}/conf/machine/include/rpi_bootloader_embedded_version.inc"
+#   next and previous additions need to be set only for machines defined in
+#   this meta layer because any devices derived in other meta layers from
+#   an RPI device can have different settings there!
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${@'${LAYERDIR_omnect}/conf/machine/include/rpi_bootloader_embedded_version.inc' if bb.utils.filter('MACHINE', 'raspberrypi3 raspberrypi4-64', d) != '' else ''}"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/dynamic-layers/raspberrypi/recipes-bsp/rpi-bootfiles/*"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/bootfiles/*"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/common/*"
