@@ -20,7 +20,7 @@
 # embedded:
 #  - OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBTARGET
 #    defines the bitbake target the versioned bootloader binary bases upon
-#  - OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBFILE
+#  - OMNECT_BOOTLOADER_EMBEDDED_VERSION_BINFILE
 #    the name of the base binary bootloader file; the generated file will be at
 #    the same path but with a suffix '.versioned', the original file gets
 #    suffixed with '.unversioned' and a link gets created from the original
@@ -187,7 +187,7 @@ python omnect_uboot_embed_version() {
 do_compile() {
     # this is actually no compilation but only taking advantage of already
     # existing bootloader binary this recipe depends on
-    cp "${DEPLOY_DIR_IMAGE}/${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBFILE}" "${WORKDIR}/bootloader.bin"
+    cp "${DEPLOY_DIR_IMAGE}/${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BINFILE}" "${WORKDIR}/bootloader.bin"
     cp "${DEPLOY_DIR_IMAGE}/omnect_bootloader_version" "${WORKDIR}/"
 }
 
