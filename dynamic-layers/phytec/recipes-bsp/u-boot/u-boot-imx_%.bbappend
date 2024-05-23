@@ -43,6 +43,10 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_omnect}/recipes-bsp/
 # we don't use rauc and overwrite the u-boot env with omnect_env.patch
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-rauc.inc"
 
+# since bootloader version gets embedded in bootloader file also general
+# settings thereof need to be fed into checksumming
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/conf/distro/include/omnect-os-bootloader-version.conf"
+
 inherit omnect_uboot_configure_env
 inherit omnect_bootloader_versioning
 

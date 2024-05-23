@@ -38,7 +38,7 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/u-boot/*"
 
 # since bootloader version gets embedded in bootloader file also general
 # settings thereof need to be fed into checksumming
-OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/conf/distro/include/omnect-os-bootloader-version.conf"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR}/conf/distro/include/omnect-os-bootloader-version.conf"
 
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE = "${OMNECT_THISDIR_SAVED}/u-boot/.gitignore"
 # don't include files which are generated on build:
