@@ -88,7 +88,7 @@ do_install:append:phyboard-polis-imx8mm-4() {
 }
 
 do_install:append() {
-    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES_RUN:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
         ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 
