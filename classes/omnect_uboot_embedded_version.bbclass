@@ -71,6 +71,8 @@
 #  - <version string> is the actual version, w/o terminating character
 #
 
+SRC_URI += "file://${DEPLOY_DIR_IMAGE}/omnect_bootloader_version"
+
 # define magic number for embedded bootloader version
 OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC = "19 69 02 28"
 
