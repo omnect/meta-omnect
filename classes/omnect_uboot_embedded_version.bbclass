@@ -14,7 +14,7 @@
 #
 # The bootloader version itself doesn't get computed here but in class
 # omnect_bootloader_versioning.bbclass which also writes the computed version
-# to file omnect_bootloader_version in WORKDIR.
+# to file omnect_bootloader_version in DEPLOY_DIR_IMAGE.
 #
 # The following bitbake variables control how the version information gets
 # embedded:
@@ -82,7 +82,7 @@ python omnect_uboot_embed_version() {
     from pathlib import Path
 
     # read the previously calculated version information
-    bootloader_version_file = d.getVar("WORKDIR") + "/omnect_bootloader_version"
+    bootloader_version_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version"
     try:
         with open( bootloader_version_file, "r", encoding="utf-8") as f:
             omnect_bootloader_version = f.read()
@@ -191,7 +191,6 @@ do_compile() {
     # this is actually no compilation but only taking advantage of already
     # existing bootloader binary this recipe depends on
     cp "${DEPLOY_DIR_IMAGE}/${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BINFILE}" "${WORKDIR}/bootloader.bin"
-    cp "${DEPLOY_DIR_IMAGE}/omnect_bootloader_version" "${WORKDIR}/"
 }
 
 do_compile[depends] += "${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBTARGET}:do_deploy "
