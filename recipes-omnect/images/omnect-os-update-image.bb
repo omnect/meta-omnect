@@ -19,7 +19,7 @@ DEPENDS += "virtual/bootloader"
 addtask do_bootloader_package before do_swuimage
 
 do_bootloader_package_extra_depends = ""
-do_bootloader_package_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
+do_bootloader_package_extra_depends:omnect_uboot = "u-boot-scr:do_deploy bootloader-versioned:do_deploy"
 do_bootloader_package_extra_depends:omnect_grub = "grub-cfg:do_deploy"
 do_bootloader_package[depends] += "virtual/bootloader:do_deploy virtual/kernel:do_deploy ${do_bootloader_package_extra_depends}"
 
@@ -79,7 +79,7 @@ IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 # images and files that will be included in the .swu image
 SWUPDATE_IMAGES = "omnect-os boot-partition-update"
-SWUPDATE_IMAGES:append:phytec-imx8mm = " imx-boot"
+SWUPDATE_IMAGES:append:phytec-imx8mm = " bootloader.versioned.bin.gz"
 
 
 SWUPDATE_IMAGES_FSTYPES[omnect-os] = ".ext4.gz"

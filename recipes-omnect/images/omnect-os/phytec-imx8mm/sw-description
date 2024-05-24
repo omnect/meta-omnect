@@ -5,7 +5,7 @@ software =
     @@MACHINE@@ = {
         embedded-script ="
         function check_bootloader_version(image)
-            os.execute(\"fw_printenv -n omnect_u-boot_version > /tmp/bootloader_version\")
+            os.execute(\"omnect_get_bootloader_version.sh > /tmp/bootloader_version\")
             fh = io.open(\"/tmp/bootloader_version\")
             bootloader_version = fh:read()
             fh:close()
@@ -53,10 +53,11 @@ software =
                     {
                         name = "bootloader";
                         hook = "check_bootloader_version";
-                        filename = "imx-boot";
-                        sha256 = "$swupdate_get_sha256(imx-boot)";
+                        filename = "bootloader.versioned.bin.gz";
+                        sha256 = "$swupdate_get_sha256(bootloader.versioned.bin.gz)";
                         version = "@@OMNECT_BOOTLOADER_VERSION@@";
                         type = "raw";
+                        compressed = "zlib";
                         device = "/dev/omnect/rootblk";
                         offset = "33K";
                     }

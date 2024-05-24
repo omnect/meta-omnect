@@ -38,9 +38,6 @@
 // set by classes/omnect_uboot_configure_env.bbclass
 #define OMNECT_ENV_BOOTARGS
 
-// set by classes/omnect_uboot_configure_env.bbclass
-#define OMNECT_ENV_BOOTLOADER_VERSION
-
 // u-boot part of omnect update workflow
 #define OMNECT_ENV_UPDATE_WORKFLOW \
     "omnect_update_flow=" \
