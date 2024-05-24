@@ -7,8 +7,8 @@
 # e.g. the raspberry-pi bootloader artefact contains u-boot + rpi bootfiles
 # + rpi firmware config files.
 #
-# This class writes two files to `DEPLOYDIR`:
-# - bootloader_version - contains full bootloader version string
+# This class writes two files to `DEPLOY_DIR_IMAGE`:
+# - omnect_bootloader_version - contains full bootloader version string
 # - omnect_bootloader_checksums.txt - list of used input files and their
 #   corresponding sha256 checksums
 #
