@@ -71,6 +71,9 @@
 #  - <version string> is the actual version, w/o terminating character
 #
 
+# define magic number for embedded bootloader version
+OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC = "19 69 02 28"
+
 python omnect_uboot_embed_version() {
     import glob
     import os
