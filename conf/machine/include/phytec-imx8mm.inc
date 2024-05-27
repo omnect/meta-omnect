@@ -1,3 +1,5 @@
+require conf/machine/include/phytec-imx8mm_bootloader_embedded_version.inc
+
 # WIC config
 WKS_FILE = "omnect-os.phytec.wks.in"
 WKS_FILES:${MACHINE} = "${WKS_FILE}"
