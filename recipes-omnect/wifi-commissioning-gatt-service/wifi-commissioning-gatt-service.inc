@@ -16,14 +16,14 @@ RDEPENDS:${PN} += "bash bluez5 (>=5.60) toml-cli wpa-supplicant"
 
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${S}/systemd/wifi-commissioning-gatt.service ${D}${systemd_system_unitdir}/
+    install -m 0644 ${S}/systemd/wifi-commissioning-gatt@.service ${D}${systemd_system_unitdir}/
     install -d ${D}${bindir}
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    ln -rs ${D}${systemd_system_unitdir}/wifi-commissioning-gatt.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wifi-commissioning-gatt.service
+    ln -rs ${D}${systemd_system_unitdir}/wifi-commissioning-gatt@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wifi-commissioning-gatt@wlan0.service
 }
 
 FILES:${PN} += "\
-    ${systemd_system_unitdir}/wifi-commissioning-gatt.service \
+    ${systemd_system_unitdir}/wifi-commissioning-gatt@.service \
 "
 
 inherit useradd
