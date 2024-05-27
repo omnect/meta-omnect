@@ -9,7 +9,7 @@ run_fs_link() {
     FS_LINK_FILE="/rootfs/etc/omnect/create-fs-links.txt"
     msg "omnect-os initramfs fs link"
 
-    if ls ${FS_LINK_FILE} 1> /dev/null 2>&1; then
+    if [ -r "${FS_LINK_FILE}" ]; then
         while read -r source destination ignore; do
             [[ "$source" =~ ^\#.* ]] && continue
             run_cmd ln -sf $source /rootfs/$destination
