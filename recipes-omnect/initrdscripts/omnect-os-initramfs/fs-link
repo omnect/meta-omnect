@@ -12,8 +12,10 @@ run_fs_link() {
     if [ -r "${FS_LINK_FILE}" ]; then
         while read -r source destination ignore; do
             [[ "$source" =~ ^\#.* ]] && continue
-            run_cmd ln -sf $source /rootfs/$destination
+            msg "create a symbolic link"
+            run_cmd ln -sf $source /rootfs/$destination || return 1
         done < ${FS_LINK_FILE}
+        run_cmd rm ${FS_LINK_FILE} || return 1
     fi
     return 0
 
