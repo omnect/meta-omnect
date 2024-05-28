@@ -74,7 +74,10 @@ get_fsck_status()
 
 
 rootblk_dev_generate_dev_omnect() {
-    local search_rootblk=("/dev/sda" "/dev/nvme0n1p")
+    # we assume there is only one internal harddrive device
+    # we assume /dev/sdb is usb when sata device is /dev/sda (no verification though)
+    # we assume /dev/sda is usb when nvme device exists (no verification though)
+    local search_rootblk=("/dev/sdb" "/dev/sda" "/dev/nvme0n1p")
     local rootblk=""
     local rootpart=${bootparam_rootpart}
     local part=""

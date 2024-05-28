@@ -7,7 +7,9 @@
   - 2nd if USB media is not present the internal nvme will be booted.
 - **Flash internal nvme:**
   - boot *omnect-os* from USB
-  - use [flash-mode 1](../README.md#flash-mode-1) in order to flash an image from USB to nvme. The nvme device path is */dev/nvme0n1*
+  - use [flash-mode 1](../README.md#flash-mode-1) in order to flash an image from USB to the internal harddrive
+    - if your device has nvme, the device path is */dev/nvme0n1*
+    - if your device has sata, the device path is */dev/sda*
   - remove USB media and power on device
 
 ## Omnect Feature Support:
