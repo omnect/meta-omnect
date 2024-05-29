@@ -1,0 +1,5 @@
+[Match]
+OriginalName=wlan0
+
+[Link]
+NamePolicy=keep

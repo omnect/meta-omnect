@@ -1,1 +1,0 @@
-KERNEL=="wlp[0-9]*s0", NAME="wlan0"
