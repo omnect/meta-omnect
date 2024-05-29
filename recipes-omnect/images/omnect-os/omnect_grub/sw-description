@@ -50,7 +50,7 @@ software =
 		};
         embedded-script ="
         function check_bootloader_version(image)
-            fh = io.open(\"/boot/EFI/BOOT/bootloader_version\")
+            fh = io.open(\"/boot/EFI/BOOT/omnect_bootloader_version\")
             bootloader_version = fh:read()
             fh:close()
             swupdate.trace(\"bootloader_version: \" .. bootloader_version)

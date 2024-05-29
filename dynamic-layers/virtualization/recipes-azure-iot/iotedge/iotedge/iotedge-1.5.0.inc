@@ -1,7 +1,7 @@
-# override rolling SRCREV  "relase/1.4" of iot-identity-service dependency
+# override rolling SRCREV  "main" of iot-identity-service dependency
 # with static rev
-# aka 1.4.8:
-iot_identity_service_rev = "657b163c8ecdf89cebcc57e1751d47cb1999de2c"
+# aka 1.5.0:
+iot_identity_service_rev = "b9fff6b2fdf9c1593a5a0b7e856a5f01c2c5ad5b"
 SRCREV_aziot-cert-client-async = "${iot_identity_service_rev}"
 SRCREV_aziot-cert-common-http = "${iot_identity_service_rev}"
 SRCREV_aziot-certd-config = "${iot_identity_service_rev}"

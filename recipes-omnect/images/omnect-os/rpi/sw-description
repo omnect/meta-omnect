@@ -5,7 +5,13 @@ software =
     @@MACHINE@@ = {
         embedded-script ="
         function check_bootloader_version(image)
-            os.execute(\"fw_printenv -n omnect_u-boot_version > /tmp/bootloader_version\")
+            os.execute(\"omnect_get_bootloader_version.sh > /tmp/bootloader_version\")
+            fh = io.open(\"/tmp/bootloader_version\")
+	    len = fh:seek(\"end\")
+	    fh:close()
+	    if len == 0 then
+                os.execute(\"fw_printenv -n omnect_u-boot_version > /tmp/bootloader_version\")
+	    end
             fh = io.open(\"/tmp/bootloader_version\")
             bootloader_version = fh:read()
             fh:close()

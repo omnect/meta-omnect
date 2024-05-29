@@ -209,10 +209,8 @@ determines the device online state have a look at systemd's
 documentation for [service systemd-networkd-wait-online](https://www.freedesktop.org/software/systemd/man/latest/systemd-networkd-wait-online.html#)
 
 To allow for customization the service file uses the content of
-environment variable `OMNECT_WAIT_ONLINE_INTERFACES_RUN` if non-empty,
-otherwise the default setting as defined in
-`OMNECT_WAIT_ONLINE_INTERFACES_BUILD` in the corresponding machine
-configuration gets set.
+environment variable `OMNECT_WAIT_ONLINE_INTERFACES` if non-empty,
+otherwise the default setting `--any` gets set.
 
 This provides the possibility to overwrite the set of online interfaces
 by injecting a systemd environment file into image, e.g.
@@ -221,7 +219,7 @@ file with the following content and inject it into the factory
 partitions of the image:
 
 ```
-OMNECT_WAIT_ONLINE_INTERFACES_RUN=--interface=<interface-name>
+OMNECT_WAIT_ONLINE_INTERFACES=--interface=<interface-name>
 ```
 
 Place holder `<interface-name>` needs to be replaced with the real name,

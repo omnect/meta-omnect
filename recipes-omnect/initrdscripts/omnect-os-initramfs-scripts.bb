@@ -11,6 +11,7 @@ SRC_URI = "\
     file://common-sh \
     file://factory-reset \
     file://flash-mode-1 \
+    file://fs-link \
     file://fs-mount \
     file://omnect-device-service-setup \
 "
@@ -57,6 +58,7 @@ do_install() {
         install -m 0755 -D ${WORKDIR}/persistent-var-log ${D}/init.d/90-persistent_var_log
     fi
     install -m 0755 -D ${WORKDIR}/omnect-device-service-setup    ${D}/init.d/95-omnect_device_service_setup
+    install -m 0755 -D ${WORKDIR}/fs-link    ${D}/init.d/96-fs_link
 }
 
 do_install:append:mx8mm-nxp-bsp () {
@@ -64,21 +66,22 @@ do_install:append:mx8mm-nxp-bsp () {
 }
 
 do_install:append:omnect_grub () {
-    install -m 0755 -D ${WORKDIR}/grub-sh            ${D}/init.d/11-bootloader_sh
+    install -m 0755 -D ${WORKDIR}/grub-sh            ${D}/init.d/09-bootloader_sh
 }
 
 do_install:append:omnect_uboot () {
-    install -m 0755 -D ${WORKDIR}/uboot-sh           ${D}/init.d/11-bootloader_sh
+    install -m 0755 -D ${WORKDIR}/uboot-sh           ${D}/init.d/09-bootloader_sh
 }
 
 FILES:${PN} = "\
     /init.d/05-common_sh \
+    /init.d/09-bootloader_sh \
     /init.d/10-rootblk_dev \
-    /init.d/11-bootloader_sh \
     /init.d/86-factory_reset \
     /init.d/87-flash_mode_1 \
     /init.d/89-fs_mount \
     /init.d/95-omnect_device_service_setup \
+    /init.d/96-fs_link \
 "
 FILES:${PN}:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', ' /init.d/87-flash_mode_2', '', d)}"
 FILES:${PN}:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', ' /init.d/87-flash_mode_3', '', d)}"

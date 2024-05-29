@@ -226,7 +226,7 @@ index 13a9cddf4e..6095c7cc75 100644
 +        grubenv_install_cmd = "install -m 0644 -D %s %s/EFI/BOOT/grubenv" % (omnect_grubenv_file, hdddir)
 +        exec_cmd(grubenv_install_cmd)
 +        deploy_dir_img = get_bitbake_var("DEPLOY_DIR_IMAGE")
-+        bootloader_version_install_cmd = "install -m 0644 -D %s/bootloader_version %s/EFI/BOOT/bootloader_version" % (deploy_dir_img, hdddir)
++        bootloader_version_install_cmd = "install -m 0644 -D %s/omnect_bootloader_version %s/EFI/BOOT/omnect_bootloader_version" % (deploy_dir_img, hdddir)
 +        exec_cmd(bootloader_version_install_cmd)
  
          if get_bitbake_var("IMAGE_EFI_BOOT_FILES"):

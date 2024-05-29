@@ -43,6 +43,7 @@ inherit omnect-device-service omnect_rust omnect_rust_azure-iot-sdk_deps systemd
 
 CARGO_BUILD_FLAGS:append:omnect_grub = " --features=bootloader_grub"
 CARGO_BUILD_FLAGS:append:omnect_uboot = " --features=bootloader_uboot"
+CARGO_BUILD_FLAGS:append = "${@bb.utils.contains('MACHINE_FEATURES', '3g', ',modem_info', '', d)}"
 
 do_install:append() {
     install -m 0644 -D ${S}/systemd/omnect-device-service.service ${D}${systemd_system_unitdir}/omnect-device-service.service
@@ -60,6 +61,23 @@ do_install:append() {
 
     # create tmpfiles.d entry to (re)create dir + permissions
     install -m 0644 -D ${WORKDIR}/omnect-device-service.tmpfilesd ${D}${libdir}/tmpfiles.d/omnect-device-service.conf
+}
+
+# health-check stuff
+do_install:append() {
+    # FIXME: the shell helper library should really be located somewhere else,
+    #        probably all of the health check stuff shoul reside in a dedicated
+    #        folder
+    install -m 0755 -D ${S}/healthcheck/healthchecklib.sh                ${D}/${sbindir}/healthchecklib.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health_check.sh           ${D}/${sbindir}/omnect_health_check.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__coredumps.sh      ${D}/${sbindir}/omnect_health__coredumps.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__services.sh       ${D}/${sbindir}/omnect_health__services.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__system_running.sh ${D}/${sbindir}/omnect_health__system_running.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__timesync.sh       ${D}/${sbindir}/omnect_health__timesync.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_service_log.sh            ${D}/${sbindir}/omnect_service_log.sh
+    # and here the configuration files
+    install -m 0644 -D ${S}/healthcheck/omnect_service_log_analysis.json ${D}/${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json
+    install -m 0644 -D ${S}/healthcheck/omnect_health_checks.json ${D}/${sysconfdir}/omnect/health_check/omnect_health_checks.json
 }
 
 do_install:append:omnect_grub() {
@@ -87,4 +105,17 @@ FILES:${PN} += "\
     ${libdir}/tmpfiles.d/omnect-device-service.conf \
     ${sysconfdir}/sudoers.d/omnect-device-service \
     ${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env \
+"
+
+# health-check stuff
+FILES:${PN} += "\
+	${sbindir}/healthchecklib.sh \
+	${sbindir}/omnect_health_check.sh \
+	${sbindir}/omnect_health__coredumps.sh \
+	${sbindir}/omnect_health__services.sh \
+	${sbindir}/omnect_health__system_running.sh \
+	${sbindir}/omnect_health__timesync.sh \
+	${sbindir}/omnect_service_log.sh \
+	${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json \
+	${sysconfdir}/omnect/health_check/omnect_health_checks.json \
 "

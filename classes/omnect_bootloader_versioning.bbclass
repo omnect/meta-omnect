@@ -7,12 +7,13 @@
 # e.g. the raspberry-pi bootloader artefact contains u-boot + rpi bootfiles
 # + rpi firmware config files.
 #
-# This class writes two files to `DEPLOYDIR`:
-# - bootloader_version - contains full bootloader version string
+# This class writes two files to `DEPLOY_DIR_IMAGE`:
+# - omnect_bootloader_version - contains full bootloader version string
 # - omnect_bootloader_checksums.txt - list of used input files and their
 #   corresponding sha256 checksums
 #
 # This class uses the following environment variables:
+# - `OMNECT_BOOTLOADER` - package name (PN) of used bootloader
 # - `OMNECT_BOOTLOADER_CHECKSUM_FILES` - list of input files (full path),
 #   wildcards are allowed
 # - `OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE` - list of files removed from
@@ -26,12 +27,24 @@
 #   note: if `OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE` is set, this var should be
 #         set to <old checksum>
 
+SRC_URI += "file://${DEPLOY_DIR_IMAGE}/omnect_bootloader_version"
 
-python  do_bootloader_checksum() {
+# create omnect_bootloader_version on recipe parse
+python() {
     import glob
     import hashlib
     import os
     from pathlib import Path
+
+    package_name = d.getVar("PN")
+    bootloader_name = d.getVar("OMNECT_BOOTLOADER")
+    if not bootloader_name:
+        bb.fatal("OMNECT_BOOTLOADER not set")
+
+    # since this runs at parse time, we have to ignore parsing of grub-efi for
+    # u-boot devices and vice versa
+    if package_name != bootloader_name:
+        return 0
 
     checksum_files = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_FILES").split(" ")
     checksum_files_ignore = []
@@ -39,7 +52,10 @@ python  do_bootloader_checksum() {
     if checksum_files_ignore_str:
         checksum_files_ignore = checksum_files_ignore_str.split(" ")
 
-    checksums_file_out = Path(d.getVar("WORKDIR") + "/omnect_bootloader_checksums.txt").open('w')
+    # we may have no workdir at parsetime -> create directly in DEPLOY_DIR_IMAGE
+    Path(d.getVar("DEPLOY_DIR_IMAGE")).mkdir(parents=True, exist_ok=True)
+
+    checksums_file_out = Path(d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_checksums.txt").open('w')
 
     used_checksum_file_list = []
     checksum_list = []
@@ -63,7 +79,7 @@ python  do_bootloader_checksum() {
 
             except OSError:
                 bb.fatal("Unable to open \"%s\"" % (checksum_glob_file))
-
+    checksums_file_out.close()
     m = hashlib.sha256()
     for checksum in checksum_list:
         m.update(checksum)
@@ -84,7 +100,7 @@ python  do_bootloader_checksum() {
         bb.fatal("expected bootloader checksum (OMNECT_BOOTLOADER_CHECKSUM_EXPECTED): \"%s\" is different from computed: \"%s\"" % (version_checksum_expected, version_checksum))
 
     omnect_bootloader_version = d.getVar("PV") + "-" + version_checksum
-    bootloader_version_file = d.getVar("WORKDIR") + "/omnect_bootloader_version"
+    bootloader_version_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version"
     try:
         with open( bootloader_version_file, "w" ) as f:
             f.write("%s" % omnect_bootloader_version)
@@ -98,14 +114,3 @@ python  do_bootloader_checksum() {
     bb.debug(2, "checksum_files: %s" % checksum_files)
     bb.debug(2, "checksum_files_ignore; %s" % checksum_files_ignore)
 }
-
-# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE and OMNECT_BOOTLOADER_CHECKSUM_EXPECTED
-# are not part of the recipe or bbclass files (set in machine config files)
-do_bootloader_checksum[vardeps] = "OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE OMNECT_BOOTLOADER_CHECKSUM_EXPECTED"
-addtask do_bootloader_checksum after do_unpack before do_configure
-
-do_deploy:append() {
-    install -m 0644 -D ${WORKDIR}/omnect_bootloader_version ${DEPLOYDIR}/bootloader_version
-    install -m 0644 -D ${WORKDIR}/omnect_bootloader_checksums.txt ${DEPLOYDIR}/
-}
-addtask do_deploy after do_compile before do_build

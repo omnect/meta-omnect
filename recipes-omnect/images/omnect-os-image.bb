@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "\
 "
 # we need the bootloader version in the *testdata.json artifact
 def omnect_create_bootloader_version(d):
-    path = d.getVar('DEPLOY_DIR_IMAGE') + '/bootloader_version'
+    path = d.getVar('DEPLOY_DIR_IMAGE') + '/omnect_bootloader_version'
     str = ""
     try:
         str = open(path, 'r').read().split()[0]
@@ -26,7 +26,7 @@ do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
 # we add boot.scr to the image on condition
 do_rootfs_extra_depends = ""
-do_rootfs_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
+do_rootfs_extra_depends:omnect_uboot = "u-boot-scr:do_deploy bootloader-versioned:do_deploy"
 do_rootfs[depends] += "${do_rootfs_extra_depends}"
 IMAGE_BOOT_FILES:append:omnect_uboot = " boot.scr"
 IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
@@ -76,6 +76,8 @@ IMAGE_INSTALL = "\
     systemd-analyze \
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
+
+IMAGE_INSTALL:append:omnect_uboot = " bootloader-versioned"
 
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.

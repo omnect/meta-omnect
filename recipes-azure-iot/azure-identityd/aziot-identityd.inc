@@ -134,6 +134,7 @@ do_install() {
         -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
         -e 's#@libexecdir@#/usr/libexec#g' \
         -e '/Environment=\(.*\)$/d' \
+	-e 's#^ExecStart=\(.*\)$#ExecStartPre=+-bash -c "/usr/sbin/omnect_service_log.sh start aziot-certd"\nExecStart=\1\nExecStopPost=+-/bin/sh -c "/usr/sbin/omnect_service_log.sh stop aziot-certd \\"$$SERVICE_RESULT\\" \\"$$EXIT_CODE\\" \\"$$EXIT_STATUS\\""#' \
         ${D}${systemd_system_unitdir}/aziot-certd.service
     install -m 0644     ${S}/cert/aziot-certd/aziot-certd.socket.in ${D}${systemd_system_unitdir}/aziot-certd.socket
     fill_placeholders ${D}${systemd_system_unitdir}/aziot-certd.service
@@ -148,6 +149,7 @@ do_install() {
         -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
         -e 's#@libexecdir@#/usr/libexec#g' \
         -e '/Environment=\(.*\)$/d' \
+	-e 's#^ExecStart=\(.*\)$#ExecStartPre=+-bash -c "/usr/sbin/omnect_service_log.sh start aziot-identityd"\nExecStart=\1\nExecStopPost=+-/bin/sh -c "/usr/sbin/omnect_service_log.sh stop aziot-identityd \\"$$SERVICE_RESULT\\" \\"$$EXIT_CODE\\" \\"$$EXIT_STATUS\\""#' \
         -e 's/^Requires=\(.*\)$/Requires=\1 network-online.target/' \
         ${D}${systemd_system_unitdir}/aziot-identityd.service
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.socket.in ${D}${systemd_system_unitdir}/aziot-identityd.socket
@@ -160,6 +162,7 @@ do_install() {
         -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
         -e 's#@libexecdir@#/usr/libexec#g' \
         -e '/Environment=\(.*\)$/d' \
+	-e 's#^ExecStart=\(.*\)$#ExecStartPre=+-bash -c "/usr/sbin/omnect_service_log.sh start aziot-keyd"\nExecStart=\1\nExecStopPost=+-/bin/sh -c "/usr/sbin/omnect_service_log.sh stop aziot-keyd \\"$$SERVICE_RESULT\\" \\"$$EXIT_CODE\\" \\"$$EXIT_STATUS\\""#' \
         ${D}${systemd_system_unitdir}/aziot-keyd.service
     install -m 0644     ${S}/key/aziot-keyd/aziot-keyd.socket.in ${D}${systemd_system_unitdir}/aziot-keyd.socket
     fill_placeholders ${D}${systemd_system_unitdir}/aziot-keyd.service
@@ -172,6 +175,7 @@ do_install() {
             -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
             -e 's#@libexecdir@#/usr/libexec#g' \
             -e '/Environment=\(.*\)$/d' \
+	-e 's#^ExecStart=\(.*\)$#ExecStartPre=+-bash -c "/usr/sbin/omnect_service_log.sh start aziot-tpmd"\nExecStart=\1\nExecStopPost=+-/bin/sh -c "/usr/sbin/omnect_service_log.sh stop aziot-tpmd \\"$$SERVICE_RESULT\\" \\"$$EXIT_CODE\\" \\"$$EXIT_STATUS\\""#' \
             ${D}${systemd_system_unitdir}/aziot-tpmd.service
         install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.socket.in ${D}${systemd_system_unitdir}/aziot-tpmd.socket
         fill_placeholders ${D}${systemd_system_unitdir}/aziot-tpmd.service

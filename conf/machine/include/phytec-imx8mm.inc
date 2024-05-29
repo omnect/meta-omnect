@@ -1,3 +1,5 @@
+require conf/machine/include/phytec-imx8mm_bootloader_embedded_version.inc
+
 # WIC config
 WKS_FILE = "omnect-os.phytec.wks.in"
 WKS_FILES:${MACHINE} = "${WKS_FILE}"
@@ -69,6 +71,7 @@ MACHINE_FEATURES:remove = " \
     optee \
 "
 
+OMNECT_BOOTLOADER = "u-boot-imx"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "<newchecksum> <oldchecksum>"
 # e.g.:
@@ -77,4 +80,4 @@ MACHINE_FEATURES:remove = " \
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot-imx - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "ee033b1ea51fc251384d62e4b35950eeec90173502f7a36b4406cb4807b18241"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "f2815f386d14e574652fe052365e8ef3de76b21bf1a7f4df45473e5f311fc00f"
