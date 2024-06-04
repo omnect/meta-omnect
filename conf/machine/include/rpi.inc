@@ -25,6 +25,9 @@ UBOOT_FDT_ADDR = "fdt_addr"
 SYSTEMD_RuntimeWatchdogSec  = "15"
 SYSTEMD_RebootWatchdogSec   = "15"
 
+# rpi bluetooth needs hciattach, which is marked deprecated
+PACKAGECONFIG:pn-bluez5:append = " deprecated tools"
+
 # this machine uses uboot
 MACHINEOVERRIDES:prepend = "omnect_uboot:"
 
