@@ -7,7 +7,7 @@ Before=aziot-identityd.service \
     aziot-certd.service \
     aziot-tpmd.service
 
-After=omnect-first-boot.service
+After=omnect-first-boot.service network-online.target
 
 ConditionPathExists=|/run/omnect-device-service/first_boot
 ConditionPathExists=|/run/omnect-device-service/omnect_validate_update
