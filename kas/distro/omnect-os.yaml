@@ -10,7 +10,7 @@ repos:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
     branch: "kirkstone"
-    commit: "5a6f7925bd2b885955c942573f70a5594f231563"
+    commit: "0560b848996a0feb410a8cd8ca07c60fe2f3b5bc"
     layers:
       meta-filesystems:
       meta-networking:
