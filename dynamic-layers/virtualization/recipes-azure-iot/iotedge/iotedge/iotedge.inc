@@ -3,7 +3,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 
 # overwrite CARGO_SRC_DIR from cargo-bitbake generated recipe
 CARGO_SRC_DIR = "edgelet/iotedge"
-CARGO_WORKSPACE_ROOT = "edgelet"
+CARGO_LOCK_PATH = "${S}/edgelet/Cargo.lock"
+# CARGO_MANIFEST_PATH = "${S}/edgelet/Cargo.toml"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:"
 
@@ -12,7 +13,7 @@ SRC_URI += "file://apply_doesnt_restart_services.patch"
 DEPENDS += "openssl"
 RDEPENDS:${PN} += "aziot-identityd"
 
-inherit features_check omnect_rust
+inherit features_check omnect_rust_aziot-identityd_deps
 
 export OPENSSL_DIR = "${STAGING_EXECPREFIXDIR}"
 export IOTEDGE_CONNECT_MANAGEMENT_URI = "unix:///var/run/iotedge/mgmt.sock"
@@ -20,6 +21,10 @@ export IOTEDGE_CONNECT_WORKLOAD_URI = "unix:///var/run/iotedge/workload.sock"
 export IOTEDGE_LISTEN_MANAGEMENT_URI = "fd://aziot-edged.mgmt.socket"
 export IOTEDGE_LISTEN_WORKLOAD_URI = "fd://aziot-edged.workload.socket"
 export SOCKET_DIR = "/run/aziot"
+
+do_configure:prepend() {
+    cp ${S}/${CARGO_SRC_DIR}/../Cargo.lock ${S}/${CARGO_SRC_DIR}/
+}
 
 do_install () {
     # Binaries

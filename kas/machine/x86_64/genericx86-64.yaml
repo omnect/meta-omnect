@@ -6,9 +6,8 @@ header:
 repos:
   ext/meta-yocto-bsp:
     url: "https://git.yoctoproject.org/meta-yocto"
-    branch: kirkstone
-    # yocto 4.0.18
-    commit: "70d8f77cf21e92d2f610d1b73f24d3faf6d96982"
+    branch: scarthgap
+    commit: "6e21dca8264c9596c55be0048490d67f861079f7"
     layers:
       meta-yocto-bsp:
 

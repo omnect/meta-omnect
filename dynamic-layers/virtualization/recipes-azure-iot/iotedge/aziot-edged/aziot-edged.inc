@@ -3,7 +3,6 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 
 # overwrite CARGO_SRC_DIR from cargo-bitbake generated recipe
 CARGO_SRC_DIR = "edgelet/aziot-edged"
-CARGO_WORKSPACE_ROOT = "edgelet"
 
 DEPENDS += "openssl virtual/docker"
 RDEPENDS:${PN} += "aziot-identityd docker"
@@ -15,7 +14,15 @@ export IOTEDGE_LISTEN_MANAGEMENT_URI = "fd://aziot-edged.mgmt.socket"
 export IOTEDGE_LISTEN_WORKLOAD_URI = "fd://aziot-edged.workload.socket"
 export SOCKET_DIR = "/run/aziot"
 
-inherit aziot features_check omnect_rust systemd
+inherit aziot features_check omnect_rust_aziot-identityd_deps systemd
+
+do_configure:prepend() {
+    cp ${S}/${CARGO_SRC_DIR}/../Cargo.lock ${S}/${CARGO_SRC_DIR}/
+}
+
+do_compile:prepend() {
+    cp ${S}/${CARGO_SRC_DIR}/Cargo.lock ${S}/${CARGO_SRC_DIR}/../
+}
 
 do_install () {
     # binaries

@@ -6,7 +6,6 @@ SRC_URI += "\
   file://omnect-device-service.tmpfilesd \
 "
 
-PV .= "+${SRCPV}"
 CVE_PRODUCT = "omnect:${PN}"
 
 # we have to truncate ${PV}, it's to long for do_fetch
@@ -39,7 +38,7 @@ RDEPENDS:${PN} += "\
 RDEPENDS:${PN}:append:omnect_grub = " grub-editenv"
 RDEPENDS:${PN}:append:omnect_uboot = " u-boot-fw-utils"
 
-inherit omnect-device-service omnect_rust omnect_rust_azure-iot-sdk_deps systemd
+inherit omnect-device-service omnect_rust_aziot-identityd_deps omnect_rust_azure-iot-sdk_deps systemd
 
 CARGO_BUILD_FLAGS:append:omnect_grub = " --features=bootloader_grub"
 CARGO_BUILD_FLAGS:append:omnect_uboot = " --features=bootloader_uboot"

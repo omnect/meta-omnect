@@ -231,29 +231,6 @@ index 13a9cddf4e..6095c7cc75 100644
  
          if get_bitbake_var("IMAGE_EFI_BOOT_FILES"):
              for src_path, dst_path in cls.install_task:
-diff --git a/meta/classes-recipe/cargo_common.bbclass b/meta/classes-recipe/cargo_common.bbclass
-index 0fb443edbd..9b638f9907 100644
---- a/meta/classes-recipe/cargo_common.bbclass
-+++ b/meta/classes-recipe/cargo_common.bbclass
-@@ -47,12 +47,12 @@ CARGO_RUST_TARGET_CCLD ??= "${RUST_TARGET_CCLD}"
- cargo_common_do_configure () {
- 	mkdir -p ${CARGO_HOME}/bitbake
- 
--	cat <<- EOF > ${CARGO_HOME}/config
--	# EXTRA_OECARGO_PATHS
--	paths = [
--	$(for p in ${EXTRA_OECARGO_PATHS}; do echo \"$p\",; done)
--	]
--	EOF
-+	# cat <<- EOF > ${CARGO_HOME}/config
-+	# # EXTRA_OECARGO_PATHS
-+	# paths = [
-+	# $(for p in ${EXTRA_OECARGO_PATHS}; do echo \"$p\",; done)
-+	# ]
-+	# EOF
- 
- 	cat <<- EOF >> ${CARGO_HOME}/config
- 
 diff --git a/meta/conf/layer.conf b/meta/conf/layer.conf
 index efbf2610f9..330c964f87 100644
 --- a/meta/conf/layer.conf

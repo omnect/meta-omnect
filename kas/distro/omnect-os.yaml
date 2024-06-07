@@ -10,7 +10,7 @@ repos:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
     branch: "scarthgap"
-    commit: "a72010b414ee3d73888ac9cb4e310e8f05e13aea"
+    commit: "6de0ab744341ad61b0661aa28d78dc6767ce0786"
     layers:
       meta-filesystems:
       meta-networking:
@@ -19,7 +19,7 @@ repos:
     patches:
       p001:
         repo: "meta-omnect"
-        path: "kas/patches/meta-openembedded_nspr_do_not_install_perl_to_image.patch"
+        path: "kas/patches/meta-openembedded.patch"
   # we need meta-tpm independend of feature/tpm.yaml to be able
   # to build iot-identity-service
   ext/meta-security:
@@ -31,11 +31,11 @@ repos:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     branch: "scarthgap"
-    commit: "ae2f52ce3c8ee742218715d1d542eaae3b4ca19c"
+    commit: "e3ead78d73314ebc12640df0d32621b52d045863"
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     branch: "scarthgap"
-    commit: "b339d02b4e8e8fea01d6d00088abb439b118d04c"
+    commit: "37c06acf58f9020bccfc61954eeefe160642d5f3"
     patches:
       p001:
         repo: "meta-omnect"

@@ -17,4 +17,7 @@ do_install:append() {
         -e 's#^ExecStart=\(.*\)$#ExecStart=/usr/sbin/ip6tables-nft-restore -- /etc/iptables/ip6tables.rules#' \
         -e 's#^ExecReload=\(.*\)$#ExecReload=/usr/sbin/ip6tables-nft-restore -- /etc/iptables/ip6tables.rules#' \
         ${D}${systemd_system_unitdir}/ip6tables.service
+
+    # /etc/ethertypes is already owned by netbase package which is a dependency of packagegroup-core-boot
+    rm ${D}${sysconfdir}/ethertypes
 }
