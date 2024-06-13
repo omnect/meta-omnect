@@ -365,10 +365,10 @@ In order to establish the custom wipe mode, a Yocto recipe `omnect-os-initramfs-
 The factory reset provides the option to exclude particular files or directories.
 For example, it may make sense to keep the WIFI configuration, in order to prevent loosing the network connectivity.
 For this purpose, the OS bootloader environment variable `factory-reset-restore-list` has to be used for.
-In the following example, the regular file `/etc/wpa_supplicant/wpa_supplicant-wlan0.conf` and the directory
+In the following example, the regular file `/etc/wpa_supplicant.conf` and the directory
 `/etc/aziot/identityd/` survives the factory reset:<br>
 ```sh
-sudo bootloader_env.sh set factory-reset-restore-list '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf;/etc/aziot/identityd/'
+sudo bootloader_env.sh set factory-reset-restore-list '/etc/wpa_supplicant.conf;/etc/aziot/identityd/'
 ```
 
 The list of path names is separated by the character `;` and is enclosed by the `'` quotation mark.
