@@ -9,15 +9,19 @@ OMNECT_THISDIR_SAVED := "${THISDIR}/"
 # is not honored. E.g. rpi.h sets 64M, but bootm refuses to boot an image with
 # 9MB. This patch isn't a real fix, it is a workaround because the soc config
 # setting is still not honored.
-SRC_URI += "file://bootm_len_check.patch"
+#SRC_URI += "file://bootm_len_check.patch"
 
 SRC_URI += "\
+    file://boot_retry.cfg \
+    file://do_not_use_default_bootcommand.cfg \
     file://lock-env.cfg \
     file://redundant-env-fragment.cfg \
     file://reloc_gd_env.cfg \
     file://silent_console.cfg \
     file://omnect_env.h \
+    file://omnect_env.env \
 "
+
 # Note:
 #   U-Boot might crash if a USB endpoint is in state halted during enumeration,
 #   and unfortunately this is the case with the LTE modem Sierra Wireless

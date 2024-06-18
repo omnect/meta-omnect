@@ -1,36 +1,37 @@
-diff --git a/include/configs/rpi.h b/include/configs/rpi.h
-index 4c5c1ac3..221925ef 100644
---- a/include/configs/rpi.h
-+++ b/include/configs/rpi.h
-@@ -13,6 +13,8 @@
- #include <asm/arch/base.h>
- #endif
+diff --git a/board/raspberrypi/rpi/rpi.env b/board/raspberrypi/rpi/rpi.env
+index 30228285ed..37feaacb7c 100644
+--- a/board/raspberrypi/rpi/rpi.env
++++ b/board/raspberrypi/rpi/rpi.env
+@@ -1,6 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0+ */
  
+ /* environment for Raspberry Pi boards */
++#include <env/omnect_env.env>
+ 
+ dhcpuboot=usb start; dhcp u-boot.uimg; bootm
+ 
+diff --git a/include/env_default.h b/include/env_default.h
+index 2ca4a087d3..e0267a8837 100644
+--- a/include/env_default.h
++++ b/include/env_default.h
+@@ -11,6 +11,7 @@
+ #include <linux/stringify.h>
+ 
+ #include <generated/environment.h>
 +#include <configs/omnect_env.h>
-+
- /* Architecture, CPU, etc.*/
  
- /* Use SoC timer for AArch32, but architected timer for AArch64 */
-@@ -84,6 +86,10 @@
- #define INITRD_HIGH "ffffffff"
+ #ifdef DEFAULT_ENV_INSTANCE_EMBEDDED
+ env_t embedded_environment __UBOOT_ENV_SECTION__(environment) = {
+@@ -36,9 +37,9 @@ const char default_environment[] = {
+ #ifdef	CONFIG_USE_BOOTARGS
+ 	"bootargs="	CONFIG_BOOTARGS			"\0"
  #endif
- 
-+#ifdef CONFIG_ENV_IS_IN_MMC
-+#define CONFIG_SYS_MMC_ENV_DEV 0
-+#endif
-+
- /*
-  * Memory layout for where various images get loaded by boot scripts:
-  *
-@@ -174,7 +180,10 @@
- 	ENV_DEVICE_SETTINGS \
- 	ENV_DFU_SETTINGS \
- 	ENV_MEM_LAYOUT_SETTINGS \
--	BOOTENV
-+	BOOTENV \
-+	OMNECT_ENV_UPDATE_WORKFLOW \
-+	OMNECT_ENV_SETTINGS \
-+	OMNECT_ENV_BOOTARGS
- 
- 
+-#ifdef	CONFIG_BOOTCOMMAND
+-	"bootcmd="	CONFIG_BOOTCOMMAND		"\0"
+-#endif
++// #ifdef	CONFIG_BOOTCOMMAND
++// 	"bootcmd="	CONFIG_BOOTCOMMAND		"\0"
++// #endif
+ #if defined(CONFIG_BOOTDELAY)
+ 	"bootdelay="	__stringify(CONFIG_BOOTDELAY)	"\0"
  #endif

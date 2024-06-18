@@ -1,17 +1,6 @@
-From 16e05f9078eb56b1cea3c2ac0d90029ece0337fa Mon Sep 17 00:00:00 2001
-From: SteffenRumler <steffen.rumler@conplement.de>
-Date: Tue, 30 Nov 2021 13:43:10 +0100
-Subject: [PATCH] Fix inappropriate fifo truncate
-
----
- scp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/scp.c b/scp.c
-index 742ae00..be1b785 100644
---- a/scp.c
-+++ b/scp.c
-@@ -1051,7 +1051,8 @@ bad:			run_err("%s: %s", np, strerror(errno));
+--- a/scp.c	2022-11-14 14:30:00.000000000 +0000
++++ b/scp.c	2024-06-18 09:55:15.228015031 +0000
+@@ -1051,7 +1051,8 @@
  			wrerr = YES;
  			wrerrno = errno;
  		}

@@ -6,6 +6,3 @@ header:
     - kas/machine/rpi/rpi.yaml
 
 machine: raspberrypi4-64
-
-env:
- LICENSE_FLAGS_ACCEPTED: "synaptics-killswitch"

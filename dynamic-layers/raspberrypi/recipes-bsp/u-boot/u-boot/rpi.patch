@@ -1,0 +1,29 @@
+diff --git a/configs/rpi_4_defconfig b/configs/rpi_4_defconfig
+index 2541b83a3d..a69dfd9911 100644
+--- a/configs/rpi_4_defconfig
++++ b/configs/rpi_4_defconfig
+@@ -14,7 +14,8 @@ CONFIG_BOOTSTD_DEFAULTS=y
+ CONFIG_OF_BOARD_SETUP=y
+ CONFIG_FDT_SIMPLEFB=y
+ CONFIG_USE_PREBOOT=y
+-CONFIG_PREBOOT="pci enum; usb start;"
++#CONFIG_PREBOOT="pci enum; usb start;"
++CONFIG_PREBOOT="pci enum;"
+ # CONFIG_DISPLAY_CPUINFO is not set
+ # CONFIG_DISPLAY_BOARDINFO is not set
+ CONFIG_MISC_INIT_R=y
+diff --git a/include/configs/rpi.h b/include/configs/rpi.h
+index 8e56bdc84a..baa99abf6e 100644
+--- a/include/configs/rpi.h
++++ b/include/configs/rpi.h
+@@ -31,4 +31,10 @@
+  */
+ #define CFG_SYS_SDRAM_SIZE		SZ_128M
+ 
++#include <configs/omnect_env.h>
++
++#ifdef CONFIG_ENV_IS_IN_MMC
++#define CONFIG_SYS_MMC_ENV_DEV 0
++#endif
++
+ #endif

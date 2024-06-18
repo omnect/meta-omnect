@@ -25,6 +25,11 @@ EXTRA_OECMAKE += "-DDO_BUILD_TESTS=OFF"
 EXTRA_OECMAKE += "-DDO_PROXY_SUPPORT=ON"
 EXTRA_OECMAKE += "-DDO_INCLUDE_AGENT=ON"
 
+# configure fix:
+EXTRA_OECMAKE += "-Dlibproxy_INCLUDE_DIR=${STAGING_INCDIR}/libproxy"
+# compile fix:
+OECMAKE_CXX_FLAGS += "-isystem ${STAGING_INCDIR}/glib-2.0 -isystem ${STAGING_LIBDIR}/glib-2.0/include"
+
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/do-client.service ${D}${systemd_system_unitdir}

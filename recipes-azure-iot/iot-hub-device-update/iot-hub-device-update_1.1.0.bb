@@ -33,11 +33,9 @@ DEPENDS = " \
 RDEPENDS:${PN} = " \
   aziot-identityd \
   bash \
+  do-client \
   swupdate \
 "
-# TODO scarthgap
-#   do-client
-
 
 inherit aziot cmake systemd
 
