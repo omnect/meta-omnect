@@ -47,12 +47,12 @@ The partition layout for devices supporting gpt:
 ```sh
 Device           Start      End  Sectors  Size Type
 /dev/mmcblkXp1    8192    90111    81920   40M Microsoft basic data
-/dev/mmcblkXp2  106496  1628159  1521664  743M Linux filesystem
-/dev/mmcblkXp3 1630208  3151871  1521664  743M Linux filesystem
-/dev/mmcblkXp4 3153920  3235839    81920   40M Linux filesystem
-/dev/mmcblkXp5 3235840  3317759    81920   40M Linux filesystem
-/dev/mmcblkXp6 3317760  3399679    81920   40M Linux filesystem
-/dev/mmcblkXp7 3399680 62333918 58934239 28.1G Linux filesystem
+/dev/mmcblkXp2   90112  1611775  1521664  743M Linux filesystem
+/dev/mmcblkXp3 1613824  3135487  1521664  743M Linux filesystem
+/dev/mmcblkXp4 3137536  3342335   204800  100M Linux filesystem
+/dev/mmcblkXp5 3342336  3424255    81920   40M Linux filesystem
+/dev/mmcblkXp6 3424256  3506175    81920   40M Linux filesystem
+/dev/mmcblkXp7 3506176 62333918 58827743 28.1G Linux filesystem
 
 ```
 - `mmcblkXp1` is the `boot` partition with vfat filesystem
@@ -83,9 +83,10 @@ Device         Boot   Start      End  Sectors  Size Id Type
 - `mmcblkXp7` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
 - `mmcblkXp8` is the writable `data` partition with ext4 filesystem
 
-**Note1**: The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M and is resized on the first boot to the max available size.<br>
-**Note2**: The size of `rootA` and `rootB` depends on your board and image variant (development or release).<br>
-**Note3 (only for images where u-boot is used as OS bootloader)**: There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks. For this purpose, the following configuration variables are used:
+**Note1**: The partition layout is just an example and may differ in a series product.<br>
+**Note2**: The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M and is resized on the first boot to the max available size.<br>
+**Note3**: The size of `rootA` and `rootB` depends on your board and image variant (development or release).<br>
+**Note4 (only for images where u-boot is used as OS bootloader)**: There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks. For this purpose, the following configuration variables are used:
 - `OMNECT_PART_OFFSET_UBOOT_ENV1`: offset of 1st u-boot environment bank (in KiB, decimal)
 - `OMNECT_PART_OFFSET_UBOOT_ENV2`: offset of 2nd u-boot environment bank (in KiB, decimal)
 - `OMNECT_PART_SIZE_UBOOT_ENV`: size of one u-boot environment bank (in KiB, decimal)
