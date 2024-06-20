@@ -81,3 +81,4 @@ OMNECT_BOOTLOADER = "u-boot-imx"
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
 OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "f2815f386d14e574652fe052365e8ef3de76b21bf1a7f4df45473e5f311fc00f"
+OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "aeb1b7ed3b1d88094242a0e2f4f43b80e2cbc3e609f1c096a3269c781d34864a f2815f386d14e574652fe052365e8ef3de76b21bf1a7f4df45473e5f311fc00f"
