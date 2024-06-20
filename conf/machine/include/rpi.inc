@@ -31,6 +31,9 @@ PACKAGECONFIG:pn-bluez5:append = " deprecated tools"
 # this machine uses uboot
 MACHINEOVERRIDES:prepend = "omnect_uboot:"
 
+# optional tpm2 support
+MACHINE_FEATURES += "tpm2"
+
 OMNECT_BOOTLOADER="u-boot"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot = "<newchecksum> <oldchecksum>"
