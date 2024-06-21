@@ -20,16 +20,19 @@ OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 # u-boot config vars
 UBOOT_FDT_ADDR = "fdt_addr"
 
-# wlan device name
-OMNECT_WLAN0 = "wlan0"
-
 # configure hardware watchdog
 # the maximum watchdog deadline depends on the hardware capabilities
 SYSTEMD_RuntimeWatchdogSec  = "15"
 SYSTEMD_RebootWatchdogSec   = "15"
 
+# rpi bluetooth needs hciattach, which is marked deprecated
+PACKAGECONFIG:pn-bluez5:append = " deprecated tools"
+
 # this machine uses uboot
 MACHINEOVERRIDES:prepend = "omnect_uboot:"
+
+# optional tpm2 support
+MACHINE_FEATURES += "tpm2"
 
 OMNECT_BOOTLOADER="u-boot"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible

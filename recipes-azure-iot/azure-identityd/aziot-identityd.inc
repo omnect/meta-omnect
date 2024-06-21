@@ -172,10 +172,10 @@ do_install() {
         install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.service.in ${D}${systemd_system_unitdir}/aziot-tpmd.service
         sed -i \
             -e 's/^After=\(.*\)$/After=\1 systemd-tmpfiles-setup.service dev-tpmrm0.device/' \
-            -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
+            -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml\nConditionPathExists=/dev/tpmrm0#' \
             -e 's#@libexecdir@#/usr/libexec#g' \
             -e '/Environment=\(.*\)$/d' \
-	-e 's#^ExecStart=\(.*\)$#ExecStartPre=+-bash -c "/usr/sbin/omnect_service_log.sh start aziot-tpmd"\nExecStart=\1\nExecStopPost=+-/bin/sh -c "/usr/sbin/omnect_service_log.sh stop aziot-tpmd \\"$$SERVICE_RESULT\\" \\"$$EXIT_CODE\\" \\"$$EXIT_STATUS\\""#' \
+            -e 's#^ExecStart=\(.*\)$#ExecStartPre=+-bash -c "/usr/sbin/omnect_service_log.sh start aziot-tpmd"\nExecStart=\1\nExecStopPost=+-/bin/sh -c "/usr/sbin/omnect_service_log.sh stop aziot-tpmd \\"$$SERVICE_RESULT\\" \\"$$EXIT_CODE\\" \\"$$EXIT_STATUS\\""#' \
             ${D}${systemd_system_unitdir}/aziot-tpmd.service
         install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.socket.in ${D}${systemd_system_unitdir}/aziot-tpmd.socket
         fill_placeholders ${D}${systemd_system_unitdir}/aziot-tpmd.service

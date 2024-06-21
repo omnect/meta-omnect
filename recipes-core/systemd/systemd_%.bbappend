@@ -2,6 +2,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://80-wlan.network \
+    file://80-wlan0.link \
 "
 
 RDEPENDS:${PN} += "bash"
@@ -21,7 +22,8 @@ do_install:append() {
     if ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'true', 'false', d)}; then
         # enable dhcp for wlan devices
         install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network
-        sed -i 's/^Name=wlan0/Name=${OMNECT_WLAN0}/' ${D}${systemd_unitdir}/network/80-wlan.network
+        # prevent renaming wlan0
+        install -m 0644 ${WORKDIR}/80-wlan0.link ${D}${systemd_unitdir}/network
     fi
 
     # persistent /var/log
@@ -94,4 +96,5 @@ do_install:append() {
 
 FILES:${PN} += "\
     ${systemd_unitdir}/network/80-wlan.network \
+    ${systemd_unitdir}/network/80-wlan0.link \
 "
