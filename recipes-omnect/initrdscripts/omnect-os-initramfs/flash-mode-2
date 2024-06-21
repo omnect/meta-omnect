@@ -34,7 +34,7 @@ flash_mode_2_enabled() {
 run_bmap_tool() {
     local umount_dev=""
     local bmap_ret=""
-    
+
     # umount, if necessary
     mkdir -p /tmp
     cp /proc/mounts /tmp/all_mounts  # make snapshot
