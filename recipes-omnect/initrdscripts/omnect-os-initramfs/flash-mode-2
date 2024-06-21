@@ -47,7 +47,7 @@ run_bmap_tool() {
     done </tmp/all_mounts
 
     run_cmd mkfifo ${wic_file} || return 1
-    run_cmd chown omnect:omnect /home/omnect/wic.xz || return 1
+    run_cmd chown omnect:omnect ${wic_file} || return 1
 
     # bmap file must be copied with scp
     msg "please run  scp <your-bmap-file> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.bmap"
@@ -69,7 +69,7 @@ run_bmap_tool() {
     vfat_dd_handling "/dev/omnect/boot"
     msg "start flashing ..."
     run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
-		       $wic_file /dev/omnect/rootblk || return 1
+		       ${wic_file} /dev/omnect/rootblk || return 1
     msg "successfully flashed input wic.xz"
 }
 
