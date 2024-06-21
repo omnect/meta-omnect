@@ -34,7 +34,6 @@ flash_mode_2_enabled() {
 run_bmap_tool() {
     local umount_dev=""
     local bmap_ret=""
-    local wic_file="/home/omnect/wic.xz"
     
     # umount, if necessary
     mkdir -p /tmp
@@ -46,8 +45,8 @@ run_bmap_tool() {
         fi
     done </tmp/all_mounts
 
-    run_cmd mkfifo ${wic_file} || return 1
-    run_cmd chown omnect:omnect ${wic_file} || return 1
+    run_cmd mkfifo /home/omnect/wic.xz || return 1
+    run_cmd chown omnect:omnect /home/omnect/wic.xz || return 1
 
     # bmap file must be copied with scp
     msg "please run  scp <your-bmap-file> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.bmap"
@@ -62,14 +61,18 @@ run_bmap_tool() {
 	# wait until scp is complete, resp. uncompress+verify wic image before writing
 	msg "verifying input wic.xz ..."
 	run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
-		       ${wic_file} /home/omnect/wic || return 1
-	wic_file=/home/omnect/wic
+		       /home/omnect/wic.xz /home/omnect/wic || return 1
 	msg "successfully verified input wic.xz"
     fi
     vfat_dd_handling "/dev/omnect/boot"
     msg "start flashing ..."
-    run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
-		       ${wic_file} /dev/omnect/rootblk || return 1
+    if ! ${OMNECT_FLASH_MODE_2_DIRECT_FLASHING}; then
+	run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
+		       /home/omnect/wic /dev/omnect/rootblk || return 1
+    else
+	run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
+		       /home/omnect/wic.xz /dev/omnect/rootblk || return 1
+    fi
     msg "successfully flashed input wic.xz"
 }
 
