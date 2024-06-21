@@ -93,7 +93,6 @@ python() {
             bb.debug(1, "overriding version_checksum %s -> %s" % (version_checksum,version_checksum_override_list[1]))
             version_checksum = version_checksum_override_list[1]
 
-
     version_checksum_expected = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_EXPECTED")
     if not version_checksum_expected:
         bb.fatal("OMNECT_BOOTLOADER_CHECKSUM_EXPECTED not set; computed checksum is: \"%s\"" % version_checksum)
