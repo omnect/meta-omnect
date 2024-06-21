@@ -1,17 +1,24 @@
 diff --git a/board/raspberrypi/rpi/rpi.env b/board/raspberrypi/rpi/rpi.env
-index 30228285ed..37feaacb7c 100644
+index 30228285ed..b9765c4219 100644
 --- a/board/raspberrypi/rpi/rpi.env
 +++ b/board/raspberrypi/rpi/rpi.env
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0+ */
+@@ -2,8 +2,6 @@
  
  /* environment for Raspberry Pi boards */
+ 
+-dhcpuboot=usb start; dhcp u-boot.uimg; bootm
+-
+ /* Environment */
+ stdin=serial,usbkbd
+ stdout=serial,vidconsole
+@@ -74,4 +72,4 @@ pxefile_addr_r=0x02500000
+ fdt_addr_r=0x02600000
+ ramdisk_addr_r=0x02700000
+ 
+-boot_targets=mmc usb pxe dhcp
 +#include <env/omnect_env.env>
- 
- dhcpuboot=usb start; dhcp u-boot.uimg; bootm
- 
 diff --git a/include/env_default.h b/include/env_default.h
-index 2ca4a087d3..e0267a8837 100644
+index 2ca4a087d3..659487c0b5 100644
 --- a/include/env_default.h
 +++ b/include/env_default.h
 @@ -11,6 +11,7 @@
@@ -22,16 +29,3 @@ index 2ca4a087d3..e0267a8837 100644
  
  #ifdef DEFAULT_ENV_INSTANCE_EMBEDDED
  env_t embedded_environment __UBOOT_ENV_SECTION__(environment) = {
-@@ -36,9 +37,9 @@ const char default_environment[] = {
- #ifdef	CONFIG_USE_BOOTARGS
- 	"bootargs="	CONFIG_BOOTARGS			"\0"
- #endif
--#ifdef	CONFIG_BOOTCOMMAND
--	"bootcmd="	CONFIG_BOOTCOMMAND		"\0"
--#endif
-+// #ifdef	CONFIG_BOOTCOMMAND
-+// 	"bootcmd="	CONFIG_BOOTCOMMAND		"\0"
-+// #endif
- #if defined(CONFIG_BOOTDELAY)
- 	"bootdelay="	__stringify(CONFIG_BOOTDELAY)	"\0"
- #endif
