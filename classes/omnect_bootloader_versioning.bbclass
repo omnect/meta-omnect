@@ -97,7 +97,10 @@ python() {
     if not version_checksum_expected:
         bb.fatal("OMNECT_BOOTLOADER_CHECKSUM_EXPECTED not set; computed checksum is: \"%s\"" % version_checksum)
     if version_checksum_expected != version_checksum:
-        bb.fatal("expected bootloader checksum (OMNECT_BOOTLOADER_CHECKSUM_EXPECTED): \"%s\" is different from computed: \"%s\"" % (version_checksum_expected, version_checksum))
+        if "1" != d.getVar("OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE"):
+            bb.fatal("expected bootloader checksum (OMNECT_BOOTLOADER_CHECKSUM_EXPECTED): \"%s\" is different from computed: \"%s\"" % (version_checksum_expected, version_checksum))
+        else:
+            bb.error("expected bootloader checksum (OMNECT_BOOTLOADER_CHECKSUM_EXPECTED): \"%s\" is different from computed: \"%s\"" % (version_checksum_expected, version_checksum))
 
     omnect_bootloader_version = d.getVar("PV") + "-" + version_checksum
     bootloader_version_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version"
