@@ -6,12 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.20.0"
-SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "5a838e620cd60a231476ec210925a4fde12c07b3"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.20.1"
+SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=actix_use_uds"
+SRCREV = "68e04e9c8a8256cc165871ca951edf90548deb78"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-
+PV:append = ".AUTOINC+68e04e9c8a"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -419,8 +419,8 @@ SRC_URI += " \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-keyd-config;destsuffix=aziot-keyd-config \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=cert-renewal;destsuffix=cert-renewal \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=http-common;destsuffix=http-common \
+    git://github.com/janzachmann/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
     git://github.com/omnect/azure-iot-sdk-sys.git;protocol=https;nobranch=1;name=azure-iot-sdk-sys;destsuffix=azure-iot-sdk-sys \
-    git://github.com/omnect/azure-iot-sdk.git;protocol=https;nobranch=1;name=azure-iot-sdk;destsuffix=azure-iot-sdk \
     git://github.com/omnect/eis-utils.git;protocol=https;nobranch=1;name=eis-utils;destsuffix=eis-utils \
     git://github.com/omnect/modemmanager-sys.git;protocol=https;nobranch=1;name=modemmanager-sys;destsuffix=modemmanager-sys \
     git://github.com/omnect/modemmanager.git;protocol=https;nobranch=1;name=modemmanager;destsuffix=modemmanager \
@@ -463,7 +463,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.4.7"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.12.1"
+SRCREV_azure-iot-sdk = "builder-pattern"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.0"
