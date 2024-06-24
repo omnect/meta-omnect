@@ -21,10 +21,6 @@ export IOTEDGE_LISTEN_MANAGEMENT_URI = "fd://aziot-edged.mgmt.socket"
 export IOTEDGE_LISTEN_WORKLOAD_URI = "fd://aziot-edged.workload.socket"
 export SOCKET_DIR = "/run/aziot"
 
-do_configure:prepend() {
-    cp ${S}/${CARGO_SRC_DIR}/../Cargo.lock ${S}/${CARGO_SRC_DIR}/
-}
-
 do_install () {
     # Binaries
     install -d  "${D}${bindir}"

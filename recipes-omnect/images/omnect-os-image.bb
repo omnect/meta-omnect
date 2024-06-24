@@ -148,9 +148,6 @@ python () {
 
 inherit omnect_user
 
-# TODO scarthgap
-#inherit logging
-
 # positive test for packages, i.e. check if installed
 check_installed_packages() {
     local manifest="$1"
