@@ -5,13 +5,8 @@ DEPENDS += "bc-native"
 # THISDIR is only save during recipe parsing
 OMNECT_THISDIR_SAVED := "${THISDIR}/"
 
-# At bootm compile time, the CONFIG_SYS_BOOTM_LEN setting from the soc config
-# is not honored. E.g. rpi.h sets 64M, but bootm refuses to boot an image with
-# 9MB. This patch isn't a real fix, it is a workaround because the soc config
-# setting is still not honored.
-#SRC_URI += "file://bootm_len_check.patch"
-
 SRC_URI += "\
+    file://omnect_env.patch \
     file://boot_retry.cfg \
     file://do_not_use_default_bootcommand.cfg \
     file://lock-env.cfg \

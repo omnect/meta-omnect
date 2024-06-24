@@ -17,15 +17,3 @@ index 30228285ed..b9765c4219 100644
  
 -boot_targets=mmc usb pxe dhcp
 +#include <env/omnect_env.env>
-diff --git a/include/env_default.h b/include/env_default.h
-index 2ca4a087d3..659487c0b5 100644
---- a/include/env_default.h
-+++ b/include/env_default.h
-@@ -11,6 +11,7 @@
- #include <linux/stringify.h>
- 
- #include <generated/environment.h>
-+#include <configs/omnect_env.h>
- 
- #ifdef DEFAULT_ENV_INSTANCE_EMBEDDED
- env_t embedded_environment __UBOOT_ENV_SECTION__(environment) = {

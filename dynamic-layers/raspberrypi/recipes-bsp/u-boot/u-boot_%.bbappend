@@ -1,10 +1,9 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/files:"
 
 SRC_URI += "\
+    file://0001-rpi-always-set-fdt_addr-with-firmware-provided-FDT-address.patch \
     file://add-reset-info.patch \
-    file://rpi-always-set-fdt_addr-with-firmware-provided-FDT-address.patch \
-    file://omnect_env.patch \
-    file://rpi.patch \
+    file://omnect_env_rpi.patch \
     file://enable-reset-info-cmd-fragment.cfg \
     file://omnect_env_rpi.h \
 "
