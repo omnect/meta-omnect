@@ -10,12 +10,13 @@ SRC_URI += "\
     file://boot_retry.cfg \
     file://do_not_use_default_bootcommand.cfg \
     file://lock-env.cfg \
-    file://redundant-env-fragment.cfg \
     file://reloc_gd_env.cfg \
     file://silent_console.cfg \
     file://omnect_env.h \
     file://omnect_env.env \
 "
+
+OMNECT_UBOOT_TEMPLATED_FRAGMENTS = "${WORKDIR}/redundant-env-fragment.cfg"
 
 # Note:
 #   U-Boot might crash if a USB endpoint is in state halted during enumeration,
@@ -43,22 +44,16 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE = "${OMNECT_THISDIR_SAVED}/u-boot/.
 # don't include files which are generated on build:
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${OMNECT_THISDIR_SAVED}/u-boot/redundant-env-fragment.cfg"
 
-
-# copy configuration fragment from template, before SRC_URI is checked
-do_fetch:prepend() {
-    import os
-    cfg_file = d.getVar('OMNECT_THISDIR_SAVED', True) + d.getVar('PN', True) + "/" + "redundant-env-fragment.cfg"
-    cfg_file_template = cfg_file + ".template"
-    os.system("cp " + cfg_file_template + " " + cfg_file)
-}
-
 inherit omnect_bootloader_versioning
 inherit omnect_fw_env_config
 inherit omnect_uboot_configure_env
 
 do_configure:prepend() {
+    # copy templated configuration fragments to workspace
+    for i in ${OMNECT_UBOOT_TEMPLATED_FRAGMENTS}; do cp ${OMNECT_THISDIR_SAVED}/${PN}/${i##*/} ${WORKDIR}/; done
+
     # incorporate distro configuration in redundant-env-fragment.cfg
-    local cfg_frag=${OMNECT_THISDIR_SAVED}${PN}/redundant-env-fragment.cfg
+    local cfg_frag=${WORKDIR}/redundant-env-fragment.cfg
     local env_size=$(omnect_conv_size_param "${OMNECT_PART_SIZE_UBOOT_ENV}"    "u-boot env. size")
     local  offset1=$(omnect_conv_size_param "${OMNECT_PART_OFFSET_UBOOT_ENV1}" "u-boot env. offset1")
     local  offset2=$(omnect_conv_size_param "${OMNECT_PART_OFFSET_UBOOT_ENV2}" "u-boot env. offset2")
