@@ -19,7 +19,7 @@ python() {
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
-    file://LICENSE-APACHE;md5=3348c7ae8c31fe1c130af6efd42e2c21 \
+    file://LICENSE-APACHE;md5=5382c4e117e2483c68e932fd10c4fd48 \
     file://LICENSE-MIT;md5=6340606a960b1965e521043f21f8d1bb \
 "
 
