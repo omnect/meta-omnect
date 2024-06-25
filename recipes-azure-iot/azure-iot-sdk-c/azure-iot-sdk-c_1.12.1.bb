@@ -4,7 +4,7 @@ HOMEPAGE = "https://github.com/Azure/azure-iot-sdk-c"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4283671594edec4c13aeb073c219237a"
 
-SRC_URI = "gitsm://github.com/Azure/azure-iot-sdk-c.git;branch=lts_03_2024;tag=LTS_03_2024;protocol=https"
+SRC_URI = "gitsm://github.com/Azure/azure-iot-sdk-c.git;branch=lts_03_2024;tag=LTS_03_2024_Ref02;protocol=https"
 PV .= "+${SRCPV}"
 CVE_PRODUCT="microsoft:azure-iot-sdk-c"
 
