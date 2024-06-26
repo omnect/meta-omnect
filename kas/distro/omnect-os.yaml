@@ -89,6 +89,9 @@ env:
   # (plain) password of omnect user
   OMNECT_USER_PASSWORD: ""
 
+  # enable to set LICENSE_FLAGS_ACCEPTED via env
+  LICENSE_FLAGS_ACCEPTED:
+
 local_conf_header:
   meta-omnect_distro_omnect-os: |
     # For more options have a look into "poky/meta-poky/conf/local.conf.sample" resp.
