@@ -1,11 +1,12 @@
 diff --git a/meta/recipes-bsp/u-boot/u-boot-configure.inc b/meta/recipes-bsp/u-boot/u-boot-configure.inc
-index 378d675364..9e58549cb2 100644
+index 378d675364..2dd8dda683 100644
 --- a/meta/recipes-bsp/u-boot/u-boot-configure.inc
 +++ b/meta/recipes-bsp/u-boot/u-boot-configure.inc
-@@ -10,6 +10,14 @@ DEPENDS += "kern-tools-native"
+@@ -10,6 +10,15 @@ DEPENDS += "kern-tools-native"
  
  CONFIGURE_FILES = "${@d.getVar('UBOOT_MACHINE') or '.config'}"
  
++OMNECT_UBOOT_TEMPLATED_FRAGMENTS ??= ""
 +def find_omnect_templated_fragments(d):
 +    sources = d.getVar('OMNECT_UBOOT_TEMPLATED_FRAGMENTS', True)
 +    sources_list=[]
@@ -17,7 +18,7 @@ index 378d675364..9e58549cb2 100644
  do_configure () {
      if [ -n "${UBOOT_CONFIG}" ]; then
          unset i j
-@@ -20,7 +28,7 @@ do_configure () {
+@@ -20,7 +29,7 @@ do_configure () {
                  if [ $j -eq $i ]; then
                      oe_runmake -C ${S} O=${B}/${config} ${config}
                      if [ -n "${@' '.join(find_cfgs(d))}" ]; then
@@ -26,7 +27,7 @@ index 378d675364..9e58549cb2 100644
                          oe_runmake -C ${S} O=${B}/${config} oldconfig
                      fi
                  fi
-@@ -34,7 +42,7 @@ do_configure () {
+@@ -34,7 +43,7 @@ do_configure () {
          else
              oe_runmake -C ${S} O=${B} oldconfig
          fi
