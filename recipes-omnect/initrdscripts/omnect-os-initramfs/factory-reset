@@ -112,6 +112,11 @@ factory_reset_finish() {
     # set return status
     set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR} "${FACTORY_RESET_RET1}:${FACTORY_RESET_RET2}"
 
+    # if we had restore handling we have to clean unmount
+    if [ -n "${factory_reset_restore_list}" ]; then
+        factory_reset_umount
+    fi
+
     # get into normal startup
     msg "Rebooting system..."
     run_cmd reboot -f
