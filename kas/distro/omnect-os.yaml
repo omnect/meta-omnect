@@ -12,10 +12,13 @@ repos:
     branch: "scarthgap"
     commit: "6de0ab744341ad61b0661aa28d78dc6767ce0786"
     layers:
+      # meta-multimedia is used by qemu_8.2.2.imx.bb (tauri) ToDo: possible to handle that in the machine specific kas file?
+      meta-multimedia:
       meta-filesystems:
       meta-networking:
       meta-oe:
       meta-python:
+
     patches:
       p001:
         repo: "meta-omnect"
