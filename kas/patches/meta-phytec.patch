@@ -1,0 +1,30 @@
+diff --git a/dynamic-layers/fsl-bsp-release/recipes-bsp/imx-mkimage/imx-boot-phytec_1.0.bb b/dynamic-layers/fsl-bsp-release/recipes-bsp/imx-mkimage/imx-boot-phytec_1.0.bb
+index 16228e12..3a133a31 100644
+--- a/dynamic-layers/fsl-bsp-release/recipes-bsp/imx-mkimage/imx-boot-phytec_1.0.bb
++++ b/dynamic-layers/fsl-bsp-release/recipes-bsp/imx-mkimage/imx-boot-phytec_1.0.bb
+@@ -16,10 +16,13 @@ IMX_EXTRA_FIRMWARE:mx8m-nxp-bsp = "firmware-imx-8m"
+ IMX_EXTRA_FIRMWARE:mx8x-nxp-bsp = "imx-sc-firmware-phytec imx-seco"
+ DEPENDS += " \
+     u-boot \
+-    ${IMX_EXTRA_FIRMWARE} \
+     imx-atf \
+     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
+ "
++# TODO scarhgap
++IMX_EXTRA_FIRMWARE:mx8m-nxp-bsp = ""
++#     ${IMX_EXTRA_FIRMWARE}
++
+ DEPENDS:append:mx8m-nxp-bsp = " u-boot-mkimage-native dtc-native"
+ BOOT_NAME = "imx-boot"
+ PROVIDES = "${BOOT_NAME}"
+diff --git a/conf/layer.conf b/conf/layer.conf
+index 29ac1c3e..9ff4cc05 100644
+--- a/conf/layer.conf
++++ b/conf/layer.conf
+@@ -46,3 +46,5 @@ LAYERRECOMMENDS_phytec = "\
+ "
+ 
+ BBMASK:append:mx8m-nxp-bsp = " meta-imx/meta-bsp/recipes-graphics/imx-gpu-apitrace/imx-gpu-apitrace_10.0.0.bb"
++
++LAYERDIR_phytec = "${LAYERDIR}"
+

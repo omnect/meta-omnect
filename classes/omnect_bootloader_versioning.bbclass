@@ -27,8 +27,6 @@
 #   note: if `OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE` is set, this var should be
 #         set to <old checksum>
 
-SRC_URI += "file://${DEPLOY_DIR_IMAGE}/omnect_bootloader_version"
-
 # create omnect_bootloader_version on recipe parse
 python() {
     import glob

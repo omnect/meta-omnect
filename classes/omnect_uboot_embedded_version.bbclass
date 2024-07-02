@@ -45,7 +45,7 @@
 #  - OMNECT_BOOTLOADER_EMBEDDED_VERSION_LOCATION
 #    defines the run-time location of the bootloader and is a file path for
 #    type "file"; in case boot loader is part of flash it is assumed that it
-#    resides in the same device as the root filesystem 
+#    resides in the same device as the root filesystem
 #  - OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC
 #    a magic number precedes the actual version string, followed by a length
 #    byte containing the length of the following string, i.e. w/o magic number
@@ -70,8 +70,6 @@
 #  - <length> is one byte specifying length of <version string>
 #  - <version string> is the actual version, w/o terminating character
 #
-
-SRC_URI += "file://${DEPLOY_DIR_IMAGE}/omnect_bootloader_version"
 
 # define magic number for embedded bootloader version
 OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC = "19 69 02 28"
