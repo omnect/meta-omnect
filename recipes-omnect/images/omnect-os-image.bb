@@ -90,6 +90,9 @@ add_kernel_and_initramfs() {
     initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${OMNECT_INITRAMFS_IMAGE_NAME}.${OMNECT_INITRAMFS_FSTYPE})
     install -m 0644 ${initramfs} $D/boot/
     ln -sf ${KERNEL_IMAGETYPE} $D/boot/${KERNEL_IMAGETYPE}.bin
+    if [ "${KERNEL_IMAGETYPE}" != "Image"  ]; then
+        ln -sf ${KERNEL_IMAGETYPE} $D/boot/Image
+    fi
     ln -sf $(basename ${initramfs}) $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}
 }
 
