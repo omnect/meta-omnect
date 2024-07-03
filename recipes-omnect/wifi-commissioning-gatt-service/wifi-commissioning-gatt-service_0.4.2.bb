@@ -8,10 +8,10 @@ inherit cargo
 # how to get wifi-commissioning-gatt-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/wifi-commissioning-gatt-service/0.4.2"
 SRC_URI += "git://github.com/JanZachmann/wifi-commissioning-gatt-service;protocol=https;nobranch=1;branch=update_rust_toolchain"
-SRCREV = "6586db2e278bc89b240d4e0b478cde7f6d961df1"
+SRCREV = "fb2b588a5b7d448e93551611d2fd2eb3110e52d0"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+6586db2e27"
+PV:append = ".AUTOINC+fb2b588a5b"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -156,8 +156,8 @@ LIC_FILES_CHKSUM = " \
     file://MIT OR Apache-2.0;md5=generateme \
 "
 
-SUMMARY = "wifi-commissioning-gatt-service"
-HOMEPAGE = "git@github.com:omnect/wifi-commissioning-gatt-service.git"
+SUMMARY = "This experimental service allows wifi commissioning via bluetooth."
+HOMEPAGE = "https://www.omnect.io/home"
 LICENSE = "MIT OR Apache-2.0"
 
 # includes this file if it exists but does not fail

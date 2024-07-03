@@ -7,11 +7,11 @@ inherit cargo
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/omnect-device-service/0.20.2"
-SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "6a53de2d03e63d1868f89aa0fdec2b55f5b350c0"
+SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=update-sdk"
+SRCREV = "536c0f57e335327927c67f9f5e122e087202f8a7"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-
+PV:append = ".AUTOINC+536c0f57e3"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -53,13 +53,11 @@ SRC_URI += " \
     crate://crates.io/async-task/4.7.1 \
     crate://crates.io/async-trait/0.1.80 \
     crate://crates.io/atomic-waker/1.1.2 \
-    crate://crates.io/atty/0.2.14 \
     crate://crates.io/autocfg/1.3.0 \
     crate://crates.io/backtrace/0.3.73 \
     crate://crates.io/base64/0.13.1 \
     crate://crates.io/base64/0.21.7 \
     crate://crates.io/base64/0.22.1 \
-    crate://crates.io/bindgen/0.63.0 \
     crate://crates.io/bindgen/0.69.4 \
     crate://crates.io/bitflags/1.3.2 \
     crate://crates.io/bitflags/2.6.0 \
@@ -105,7 +103,6 @@ SRC_URI += " \
     crate://crates.io/enumflags2_derive/0.7.10 \
     crate://crates.io/env_filter/0.1.0 \
     crate://crates.io/env_logger/0.11.3 \
-    crate://crates.io/env_logger/0.8.4 \
     crate://crates.io/equivalent/1.0.1 \
     crate://crates.io/errno/0.3.9 \
     crate://crates.io/event-listener-strategy/0.5.2 \
@@ -145,7 +142,6 @@ SRC_URI += " \
     crate://crates.io/headers-core/0.2.0 \
     crate://crates.io/headers/0.3.9 \
     crate://crates.io/heck/0.5.0 \
-    crate://crates.io/hermit-abi/0.1.19 \
     crate://crates.io/hermit-abi/0.3.9 \
     crate://crates.io/hermit-abi/0.4.0 \
     crate://crates.io/hex/0.4.3 \
@@ -157,15 +153,14 @@ SRC_URI += " \
     crate://crates.io/http/1.1.0 \
     crate://crates.io/httparse/1.9.4 \
     crate://crates.io/httpdate/1.0.3 \
-    crate://crates.io/humantime/2.1.0 \
     crate://crates.io/hyper-openssl/0.9.2 \
     crate://crates.io/hyper-proxy/0.9.1 \
     crate://crates.io/hyper-rustls/0.27.2 \
-    crate://crates.io/hyper-timeout/0.4.1 \
+    crate://crates.io/hyper-timeout/0.5.1 \
     crate://crates.io/hyper-tls/0.6.0 \
-    crate://crates.io/hyper-util/0.1.5 \
+    crate://crates.io/hyper-util/0.1.6 \
     crate://crates.io/hyper/0.14.29 \
-    crate://crates.io/hyper/1.3.1 \
+    crate://crates.io/hyper/1.4.0 \
     crate://crates.io/iana-time-zone-haiku/0.1.2 \
     crate://crates.io/iana-time-zone/0.1.60 \
     crate://crates.io/ident_case/1.0.1 \
@@ -234,7 +229,6 @@ SRC_URI += " \
     crate://crates.io/parking_lot/0.12.3 \
     crate://crates.io/parking_lot_core/0.9.10 \
     crate://crates.io/paste/1.0.15 \
-    crate://crates.io/peeking_take_while/0.1.2 \
     crate://crates.io/percent-encoding/2.3.1 \
     crate://crates.io/pin-project-internal/1.1.5 \
     crate://crates.io/pin-project-lite/0.2.14 \
@@ -285,7 +279,7 @@ SRC_URI += " \
     crate://crates.io/semver/1.0.23 \
     crate://crates.io/serde/1.0.203 \
     crate://crates.io/serde_derive/1.0.203 \
-    crate://crates.io/serde_json/1.0.119 \
+    crate://crates.io/serde_json/1.0.120 \
     crate://crates.io/serde_repr/0.1.19 \
     crate://crates.io/serde_urlencoded/0.7.1 \
     crate://crates.io/serde_with/2.3.3 \
@@ -315,7 +309,6 @@ SRC_URI += " \
     crate://crates.io/system-configuration/0.5.1 \
     crate://crates.io/systemd-zbus/0.3.2 \
     crate://crates.io/tempfile/3.10.1 \
-    crate://crates.io/termcolor/1.4.1 \
     crate://crates.io/termtree/0.4.1 \
     crate://crates.io/thiserror-impl/1.0.61 \
     crate://crates.io/thiserror/1.0.61 \
@@ -324,7 +317,6 @@ SRC_URI += " \
     crate://crates.io/time/0.3.36 \
     crate://crates.io/tinyvec/1.6.1 \
     crate://crates.io/tinyvec_macros/0.1.1 \
-    crate://crates.io/tokio-io-timeout/1.2.0 \
     crate://crates.io/tokio-macros/2.3.0 \
     crate://crates.io/tokio-native-tls/0.3.1 \
     crate://crates.io/tokio-openssl/0.6.4 \
@@ -430,61 +422,61 @@ SRC_URI += " \
 "
 
 SRCREV_FORMAT .= "_aziot-cert-client-async"
-SRCREV_aziot-cert-client-async = "1.4.7"
+SRCREV_aziot-cert-client-async = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-cert-client-async"
 SRCREV_FORMAT .= "_aziot-cert-common"
-SRCREV_aziot-cert-common = "1.4.7"
+SRCREV_aziot-cert-common = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-cert-common"
 SRCREV_FORMAT .= "_aziot-cert-common-http"
-SRCREV_aziot-cert-common-http = "1.4.7"
+SRCREV_aziot-cert-common-http = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-cert-common-http"
 SRCREV_FORMAT .= "_aziot-certd-config"
-SRCREV_aziot-certd-config = "1.4.7"
+SRCREV_aziot-certd-config = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-certd-config"
 SRCREV_FORMAT .= "_aziot-identity-client-async"
-SRCREV_aziot-identity-client-async = "1.4.7"
+SRCREV_aziot-identity-client-async = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-identity-client-async"
 SRCREV_FORMAT .= "_aziot-identity-common"
-SRCREV_aziot-identity-common = "1.4.7"
+SRCREV_aziot-identity-common = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-identity-common"
 SRCREV_FORMAT .= "_aziot-identity-common-http"
-SRCREV_aziot-identity-common-http = "1.4.7"
+SRCREV_aziot-identity-common-http = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-identity-common-http"
 SRCREV_FORMAT .= "_aziot-identityd-config"
-SRCREV_aziot-identityd-config = "1.4.7"
+SRCREV_aziot-identityd-config = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-identityd-config"
 SRCREV_FORMAT .= "_aziot-key-client-async"
-SRCREV_aziot-key-client-async = "1.4.7"
+SRCREV_aziot-key-client-async = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-key-client-async"
 SRCREV_FORMAT .= "_aziot-key-common"
-SRCREV_aziot-key-common = "1.4.7"
+SRCREV_aziot-key-common = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-key-common"
 SRCREV_FORMAT .= "_aziot-key-common-http"
-SRCREV_aziot-key-common-http = "1.4.7"
+SRCREV_aziot-key-common-http = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-key-common-http"
 SRCREV_FORMAT .= "_aziot-keyd-config"
-SRCREV_aziot-keyd-config = "1.4.7"
+SRCREV_aziot-keyd-config = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.13.0"
+SRCREV_azure-iot-sdk = "0.13.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
-SRCREV_azure-iot-sdk-sys = "0.6.0"
+SRCREV_azure-iot-sdk-sys = "0.6.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk-sys"
 SRCREV_FORMAT .= "_cert-renewal"
-SRCREV_cert-renewal = "1.4.7"
+SRCREV_cert-renewal = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/cert-renewal"
 SRCREV_FORMAT .= "_eis-utils"
-SRCREV_eis-utils = "0.3.2"
+SRCREV_eis-utils = "0.3.3"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/eis-utils"
 SRCREV_FORMAT .= "_http-common"
-SRCREV_http-common = "1.4.7"
+SRCREV_http-common = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/http-common"
 SRCREV_FORMAT .= "_modemmanager"
-SRCREV_modemmanager = "0.3.0"
+SRCREV_modemmanager = "0.3.1"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/modemmanager"
 SRCREV_FORMAT .= "_modemmanager-sys"
-SRCREV_modemmanager-sys = "0.1.0"
+SRCREV_modemmanager-sys = "0.1.2"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/modemmanager-sys"
 
 # FIXME: update generateme with the real MD5 of the license file
