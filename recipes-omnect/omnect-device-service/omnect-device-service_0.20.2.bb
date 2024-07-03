@@ -7,11 +7,11 @@ inherit cargo
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/omnect-device-service/0.20.2"
-SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=update-sdk"
-SRCREV = "536c0f57e335327927c67f9f5e122e087202f8a7"
+SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
+SRCREV = "328d068a60ef1d9b45d5fcf0d53db93a2dbb2aeb"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+536c0f57e3"
+
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -37,17 +37,14 @@ SRC_URI += " \
     crate://crates.io/anstyle/1.0.7 \
     crate://crates.io/anyhow/1.0.86 \
     crate://crates.io/async-broadcast/0.5.1 \
-    crate://crates.io/async-broadcast/0.7.1 \
     crate://crates.io/async-channel/2.3.1 \
     crate://crates.io/async-executor/1.12.0 \
     crate://crates.io/async-fs/1.6.0 \
-    crate://crates.io/async-fs/2.1.2 \
     crate://crates.io/async-io/1.13.0 \
     crate://crates.io/async-io/2.3.3 \
     crate://crates.io/async-lock/2.8.0 \
     crate://crates.io/async-lock/3.4.0 \
     crate://crates.io/async-process/1.8.1 \
-    crate://crates.io/async-process/2.2.3 \
     crate://crates.io/async-recursion/1.1.1 \
     crate://crates.io/async-signal/0.2.8 \
     crate://crates.io/async-task/4.7.1 \
@@ -97,7 +94,6 @@ SRC_URI += " \
     crate://crates.io/downcast/0.11.0 \
     crate://crates.io/either/1.13.0 \
     crate://crates.io/encoding_rs/0.8.34 \
-    crate://crates.io/endi/1.1.0 \
     crate://crates.io/enum_dispatch/0.3.13 \
     crate://crates.io/enumflags2/0.7.10 \
     crate://crates.io/enumflags2_derive/0.7.10 \
@@ -245,7 +241,6 @@ SRC_URI += " \
     crate://crates.io/predicates/3.1.0 \
     crate://crates.io/prettyplease/0.2.20 \
     crate://crates.io/proc-macro-crate/1.3.1 \
-    crate://crates.io/proc-macro-crate/3.1.0 \
     crate://crates.io/proc-macro2/1.0.86 \
     crate://crates.io/quote/1.0.36 \
     crate://crates.io/rand/0.8.5 \
@@ -307,7 +302,7 @@ SRC_URI += " \
     crate://crates.io/sync_wrapper/1.0.1 \
     crate://crates.io/system-configuration-sys/0.5.0 \
     crate://crates.io/system-configuration/0.5.1 \
-    crate://crates.io/systemd-zbus/0.3.2 \
+    crate://crates.io/systemd-zbus/0.1.1 \
     crate://crates.io/tempfile/3.10.1 \
     crate://crates.io/termtree/0.4.1 \
     crate://crates.io/thiserror-impl/1.0.61 \
@@ -325,7 +320,6 @@ SRC_URI += " \
     crate://crates.io/tokio/1.38.0 \
     crate://crates.io/toml_datetime/0.6.6 \
     crate://crates.io/toml_edit/0.19.15 \
-    crate://crates.io/toml_edit/0.21.1 \
     crate://crates.io/tower-layer/0.3.2 \
     crate://crates.io/tower-service/0.3.2 \
     crate://crates.io/tower/0.4.13 \
@@ -382,24 +376,18 @@ SRC_URI += " \
     crate://crates.io/winnow/0.5.40 \
     crate://crates.io/winreg/0.52.0 \
     crate://crates.io/xdg-home/1.2.0 \
-    crate://crates.io/zbus/3.15.2 \
-    crate://crates.io/zbus/4.3.1 \
-    crate://crates.io/zbus_macros/3.15.2 \
-    crate://crates.io/zbus_macros/4.3.1 \
+    crate://crates.io/zbus/3.14.1 \
+    crate://crates.io/zbus_macros/3.14.1 \
     crate://crates.io/zbus_names/2.6.1 \
-    crate://crates.io/zbus_names/3.0.0 \
-    crate://crates.io/zerocopy-derive/0.7.34 \
-    crate://crates.io/zerocopy/0.7.34 \
+    crate://crates.io/zerocopy-derive/0.7.35 \
+    crate://crates.io/zerocopy/0.7.35 \
     crate://crates.io/zeroize/1.8.1 \
     crate://crates.io/zstd-safe/7.1.0 \
     crate://crates.io/zstd-sys/2.0.11+zstd.1.5.6 \
     crate://crates.io/zstd/0.13.1 \
-    crate://crates.io/zvariant/3.15.2 \
-    crate://crates.io/zvariant/4.1.2 \
-    crate://crates.io/zvariant_derive/3.15.2 \
-    crate://crates.io/zvariant_derive/4.1.2 \
+    crate://crates.io/zvariant/3.15.1 \
+    crate://crates.io/zvariant_derive/3.15.1 \
     crate://crates.io/zvariant_utils/1.0.1 \
-    crate://crates.io/zvariant_utils/2.0.0 \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-client-async;destsuffix=aziot-cert-client-async \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-common-http;destsuffix=aziot-cert-common-http \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-common;destsuffix=aziot-cert-common \
