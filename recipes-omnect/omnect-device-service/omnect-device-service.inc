@@ -45,6 +45,8 @@ CARGO_BUILD_FLAGS:append:omnect_grub = " --features=bootloader_grub"
 CARGO_BUILD_FLAGS:append:omnect_uboot = " --features=bootloader_uboot"
 CARGO_BUILD_FLAGS:append = "${@bb.utils.contains('MACHINE_FEATURES', '3g', ',modem_info', '', d)}"
 
+export SOCKET_DIR = "/run/aziot"
+
 do_install:append() {
     install -m 0644 -D ${S}/systemd/omnect-device-service.service ${D}${systemd_system_unitdir}/omnect-device-service.service
     install -m 0644 -D ${S}/systemd/omnect-device-service.socket ${D}${systemd_system_unitdir}/omnect-device-service.socket
