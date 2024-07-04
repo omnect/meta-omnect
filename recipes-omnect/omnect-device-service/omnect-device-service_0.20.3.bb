@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.20.2"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.20.3"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "328d068a60ef1d9b45d5fcf0d53db93a2dbb2aeb"
+SRCREV = "6ff730c453870be6f0eda98724ea705331d0b3ed"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -36,6 +36,7 @@ SRC_URI += " \
     crate://crates.io/android_system_properties/0.1.5 \
     crate://crates.io/anstyle/1.0.7 \
     crate://crates.io/anyhow/1.0.86 \
+    crate://crates.io/assert-json-diff/2.0.2 \
     crate://crates.io/async-broadcast/0.5.1 \
     crate://crates.io/async-channel/2.3.1 \
     crate://crates.io/async-executor/1.12.0 \
