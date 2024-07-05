@@ -14,6 +14,7 @@ SRC_URI += " \
     file://enable-reset-info-cmd-fragment.cfg \
     file://enable-pxe-cmd.cfg \
     file://lock-env.cfg \
+    file://redundant-env.cfg \
     file://reloc_gd_env.cfg \
     file://silent_console.cfg \
     file://omnect_env.h \
@@ -45,10 +46,6 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_phytec}/recipes-bsp/
 
 inherit omnect_uboot_configure_env
 inherit omnect_bootloader_versioning
-
-do_configure:prepend() {
-    omnect_uboot_configure_env
-}
 
 do_configure:prepend:mx8mm-nxp-bsp() {
     cp -f ${WORKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h

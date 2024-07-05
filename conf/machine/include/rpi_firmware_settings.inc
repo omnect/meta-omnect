@@ -7,3 +7,14 @@ CMDLINE_ROOTFS = ""
 DISABLE_RPI_BOOT_LOGO = "1"
 # prepend before uart console to prioritize serial console output of stdout
 CMDLINE:prepend:pn-rpi-cmdline = "console=tty0 "
+
+# u-boot config vars
+UBOOT_FDT_ADDR = "fdt_addr"
+
+# redundant u-boot env
+OMNECT_PART_OFFSET_UBOOT_ENV1 = "1024"
+OMNECT_PART_OFFSET_UBOOT_ENV2 = "1152"
+OMNECT_PART_SIZE_UBOOT_ENV = "64"
+
+# for flash-mode and wic image
+OMNECT_PART_OFFSET_BOOT = "4096"
