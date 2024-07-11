@@ -32,7 +32,12 @@ do_compile:append() {
         mkenvimage="mkenvimage -r"
     fi
     if [ -n "${UBOOT_CONFIG}" ]; then
-        initial_env="${B}/${config}/u-boot-initial-env-${type}"
+        # this is based on the handling in openembedded-core/meta/recipes-bsp/u-boot/u-boot.inc
+        for config in ${UBOOT_MACHINE}; do
+            initial_env="${B}/${config}/u-boot-initial-env"
+            # so far i don't see that `UBOOT_MACHINE` is ever set to multiple configs
+            break;
+        done
     else
         initial_env="${B}/u-boot-initial-env"
     fi
