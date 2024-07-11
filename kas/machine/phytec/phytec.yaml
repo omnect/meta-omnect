@@ -7,7 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "scarthgap"
-    commit: "7852b630f3e4d7cb8b87cb00e4a3a86e74716f3a"
+    commit: "304506563b52b5935c8cc0320208093fd43a933b"
     patches:
       p001:
         repo: "meta-omnect"
@@ -30,7 +30,7 @@ repos:
   ext/meta-arm:
     url: "https://git.yoctoproject.org/meta-arm"
     branch: "scarthgap"
-    commit: "29799b787d57d623dce140012a87568f314f3460"
+    commit: "58268ddccbe2780de28513273e15193ee949987b"
     layers:
       meta-arm:
       meta-arm-toolchain:
