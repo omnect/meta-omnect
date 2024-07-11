@@ -17,9 +17,6 @@ RPI_USE_U_BOOT = "1"
 # initramfs type
 OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 
-# u-boot config vars
-UBOOT_FDT_ADDR = "fdt_addr"
-
 # configure hardware watchdog
 # the maximum watchdog deadline depends on the hardware capabilities
 SYSTEMD_RuntimeWatchdogSec  = "15"
@@ -43,4 +40,4 @@ OMNECT_BOOTLOADER="u-boot"
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "29da4e9bb9c826ae84fcc95d8bd774f6d4c1124588002d63708c3ea3466b1eb1"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "82d02cb794aa0fe2a8d31f5416f3b623616c64c47f230bfa9bf0ea6a5f30bc3f"

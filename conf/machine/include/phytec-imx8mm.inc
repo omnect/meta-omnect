@@ -34,6 +34,7 @@ KERNEL_BOOTCMD = "booti"
 UBOOT_ARCH = "arm64"
 UBOOT_FDT_ADDR = "fdt_addr"
 UBOOT_FDT_LOAD = "1"
+PREFERRED_PROVIDER_u-boot-mkenvimage-native = "u-boot-imx-tools-native"
 
 # redundant u-boot env
 # This is currently preset by meta-phytec, because we use u-boot-imx instead
@@ -41,6 +42,8 @@ UBOOT_FDT_LOAD = "1"
 OMNECT_PART_OFFSET_UBOOT_ENV1 = "3840"
 OMNECT_PART_OFFSET_UBOOT_ENV2 = "3968"
 OMNECT_PART_SIZE_UBOOT_ENV = "64"
+# for flash-mode and wic image
+OMNECT_PART_OFFSET_BOOT = "4096"
 
 # mask fw_env.config configuration of meta-phytec, we generate that ourselves
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
@@ -81,4 +84,4 @@ OMNECT_BOOTLOADER = "u-boot-imx"
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
 OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "f2815f386d14e574652fe052365e8ef3de76b21bf1a7f4df45473e5f311fc00f"
-OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "98d19be56831a37a02112411cb39bb8e99c50faaa23da0d21ba068be6484468a f2815f386d14e574652fe052365e8ef3de76b21bf1a7f4df45473e5f311fc00f"
+OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "c60d595748042c46af7fd9de08924b9e3509068944a633571f178790e1909e9b f2815f386d14e574652fe052365e8ef3de76b21bf1a7f4df45473e5f311fc00f"

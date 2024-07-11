@@ -23,6 +23,7 @@ SRC_URI:append:mx8mm-nxp-bsp = " file://imx-sdma"
 SRC_URI:append:omnect_grub = " file://grub-sh"
 SRC_URI:append:omnect_uboot = " file://uboot-sh"
 
+DEPENDS = "bc-native"
 RDEPENDS:${PN} = "bash"
 
 do_install() {
@@ -44,13 +45,11 @@ do_install() {
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'true', 'false', d)}; then
         install -m 0755 -D ${WORKDIR}/flash-mode-2                          ${D}/init.d/87-flash_mode_2
-        sed -i -e "s/@@OMNECT_PART_SIZE_BOOT@@/${OMNECT_PART_SIZE_BOOT}/g" \
+        # bitbake doesn't parse bash arithmetic expression, so we use bc
+        dd_zero_size=$(echo "${OMNECT_PART_OFFSET_BOOT} + ${OMNECT_PART_SIZE_BOOT}" | bc)
+        sed -i -e "s/@@DD_ZERO_SIZE@@/${dd_zero_size}/g" \
 	       -e "s/@@OMNECT_FLASH_MODE_2_DIRECT_FLASHING@@/${@oe.utils.conditional('OMNECT_FLASH_MODE_2_DIRECT_FLASHING', '1', 'true', 'false', d)}/g" \
 	          ${D}/init.d/87-flash_mode_2
-    fi
-    if ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', 'true', 'false', d)}; then
-        install -m 0755 -D ${WORKDIR}/flash-mode-3                          ${D}/init.d/87-flash_mode_3
-        sed -i "s/@@OMNECT_PART_SIZE_BOOT@@/${OMNECT_PART_SIZE_BOOT}/g"     ${D}/init.d/87-flash_mode_3
     fi
     if ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', 'true', 'false', d)}; then
         install -m 0755 -D ${WORKDIR}/resize-data        ${D}/init.d/88-resize_data

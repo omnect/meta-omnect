@@ -105,11 +105,6 @@ omnect_setup_sysctl_config() {
     echo "vm.panic_on_oom = ${OMNECT_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/omnect.conf
 }
 
-ROOTFS_POSTPROCESS_COMMAND:append = " omnect_create_uboot_env_ff_img;"
-omnect_create_uboot_env_ff_img() {
-    dd if=/dev/zero bs=1024 count=${OMNECT_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/omnect_uboot_env_ff.img
-}
-
 # systemd getty terminals get enabled after do_rootfs and/or at runtime if not explicitly masked;
 # for a release image we explicitly disable them by masking
 IMAGE_PREPROCESS_COMMAND:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'disable_getty;', '', d)}"
