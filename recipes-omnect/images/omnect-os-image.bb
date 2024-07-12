@@ -92,6 +92,12 @@ add_kernel_and_initramfs() {
     initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${OMNECT_INITRAMFS_IMAGE_NAME}.${OMNECT_INITRAMFS_FSTYPE})
     install -m 0644 ${initramfs} $D/boot/
     ln -sf ${KERNEL_IMAGETYPE} $D/boot/${KERNEL_IMAGETYPE}.bin
+    if [ "${KERNEL_IMAGETYPE}" != "Image"  ]; then
+        # we uniformly want kernel image named Image
+        ln -sf ${KERNEL_IMAGETYPE} $D/boot/Image
+        # do that also for post processing working on DEPLOY_DIR_IMAGE
+        ln -sf ${KERNEL_IMAGETYPE} ${DEPLOY_DIR_IMAGE}/Image
+    fi
     ln -sf $(basename ${initramfs}) $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}
 }
 
@@ -99,11 +105,6 @@ add_kernel_and_initramfs() {
 ROOTFS_POSTPROCESS_COMMAND:append = " omnect_setup_sysctl_config;"
 omnect_setup_sysctl_config() {
     echo "vm.panic_on_oom = ${OMNECT_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/omnect.conf
-}
-
-ROOTFS_POSTPROCESS_COMMAND:append = " omnect_create_uboot_env_ff_img;"
-omnect_create_uboot_env_ff_img() {
-    dd if=/dev/zero bs=1024 count=${OMNECT_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/omnect_uboot_env_ff.img
 }
 
 # systemd getty terminals get enabled after do_rootfs and/or at runtime if not explicitly masked;

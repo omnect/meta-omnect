@@ -14,6 +14,7 @@ SRC_URI += " \
     file://enable-reset-info-cmd-fragment.cfg \
     file://enable-pxe-cmd.cfg \
     file://lock-env.cfg \
+    file://redundant-env.cfg \
     file://reloc_gd_env.cfg \
     file://silent_console.cfg \
     file://omnect_env.h \
@@ -42,17 +43,11 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/dynamic-layers/freescale
 #OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_fsl-bsp-release}/recipes-bsp/imx-atf/imx-atf_*.bb"
 
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE = "${LAYERDIR_omnect}/recipes-bsp/u-boot/.gitignore"
-OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot/redundant-env-fragment.cfg"
-OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot/redundant-env-fragment.cfg.template"
 # we don't use rauc and overwrite the u-boot env with omnect_env.patch
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-rauc.inc"
 
 inherit omnect_uboot_configure_env
 inherit omnect_bootloader_versioning
-
-do_configure:prepend() {
-    omnect_uboot_configure_env
-}
 
 do_configure:prepend:mx8mm-nxp-bsp() {
     cp -f ${WORKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h

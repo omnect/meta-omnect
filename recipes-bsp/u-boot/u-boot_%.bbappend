@@ -16,8 +16,6 @@ SRC_URI += "\
     file://omnect_env.env \
 "
 
-OMNECT_UBOOT_TEMPLATED_FRAGMENTS = "${WORKDIR}/redundant-env-fragment.cfg"
-
 # Note:
 #   U-Boot might crash if a USB endpoint is in state halted during enumeration,
 #   and unfortunately this is the case with the LTE modem Sierra Wireless
@@ -45,25 +43,4 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE = "${OMNECT_THISDIR_SAVED}/u-boot/.
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${OMNECT_THISDIR_SAVED}/u-boot/redundant-env-fragment.cfg"
 
 inherit omnect_bootloader_versioning
-inherit omnect_fw_env_config
 inherit omnect_uboot_configure_env
-
-do_configure:prepend() {
-    # copy templated configuration fragments to workspace
-    for i in ${OMNECT_UBOOT_TEMPLATED_FRAGMENTS}; do cp ${OMNECT_THISDIR_SAVED}/${PN}/${i##*/} ${WORKDIR}/; done
-
-    # incorporate distro configuration in redundant-env-fragment.cfg
-    local cfg_frag=${WORKDIR}/redundant-env-fragment.cfg
-    local env_size=$(omnect_conv_size_param "${OMNECT_PART_SIZE_UBOOT_ENV}"    "u-boot env. size")
-    local  offset1=$(omnect_conv_size_param "${OMNECT_PART_OFFSET_UBOOT_ENV1}" "u-boot env. offset1")
-    local  offset2=$(omnect_conv_size_param "${OMNECT_PART_OFFSET_UBOOT_ENV2}" "u-boot env. offset2")
-
-    sed -i -e "s|^CONFIG_ENV_SIZE=.*$|CONFIG_ENV_SIZE=${env_size}|g" ${cfg_frag}
-    sed -i -e "s|^CONFIG_ENV_OFFSET=.*$|CONFIG_ENV_OFFSET=${offset1}|g" ${cfg_frag}
-    sed -i -e "s|^CONFIG_ENV_OFFSET_REDUND=.*$|CONFIG_ENV_OFFSET_REDUND=${offset2}|g" ${cfg_frag}
-
-    # for devtool
-    if [ -d "${S}/oe-local-files/" ]; then cp ${cfg_frag} ${S}/oe-local-files/; fi
-
-    omnect_uboot_configure_env
-}

@@ -39,6 +39,7 @@ KERNEL_BOOTCMD = "booti"
 UBOOT_ARCH = "arm64"
 UBOOT_FDT_ADDR = "fdt_addr"
 UBOOT_FDT_LOAD = "1"
+PREFERRED_PROVIDER_u-boot-mkenvimage-native = "u-boot-imx-tools-native"
 
 # redundant u-boot env
 # This is currently preset by meta-phytec, because we use u-boot instead
@@ -47,6 +48,8 @@ UBOOT_FDT_LOAD = "1"
 OMNECT_PART_OFFSET_UBOOT_ENV1 = "3840"
 OMNECT_PART_OFFSET_UBOOT_ENV2 = "3968"
 OMNECT_PART_SIZE_UBOOT_ENV = "64"
+# for flash-mode and wic image
+OMNECT_PART_OFFSET_BOOT = "4096"
 
 # mask fw_env.config configuration of meta-phytec, we generate that ourselves
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"

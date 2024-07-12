@@ -357,14 +357,15 @@ index 0000000..3f9afef
 +install (TARGETS ${target_name} LIBRARY DESTINATION ${ADUC_EXTENSIONS_INSTALL_FOLDER})
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json b/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
 new file mode 100644
-index 0000000..69f9ca4
+index 0000000..8e66c09
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
-@@ -0,0 +1,5 @@
+@@ -0,0 +1,6 @@
 +{
 +  "general_consent": [
 +    "swupdate"
-+  ]
++  ],
++  "reset_consent_on_fail": false
 +}
 \ No newline at end of file
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json b/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
@@ -1085,11 +1086,97 @@ index 0000000..891e09b
 +    ADUC_Result result = { ADUC_Result_Restore_Success };
 +    return result;
 +}
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp b/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp
+index 3c8b215..26843f4 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp
++++ b/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp
+@@ -82,6 +82,11 @@ private:
+      * @returns a value of ADUC_Result
+      */
+     ADUC_Result CancelApply(const tagADUC_WorkflowData* workflowData);
++    /**
++    * @brief Clean user consent agreed
++    * @return a value of ADUC_GeneralResult
++    */
++    ADUC_GeneralResult CleanUserConsentAgreed(void);
+ 
+ protected:
+     //!< Protected constructor, must call CreateContentHandler factory method or from derived simulator class
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-index 2d60fa7..a40b74a 100644
+index 2d60fa7..f37204e 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
 +++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-@@ -332,12 +332,50 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -38,6 +38,9 @@
+ #define HANDLER_PROPERTIES_API_VERSION "apiVersion"
+ #define HANDLER_ARG_ACTION "--action"
+ 
++#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/etc/omnect/consent/consent_conf.json"
++#define ADUC_SWUPDATE_CONSENT_USER_FILE "/etc/omnect/consent/swupdate/user_consent.json"
++
+ namespace adushconst = Adu::Shell::Const;
+ 
+ struct JSONValueDeleter
+@@ -58,6 +61,59 @@ SWUpdateHandlerImpl::~SWUpdateHandlerImpl() // override
+     ADUC_Logging_Uninit();
+ }
+ 
++
++/**
++ * @brief Clean user consent agreed in case reset_consent_on_fail is set to true
++ *
++ * @return ADUC_GeneralResult
++ *
++ */
++ADUC_GeneralResult SWUpdateHandlerImpl::CleanUserConsentAgreed(void)
++{
++    ADUC_GeneralResult result = ADUC_GeneralResult_Failure;
++    JSON_Value* rootValue = json_parse_file(ADUC_SWUPDATE_CONSENT_USER_FILE);
++    JSON_Object* data = json_value_get_object(rootValue);
++
++    Log_Info("clean user consent agreed");
++
++    if (nullptr == data)
++    {
++        Log_Error("No ADUC_SWUPDATE_CONSENT_USER_FILE data file provided, or missing json content");
++    }
++    else
++    {
++        // clean ADUC_SWUPDATE_CONSENT_USER_FILE only if consent available -> prevent file write operation
++        if (json_object_has_value(data, "consent") != 0)
++        {
++            // check reset_consent_on_fail configuration
++            JSON_Value* rootValueConsentConf = json_parse_file(ADUC_SWUPDATE_CONSENT_CONF_FILE);
++            JSON_Object* dataConsentConf = json_value_get_object(rootValueConsentConf);
++            if (nullptr == dataConsentConf)
++            {
++                Log_Error("No ADUC_SWUPDATE_CONSENT_CONF_FILE data file provided, or missing json content");
++            }
++            else
++            {
++                if (json_object_get_boolean(dataConsentConf, "reset_consent_on_fail") == true)
++                {
++                    Log_Info("clean ADUC_SWUPDATE_CONSENT_USER_FILE");
++                    json_object_remove(data, "consent");
++                    json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_USER_FILE);
++                }
++                else
++                {
++                    Log_Info("reset_consent_on_fail: false or not present; don't change ADUC_SWUPDATE_CONSENT_USER_FILE");
++                }
++                json_value_free(rootValueConsentConf);
++            }
++        }
++        result = ADUC_GeneralResult_Success;
++        json_value_free(rootValue);
++    }
++
++    return result;
++}
++
+ /**
+  * @brief Downloads a main script file into a sandbox folder.
+  *        The 'handlerProperties["scriptFileName"]' contains the main script file name.
+@@ -332,12 +388,53 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
      memset(&fileEntity, 0, sizeof(fileEntity));
      size_t fileCount = workflow_get_update_files_count(workflowHandle);
      ADUC_Result result = SWUpdate_Handler_DownloadScriptFile(workflowHandle);
@@ -1131,6 +1218,9 @@ index 2d60fa7..a40b74a 100644
 +            result = { ADUC_Result_Failure };
 +            Log_Error("Update validation on new boot part failed. Rebooted to old boot part.");
 +            result.ExtendedResultCode = ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION;
++
++            // cleanup user consent of current update if it configured
++            CleanUserConsentAgreed();
 +            goto done;
 +        }
 +
@@ -1140,7 +1230,7 @@ index 2d60fa7..a40b74a 100644
      // Determine whether to continue downloading the rest.
      installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
      result = IsInstalled(workflowData);
-@@ -348,6 +386,16 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -348,6 +445,16 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
          goto done;
      }
  

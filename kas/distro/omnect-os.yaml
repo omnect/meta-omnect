@@ -58,11 +58,7 @@ env:
   # is image of type release?
   OMNECT_RELEASE_IMAGE: "0"
 
-  # changelog version and repo uri of meta-omnect
-  META_OMNECT_VERSION: "META_OMNECT_VERSION_NOT_SET"
   META_OMNECT_GIT_REPO: "META_OMNECT_GIT_REPO_NOT_SET"
-  # changelog version, revision, branch and repo uri of omnect-os
-  OMNECT_OS_VERSION: "OMNECT_OS_VERSION_NOT_SET"
   OMNECT_OS_GIT_SHA: "OMNECT_OS_GIT_SHA_NOT_SET"
   OMNECT_OS_GIT_BRANCH: "OMNECT_OS_GIT_BRANCH_NOT_SET"
   OMNECT_OS_GIT_REPO: "OMNECT_OS_GIT_REPO_NOT_SET"
