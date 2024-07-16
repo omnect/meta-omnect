@@ -63,7 +63,8 @@ python do_dependencytrack_collect() {
                 "name": names[index],
                 "version": version,
                 "cpe": cpe,
-                "purl": purl
+                "purl": purl,
+                "type": "library"
             })
 
     # write it back to the deploy directory
