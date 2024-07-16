@@ -64,7 +64,7 @@ python do_dependencytrack_collect() {
                 "version": version,
                 "cpe": cpe,
                 "purl": purl,
-                "type": "library"
+                "type": "application"
             })
 
     # write it back to the deploy directory
