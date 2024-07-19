@@ -44,3 +44,6 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${OMNECT_THISDIR_SAVED}/u-boot/
 
 inherit omnect_bootloader_versioning
 inherit omnect_uboot_configure_env
+
+# ignore patch-status in do_patch_qa
+ERROR_QA:remove = "patch-status"

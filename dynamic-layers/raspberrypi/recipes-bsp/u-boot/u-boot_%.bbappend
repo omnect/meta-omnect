@@ -34,6 +34,3 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_raspberrypi}/recipes
 do_configure:prepend() {
     cp -f ${WORKDIR}/omnect_env_rpi.h ${S}/include/configs/omnect_env_machine.h
 }
-
-# ignore patch-status in do_patch_qa
-ERROR_QA:remove = "patch-status"

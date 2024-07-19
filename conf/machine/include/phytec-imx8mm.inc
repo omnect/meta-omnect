@@ -1,9 +1,8 @@
 require conf/machine/include/phytec-imx8mm_bootloader_embedded_version.inc
 
-PREFERRED_PROVIDER_virtual/bootloader:mx8-nxp-bsp = "u-boot"
 PREFERRED_PROVIDER_virtual/kernel:mx8-nxp-bsp = "linux-imx"
-# PREFERRED_VERSION_linux-imx = "6.6%"
-# COMPATIBLE_MACHINE:pn-linux-imx = "mx8-nxp-bsp"
+PREFERRED_VERSION_linux-imx = "6.6.23-2.0.0-phy1"
+PREFERRED_VERSION_imx-atf = "2.8%"
 
 # WIC config
 WKS_FILE = "omnect-os.phytec.wks.in"
@@ -34,6 +33,11 @@ APPEND += "console=ttymxc2,115200"
 # https://github.com/phytec/meta-phytec/commit/6d71e11b4fc1ee8196e579e4de73ed3197e0e4be
 APPEND += "clk-imx8mm.mcore_booted"
 
+#
+ATF_BOOT_UART_BASE = "0x30880000"
+# SOC_ATF_BOOT_UART_BASE = "0x30880000"
+
+
 # u-boot boot.scr config
 KERNEL_BOOTCMD = "booti"
 UBOOT_ARCH = "arm64"
@@ -55,6 +59,8 @@ OMNECT_PART_OFFSET_BOOT = "4096"
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
 # masks necessary to build with our bblayers.conf:
 BBMASK:append = " \
+    meta-freescale/recipes-kernel/linux/linux-imx_6.6.bb \
+    meta-imx/meta-imx-bsp/recipes-kernel/linux/linux-imx_6.6.bb \
     meta-imx/meta-imx-bsp/recipes-multimedia/wireplumber/wireplumber_%.bbappend \
     meta-imx/meta-imx-sdk/recipes-fsl/fsl-rc-local/fsl-rc-local.bbappend \
     meta-imx/meta-imx-sdk/recipes-fsl/images/fsl-image-machine-test.bbappend \
@@ -67,11 +73,17 @@ BBMASK:append = " \
     meta-phytec/dynamic-layers/fsl-bsp-release/recipes-bsp/isp-imx/isp-imx-phycam_4.2.2.22.0.bb \
     meta-phytec/dynamic-layers/fsl-bsp-release/recipes-fsl/mcore-demos/imx-m33-demos_2.14.2.bbappend \
     meta-phytec/dynamic-layers/fsl-bsp-release/recipes-kernel/kernel-modules/kernel-module-isp-vvcam_4.2.2.20.0.bbappend \
+    meta-phytec/dynamic-layers/fsl-bsp-release/recipes-kernel/linux/linux-imx_5.15.71_2.2.2-phy5.bb \
 "
 
+# ToDo revisit if still applies or move to block above
 # mask otherwise we can not use the latest meta-freescale/meta-imx commits
 BBMASK:append = " meta-imx/meta-bsp/recipes-support/opencv/opencv_4.6.0.imx.bb"
-BBMASK:append = " meta-imx/meta-sdk/dynamic-layers/openembedded-layer/recipes-multimedia/dvb-apps/dvb-apps_%.bbappend"
+
+# additional kernel config
+# OMNECT_KERNEL_SRC_URI:append = " \
+#     file://disable_mxc_gpu_viv.cfg \
+# "
 
 # fix search path
 FILESEXTRAPATHS:prepend:pn-imx-boot-phytec := "${LAYERDIR_freescale-layer}/recipes-bsp/imx-mkimage/files:"
@@ -95,15 +107,15 @@ MACHINE_FEATURES:remove = " \
     optee \
 "
 
-OMNECT_BOOTLOADER = "u-boot"
+OMNECT_BOOTLOADER = "u-boot-imx"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
-# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot = "<newchecksum> <oldchecksum>"
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "<newchecksum> <oldchecksum>"
 # e.g.:
-# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot = "2cf3dd5f692d9ed563f06ecf80d0cb566ddc165fa01a37b4eba663dc7b7b9087 ebe0e595a3efb112b7495a14f9562d89d00041390f26a9ad4985435687bf2311"
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "2cf3dd5f692d9ed563f06ecf80d0cb566ddc165fa01a37b4eba663dc7b7b9087 ebe0e595a3efb112b7495a14f9562d89d00041390f26a9ad4985435687bf2311"
 #
-# OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot - build will fail, if the
+# OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot-imx - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
-# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "f2815f386d14e574652fe052365e8ef3de76b21bf1a7f4df45473e5f311fc00f"
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "f2815f386d14e574652fe052365e8ef3de76b21bf1a7f4df45473e5f311fc00f"
 # TODO remove!!!:
 OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE = "1"

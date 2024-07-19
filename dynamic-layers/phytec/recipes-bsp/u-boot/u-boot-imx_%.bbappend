@@ -4,12 +4,12 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot:${LAYERDIR_omnect}/recipes-bsp/u-b
 OMNECT_THISDIR_SAVED := "${THISDIR}/"
 
 SRC_URI += " \
-    file://add-reset-info.patch \
     file://omnect_env.patch \
-    file://phycore-imx8mm_defconfig.patch \
-    file://silent_console_early.patch \
+    file://phycore_imx8mm.patch \
+    file://boot_retry.cfg \
     file://disable_android_boot_image.cfg \
     file://disable-usb.cfg \
+    file://do_not_use_default_bootcommand.cfg \
     file://enable_generic_console_fs_cmds.cfg \
     file://enable-reset-info-cmd-fragment.cfg \
     file://enable-pxe-cmd.cfg \
@@ -19,8 +19,17 @@ SRC_URI += " \
     file://silent_console.cfg \
     file://omnect_env.h \
     file://omnect_env_phycore_imx8mm.h \
+    file://omnect_env.env \
+    file://phycore_imx8mm.env \
 "
 
+# todo
+# file://mmc.patch
+# file://add-reset-info.patch
+#
+# file://phycore-imx8mm_defconfig.patch
+# file://silent_console_early.patch
+#
 OMNECT_BOOTLOADER_CHECKSUM_FILES  = "${LAYERDIR_omnect}/classes/u-boot-scr.bbclass"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot-scr.bb"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot/*"
@@ -51,4 +60,5 @@ inherit omnect_bootloader_versioning
 
 do_configure:prepend:mx8mm-nxp-bsp() {
     cp -f ${WORKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h
+    cp -f ${WORKDIR}/phycore_imx8mm.env ${S}/board/phytec/phycore_imx8mm/phycore_imx8mm.env
 }

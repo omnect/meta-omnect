@@ -1,0 +1,14 @@
+diff --git a/dynamic-layers/fsl-bsp-release/recipes-kernel/linux/linux-imx_6.6.23-2.0.0-phy1.bb b/dynamic-layers/fsl-bsp-release/recipes-kernel/linux/linux-imx_6.6.23-2.0.0-phy1.bb
+index 860d0fc4..4ba75722 100644
+--- a/dynamic-layers/fsl-bsp-release/recipes-kernel/linux/linux-imx_6.6.23-2.0.0-phy1.bb
++++ b/dynamic-layers/fsl-bsp-release/recipes-kernel/linux/linux-imx_6.6.23-2.0.0-phy1.bb
+@@ -1,7 +1,8 @@
+ # Copyright (C) 2024 PHYTEC Messtechnik GmbH,
+ 
++inherit kernel
+ inherit phygittag
+-inherit buildinfo
++inherit buildinfo kconfig
+ inherit fsl-vivante-kernel-driver-handler
+ include recipes-kernel/linux/linux-common.inc
+ 
