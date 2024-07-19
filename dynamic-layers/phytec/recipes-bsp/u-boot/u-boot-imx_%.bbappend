@@ -9,6 +9,7 @@ SRC_URI += " \
     file://phycore-imx8mm_defconfig.patch \
     file://silent_console_early.patch \
     file://disable_android_boot_image.cfg \
+    file://disable-nfs.cfg \
     file://disable-usb.cfg \
     file://enable_generic_console_fs_cmds.cfg \
     file://enable-reset-info-cmd-fragment.cfg \

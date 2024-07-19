@@ -12,11 +12,13 @@ OMNECT_THISDIR_SAVED := "${THISDIR}/"
 SRC_URI += "file://bootm_len_check.patch"
 
 SRC_URI += "\
+    file://disable-nfs.cfg \
     file://lock-env.cfg \
     file://reloc_gd_env.cfg \
     file://silent_console.cfg \
     file://omnect_env.h \
 "
+
 # Note:
 #   U-Boot might crash if a USB endpoint is in state halted during enumeration,
 #   and unfortunately this is the case with the LTE modem Sierra Wireless
