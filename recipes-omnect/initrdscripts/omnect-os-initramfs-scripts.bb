@@ -51,6 +51,9 @@ do_install() {
 	       -e "s/@@OMNECT_FLASH_MODE_2_DIRECT_FLASHING@@/${@oe.utils.conditional('OMNECT_FLASH_MODE_2_DIRECT_FLASHING', '1', 'true', 'false', d)}/g" \
 	          ${D}/init.d/87-flash_mode_2
     fi
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', 'true', 'false', d)}; then
+        install -m 0755 -D ${WORKDIR}/flash-mode-3                          ${D}/init.d/87-flash_mode_3
+    fi
     if ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', 'true', 'false', d)}; then
         install -m 0755 -D ${WORKDIR}/resize-data        ${D}/init.d/88-resize_data
     fi
