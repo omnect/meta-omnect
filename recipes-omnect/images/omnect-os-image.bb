@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "\
 "
 # we need the bootloader version in the *testdata.json artifact
 def omnect_create_bootloader_version(d):
-    path = d.getVar('DEPLOY_DIR_IMAGE') + '/bootloader_version'
+    path = d.getVar('DEPLOY_DIR_IMAGE') + '/omnect_bootloader_version'
     str = ""
     try:
         str = open(path, 'r').read().split()[0]
@@ -26,7 +26,7 @@ do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
 # we add boot.scr to the image on condition
 do_rootfs_extra_depends = ""
-do_rootfs_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
+do_rootfs_extra_depends:omnect_uboot = "u-boot-scr:do_deploy bootloader-versioned:do_deploy"
 do_rootfs[depends] += "${do_rootfs_extra_depends}"
 IMAGE_BOOT_FILES:append:omnect_uboot = " boot.scr"
 IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
@@ -77,6 +77,8 @@ IMAGE_INSTALL = "\
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 
+IMAGE_INSTALL:append:omnect_uboot = " bootloader-versioned"
+
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
 # If we add it to IMAGE_BOOT_FILES, wic would move it to the boot
@@ -88,6 +90,12 @@ add_kernel_and_initramfs() {
     initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${OMNECT_INITRAMFS_IMAGE_NAME}.${OMNECT_INITRAMFS_FSTYPE})
     install -m 0644 ${initramfs} $D/boot/
     ln -sf ${KERNEL_IMAGETYPE} $D/boot/${KERNEL_IMAGETYPE}.bin
+    if [ "${KERNEL_IMAGETYPE}" != "Image"  ]; then
+        # we uniformly want kernel image named Image
+        ln -sf ${KERNEL_IMAGETYPE} $D/boot/Image
+        # do that also for post processing working on DEPLOY_DIR_IMAGE
+        ln -sf ${KERNEL_IMAGETYPE} ${DEPLOY_DIR_IMAGE}/Image
+    fi
     ln -sf $(basename ${initramfs}) $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}
 }
 
@@ -95,11 +103,6 @@ add_kernel_and_initramfs() {
 ROOTFS_POSTPROCESS_COMMAND:append = " omnect_setup_sysctl_config;"
 omnect_setup_sysctl_config() {
     echo "vm.panic_on_oom = ${OMNECT_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/omnect.conf
-}
-
-ROOTFS_POSTPROCESS_COMMAND:append = " omnect_create_uboot_env_ff_img;"
-omnect_create_uboot_env_ff_img() {
-    dd if=/dev/zero bs=1024 count=${OMNECT_PART_SIZE_UBOOT_ENV} | tr "\000" "\377" >${DEPLOY_DIR_IMAGE}/omnect_uboot_env_ff.img
 }
 
 # systemd getty terminals get enabled after do_rootfs and/or at runtime if not explicitly masked;

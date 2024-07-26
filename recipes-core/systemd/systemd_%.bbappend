@@ -2,6 +2,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://80-wlan.network \
+    file://80-wlan0.link \
 "
 
 RDEPENDS:${PN} += "bash"
@@ -21,7 +22,8 @@ do_install:append() {
     if ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'true', 'false', d)}; then
         # enable dhcp for wlan devices
         install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network
-        sed -i 's/^Name=wlan0/Name=${OMNECT_WLAN0}/' ${D}${systemd_unitdir}/network/80-wlan.network
+        # prevent renaming wlan0
+        install -m 0644 ${WORKDIR}/80-wlan0.link ${D}${systemd_unitdir}/network
     fi
 
     # persistent /var/log
@@ -52,6 +54,12 @@ do_install:append() {
     [ -n "${JOURNALD_RuntimeMaxFileSize}" ] && sed -i 's/^#RuntimeMaxFileSize=/RuntimeMaxFileSize=${JOURNALD_RuntimeMaxFileSize} /' ${D}${sysconfdir}/systemd/journald.conf
     [ -n "${JOURNALD_RuntimeMaxFiles}" ]    && sed -i 's/^#RuntimeMaxFiles=/RuntimeMaxFiles=${JOURNALD_RuntimeMaxFiles} /' ${D}${sysconfdir}/systemd/journald.conf
     [ -n "${JOURNALD_ForwardToSyslog}" ]    && sed -i -E 's/^#ForwardToSyslog=(.*)/ForwardToSyslog=${JOURNALD_ForwardToSyslog} /' ${D}${sysconfdir}/systemd/journald.conf
+
+    # delete systemd-journald-audit.socket if audit is not in DISTRO_FEATURES
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'audit', 'false', 'true', d)}; then
+        rm ${D}${systemd_system_unitdir}/sockets.target.wants/systemd-journald-audit.socket
+        rm ${D}${systemd_system_unitdir}/systemd-journald-audit.socket
+    fi
 
     # sync time on sysinit
     install -d ${D}${sysconfdir}/systemd/system/sysinit.target.wants
@@ -87,27 +95,12 @@ do_install:append:phyboard-polis-imx8mm-4() {
     enable_hardware_watchdog
 }
 
-
-def online_ifc_list_to_parameter_list(d, ifclistvar):
-    param_list = ''
-    ifclist = d.getVar(ifclistvar)
-    if ifclist == None:
-        bb.warn('No online interfaces defined in variable {}!'.format(ifclistvar))
-        return param_list
-    interfaces = ifclist.split(':')
-    if len(interfaces) > 1:
-        param_list = '--any '
-    for i in interfaces:
-        param_list += '--interface={} '.format(i)
-    return param_list
-
-ONLINE_INTERFACE_ARGS = "${@online_ifc_list_to_parameter_list(d, 'OMNECT_WAIT_ONLINE_INTERFACES_BUILD')}"
-
 do_install:append() {
-    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES_RUN:-${ONLINE_INTERFACE_ARGS}} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
         ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 
 FILES:${PN} += "\
     ${systemd_unitdir}/network/80-wlan.network \
+    ${systemd_unitdir}/network/80-wlan0.link \
 "

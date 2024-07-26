@@ -2,7 +2,7 @@
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
-    file://LICENSE-APACHE;md5=650e893673eb59696f3d4ee64f6d2357 \
+    file://LICENSE-APACHE;md5=5382c4e117e2483c68e932fd10c4fd48 \
     file://LICENSE-MIT;md5=afb814368d9110052a22e0da67f027d3 \
 "
 
@@ -19,7 +19,7 @@ do_install:append() {
     install -m 0644 ${S}/systemd/wifi-commissioning-gatt@.service ${D}${systemd_system_unitdir}/
     install -d ${D}${bindir}
     install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    ln -rs ${D}${systemd_system_unitdir}/wifi-commissioning-gatt@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wifi-commissioning-gatt@${OMNECT_WLAN0}.service
+    ln -rs ${D}${systemd_system_unitdir}/wifi-commissioning-gatt@.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wifi-commissioning-gatt@wlan0.service
 }
 
 FILES:${PN} += "\

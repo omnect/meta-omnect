@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 15b2c9ec..032175c5 100644
+index 15b2c9e..032175c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -200,7 +200,7 @@ set (
@@ -24,7 +24,7 @@ index 15b2c9ec..032175c5 100644
      ADUC_IOT_HUB_PROTOCOL
      "IotHub_Protocol_from_Config"
 diff --git a/scripts/error_code_generator_defs/result_codes.json b/scripts/error_code_generator_defs/result_codes.json
-index 6fc707cf..11d4e4b4 100644
+index 6fc707c..11d4e4b 100644
 --- a/scripts/error_code_generator_defs/result_codes.json
 +++ b/scripts/error_code_generator_defs/result_codes.json
 @@ -369,6 +369,10 @@
@@ -46,7 +46,7 @@ index 6fc707cf..11d4e4b4 100644
 +}
 \ No newline at end of file
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index 3eb5fa40..7e6e3abc 100644
+index 3eb5fa4..7e6e3ab 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
 @@ -35,6 +35,10 @@
@@ -155,7 +155,7 @@ index 3eb5fa40..7e6e3abc 100644
                  else
                  {
 diff --git a/src/agent/src/main.c b/src/agent/src/main.c
-index 934066c5..0a2ac434 100644
+index 934066c..0a2ac43 100644
 --- a/src/agent/src/main.c
 +++ b/src/agent/src/main.c
 @@ -812,7 +812,7 @@ done:
@@ -177,7 +177,7 @@ index 934066c5..0a2ac434 100644
  }
  
 diff --git a/src/communication_managers/iothub_communication_manager/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
-index 9707b069..5f47727b 100644
+index 9707b06..5f47727 100644
 --- a/src/communication_managers/iothub_communication_manager/CMakeLists.txt
 +++ b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
 @@ -29,7 +29,8 @@ target_link_libraries (
@@ -191,7 +191,7 @@ index 9707b069..5f47727b 100644
  target_link_libraries (${target_name} PRIVATE libaducpal)
  
 diff --git a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
-index 6397fea1..c7c1bae2 100644
+index 6397fea..c7c1bae 100644
 --- a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
 +++ b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
 @@ -39,6 +39,8 @@
@@ -228,7 +228,7 @@ index 6397fea1..c7c1bae2 100644
      case IOTHUB_CLIENT_CONNECTION_UNAUTHENTICATED:
          if (g_last_authenticated_time >= g_first_unauthenticated_time)
 diff --git a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
-index 85008278..71b9ceca 100644
+index 8500827..71b9cec 100644
 --- a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
 +++ b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
 @@ -16,7 +16,7 @@ find_package (Parson REQUIRED)
@@ -241,7 +241,7 @@ index 85008278..71b9ceca 100644
  
  target_link_libraries (
 diff --git a/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c b/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
-index 5c232a13..8751a294 100644
+index 5c232a1..8751a29 100644
 --- a/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
 +++ b/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
 @@ -11,7 +11,7 @@
@@ -267,7 +267,7 @@ index 5c232a13..8751a294 100644
  #include <diagnostics_config_utils.h>
  #include <diagnostics_devicename.h>
 diff --git a/src/diagnostics_component/utils/CMakeLists.txt b/src/diagnostics_component/utils/CMakeLists.txt
-index 2952f344..811a22f1 100644
+index 2952f34..811a22f 100644
 --- a/src/diagnostics_component/utils/CMakeLists.txt
 +++ b/src/diagnostics_component/utils/CMakeLists.txt
 @@ -2,5 +2,5 @@ cmake_minimum_required (VERSION 3.5)
@@ -278,7 +278,7 @@ index 2952f344..811a22f1 100644
 +# add_subdirectory (file_upload_utils)
  add_subdirectory (operation_id_utils)
 diff --git a/src/extensions/CMakeLists.txt b/src/extensions/CMakeLists.txt
-index e7bcad3c..65e92251 100644
+index e7bcad3..65e9225 100644
 --- a/src/extensions/CMakeLists.txt
 +++ b/src/extensions/CMakeLists.txt
 @@ -1,6 +1,6 @@
@@ -290,7 +290,7 @@ index e7bcad3c..65e92251 100644
  add_subdirectory (download_handlers)
  add_subdirectory (extension_manager)
 diff --git a/src/extensions/content_downloaders/CMakeLists.txt b/src/extensions/content_downloaders/CMakeLists.txt
-index d9978f00..69b3c4ab 100644
+index d9978f0..69b3c4a 100644
 --- a/src/extensions/content_downloaders/CMakeLists.txt
 +++ b/src/extensions/content_downloaders/CMakeLists.txt
 @@ -1,4 +1,4 @@
@@ -300,7 +300,7 @@ index d9978f00..69b3c4ab 100644
 +# add_subdirectory (curl_downloader)
  add_subdirectory (deliveryoptimization_downloader)
 diff --git a/src/extensions/download_handlers/CMakeLists.txt b/src/extensions/download_handlers/CMakeLists.txt
-index 850c103f..bc0bb06f 100644
+index 850c103..bc0bb06 100644
 --- a/src/extensions/download_handlers/CMakeLists.txt
 +++ b/src/extensions/download_handlers/CMakeLists.txt
 @@ -1,3 +1,3 @@
@@ -310,7 +310,7 @@ index 850c103f..bc0bb06f 100644
 +# add_subdirectory (plugin_examples)
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
 new file mode 100644
-index 00000000..3f9afeff
+index 0000000..3f9afef
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
 @@ -0,0 +1,41 @@
@@ -357,19 +357,20 @@ index 00000000..3f9afeff
 +install (TARGETS ${target_name} LIBRARY DESTINATION ${ADUC_EXTENSIONS_INSTALL_FOLDER})
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json b/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
 new file mode 100644
-index 00000000..69f9ca47
+index 0000000..8e66c09
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
-@@ -0,0 +1,5 @@
+@@ -0,0 +1,6 @@
 +{
 +  "general_consent": [
 +    "swupdate"
-+  ]
++  ],
++  "reset_consent_on_fail": false
 +}
 \ No newline at end of file
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json b/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
 new file mode 100644
-index 00000000..698c790c
+index 0000000..698c790
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
 @@ -0,0 +1,6 @@
@@ -382,7 +383,7 @@ index 00000000..698c790c
 \ No newline at end of file
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json b/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json
 new file mode 100644
-index 00000000..9f35e525
+index 0000000..9f35e52
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json
 @@ -0,0 +1,4 @@
@@ -393,7 +394,7 @@ index 00000000..9f35e525
 \ No newline at end of file
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json b/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json
 new file mode 100644
-index 00000000..0e0dcd23
+index 0000000..0e0dcd2
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json
 @@ -0,0 +1,3 @@
@@ -403,7 +404,7 @@ index 00000000..0e0dcd23
 \ No newline at end of file
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp b/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
 new file mode 100644
-index 00000000..8ea0cf2a
+index 0000000..8ea0cf2
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
 @@ -0,0 +1,73 @@
@@ -482,7 +483,7 @@ index 00000000..8ea0cf2a
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 00000000..891e09b8
+index 0000000..891e09b
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 @@ -0,0 +1,599 @@
@@ -1085,11 +1086,97 @@ index 00000000..891e09b8
 +    ADUC_Result result = { ADUC_Result_Restore_Success };
 +    return result;
 +}
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp b/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp
+index 3c8b215..26843f4 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp
++++ b/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp
+@@ -82,6 +82,11 @@ private:
+      * @returns a value of ADUC_Result
+      */
+     ADUC_Result CancelApply(const tagADUC_WorkflowData* workflowData);
++    /**
++    * @brief Clean user consent agreed
++    * @return a value of ADUC_GeneralResult
++    */
++    ADUC_GeneralResult CleanUserConsentAgreed(void);
+ 
+ protected:
+     //!< Protected constructor, must call CreateContentHandler factory method or from derived simulator class
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-index 2d60fa75..a40b74ae 100644
+index 2d60fa7..f37204e 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
 +++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-@@ -332,12 +332,50 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -38,6 +38,9 @@
+ #define HANDLER_PROPERTIES_API_VERSION "apiVersion"
+ #define HANDLER_ARG_ACTION "--action"
+ 
++#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/etc/omnect/consent/consent_conf.json"
++#define ADUC_SWUPDATE_CONSENT_USER_FILE "/etc/omnect/consent/swupdate/user_consent.json"
++
+ namespace adushconst = Adu::Shell::Const;
+ 
+ struct JSONValueDeleter
+@@ -58,6 +61,59 @@ SWUpdateHandlerImpl::~SWUpdateHandlerImpl() // override
+     ADUC_Logging_Uninit();
+ }
+ 
++
++/**
++ * @brief Clean user consent agreed in case reset_consent_on_fail is set to true
++ *
++ * @return ADUC_GeneralResult
++ *
++ */
++ADUC_GeneralResult SWUpdateHandlerImpl::CleanUserConsentAgreed(void)
++{
++    ADUC_GeneralResult result = ADUC_GeneralResult_Failure;
++    JSON_Value* rootValue = json_parse_file(ADUC_SWUPDATE_CONSENT_USER_FILE);
++    JSON_Object* data = json_value_get_object(rootValue);
++
++    Log_Info("clean user consent agreed");
++
++    if (nullptr == data)
++    {
++        Log_Error("No ADUC_SWUPDATE_CONSENT_USER_FILE data file provided, or missing json content");
++    }
++    else
++    {
++        // clean ADUC_SWUPDATE_CONSENT_USER_FILE only if consent available -> prevent file write operation
++        if (json_object_has_value(data, "consent") != 0)
++        {
++            // check reset_consent_on_fail configuration
++            JSON_Value* rootValueConsentConf = json_parse_file(ADUC_SWUPDATE_CONSENT_CONF_FILE);
++            JSON_Object* dataConsentConf = json_value_get_object(rootValueConsentConf);
++            if (nullptr == dataConsentConf)
++            {
++                Log_Error("No ADUC_SWUPDATE_CONSENT_CONF_FILE data file provided, or missing json content");
++            }
++            else
++            {
++                if (json_object_get_boolean(dataConsentConf, "reset_consent_on_fail") == true)
++                {
++                    Log_Info("clean ADUC_SWUPDATE_CONSENT_USER_FILE");
++                    json_object_remove(data, "consent");
++                    json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_USER_FILE);
++                }
++                else
++                {
++                    Log_Info("reset_consent_on_fail: false or not present; don't change ADUC_SWUPDATE_CONSENT_USER_FILE");
++                }
++                json_value_free(rootValueConsentConf);
++            }
++        }
++        result = ADUC_GeneralResult_Success;
++        json_value_free(rootValue);
++    }
++
++    return result;
++}
++
+ /**
+  * @brief Downloads a main script file into a sandbox folder.
+  *        The 'handlerProperties["scriptFileName"]' contains the main script file name.
+@@ -332,12 +388,53 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
      memset(&fileEntity, 0, sizeof(fileEntity));
      size_t fileCount = workflow_get_update_files_count(workflowHandle);
      ADUC_Result result = SWUpdate_Handler_DownloadScriptFile(workflowHandle);
@@ -1131,6 +1218,9 @@ index 2d60fa75..a40b74ae 100644
 +            result = { ADUC_Result_Failure };
 +            Log_Error("Update validation on new boot part failed. Rebooted to old boot part.");
 +            result.ExtendedResultCode = ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION;
++
++            // cleanup user consent of current update if it configured
++            CleanUserConsentAgreed();
 +            goto done;
 +        }
 +
@@ -1140,7 +1230,7 @@ index 2d60fa75..a40b74ae 100644
      // Determine whether to continue downloading the rest.
      installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
      result = IsInstalled(workflowData);
-@@ -348,6 +386,16 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -348,6 +445,16 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
          goto done;
      }
  
@@ -1158,7 +1248,7 @@ index 2d60fa75..a40b74ae 100644
  
      for (int i = 0; i < fileCount; i++)
 diff --git a/src/platform_layers/linux_platform_layer/CMakeLists.txt b/src/platform_layers/linux_platform_layer/CMakeLists.txt
-index 40d57d15..000e5309 100644
+index 40d57d1..000e530 100644
 --- a/src/platform_layers/linux_platform_layer/CMakeLists.txt
 +++ b/src/platform_layers/linux_platform_layer/CMakeLists.txt
 @@ -47,7 +47,8 @@ target_compile_definitions (
@@ -1172,7 +1262,7 @@ index 40d57d15..000e5309 100644
  if (ADUC_BUILD_UNIT_TESTS)
      add_subdirectory (tests)
 diff --git a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
-index 5a6ab626..b3837bb0 100644
+index 5a6ab62..b3837bb 100644
 --- a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
 +++ b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
 @@ -449,7 +449,7 @@ static char* DeviceInfo_GetTotalStorage()
@@ -1185,7 +1275,7 @@ index 5a6ab626..b3837bb0 100644
          Log_Error("statvfs failed, error: %d", errno);
          return nullptr;
 diff --git a/src/utils/c_utils/src/string_c_utils.c b/src/utils/c_utils/src/string_c_utils.c
-index af0adafb..dcca4184 100644
+index af0adaf..dcca418 100644
 --- a/src/utils/c_utils/src/string_c_utils.c
 +++ b/src/utils/c_utils/src/string_c_utils.c
 @@ -45,7 +45,7 @@ bool LoadBufferWithFileContents(const char* filePath, char* strBuffer, const siz
@@ -1198,7 +1288,7 @@ index af0adafb..dcca4184 100644
      {
          goto done;
 diff --git a/src/utils/eis_utils/src/eis_coms.c b/src/utils/eis_utils/src/eis_coms.c
-index dba6c64e..cb25857d 100644
+index dba6c64..cb25857 100644
 --- a/src/utils/eis_utils/src/eis_coms.c
 +++ b/src/utils/eis_utils/src/eis_coms.c
 @@ -140,7 +140,7 @@ typedef struct tagEIS_HTTP_WORKLOAD_CONTEXT
@@ -1211,7 +1301,7 @@ index dba6c64e..cb25857d 100644
  //
  // HTTP Functions
 diff --git a/src/utils/extension_utils/src/extension_utils.c b/src/utils/extension_utils/src/extension_utils.c
-index f63aa42b..0f0ae388 100644
+index f63aa42..ac41f5f 100644
 --- a/src/utils/extension_utils/src/extension_utils.c
 +++ b/src/utils/extension_utils/src/extension_utils.c
 @@ -265,7 +265,7 @@ static bool RegisterHandlerExtension(
@@ -1223,6 +1313,15 @@ index f63aa42b..0f0ae388 100644
      if (!ADUC_HashUtils_GetFileHash(handlerFilePath, SHA256, &hash))
      {
          goto done;
+@@ -274,7 +274,7 @@ static bool RegisterHandlerExtension(
+     content = STRING_construct_sprintf(
+         "{\n"
+         "   \"fileName\":\"%s\",\n"
+-        "   \"sizeInBytes\":%d,\n"
++        "   \"sizeInBytes\":%lld,\n"
+         "   \"hashes\": {\n"
+         "        \"sha256\":\"%s\"\n"
+         "   },\n"
 @@ -483,7 +483,7 @@ bool RegisterExtension(const char* extensionDir, const char* extensionFilePath)
          goto done;
      }
@@ -1232,3 +1331,12 @@ index f63aa42b..0f0ae388 100644
  
      if (!ADUC_HashUtils_GetFileHash(extensionFilePath, SHA256, &hash))
      {
+@@ -493,7 +493,7 @@ bool RegisterExtension(const char* extensionDir, const char* extensionFilePath)
+     content = STRING_construct_sprintf(
+         "{\n"
+         "   \"fileName\":\"%s\",\n"
+-        "   \"sizeInBytes\":%d,\n"
++        "   \"sizeInBytes\":%lld,\n"
+         "   \"hashes\": {\n"
+         "        \"sha256\":\"%s\"\n"
+         "   }\n"

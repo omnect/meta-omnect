@@ -1,0 +1,15 @@
+# kas config file
+
+header:
+  version: 14
+
+repos:
+  ext/meta-yocto-bsp:
+    url: "https://git.yoctoproject.org/meta-yocto"
+    branch: kirkstone
+    # yocto 4.0.19 (no tag)
+    commit: "6518f291d692997632304451695b6c194fec6fa6"
+    layers:
+      meta-yocto-bsp:
+
+machine: "genericx86-64"

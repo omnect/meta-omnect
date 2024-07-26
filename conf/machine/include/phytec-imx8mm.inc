@@ -1,3 +1,5 @@
+require conf/machine/include/phytec-imx8mm_bootloader_embedded_version.inc
+
 # WIC config
 WKS_FILE = "omnect-os.phytec.wks.in"
 WKS_FILES:${MACHINE} = "${WKS_FILE}"
@@ -32,6 +34,7 @@ KERNEL_BOOTCMD = "booti"
 UBOOT_ARCH = "arm64"
 UBOOT_FDT_ADDR = "fdt_addr"
 UBOOT_FDT_LOAD = "1"
+PREFERRED_PROVIDER_u-boot-mkenvimage-native = "u-boot-imx-tools-native"
 
 # redundant u-boot env
 # This is currently preset by meta-phytec, because we use u-boot-imx instead
@@ -39,6 +42,8 @@ UBOOT_FDT_LOAD = "1"
 OMNECT_PART_OFFSET_UBOOT_ENV1 = "3840"
 OMNECT_PART_OFFSET_UBOOT_ENV2 = "3968"
 OMNECT_PART_SIZE_UBOOT_ENV = "64"
+# for flash-mode and wic image
+OMNECT_PART_OFFSET_BOOT = "4096"
 
 # mask fw_env.config configuration of meta-phytec, we generate that ourselves
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
@@ -69,6 +74,7 @@ MACHINE_FEATURES:remove = " \
     optee \
 "
 
+OMNECT_BOOTLOADER = "u-boot-imx"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "<newchecksum> <oldchecksum>"
 # e.g.:
@@ -77,4 +83,4 @@ MACHINE_FEATURES:remove = " \
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot-imx - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "ee033b1ea51fc251384d62e4b35950eeec90173502f7a36b4406cb4807b18241"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "917038307606a097422260b836efaa60257f6bc49a8a8e1a0c0824562780d1e2"

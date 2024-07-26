@@ -10,7 +10,7 @@ repos:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
     branch: "kirkstone"
-    commit: "8bb16533532b6abc2eded7d9961ab2a108fd7a5b"
+    commit: "8e297cdc841c6cad34097f00a6903ba25edfc153"
     layers:
       meta-filesystems:
       meta-networking:
@@ -25,17 +25,17 @@ repos:
   ext/meta-security:
     url: "https://git.yoctoproject.org/meta-security"
     branch: "kirkstone"
-    commit: "1a3e42cedbd94ca73be45800d0e902fec35d0f0f"
+    commit: "353078bc06c8b471736daab6ed193e30d533d1f1"
     layers:
       meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     branch: "kirkstone"
-    commit: "3d12b2788a45d86efcb1ad3e01f209558c54795c"
+    commit: "6918be849ddf1fed5b7a0173e51c7a136e8d4101"
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     branch: "kirkstone"
-    commit: "cb2bc17e96552cdfc141d27bd9f4dbd95a872846"
+    commit: "8b356b91ed0d4bcab72350a2ddcef880f4fa5c26"
     patches:
       p001:
         repo: "meta-omnect"
@@ -55,11 +55,7 @@ env:
   # is image of type release?
   OMNECT_RELEASE_IMAGE: "0"
 
-  # changelog version and repo uri of meta-omnect
-  META_OMNECT_VERSION: "META_OMNECT_VERSION_NOT_SET"
   META_OMNECT_GIT_REPO: "META_OMNECT_GIT_REPO_NOT_SET"
-  # changelog version, revision, branch and repo uri of omnect-os
-  OMNECT_OS_VERSION: "OMNECT_OS_VERSION_NOT_SET"
   OMNECT_OS_GIT_SHA: "OMNECT_OS_GIT_SHA_NOT_SET"
   OMNECT_OS_GIT_BRANCH: "OMNECT_OS_GIT_BRANCH_NOT_SET"
   OMNECT_OS_GIT_REPO: "OMNECT_OS_GIT_REPO_NOT_SET"

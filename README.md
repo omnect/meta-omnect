@@ -47,12 +47,12 @@ The partition layout for devices supporting gpt:
 ```sh
 Device           Start      End  Sectors  Size Type
 /dev/mmcblkXp1    8192    90111    81920   40M Microsoft basic data
-/dev/mmcblkXp2  106496  1628159  1521664  743M Linux filesystem
-/dev/mmcblkXp3 1630208  3151871  1521664  743M Linux filesystem
-/dev/mmcblkXp4 3153920  3235839    81920   40M Linux filesystem
-/dev/mmcblkXp5 3235840  3317759    81920   40M Linux filesystem
-/dev/mmcblkXp6 3317760  3399679    81920   40M Linux filesystem
-/dev/mmcblkXp7 3399680 62333918 58934239 28.1G Linux filesystem
+/dev/mmcblkXp2   90112  1611775  1521664  743M Linux filesystem
+/dev/mmcblkXp3 1613824  3135487  1521664  743M Linux filesystem
+/dev/mmcblkXp4 3137536  3342335   204800  100M Linux filesystem
+/dev/mmcblkXp5 3342336  3424255    81920   40M Linux filesystem
+/dev/mmcblkXp6 3424256  3506175    81920   40M Linux filesystem
+/dev/mmcblkXp7 3506176 62333918 58827743 28.1G Linux filesystem
 
 ```
 - `mmcblkXp1` is the `boot` partition with vfat filesystem
@@ -83,8 +83,8 @@ Device         Boot   Start      End  Sectors  Size Id Type
 - `mmcblkXp7` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
 - `mmcblkXp8` is the writable `data` partition with ext4 filesystem
 
-**Note1**: The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M and is resized on the first boot to the max available size.<br>
-**Note2**: The size of `rootA` and `rootB` depends on your board and image variant (development or release).<br>
+**Note1**: The partition layout is an example, sizes may differ depending on your board and image variant (development or release).<br>
+**Note2**: The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M and is resized on the first boot to the max available size.<br>
 **Note3 (only for images where u-boot is used as OS bootloader)**: There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks. For this purpose, the following configuration variables are used:
 - `OMNECT_PART_OFFSET_UBOOT_ENV1`: offset of 1st u-boot environment bank (in KiB, decimal)
 - `OMNECT_PART_OFFSET_UBOOT_ENV2`: offset of 2nd u-boot environment bank (in KiB, decimal)
@@ -209,10 +209,8 @@ determines the device online state have a look at systemd's
 documentation for [service systemd-networkd-wait-online](https://www.freedesktop.org/software/systemd/man/latest/systemd-networkd-wait-online.html#)
 
 To allow for customization the service file uses the content of
-environment variable `OMNECT_WAIT_ONLINE_INTERFACES_RUN` if non-empty,
-otherwise the default setting as defined in
-`OMNECT_WAIT_ONLINE_INTERFACES_BUILD` in the corresponding machine
-configuration gets set.
+environment variable `OMNECT_WAIT_ONLINE_INTERFACES` if non-empty,
+otherwise the default setting `--any` gets set.
 
 This provides the possibility to overwrite the set of online interfaces
 by injecting a systemd environment file into image, e.g.
@@ -221,7 +219,7 @@ file with the following content and inject it into the factory
 partitions of the image:
 
 ```
-OMNECT_WAIT_ONLINE_INTERFACES_RUN=--interface=<interface-name>
+OMNECT_WAIT_ONLINE_INTERFACES=--interface=<interface-name>
 ```
 
 Place holder `<interface-name>` needs to be replaced with the real name,
@@ -367,10 +365,10 @@ In order to establish the custom wipe mode, a Yocto recipe `omnect-os-initramfs-
 The factory reset provides the option to exclude particular files or directories.
 For example, it may make sense to keep the WIFI configuration, in order to prevent loosing the network connectivity.
 For this purpose, the OS bootloader environment variable `factory-reset-restore-list` has to be used for.
-In the following example, the regular file `/etc/wpa_supplicant/wpa_supplicant-wlan0.conf` and the directory
+In the following example, the regular file `/etc/wpa_supplicant.conf` and the directory
 `/etc/aziot/identityd/` survives the factory reset:<br>
 ```sh
-sudo bootloader_env.sh set factory-reset-restore-list '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf;/etc/aziot/identityd/'
+sudo bootloader_env.sh set factory-reset-restore-list '/etc/wpa_supplicant.conf;/etc/aziot/identityd/'
 ```
 
 The list of path names is separated by the character `;` and is enclosed by the `'` quotation mark.

@@ -19,14 +19,14 @@ DEPENDS += "virtual/bootloader"
 addtask do_bootloader_package before do_swuimage
 
 do_bootloader_package_extra_depends = ""
-do_bootloader_package_extra_depends:omnect_uboot = "u-boot-scr:do_deploy"
+do_bootloader_package_extra_depends:omnect_uboot = "u-boot-scr:do_deploy bootloader-versioned:do_deploy"
 do_bootloader_package_extra_depends:omnect_grub = "grub-cfg:do_deploy"
 do_bootloader_package[depends] += "virtual/bootloader:do_deploy virtual/kernel:do_deploy ${do_bootloader_package_extra_depends}"
 
 # set OMNECT_BOOTLOADER_VERSION for swupdate description
 do_swuimage:prepend() {
     try:
-        with open( d.getVar("DEPLOY_DIR_IMAGE") + "/bootloader_version", "r") as f:
+        with open( d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version", "r") as f:
             d.setVar('OMNECT_BOOTLOADER_VERSION', f.read())
             bb.debug(1, "OMNECT_BOOTLOADER_VERISON: %s" % d.getVar("OMNECT_BOOTLOADER_VERSION"))
     except:
@@ -60,7 +60,7 @@ do_bootloader_package:phytec-imx8mm() {
 do_bootloader_package:omnect_grub() {
     mkdir -p ${WORKDIR}/EFI/BOOT
     cp ${DEPLOY_DIR_IMAGE}/grub-efi-bootx64.efi ${WORKDIR}/EFI/BOOT/bootx64.efi
-    cp ${DEPLOY_DIR_IMAGE}/bootloader_version   ${WORKDIR}/EFI/BOOT/bootloader_version
+    cp ${DEPLOY_DIR_IMAGE}/omnect_bootloader_version   ${WORKDIR}/EFI/BOOT/omnect_bootloader_version
     cp ${DEPLOY_DIR_IMAGE}/grub.cfg             ${WORKDIR}/EFI/BOOT/grub.cfg
     cd ${WORKDIR}
     tar cfz boot-partition-update.tar.gz EFI/BOOT/*
@@ -79,7 +79,7 @@ IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 # images and files that will be included in the .swu image
 SWUPDATE_IMAGES = "omnect-os boot-partition-update"
-SWUPDATE_IMAGES:append:phytec-imx8mm = " imx-boot"
+SWUPDATE_IMAGES:append:phytec-imx8mm = " bootloader.versioned.bin.gz"
 
 
 SWUPDATE_IMAGES_FSTYPES[omnect-os] = ".ext4.gz"

@@ -208,15 +208,13 @@ run_flash_mode_1() {
         echo "Configuring grub"
         run_cmd_stdout mkdir -p /tmp/boot
         run_cmd_stdout mount ${blk_dev_dst}${p}1 /tmp/boot
-        cp /etc/omnect/grub.cfg /tmp/boot/EFI/BOOT/grub.cfg
         cp /etc/omnect/grubenv.in /tmp/boot/EFI/BOOT/grubenv
         run_cmd_stdout umount /tmp/boot
     else
         echo "ENFORCE default bootloader environment..."
         # Warning: we enforce  here that there is a redundant uboot env available, even if the initial wic did'nt have one
-        dd if=/dev/zero bs=1024 count=${OMNECT_FLASH_MODE_UBOOT_ENV_SIZE} 2>/dev/null | tr "\000" "\377" >/tmp/uboot_env_ff.img
-        run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV1_START*1024)) || return 1
-        run_cmd_stdout dd if=/tmp/uboot_env_ff.img of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV2_START*1024)) || return 1
+        run_cmd_stdout dd if=/etc/omnect/uboot-env.bin of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV1_START*1024)) || return 1
+        run_cmd_stdout dd if=/etc/omnect/uboot-env.bin of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV2_START*1024)) || return 1
     fi
 
     flash_mode_efi_handling ${blk_dev_dst} ${p}

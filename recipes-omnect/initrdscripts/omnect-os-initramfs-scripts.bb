@@ -11,6 +11,7 @@ SRC_URI = "\
     file://common-sh \
     file://factory-reset \
     file://flash-mode-1 \
+    file://fs-link \
     file://fs-mount \
     file://omnect-device-service-setup \
 "
@@ -22,6 +23,7 @@ SRC_URI:append:mx8mm-nxp-bsp = " file://imx-sdma"
 SRC_URI:append:omnect_grub = " file://grub-sh"
 SRC_URI:append:omnect_uboot = " file://uboot-sh"
 
+DEPENDS = "bc-native"
 RDEPENDS:${PN} = "bash"
 
 do_install() {
@@ -43,11 +45,14 @@ do_install() {
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'true', 'false', d)}; then
         install -m 0755 -D ${WORKDIR}/flash-mode-2                          ${D}/init.d/87-flash_mode_2
-        sed -i "s/@@OMNECT_PART_SIZE_BOOT@@/${OMNECT_PART_SIZE_BOOT}/g"     ${D}/init.d/87-flash_mode_2
+        # bitbake doesn't parse bash arithmetic expression, so we use bc
+        dd_zero_size=$(echo "${OMNECT_PART_OFFSET_BOOT} + ${OMNECT_PART_SIZE_BOOT}" | bc)
+        sed -i -e "s/@@DD_ZERO_SIZE@@/${dd_zero_size}/g" \
+	       -e "s/@@OMNECT_FLASH_MODE_2_DIRECT_FLASHING@@/${@oe.utils.conditional('OMNECT_FLASH_MODE_2_DIRECT_FLASHING', '1', 'true', 'false', d)}/g" \
+	          ${D}/init.d/87-flash_mode_2
     fi
     if ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', 'true', 'false', d)}; then
         install -m 0755 -D ${WORKDIR}/flash-mode-3                          ${D}/init.d/87-flash_mode_3
-        sed -i "s/@@OMNECT_PART_SIZE_BOOT@@/${OMNECT_PART_SIZE_BOOT}/g"     ${D}/init.d/87-flash_mode_3
     fi
     if ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', 'true', 'false', d)}; then
         install -m 0755 -D ${WORKDIR}/resize-data        ${D}/init.d/88-resize_data
@@ -57,6 +62,7 @@ do_install() {
         install -m 0755 -D ${WORKDIR}/persistent-var-log ${D}/init.d/90-persistent_var_log
     fi
     install -m 0755 -D ${WORKDIR}/omnect-device-service-setup    ${D}/init.d/95-omnect_device_service_setup
+    install -m 0755 -D ${WORKDIR}/fs-link    ${D}/init.d/96-fs_link
 }
 
 do_install:append:mx8mm-nxp-bsp () {
@@ -64,21 +70,22 @@ do_install:append:mx8mm-nxp-bsp () {
 }
 
 do_install:append:omnect_grub () {
-    install -m 0755 -D ${WORKDIR}/grub-sh            ${D}/init.d/11-bootloader_sh
+    install -m 0755 -D ${WORKDIR}/grub-sh            ${D}/init.d/09-bootloader_sh
 }
 
 do_install:append:omnect_uboot () {
-    install -m 0755 -D ${WORKDIR}/uboot-sh           ${D}/init.d/11-bootloader_sh
+    install -m 0755 -D ${WORKDIR}/uboot-sh           ${D}/init.d/09-bootloader_sh
 }
 
 FILES:${PN} = "\
     /init.d/05-common_sh \
+    /init.d/09-bootloader_sh \
     /init.d/10-rootblk_dev \
-    /init.d/11-bootloader_sh \
     /init.d/86-factory_reset \
     /init.d/87-flash_mode_1 \
     /init.d/89-fs_mount \
     /init.d/95-omnect_device_service_setup \
+    /init.d/96-fs_link \
 "
 FILES:${PN}:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', ' /init.d/87-flash_mode_2', '', d)}"
 FILES:${PN}:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', ' /init.d/87-flash_mode_3', '', d)}"

@@ -5,6 +5,10 @@ LIC_FILES_CHKSUM = "\
     file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10 \
 "
 
+do_rootfs_extra_depends = ""
+do_rootfs_extra_depends:omnect_uboot = "virtual/bootloader:do_deploy"
+do_rootfs[depends] += "${do_rootfs_extra_depends}"
+
 inherit omnect_initramfs
 
 IMAGE_NAME = "${OMNECT_INITRAMFS_IMAGE_NAME}"
@@ -58,6 +62,12 @@ PACKAGE_INSTALL = "\
 
 PACKAGE_INSTALL:append:omnect_grub = " ${GRUB_SUPPORT_PACKAGES}"
 PACKAGE_INSTALL:append:omnect_uboot = " ${UBOOT_SUPPORT_PACKAGES}"
+
+ROOTFS_POSTPROCESS_COMMAND:append:omnect_uboot = " add_uboot_env;"
+add_uboot_env() {
+    install -m 644 -D ${DEPLOY_DIR_IMAGE}/uboot-env.bin $D/${sysconfdir}/omnect/uboot-env.bin
+}
+
 
 IMAGE_PREPROCESS_COMMAND:append = "add_fsck_vfat_support;"
 add_fsck_vfat_support() {

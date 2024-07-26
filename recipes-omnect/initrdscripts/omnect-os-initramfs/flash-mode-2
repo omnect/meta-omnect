@@ -9,6 +9,7 @@
 #
 OMNECT_FLASH_MODE=""
 OMNECT_FLASH_MODE_FLAG_FILE="/etc/enforce_flash_mode"
+OMNECT_FLASH_MODE_2_DIRECT_FLASHING=@@OMNECT_FLASH_MODE_2_DIRECT_FLASHING@@
 
 # called by generic INITRAMFS
 flash_mode_2_enabled() {
@@ -56,21 +57,27 @@ run_bmap_tool() {
 
     msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.xz"
     export PATH
-    # wait until scp is complete, resp. uncompress+verify wic image before writing
-    msg "verifying input wic.xz ..."
-    run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
-        /home/omnect/wic.xz /home/omnect/wic || return 1
-    msg "successfully verified input wic.xz; start flashing ..."
-    vfat_dd_handling "/dev/omnect/boot"
-    run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
-        /home/omnect/wic /dev/omnect/rootblk || return 1
+    if ! ${OMNECT_FLASH_MODE_2_DIRECT_FLASHING}; then
+	# wait until scp is complete, resp. uncompress+verify wic image before writing
+	msg "verifying input wic.xz ..."
+	run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
+		       /home/omnect/wic.xz /home/omnect/wic || return 1
+	msg "successfully verified input wic.xz"
+    fi
+    non_bmap_dd_handling
+    msg "start flashing ..."
+    if ! ${OMNECT_FLASH_MODE_2_DIRECT_FLASHING}; then
+	run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
+		       /home/omnect/wic /dev/omnect/rootblk || return 1
+    else
+	run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
+		       /home/omnect/wic.xz /dev/omnect/rootblk || return 1
+    fi
     msg "successfully flashed input wic.xz"
 }
 
-vfat_dd_handling()
+non_bmap_dd_handling()
 {
-    local dest="${1}"
-
     # grub:
     # we encountered situations where the device could not boot after
     # flash-mode-2 and could boot if flash-mode-2 did run again.
@@ -82,7 +89,7 @@ vfat_dd_handling()
     # we encountered situations where the boot partition has errors
     # after flash-mode-2 with bmaptool.
 
-    dd if=/dev/zero of=${dest} bs=@@OMNECT_PART_SIZE_BOOT@@K count=1
+    dd if=/dev/zero of=/dev/omnect/rootblk bs=@@DD_ZERO_SIZE@@K count=1
 }
 
 # deploy WIC image via network to (same) active block device

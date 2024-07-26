@@ -1,4 +1,5 @@
 require rpi_firmware_settings.inc
+require rpi_bootloader_embedded_version.inc
 
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot"
 # since u-boot is a file for rpi devices and part of IMAGE_BOOT_FILES, it is not in rootfs
@@ -16,20 +17,21 @@ RPI_USE_U_BOOT = "1"
 # initramfs type
 OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 
-# u-boot config vars
-UBOOT_FDT_ADDR = "fdt_addr"
-
-# wlan device name
-OMNECT_WLAN0 = "wlan0"
-
 # configure hardware watchdog
 # the maximum watchdog deadline depends on the hardware capabilities
 SYSTEMD_RuntimeWatchdogSec  = "15"
 SYSTEMD_RebootWatchdogSec   = "15"
 
+# rpi bluetooth needs hciattach, which is marked deprecated
+PACKAGECONFIG:pn-bluez5:append = " deprecated tools"
+
 # this machine uses uboot
 MACHINEOVERRIDES:prepend = "omnect_uboot:"
 
+# optional tpm2 support
+MACHINE_FEATURES += "tpm2"
+
+OMNECT_BOOTLOADER="u-boot"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot = "<newchecksum> <oldchecksum>"
 # e.g.:
@@ -38,4 +40,4 @@ MACHINEOVERRIDES:prepend = "omnect_uboot:"
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "f7597ebab14d96ee0462748b29108a2448495a821e90666dcb8c936234437bc0"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "7320f8af2c8e3769de2af4a8151b1f06b297beba134db93b0b3c2df9b50b9bcf"

@@ -1,15 +1,21 @@
 inherit aziot useradd
 
-
+# we create an omnect_device_socket user and group with static uid/gid 10000.
+# they can be used by containers (or other programs) on all image variants and versions
+# to get required socket permissions 
 GROUPADD_PARAM:${PN} += " \
   -r adu; \
   -r omnect_device_service; \
+  -r -g 10000 omnect_device_socket; \
   -r ssh_tunnel_user; \
 "
 
+# omnect-device-service.socket user and group
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -u 10000 -g 10000 omnect_device_socket;"
+
 # omnect-device-service needs groups rights for
 # adu - editing adu consent file
-# aziotcs,aziotid,aziotks - provistioning via iot-identity-service
+# aziotcs,aziotid,aziotks - provisioning via iot-identity-service
 USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,adu -g omnect_device_service omnect_device_service;"
 
 # ssh_tunnel_user requires no permissions
