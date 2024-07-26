@@ -3,7 +3,6 @@ Used to configure compatibility between online updates. E.g. if you increase fro
 You have to reflash the device with the new image version containing OMNECT_ADU_DEVICEPROPERTIES_COMPATIBILITY_ID = "1".
 Part of `compatPropertyNames`, see https://learn.microsoft.com/en-us/azure/iot-hub-device-update/device-update-plug-and-play.
 
-
 # OMNECT_ADU_DEVICEPROPERTIES_MANUFACTURER
 Sets `ADUC_DEVICEPROPERTIES_MANUFACTURER` for iot-hub-device-update. See https://learn.microsoft.com/en-us/azure/iot-hub-device-update/device-update-plug-and-play#device-properties.
 
@@ -100,16 +99,46 @@ Variable appended to virtual/kernel recipes [SRC_URI](https://docs.yoctoproject.
 Variable appended to virtual/kernel recipes [SRC_URI](https://docs.yoctoproject.org/ref-manual/variables.html#term-SRC_URI) in case `3g` is in [MACHINE_FEATURES](https://docs.yoctoproject.org/ref-manual/variables.html#term-MACHINE_FEATURES).
 
 # OMNECT_PART_OFFSET_UBOOT_ENV1
+Offset of u-boot environment 1 in omnect-os-image. Machine specific configuration which is used in wic file to generate the omnect-os image and in u-boot + u-boot userspace tooling to access the u-boot environment.
+*Note*: Currently the redundant u-boot environment is part of the omnect-os-image.
+*Note*: This variable is used to create u-boot userspace runtime config files and the omnect-os-image. If you want to configure the u-boot env offset for u-boot, you have to set it in the appropriate u-boot redundant-env.cfg file, e.g.
+https://github.com/omnect/meta-omnect/blob/main/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot/redundant-env.cfg.
+
 # OMNECT_PART_OFFSET_UBOOT_ENV2
+Offset of u-boot environment 2 in omnect-os-image. Machine specific configuration which is used in wic file to generate the omnect-os image and in u-boot + u-boot userspace tooling to access the u-boot environment.
+*Note*: Currently the redundant u-boot environment is part of the omnect-os-image.
+*Note*: This variable is used to create u-boot userspace runtime config files and the omnect-os-image. If you want to configure the u-boot env offset for u-boot, you have to set it in the appropriate u-boot redundant-env.cfg file, e.g.
+https://github.com/omnect/meta-omnect/blob/main/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot/redundant-env.cfg.
+
 # OMNECT_PART_SIZE_BOOT
+Size of boot partition. See [partition layout](https://github.com/omnect/meta-omnect?tab=readme-ov-file#partition-layout).
+
 # OMNECT_PART_SIZE_CERT
+Size of certificate partition. See [partition layout](https://github.com/omnect/meta-omnect?tab=readme-ov-file#partition-layout).
+
 # OMNECT_PART_SIZE_DATA
+Size of data partition. Gets increased to available space on first boot, if `resize-data` is in [DISTRO_FEATURES](https://docs.yoctoproject.org/ref-manual/variables.html#term-MACHINE_FEATURES).
+
 # OMNECT_PART_SIZE_ETC
+Size of etc overlay parition. See [partition layout](https://github.com/omnect/meta-omnect?tab=readme-ov-file#partition-layout).
+
 # OMNECT_PART_SIZE_FACTORY
+Size of factory parition. See [partition layout](https://github.com/omnect/meta-omnect?tab=readme-ov-file#partition-layout).
+
 # OMNECT_PART_SIZE_ROOTFS
+Size of rootA resp. rootB parition. See [partition layout](https://github.com/omnect/meta-omnect?tab=readme-ov-file#partition-layout).
+
 # OMNECT_PART_SIZE_UBOOT_ENV
+Size of u-boot environment.
+*Note*: This variable is used to create u-boot userspace runtime config files and the omnect-os-image. If you want to configure the u-boot env size for u-boot, you have to set it in the appropriate u-boot redundant-env.cfg file, e.g.
+https://github.com/omnect/meta-omnect/blob/main/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot/redundant-env.cfg.
+
 # OMNECT_RELEASE_IMAGE
+Boolean to reflect if a devel or a release image gets build.
+If set to `OMNECT_RELEASE_IMAGE=1` no `OMNECT_DEVEL_TOOLS` get installed. Getty is disabled. U-boot and grub are configured to be non-interruptible and silent as possible. Kernel is silent on ttyS0. Local ssh access via omnect user is disabled.
+
 # OMNECT_UBOOT_WRITEABLE_ENV_FLAGS
+
 # OMNECT_USER_PASSWORD
 # OMNECT_VM_PANIC_ON_OOM
 # OMNECT_WAIT_ONLINE_INTERFACES
