@@ -138,14 +138,16 @@ Boolean to reflect if a devel or a release image gets build.
 If set to `OMNECT_RELEASE_IMAGE=1` no `OMNECT_DEVEL_TOOLS` get installed. Getty is disabled. U-boot and grub are configured to be non-interruptible and silent as possible. Kernel is silent on ttyS0. Local ssh access via omnect user is disabled.
 
 # OMNECT_UBOOT_WRITEABLE_ENV_FLAGS
+Additional u-boot flags which have to be writable. See `CONFIG_ENV_FLAGS_LIST_STATIC` in upstream [documentation](https://github.com/u-boot/u-boot/blob/v2022.01/README).
 
 # OMNECT_USER_PASSWORD
-# OMNECT_VM_PANIC_ON_OOM
-# OMNECT_WAIT_ONLINE_INTERFACES
-# OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS
+Password of the omnect user. Default is "omnect".
 
-#TODO
-LAYERDIR_omnect
-LAYERDIR_...
-META_OMNECT_GIT_REPO
-META_OMNECT_VERSION
+# OMNECT_VM_PANIC_ON_OOM
+Default [vm.panic_on_oom](https://www.kernel.org/doc/html/v5.15/admin-guide/sysctl/vm.html#panic-on-oom) setting for the linux kernel virtual memory subsystem.
+
+# OMNECT_WAIT_ONLINE_INTERFACES
+See https://github.com/omnect/meta-omnect?tab=readme-ov-file#modify-set-of-interfaces-considered-when-detecting-online-state.
+
+# OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS
+See https://github.com/omnect/meta-omnect?tab=readme-ov-file#modify-set-of-interfaces-considered-when-detecting-online-state.

@@ -226,7 +226,9 @@ Place holder `<interface-name>` needs to be replaced with the real name,
 of course.
 You can also specify multiple interface arguments here which need to be
 either all active for online state, or only one of them if argument
-`--any` is added, too.
+`--any` is added, too.<br>
+Set `OMNECT_WAIT_ONLINE_TIMEOUT_IN_SEC` to configure the timeout in seconds, default timeout is 5 minutes.
+
 
 ## Usage
 
