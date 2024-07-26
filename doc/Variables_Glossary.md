@@ -17,19 +17,38 @@ Sets `ADUC_DEVICEINFO_MANUFACTURER` for iot-hub-device-update. See https://learn
 Sets `ADUC_DEVICEINFO_MODEL` for iot-hub-device-update. See https://learn.microsoft.com/en-us/azure/iot-hub-device-update/device-update-configuration-file (aduc_model).
 
 # OMNECT_BOOT_SCR_NAME
-TODO only used in one occurence -> should be removed
+Name of u-boot bootscript to be generated for devices using u-boot as bootloader. Default is "boot.scr".
 
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE
-This variable is used to reflect that
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_versioning.bbclass.
 
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED
-OMNECT_BOOTLOADER_CHECKSUM_FILES
-OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE
-OMNECT_BUILD_NUMBER
-OMNECT_DEVEL_TOOLS
-OMNECT_FDT_LOAD_NAME
-OMNECT_FLASH_DEVPATH_VAR
-OMNECT_FLASH_MODE
+# OMNECT_BOOTLOADER_CHECKSUM_EXPECTED
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_versioning.bbclass.
+
+# OMNECT_BOOTLOADER_CHECKSUM_FILES
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_versioning.bbclass.
+
+# OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_versioning.bbclass.
+
+# OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_versioning.bbclass.
+
+# OMNECT_BUILD_NUMBER
+`OMNECT_BUILD_NUMBER` is appended to the upstream yocto version and thus part of [`DISTRO_VERSION`](https://docs.yoctoproject.org/ref-manual/variables.html#term-DISTRO_VERSION).
+
+# OMNECT_DEVEL_TOOLS
+List of tools which get installed into a omnect-os devel image.
+
+# OMNECT_FDT_LOAD_NAME
+Name of u-boot device-tree bootscript to be generated for devices using u-boot as bootloader. Default is "fdt-load.scr".
+
+# OMNECT_FLASH_DEVPATH_VAR
+Used in ['flash-mode-1'](https://github.com/omnect/meta-omnect?tab=readme-ov-file#flash-mode-1) initrd script. Contains the path to the target flash device.
+
+# OMNECT_FLASH_MODE
+Used in flash-mode initrd scripts. Is either 1,2 or 3.
+
 OMNECT_FLASH_MODE_BOOTLOADER_START
 OMNECT_FLASH_MODE_DATA_SIZE
 OMNECT_FLASH_MODE_FLAG_FILE
@@ -37,6 +56,7 @@ OMNECT_FLASH_MODE_IP_ADDR
 OMNECT_FLASH_MODE_UBOOT_ENV_SIZE
 OMNECT_FLASH_MODE_UBOOT_ENV1_START
 OMNECT_FLASH_MODE_UBOOT_ENV2_START
+
 OMNECT_GRUBENV_FILE
 OMNECT_INITRAMFS_FSTYPE
 OMNECT_KERNEL_SRC_URI

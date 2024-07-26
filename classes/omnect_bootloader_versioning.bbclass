@@ -26,6 +26,8 @@
 #   content is different from the computed checksum, the build will fail
 #   note: if `OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE` is set, this var should be
 #         set to <old checksum>
+# - `OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE` - disable fatal error when version
+#   check fails. (still produces an error.)
 
 SRC_URI += "file://${DEPLOY_DIR_IMAGE}/omnect_bootloader_version"
 
