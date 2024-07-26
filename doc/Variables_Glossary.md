@@ -31,6 +31,36 @@ See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_ve
 # OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE
 See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_versioning.bbclass.
 
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBTARGET
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
+
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_BINFILE
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
+
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_FILLBYTE
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
+
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGEGZ
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
+
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGEOFFSET
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
+
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGESIZE
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
+
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_LOCATION
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
+
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
+
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_PARAMSIZE
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
+
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_TYPE
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
+
 # OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE
 See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_versioning.bbclass.
 
@@ -49,46 +79,44 @@ Used in ['flash-mode-1'](https://github.com/omnect/meta-omnect?tab=readme-ov-fil
 # OMNECT_FLASH_MODE
 Used in flash-mode initrd scripts. Is either 1,2 or 3.
 
-OMNECT_FLASH_MODE_BOOTLOADER_START
-OMNECT_FLASH_MODE_DATA_SIZE
-OMNECT_FLASH_MODE_FLAG_FILE
-OMNECT_FLASH_MODE_IP_ADDR
-OMNECT_FLASH_MODE_UBOOT_ENV_SIZE
-OMNECT_FLASH_MODE_UBOOT_ENV1_START
-OMNECT_FLASH_MODE_UBOOT_ENV2_START
+# OMNECT_FLASH_MODE_BOOTLOADER_START
+# OMNECT_FLASH_MODE_DATA_SIZE
+# OMNECT_FLASH_MODE_FLAG_FILE
+# OMNECT_FLASH_MODE_IP_ADDR
+# OMNECT_FLASH_MODE_UBOOT_ENV_SIZE
+# OMNECT_FLASH_MODE_UBOOT_ENV1_START
+# OMNECT_FLASH_MODE_UBOOT_ENV2_START
 
-OMNECT_GRUBENV_FILE
-OMNECT_INITRAMFS_FSTYPE
-OMNECT_KERNEL_SRC_URI
-OMNECT_KERNEL_SRC_URI_LTE
-OMNECT_OS_GIT_SHA
-OMNECT_OS_GIT_BRANCH
-OMNECT_OS_GIT_REPO
-OMNECT_OS_VERSION
-OMNECT_PART_OFFSET_UBOOT_ENV1
-OMNECT_PART_OFFSET_UBOOT_ENV2
-OMNECT_PART_SIZE_BOOT
-OMNECT_PART_SIZE_CERT
-OMNECT_PART_SIZE_DATA
-OMNECT_PART_SIZE_ETC
-OMNECT_PART_SIZE_FACTORY
-OMNECT_PART_SIZE_ROOTFS
-OMNECT_PART_SIZE_UBOOT_ENV
-OMNECT_PART_SPARE1
-OMNECT_PART_SPARE2
-OMNECT_RELEASE_IMAGE
-OMNECT_ROOT_DEVICE
-OMNECT_UBOOT_WRITEABLE_ENV_FLAGS
-OMNECT_USER_PASSWORD
-OMNECT_VM_PANIC_ON_OOM
-OMNECT_WAIT_ONLINE_INTERFACES_BUILD
-OMNECT_WAIT_ONLINE_INTERFACES_RUN
-OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS
-OMNECT_WLAN0
+# OMNECT_GRUBENV_FILE
+Path to grubenv file in buildsystem. Defaults to `${LAYERDIR_omnect}/files/grubenv`. Relevant for devices which use grub as bootloader, such as genericx86-64.
+
+# OMNECT_INITRAMFS_FSTYPE
+In reference to [INITRAMFS_FSTYPES](https://docs.yoctoproject.org/ref-manual/variables.html#term-INITRAMFS_FSTYPES) the `FSTYPE` of out initramfs artefact. E.g. `cpio.gz` vs `cpio.gz.u-boot`.
+
+# OMNECT_KERNEL_SRC_URI
+Variable appended to virtual/kernel recipes [SRC_URI](https://docs.yoctoproject.org/ref-manual/variables.html#term-SRC_URI).
+
+# OMNECT_KERNEL_SRC_URI_LTE
+Variable appended to virtual/kernel recipes [SRC_URI](https://docs.yoctoproject.org/ref-manual/variables.html#term-SRC_URI) in case `3g` is in [MACHINE_FEATURES](https://docs.yoctoproject.org/ref-manual/variables.html#term-MACHINE_FEATURES).
+
+# OMNECT_PART_OFFSET_UBOOT_ENV1
+# OMNECT_PART_OFFSET_UBOOT_ENV2
+# OMNECT_PART_SIZE_BOOT
+# OMNECT_PART_SIZE_CERT
+# OMNECT_PART_SIZE_DATA
+# OMNECT_PART_SIZE_ETC
+# OMNECT_PART_SIZE_FACTORY
+# OMNECT_PART_SIZE_ROOTFS
+# OMNECT_PART_SIZE_UBOOT_ENV
+# OMNECT_RELEASE_IMAGE
+# OMNECT_UBOOT_WRITEABLE_ENV_FLAGS
+# OMNECT_USER_PASSWORD
+# OMNECT_VM_PANIC_ON_OOM
+# OMNECT_WAIT_ONLINE_INTERFACES
+# OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS
 
 #TODO
 LAYERDIR_omnect
 LAYERDIR_...
 META_OMNECT_GIT_REPO
 META_OMNECT_VERSION
-ONLINE_INTERFACE_ARGS
