@@ -2,6 +2,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://daemon.json \
+    file://0001-daemon-overlay2-Write-layer-metadata-atomically.patch \
 "
 
 do_install:append () {
