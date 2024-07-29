@@ -6,11 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.21.2"
-SRC_URI += "git://github.com/JoergZeidler/omnect-device-service.git;protocol=https;nobranch=1;branch=refactor_factory_reset"
-SRCREV = "b6ad4e3132bfb7331389e123d1d7f1cb229d7351"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.21.3"
+SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
+SRCREV = "02461e83c35ad41cfaabdc15014ce53fa702194b"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
+
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -33,7 +34,7 @@ SRC_URI += " \
     crate://crates.io/alloc-stdlib/0.2.2 \
     crate://crates.io/android-tzdata/0.1.1 \
     crate://crates.io/android_system_properties/0.1.5 \
-    crate://crates.io/anstyle/1.0.7 \
+    crate://crates.io/anstyle/1.0.8 \
     crate://crates.io/anyhow/1.0.86 \
     crate://crates.io/assert-json-diff/2.0.2 \
     crate://crates.io/async-broadcast/0.5.1 \
@@ -97,8 +98,8 @@ SRC_URI += " \
     crate://crates.io/enum_dispatch/0.3.13 \
     crate://crates.io/enumflags2/0.7.10 \
     crate://crates.io/enumflags2_derive/0.7.10 \
-    crate://crates.io/env_filter/0.1.1 \
-    crate://crates.io/env_logger/0.11.4 \
+    crate://crates.io/env_filter/0.1.2 \
+    crate://crates.io/env_logger/0.11.5 \
     crate://crates.io/equivalent/1.0.1 \
     crate://crates.io/errno/0.3.9 \
     crate://crates.io/event-listener-strategy/0.5.2 \
@@ -236,9 +237,9 @@ SRC_URI += " \
     crate://crates.io/polling/3.7.2 \
     crate://crates.io/powerfmt/0.2.0 \
     crate://crates.io/ppv-lite86/0.2.17 \
-    crate://crates.io/predicates-core/1.0.6 \
-    crate://crates.io/predicates-tree/1.0.9 \
-    crate://crates.io/predicates/3.1.0 \
+    crate://crates.io/predicates-core/1.0.8 \
+    crate://crates.io/predicates-tree/1.0.11 \
+    crate://crates.io/predicates/3.1.2 \
     crate://crates.io/prettyplease/0.2.20 \
     crate://crates.io/proc-macro-crate/1.3.1 \
     crate://crates.io/proc-macro2/1.0.86 \
@@ -318,7 +319,7 @@ SRC_URI += " \
     crate://crates.io/tokio-rustls/0.26.0 \
     crate://crates.io/tokio-util/0.7.11 \
     crate://crates.io/tokio/1.39.1 \
-    crate://crates.io/toml_datetime/0.6.6 \
+    crate://crates.io/toml_datetime/0.6.7 \
     crate://crates.io/toml_edit/0.19.15 \
     crate://crates.io/tower-layer/0.3.2 \
     crate://crates.io/tower-service/0.3.2 \
@@ -336,7 +337,7 @@ SRC_URI += " \
     crate://crates.io/url/2.5.2 \
     crate://crates.io/uuid/1.10.0 \
     crate://crates.io/vcpkg/0.2.15 \
-    crate://crates.io/version_check/0.9.4 \
+    crate://crates.io/version_check/0.9.5 \
     crate://crates.io/waker-fn/1.2.0 \
     crate://crates.io/walkdir/2.5.0 \
     crate://crates.io/want/0.3.1 \
@@ -446,7 +447,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.13.1"
+SRCREV_azure-iot-sdk = "0.13.2"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.1"
