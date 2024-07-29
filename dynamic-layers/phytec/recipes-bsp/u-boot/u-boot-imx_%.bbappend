@@ -22,6 +22,8 @@ SRC_URI += " \
     file://omnect_env_phycore_imx8mm.h \
 "
 
+CVE_PRODUCT = "u-boot-imx u-boot"
+
 OMNECT_BOOTLOADER_CHECKSUM_FILES  = "${LAYERDIR_omnect}/classes/u-boot-scr.bbclass"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot-scr.bb"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot/*"
