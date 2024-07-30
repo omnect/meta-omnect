@@ -48,10 +48,10 @@ factory_reset_status_handling() {
 
     echo -n "" > ${omnect_run_dir}/factory-reset-status
 
-    local status=$(get_factory_reset_status)
+    local status=$(get_bootloader_env_var "${FACTORY_RESET_STATUS_VAR}")
     if [ -n "${status}" ]; then
         echo ${status} > ${omnect_run_dir}/factory-reset-status
-        clear_factory_reset_status
+        set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR}
     fi
 
     run_cmd chown ${omnect_device_service_user}:${omnect_device_service_group} ${omnect_run_dir}/factory-reset-status || return 1

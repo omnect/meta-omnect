@@ -102,14 +102,6 @@ factory_reset_wipe_custom() {
     return 0
 }
 
-get_factory_reset_status() {
-    echo -n "$(get_bootloader_env_var "${FACTORY_RESET_STATUS_VAR}")"
-}
-
-clear_factory_reset_status() {
-    set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR}
-}
-
 factory_reset_finish() {
     # remove factory reset trigger at this point
     # interrupted factory reset will be replayed
