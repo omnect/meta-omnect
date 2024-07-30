@@ -16,7 +16,11 @@ OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGESIZE ?= ""
 OMNECT_BOOTLOADER_EMBEDDED_VERSION_LOCATION ?= ""
 OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGESIZE ?= ""
 
-inherit deploy omnect_uboot_embedded_version
+# although not needed here for version calculation, nevertheless inherit class
+# omnect_bootloader_versioning to (hopefully) cause correct re-building of
+# verisioned bootlaoder artefact instead of matching an old version in SSTATE
+# cache
+inherit deploy omnect_bootloader_versioning omnect_uboot_embedded_version
 
 do_compile:append() {
     cp "${WORKDIR}/omnect_get_bootloader_version.sh.template" "${WORKDIR}/omnect_get_bootloader_version.sh"
