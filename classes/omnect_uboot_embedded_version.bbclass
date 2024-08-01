@@ -71,7 +71,9 @@
 #  - <version string> is the actual version, w/o terminating character
 #
 
-SRC_URI += "file://${DEPLOY_DIR_IMAGE}/omnect_bootloader_version"
+# we need the calculated bootloader version, so inherit class
+# omnect_bootloader_versioning alongside deploy
+inherit deploy omnect_bootloader_versioning
 
 # define magic number for embedded bootloader version
 OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC = "19 69 02 28"
@@ -81,15 +83,23 @@ python omnect_uboot_embed_version() {
     import os
     import shutil
     import gzip
+    import time
     from pathlib import Path
 
     # read the previously calculated version information
-    bootloader_version_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version"
-    try:
-        with open( bootloader_version_file, "r", encoding="utf-8") as f:
-            omnect_bootloader_version = f.read()
-    except OSError:
-        bb.fatal("Unable to read from bootloader version file \"%s\"" % (bootloader_version_file))
+    # NOTE:
+    #   yes, the following polling is rather ugly, but due to the nature of how
+    #   the checksum file is generated (done during recipe parsing) there is no
+    #   other possibility to busy-wait for the file to appear ...
+    while True:
+        bootloader_version_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version"
+        try:
+            with open( bootloader_version_file, "r", encoding="utf-8") as f:
+                omnect_bootloader_version = f.read()
+            break
+        except OSError:
+            bb.warn("Unable to read from bootloader version file \"%s\" wait for it to appear" % (bootloader_version_file))
+            time.sleep(3)
 
     # be prepared for the case that the one byte version length possibly
     # becomes insufficient! maybe we want to handle most significant bit for
@@ -189,14 +199,16 @@ python omnect_uboot_embed_version() {
                     shutil.copyfileobj(f_in, f_out)
 }
 
-do_compile() {
-    # this is actually no compilation but only taking advantage of already
-    # existing bootloader binary this recipe depends on
+omnect_uboot_get_plain_artefact() {
+    # copy already existing bootloader binary this recipe depends on to
+    # working directory so that it can be enriched with bootloader version
+    # during deploy stage lateron
     cp "${DEPLOY_DIR_IMAGE}/${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BINFILE}" "${WORKDIR}/bootloader.bin"
 }
 
-do_compile[depends] += "${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBTARGET}:do_deploy "
-do_deploy[prefuncs] += "omnect_uboot_embed_version"
+do_compile[depends]  += "${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBTARGET}:do_deploy "
+do_compile[prefuncs] += "omnect_uboot_get_plain_artefact"
+do_deploy[prefuncs]  += "omnect_uboot_embed_version"
 
 do_deploy() {
     install -m 0644 -D ${WORKDIR}/bootloader.bin.versioned ${DEPLOYDIR}/bootloader.versioned.bin
