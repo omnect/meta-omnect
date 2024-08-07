@@ -117,6 +117,9 @@ factory_reset_finish() {
         factory_reset_umount
     fi
 
+    # boot maybe mounted on grub systems for bootloader env handling
+    run_cmd umount ${ROOTFS_DIR}/boot 2>/dev/null || true
+
     # get into normal startup
     msg "Rebooting system..."
     run_cmd reboot -f
@@ -196,6 +199,8 @@ factory_reset_umount() {
     umount_data_partition "${ROOTFS_DIR}"
     umount_etc_partition  "${ROOTFS_DIR}"
     run_cmd umount "${ROOTFS_DIR}/mnt/factory"
+    # boot maybe mounted on grub systems for bootloader env handling
+    run_cmd umount ${ROOTFS_DIR}/boot 2>/dev/null || true
     umount_rootfs_partition "${ROOTFS_DIR}"
 }
 
