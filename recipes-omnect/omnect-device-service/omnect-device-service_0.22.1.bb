@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.22.0"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.22.1"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "ca7800bdd647a5914d2b9cf89809a3269e8979db"
+SRCREV = "46bdd76acb61347233b1c237140877fbc19b18de"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -21,7 +21,7 @@ SRC_URI += " \
     crate://crates.io/actix-macros/0.2.4 \
     crate://crates.io/actix-router/0.5.3 \
     crate://crates.io/actix-rt/2.10.0 \
-    crate://crates.io/actix-server/2.4.0 \
+    crate://crates.io/actix-server/2.5.0 \
     crate://crates.io/actix-service/2.0.2 \
     crate://crates.io/actix-utils/3.0.1 \
     crate://crates.io/actix-web-codegen/4.3.0 \
@@ -68,7 +68,7 @@ SRC_URI += " \
     crate://crates.io/brotli/6.0.0 \
     crate://crates.io/bumpalo/3.16.0 \
     crate://crates.io/byteorder/1.5.0 \
-    crate://crates.io/bytes/1.6.1 \
+    crate://crates.io/bytes/1.7.1 \
     crate://crates.io/bytestring/1.3.1 \
     crate://crates.io/cc/1.1.7 \
     crate://crates.io/cexpr/0.6.0 \
@@ -115,7 +115,7 @@ SRC_URI += " \
     crate://crates.io/fastrand/1.9.0 \
     crate://crates.io/fastrand/2.1.0 \
     crate://crates.io/filetime/0.2.23 \
-    crate://crates.io/flate2/1.0.30 \
+    crate://crates.io/flate2/1.0.31 \
     crate://crates.io/fnv/1.0.7 \
     crate://crates.io/foreign-types-shared/0.1.1 \
     crate://crates.io/foreign-types/0.3.2 \
@@ -161,7 +161,7 @@ SRC_URI += " \
     crate://crates.io/hyper-rustls/0.27.2 \
     crate://crates.io/hyper-timeout/0.5.1 \
     crate://crates.io/hyper-tls/0.6.0 \
-    crate://crates.io/hyper-util/0.1.6 \
+    crate://crates.io/hyper-util/0.1.7 \
     crate://crates.io/hyper/0.14.30 \
     crate://crates.io/hyper/1.4.1 \
     crate://crates.io/iana-time-zone-haiku/0.1.2 \
@@ -169,7 +169,7 @@ SRC_URI += " \
     crate://crates.io/ident_case/1.0.1 \
     crate://crates.io/idna/0.5.0 \
     crate://crates.io/indexmap/1.9.3 \
-    crate://crates.io/indexmap/2.2.6 \
+    crate://crates.io/indexmap/2.3.0 \
     crate://crates.io/inotify-sys/0.1.5 \
     crate://crates.io/inotify/0.9.6 \
     crate://crates.io/instant/0.1.13 \
@@ -243,7 +243,7 @@ SRC_URI += " \
     crate://crates.io/polling/2.8.0 \
     crate://crates.io/polling/3.7.2 \
     crate://crates.io/powerfmt/0.2.0 \
-    crate://crates.io/ppv-lite86/0.2.18 \
+    crate://crates.io/ppv-lite86/0.2.20 \
     crate://crates.io/predicates-core/1.0.8 \
     crate://crates.io/predicates-tree/1.0.11 \
     crate://crates.io/predicates/3.1.2 \
@@ -259,7 +259,7 @@ SRC_URI += " \
     crate://crates.io/regex-automata/0.4.7 \
     crate://crates.io/regex-lite/0.1.6 \
     crate://crates.io/regex-syntax/0.8.4 \
-    crate://crates.io/regex/1.10.5 \
+    crate://crates.io/regex/1.10.6 \
     crate://crates.io/reqwest/0.12.5 \
     crate://crates.io/ring/0.17.8 \
     crate://crates.io/rustc-demangle/0.1.24 \
@@ -268,8 +268,8 @@ SRC_URI += " \
     crate://crates.io/rusticata-macros/4.1.0 \
     crate://crates.io/rustix/0.37.27 \
     crate://crates.io/rustix/0.38.34 \
-    crate://crates.io/rustls-pemfile/2.1.2 \
-    crate://crates.io/rustls-pki-types/1.7.0 \
+    crate://crates.io/rustls-pemfile/2.1.3 \
+    crate://crates.io/rustls-pki-types/1.8.0 \
     crate://crates.io/rustls-webpki/0.102.6 \
     crate://crates.io/rustls/0.23.12 \
     crate://crates.io/rustversion/1.0.17 \
@@ -283,7 +283,7 @@ SRC_URI += " \
     crate://crates.io/semver/1.0.23 \
     crate://crates.io/serde/1.0.204 \
     crate://crates.io/serde_derive/1.0.204 \
-    crate://crates.io/serde_json/1.0.121 \
+    crate://crates.io/serde_json/1.0.122 \
     crate://crates.io/serde_repr/0.1.19 \
     crate://crates.io/serde_spanned/0.6.7 \
     crate://crates.io/serde_urlencoded/0.7.1 \
@@ -314,7 +314,7 @@ SRC_URI += " \
     crate://crates.io/system-configuration-sys/0.5.0 \
     crate://crates.io/system-configuration/0.5.1 \
     crate://crates.io/systemd-zbus/0.1.1 \
-    crate://crates.io/tempfile/3.10.1 \
+    crate://crates.io/tempfile/3.11.0 \
     crate://crates.io/termtree/0.4.1 \
     crate://crates.io/thiserror-impl/1.0.63 \
     crate://crates.io/thiserror/1.0.63 \
@@ -329,10 +329,10 @@ SRC_URI += " \
     crate://crates.io/tokio-rustls/0.26.0 \
     crate://crates.io/tokio-util/0.7.11 \
     crate://crates.io/tokio/1.39.2 \
-    crate://crates.io/toml/0.8.16 \
-    crate://crates.io/toml_datetime/0.6.7 \
+    crate://crates.io/toml/0.8.19 \
+    crate://crates.io/toml_datetime/0.6.8 \
     crate://crates.io/toml_edit/0.19.15 \
-    crate://crates.io/toml_edit/0.22.17 \
+    crate://crates.io/toml_edit/0.22.20 \
     crate://crates.io/tower-layer/0.3.2 \
     crate://crates.io/tower-service/0.3.2 \
     crate://crates.io/tower/0.4.13 \
@@ -363,12 +363,13 @@ SRC_URI += " \
     crate://crates.io/web-sys/0.3.69 \
     crate://crates.io/which/4.4.2 \
     crate://crates.io/winapi-i686-pc-windows-gnu/0.4.0 \
-    crate://crates.io/winapi-util/0.1.8 \
+    crate://crates.io/winapi-util/0.1.9 \
     crate://crates.io/winapi-x86_64-pc-windows-gnu/0.4.0 \
     crate://crates.io/winapi/0.3.9 \
     crate://crates.io/windows-core/0.52.0 \
     crate://crates.io/windows-sys/0.48.0 \
     crate://crates.io/windows-sys/0.52.0 \
+    crate://crates.io/windows-sys/0.59.0 \
     crate://crates.io/windows-targets/0.48.5 \
     crate://crates.io/windows-targets/0.52.6 \
     crate://crates.io/windows_aarch64_gnullvm/0.48.5 \
@@ -387,20 +388,18 @@ SRC_URI += " \
     crate://crates.io/windows_x86_64_msvc/0.48.5 \
     crate://crates.io/windows_x86_64_msvc/0.52.6 \
     crate://crates.io/winnow/0.5.40 \
-    crate://crates.io/winnow/0.6.16 \
+    crate://crates.io/winnow/0.6.18 \
     crate://crates.io/winreg/0.52.0 \
     crate://crates.io/x509-parser/0.16.0 \
     crate://crates.io/xdg-home/1.2.0 \
     crate://crates.io/zbus/3.14.1 \
     crate://crates.io/zbus_macros/3.14.1 \
     crate://crates.io/zbus_names/2.6.1 \
-    crate://crates.io/zerocopy-derive/0.6.6 \
     crate://crates.io/zerocopy-derive/0.7.35 \
-    crate://crates.io/zerocopy/0.6.6 \
     crate://crates.io/zerocopy/0.7.35 \
     crate://crates.io/zeroize/1.8.1 \
-    crate://crates.io/zstd-safe/7.2.0 \
-    crate://crates.io/zstd-sys/2.0.12+zstd.1.5.6 \
+    crate://crates.io/zstd-safe/7.2.1 \
+    crate://crates.io/zstd-sys/2.0.13+zstd.1.5.6 \
     crate://crates.io/zstd/0.13.2 \
     crate://crates.io/zvariant/3.15.2 \
     crate://crates.io/zvariant_derive/3.15.2 \
