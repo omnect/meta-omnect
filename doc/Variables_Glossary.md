@@ -72,6 +72,10 @@ List of tools which get installed into a omnect-os devel image.
 # OMNECT_FDT_LOAD_NAME
 Name of u-boot device-tree bootscript to be generated for devices using u-boot as bootloader. Default is "fdt-load.scr".
 
+# OMNECT_FLASH_MODE_2_DIRECT_FLASHING
+If value is 1 [flash-mode-2](https://github.com/omnect/meta-omnect?tab=readme-ov-file#flash-mode-2) directly flashes the image. Default is unset.
+Normally we save the incoming image to RAM and verify it before we flash. On devices with a minimal RAM configuration this can fail. In this case you can skip the verifying and flash directly.
+
 # OMNECT_GRUBENV_FILE
 Path to grubenv file in buildsystem. Defaults to `${LAYERDIR_omnect}/files/grubenv`. Relevant for devices which use grub as bootloader, such as genericx86-64.
 
