@@ -41,3 +41,4 @@ OMNECT_BOOTLOADER="u-boot"
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot is set
 OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "7320f8af2c8e3769de2af4a8151b1f06b297beba134db93b0b3c2df9b50b9bcf"
+OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot = "e736358b2aa6aa720628b0253512b94a669ee75c0fc4a6088d75b7b78ff68e4d 7320f8af2c8e3769de2af4a8151b1f06b297beba134db93b0b3c2df9b50b9bcf"

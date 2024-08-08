@@ -17,7 +17,7 @@ This yocto meta layer provides the device management distribution `omnect-os`. I
     - Updating the bootloader
 
 ### `DISTRO_FEATURES`
-`omnect-os` is built with yocto [`DISTRO_FEATURES`](https://docs.yoctoproject.org/ref-manual/features.html#distro-features) = `debuginfod ipv4 ipv6 polkit seccomp zeroconf`.
+`omnect-os` is built with yocto [`DISTRO_FEATURES`](https://docs.yoctoproject.org/ref-manual/features.html#distro-features) = `ipv4 ipv6 polkit seccomp zeroconf`.
 Depending on `MACHINE_FEATURES` we also set `3g`, `bluetooth` and `wifi`.
 
 `meta-omnect` adds the following `DISTRO_FEATURES`:
