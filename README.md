@@ -232,7 +232,6 @@ either all active for online state, or only one of them if argument
 `--any` is added, too.<br>
 Set `OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS` to configure the timeout in seconds, default timeout is 5 minutes.  A value of 0 means no timeout.
 
-
 ## Usage
 
 ### Flash Modes
