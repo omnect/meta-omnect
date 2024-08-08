@@ -178,6 +178,9 @@ The `omnect-os-update-image` artefact is named `omnect-os-update-image-raspberry
 If you want to add additional yocto layers to your build, you can adapt layer priorities in `conf/layer.conf`. This layer is the last in the `BBLAYERS` yocto variable when you build with our `kas` configuration files. If not, you have to possibly adapt layer prioritization values in the last layer included in `BBLAYERS`.
 E.g. we reset the layer prioritization of `meta-phytec` to `9`, to ensure it is less than the prioritization of `meta-omnect`.
 
+### Variables Glossary
+[follow](doc/Variables_Glossary.md)
+
 ## Runtime configuration
 
 The `omnect-os-image` needs post processing via [`omnect-cli`](https://github.com/omnect/omnect-cli.git) to set a mandatory `iot-identity-service` configuration. You can optionally set an `iot-hub-device-update` configuration.
@@ -227,7 +230,7 @@ of course.
 You can also specify multiple interface arguments here which need to be
 either all active for online state, or only one of them if argument
 `--any` is added, too.<br>
-Set `OMNECT_WAIT_ONLINE_TIMEOUT_IN_SEC` to configure the timeout in seconds, default timeout is 5 minutes.
+Set `OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS` to configure the timeout in seconds, default timeout is 5 minutes.  A value of 0 means no timeout.
 
 
 ## Usage

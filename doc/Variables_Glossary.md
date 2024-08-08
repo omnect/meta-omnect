@@ -72,25 +72,11 @@ List of tools which get installed into a omnect-os devel image.
 # OMNECT_FDT_LOAD_NAME
 Name of u-boot device-tree bootscript to be generated for devices using u-boot as bootloader. Default is "fdt-load.scr".
 
-# OMNECT_FLASH_DEVPATH_VAR
-Used in ['flash-mode-1'](https://github.com/omnect/meta-omnect?tab=readme-ov-file#flash-mode-1) initrd script. Contains the path to the target flash device.
-
-# OMNECT_FLASH_MODE
-Used in flash-mode initrd scripts. Is either 1,2 or 3.
-
-# OMNECT_FLASH_MODE_BOOTLOADER_START
-# OMNECT_FLASH_MODE_DATA_SIZE
-# OMNECT_FLASH_MODE_FLAG_FILE
-# OMNECT_FLASH_MODE_IP_ADDR
-# OMNECT_FLASH_MODE_UBOOT_ENV_SIZE
-# OMNECT_FLASH_MODE_UBOOT_ENV1_START
-# OMNECT_FLASH_MODE_UBOOT_ENV2_START
-
 # OMNECT_GRUBENV_FILE
 Path to grubenv file in buildsystem. Defaults to `${LAYERDIR_omnect}/files/grubenv`. Relevant for devices which use grub as bootloader, such as genericx86-64.
 
 # OMNECT_INITRAMFS_FSTYPE
-In reference to [INITRAMFS_FSTYPES](https://docs.yoctoproject.org/ref-manual/variables.html#term-INITRAMFS_FSTYPES) the `FSTYPE` of out initramfs artefact. E.g. `cpio.gz` vs `cpio.gz.u-boot`.
+In reference to [INITRAMFS_FSTYPES](https://docs.yoctoproject.org/ref-manual/variables.html#term-INITRAMFS_FSTYPES) the `FSTYPE` of our initramfs artefact. E.g. `cpio.gz` vs `cpio.gz.u-boot`.
 
 # OMNECT_KERNEL_SRC_URI
 Variable appended to virtual/kernel recipes [SRC_URI](https://docs.yoctoproject.org/ref-manual/variables.html#term-SRC_URI).
@@ -99,13 +85,13 @@ Variable appended to virtual/kernel recipes [SRC_URI](https://docs.yoctoproject.
 Variable appended to virtual/kernel recipes [SRC_URI](https://docs.yoctoproject.org/ref-manual/variables.html#term-SRC_URI) in case `3g` is in [MACHINE_FEATURES](https://docs.yoctoproject.org/ref-manual/variables.html#term-MACHINE_FEATURES).
 
 # OMNECT_PART_OFFSET_UBOOT_ENV1
-Offset of u-boot environment 1 in omnect-os-image. Machine specific configuration which is used in wic file to generate the omnect-os image and in u-boot + u-boot userspace tooling to access the u-boot environment.
+Offset of the first u-boot environment in omnect-os-image. Machine specific configuration which is used in wic file to generate the omnect-os image and in u-boot + u-boot userspace tooling to access the u-boot environment.
 *Note*: Currently the redundant u-boot environment is part of the omnect-os-image.
 *Note*: This variable is used to create u-boot userspace runtime config files and the omnect-os-image. If you want to configure the u-boot env offset for u-boot, you have to set it in the appropriate u-boot redundant-env.cfg file, e.g.
 https://github.com/omnect/meta-omnect/blob/main/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot/redundant-env.cfg.
 
 # OMNECT_PART_OFFSET_UBOOT_ENV2
-Offset of u-boot environment 2 in omnect-os-image. Machine specific configuration which is used in wic file to generate the omnect-os image and in u-boot + u-boot userspace tooling to access the u-boot environment.
+Offset of the second u-boot environment in omnect-os-image. Machine specific configuration which is used in wic file to generate the omnect-os image and in u-boot + u-boot userspace tooling to access the u-boot environment.
 *Note*: Currently the redundant u-boot environment is part of the omnect-os-image.
 *Note*: This variable is used to create u-boot userspace runtime config files and the omnect-os-image. If you want to configure the u-boot env offset for u-boot, you have to set it in the appropriate u-boot redundant-env.cfg file, e.g.
 https://github.com/omnect/meta-omnect/blob/main/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot/redundant-env.cfg.
@@ -117,7 +103,7 @@ Size of boot partition. See [partition layout](https://github.com/omnect/meta-om
 Size of certificate partition. See [partition layout](https://github.com/omnect/meta-omnect?tab=readme-ov-file#partition-layout).
 
 # OMNECT_PART_SIZE_DATA
-Size of data partition. Gets increased to available space on first boot, if `resize-data` is in [DISTRO_FEATURES](https://docs.yoctoproject.org/ref-manual/variables.html#term-MACHINE_FEATURES).
+Size of data partition. Gets increased to available space on first boot, if `resized-data` is in [DISTRO_FEATURES](https://docs.yoctoproject.org/ref-manual/variables.html#term-MACHINE_FEATURES).
 
 # OMNECT_PART_SIZE_ETC
 Size of etc overlay parition. See [partition layout](https://github.com/omnect/meta-omnect?tab=readme-ov-file#partition-layout).
