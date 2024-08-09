@@ -7,24 +7,24 @@
 # Flash Mode
 #     2    flash disk image from network to active block device
 #
-OMNECT_FLASH_MODE=""
-OMNECT_FLASH_MODE_FLAG_FILE="/etc/enforce_flash_mode"
-OMNECT_FLASH_MODE_2_DIRECT_FLASHING=@@OMNECT_FLASH_MODE_2_DIRECT_FLASHING@@
+FLASH_MODE=""
+FLAG_FILE="/etc/enforce_flash_mode"
+DIRECT_FLASHING=@@DIRECT_FLASHING@@
 
 # called by generic INITRAMFS
 flash_mode_2_enabled() {
-    debug "flash mode 2: ${OMNECT_FLASH_MODE}"
+    debug "flash mode 2: ${FLASH_MODE}"
 
     # flag file (part of "omnect-os-initramfs-test")
-    if [ -f ${OMNECT_FLASH_MODE_FLAG_FILE} ]; then
-        msg "enable flash mode: by ${OMNECT_FLASH_MODE_FLAG_FILE}"
-        OMNECT_FLASH_MODE=2
+    if [ -f ${FLAG_FILE} ]; then
+        msg "enable flash mode: by ${FLAG_FILE}"
+        FLASH_MODE=2
         return 0  # enable flash mode; call main entry point
     fi
 
     # flash mode triggered at runtime
-    OMNECT_FLASH_MODE=$(get_bootloader_env_var flash-mode)
-    if [ "${OMNECT_FLASH_MODE}" == "2" ]; then
+    FLASH_MODE=$(get_bootloader_env_var flash-mode)
+    if [ "${FLASH_MODE}" == "2" ]; then
         return 0  # enable flash mode; call main entry point
     fi
 
@@ -49,15 +49,15 @@ run_bmap_tool() {
     run_cmd chown omnect:omnect /home/omnect/wic.xz || return 1
 
     # bmap file must be copied with scp
-    msg "please run  scp <your-bmap-file> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.bmap"
+    msg "please run  scp <your-bmap-file> omnect@${FLASH_MODE_IP_ADDR}:wic.bmap"
     while true; do
         if [ -f /home/omnect/wic.bmap ]; then break; fi
         sleep 1
     done
 
-    msg "please run  scp <your-wic-image> omnect@${OMNECT_FLASH_MODE_IP_ADDR}:wic.xz"
+    msg "please run  scp <your-wic-image> omnect@${FLASH_MODE_IP_ADDR}:wic.xz"
     export PATH
-    if ! ${OMNECT_FLASH_MODE_2_DIRECT_FLASHING}; then
+    if ! ${DIRECT_FLASHING}; then
 	# wait until scp is complete, resp. uncompress+verify wic image before writing
 	msg "verifying input wic.xz ..."
 	run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
@@ -66,7 +66,7 @@ run_bmap_tool() {
     fi
     non_bmap_dd_handling
     msg "start flashing ..."
-    if ! ${OMNECT_FLASH_MODE_2_DIRECT_FLASHING}; then
+    if ! ${DIRECT_FLASHING}; then
 	run_cmd_stdout bmaptool copy --bmap /home/omnect/wic.bmap \
 		       /home/omnect/wic /dev/omnect/rootblk || return 1
     else
