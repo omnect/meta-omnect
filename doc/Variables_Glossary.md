@@ -67,7 +67,7 @@ See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_ve
 `OMNECT_BUILD_NUMBER` is appended to the upstream yocto version and thus part of [`DISTRO_VERSION`](https://docs.yoctoproject.org/ref-manual/variables.html#term-DISTRO_VERSION).
 
 # OMNECT_DEVEL_TOOLS
-List of tools which get installed into a omnect-os devel image.
+List of tools which get installed into an omnect-os devel image.
 
 # OMNECT_FDT_LOAD_NAME
 Name of u-boot device-tree bootscript to be generated for devices using u-boot as bootloader. Default is "fdt-load.scr".
