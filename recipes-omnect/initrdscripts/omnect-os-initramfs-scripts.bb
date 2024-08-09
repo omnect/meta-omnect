@@ -34,13 +34,13 @@ do_install() {
 
     install -m 0755 -D ${WORKDIR}/flash-mode-1           ${D}/init.d/87-flash_mode_1
     # set variables templates
-    sed -i -e 's|^\(OMNECT_FLASH_MODE_UBOOT_ENV1_START\)="UNDEFINED"|\1="${OMNECT_PART_OFFSET_UBOOT_ENV1}"|' \
-           -e 's|^\(OMNECT_FLASH_MODE_UBOOT_ENV2_START\)="UNDEFINED"|\1="${OMNECT_PART_OFFSET_UBOOT_ENV2}"|' \
-           -e 's|^\(OMNECT_FLASH_MODE_UBOOT_ENV_SIZE\)="UNDEFINED"|\1="${OMNECT_PART_SIZE_UBOOT_ENV}"|' \
-           -e 's|^\(OMNECT_FLASH_MODE_DATA_SIZE\)="UNDEFINED"|\1="${OMNECT_PART_SIZE_DATA}"|' \
+    sed -i -e 's|^\(UBOOT_ENV1_START\)="UNDEFINED"|\1="${OMNECT_PART_OFFSET_UBOOT_ENV1}"|' \
+           -e 's|^\(UBOOT_ENV2_START\)="UNDEFINED"|\1="${OMNECT_PART_OFFSET_UBOOT_ENV2}"|' \
+           -e 's|^\(UBOOT_ENV_SIZE\)="UNDEFINED"|\1="${OMNECT_PART_SIZE_UBOOT_ENV}"|' \
+           -e 's|^\(DATA_SIZE\)="UNDEFINED"|\1="${OMNECT_PART_SIZE_DATA}"|' \
               ${D}/init.d/87-flash_mode_1
     if [ -n "${BOOTLOADER_SEEK}" ]; then
-        sed -i -e 's|^\(OMNECT_FLASH_MODE_BOOTLOADER_START\)="UNDEFINED"|\1="${BOOTLOADER_SEEK}"|' ${D}/init.d/87-flash_mode_1
+        sed -i -e 's|^\(BOOTLOADER_START\)="UNDEFINED"|\1="${BOOTLOADER_SEEK}"|' ${D}/init.d/87-flash_mode_1
     fi
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'true', 'false', d)}; then
@@ -48,7 +48,7 @@ do_install() {
         # bitbake doesn't parse bash arithmetic expression, so we use bc
         dd_zero_size=$(echo "${OMNECT_PART_OFFSET_BOOT} + ${OMNECT_PART_SIZE_BOOT}" | bc)
         sed -i -e "s/@@DD_ZERO_SIZE@@/${dd_zero_size}/g" \
-	       -e "s/@@OMNECT_FLASH_MODE_2_DIRECT_FLASHING@@/${@oe.utils.conditional('OMNECT_FLASH_MODE_2_DIRECT_FLASHING', '1', 'true', 'false', d)}/g" \
+	       -e "s/@@DIRECT_FLASHING@@/${@oe.utils.conditional('OMNECT_FLASH_MODE_2_DIRECT_FLASHING', '1', 'true', 'false', d)}/g" \
 	          ${D}/init.d/87-flash_mode_2
     fi
     if ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', 'true', 'false', d)}; then

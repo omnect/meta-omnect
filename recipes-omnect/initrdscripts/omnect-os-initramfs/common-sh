@@ -329,7 +329,7 @@ flash_mode_setup_network() {
         if [ -n "${ip_addr}" ]; then break; fi
         sleep 1
     done
-    OMNECT_FLASH_MODE_IP_ADDR="${ip_addr%/*}"
+    FLASH_MODE_IP_ADDR="${ip_addr%/*}"
 
     # setup PTY
     run_cmd mkdir -p /dev/pts || return 1
