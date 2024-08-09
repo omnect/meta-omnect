@@ -112,13 +112,16 @@ factory_reset_finish() {
     # set return status
     set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR} "${FACTORY_RESET_RET1}:${FACTORY_RESET_RET2}"
 
+    # we already mounted /dev/omnect/boot when we're using grub. so we unmount.
+    if [ -f /usr/bin/grub-editenv ]; then
+        sync
+        run_cmd umount ${ROOTFS_DIR}/boot
+    fi
+
     # if we had restore handling we have to clean unmount
     if [ -n "${factory_reset_restore_list}" ]; then
         factory_reset_umount
     fi
-
-    # boot maybe mounted on grub systems for bootloader env handling
-    run_cmd umount ${ROOTFS_DIR}/boot 2>/dev/null || true
 
     # get into normal startup
     msg "Rebooting system..."
@@ -199,9 +202,9 @@ factory_reset_umount() {
     umount_data_partition "${ROOTFS_DIR}"
     umount_etc_partition  "${ROOTFS_DIR}"
     run_cmd umount "${ROOTFS_DIR}/mnt/factory"
-    # boot maybe mounted on grub systems for bootloader env handling
-    run_cmd umount ${ROOTFS_DIR}/boot 2>/dev/null || true
     umount_rootfs_partition "${ROOTFS_DIR}"
+    msg "mount: "
+    run_cmd mount
 }
 
 # main entry point
@@ -219,6 +222,12 @@ factory_reset_run() {
     fi
 
     factory_reset_restore_list=$(get_bootloader_env_var "${FACTORY_RESET_RESTORE_LIST_VAR}")
+
+    # we already mounted /dev/omnect/boot when we're using grub. so we unmount so we don't disturb the restore mount/umount handling
+    if [ -f /usr/bin/grub-editenv ]; then
+        sync
+        run_cmd umount ${ROOTFS_DIR}/boot
+    fi
 
     msg "Running Factory Reset [mode=${factory_reset_mode}]..."
 
