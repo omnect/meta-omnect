@@ -7,25 +7,25 @@
 # Flash Mode
 #     1    clone disk image from active block device to other one
 #
-OMNECT_FLASH_MODE=""
+FLASH_MODE=""
 
-OMNECT_FLASH_MODE_VAR="flash-mode"
-OMNECT_FLASH_DEVPATH_VAR="flash-mode-devpath"
+FLASH_MODE_VAR="flash-mode"
+FLASH_MODE_DEVPATH_VAR="flash-mode-devpath"
 
 # variable templates, which are replaced at build time
-OMNECT_FLASH_MODE_BOOTLOADER_START="UNDEFINED"  # optionally, start of bootloader area
-OMNECT_FLASH_MODE_UBOOT_ENV1_START="UNDEFINED"  # start of  first u-boot environment
-OMNECT_FLASH_MODE_UBOOT_ENV2_START="UNDEFINED"  # start of second u-boot environment
-OMNECT_FLASH_MODE_UBOOT_ENV_SIZE="UNDEFINED"    # size of u-boot environment
-OMNECT_FLASH_MODE_DATA_SIZE="UNDEFINED"         # initial size of data partition (in KB)
+BOOTLOADER_START="UNDEFINED"  # optionally, start of bootloader area
+UBOOT_ENV1_START="UNDEFINED"  # start of  first u-boot environment
+UBOOT_ENV2_START="UNDEFINED"  # start of second u-boot environment
+UBOOT_ENV_SIZE="UNDEFINED"    # size of u-boot environment
+DATA_SIZE="UNDEFINED"         # initial size of data partition (in KB)
 
 # called by generic INITRAMFS
 flash_mode_1_enabled() {
-    debug "flash mode 1: ${OMNECT_FLASH_MODE} - ${OMNECT_FLASH_MODE_VAR}"
+    debug "flash mode 1: ${FLASH_MODE} - ${FLASH_MODE_VAR}"
 
     # flash mode triggered at runtime
-    OMNECT_FLASH_MODE=$(get_bootloader_env_var ${OMNECT_FLASH_MODE_VAR})
-    if [ "${OMNECT_FLASH_MODE}" == "1" ] && [ -n "${OMNECT_FLASH_MODE_VAR}" ]; then
+    FLASH_MODE=$(get_bootloader_env_var ${FLASH_MODE_VAR})
+    if [ "${FLASH_MODE}" == "1" ] && [ -n "${FLASH_MODE_VAR}" ]; then
         return 0  # enable flash mode; call main entry point
     fi
 
@@ -59,12 +59,12 @@ run_flash_mode_1() {
     echo "Entering omnect flashing mode 1 ..."
 
     # detect destination block device from environment variable
-    blk_dev_dst=$(get_bootloader_env_var ${OMNECT_FLASH_DEVPATH_VAR} | cut -d= -f2)
+    blk_dev_dst=$(get_bootloader_env_var ${FLASH_MODE_DEVPATH_VAR} | cut -d= -f2)
     blk_dev_dst=$(readlink -f ${blk_dev_dst})
 
     # disable flash mode for subsequent restarts
-    set_bootloader_env_var ${OMNECT_FLASH_MODE_VAR}
-    set_bootloader_env_var ${OMNECT_FLASH_DEVPATH_VAR}
+    set_bootloader_env_var ${FLASH_MODE_VAR}
+    set_bootloader_env_var ${FLASH_MODE_DEVPATH_VAR}
 
     # we already mounted /dev/omnect/boot when we're using grub. so we unmount before copying boot.
     if [ -f /usr/bin/grub-editenv ]; then
@@ -74,15 +74,15 @@ run_flash_mode_1() {
 
     # check for (mandatory) substitutions of variable templates
     if [[ ! " ${machine_features} " =~ " grub " ]]; then
-        if [ "${OMNECT_FLASH_MODE_UBOOT_ENV1_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV1_START"; return 1; fi
-        if [ "${OMNECT_FLASH_MODE_UBOOT_ENV2_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV2_START"; return 1; fi
-        if [ "${OMNECT_FLASH_MODE_UBOOT_ENV_SIZE}"   == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_UBOOT_ENV_SIZE"; return 1; fi
+        if [ "${UBOOT_ENV1_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition UBOOT_ENV1_START"; return 1; fi
+        if [ "${UBOOT_ENV2_START}" == "UNDEFINED" ]; then stderr_fatal "missing definition UBOOT_ENV2_START"; return 1; fi
+        if [ "${UBOOT_ENV_SIZE}"   == "UNDEFINED" ]; then stderr_fatal "missing definition UBOOT_ENV_SIZE"; return 1; fi
     fi
 
-    if [ "${OMNECT_FLASH_MODE_DATA_SIZE}"        == "UNDEFINED" ]; then stderr_fatal "missing definition OMNECT_FLASH_MODE_DATA_SIZE"; return 1; fi
+    if [ "${DATA_SIZE}"        == "UNDEFINED" ]; then stderr_fatal "missing definition DATA_SIZE"; return 1; fi
 
     if [ -z "${blk_dev_dst}" ]; then
-        stderr_fatal "bootloader environment variable \"${OMNECT_FLASH_DEVPATH_VAR}\" not set"
+        stderr_fatal "bootloader environment variable \"${FLASH_MODE_DEVPATH_VAR}\" not set"
         return 1
     fi
     for i in $(seq 1 30); do
@@ -111,7 +111,7 @@ run_flash_mode_1() {
         return 1
     fi
     # adapt size of data partition to initial value, before (optional) resize of data partition
-    data_partition_size=$((OMNECT_FLASH_MODE_DATA_SIZE * 2)) # 1024 (yocto) -> 512 (sfdisk)
+    data_partition_size=$((DATA_SIZE * 2)) # 1024 (yocto) -> 512 (sfdisk)
 
     # check for partition type
     part_type=$(get_partition_type)
@@ -171,11 +171,11 @@ run_flash_mode_1() {
 
     # handle u-boot not stored inside the boot partition
     # e.g. not UNDEFINED if BOOTLOADER_SEEK is set (phytec boards)
-    if [ "${OMNECT_FLASH_MODE_BOOTLOADER_START}" != "UNDEFINED" ]; then
+    if [ "${BOOTLOADER_START}" != "UNDEFINED" ]; then
         echo "COPY u-boot..."
-        run_cmd_stdout dd if=${blk_dev_src} iflag=skip_bytes skip=$((OMNECT_FLASH_MODE_BOOTLOADER_START*1024)) \
-                          of=${blk_dev_dst} oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_BOOTLOADER_START*1024)) \
-                          bs=1024 count=$((OMNECT_FLASH_MODE_UBOOT_ENV1_START - OMNECT_FLASH_MODE_BOOTLOADER_START)) || return 1
+        run_cmd_stdout dd if=${blk_dev_src} iflag=skip_bytes skip=$((BOOTLOADER_START*1024)) \
+                          of=${blk_dev_dst} oflag=seek_bytes seek=$((BOOTLOADER_START*1024)) \
+                          bs=1024 count=$((UBOOT_ENV1_START - BOOTLOADER_START)) || return 1
     fi
 
     # enforce first boot condition
@@ -213,8 +213,8 @@ run_flash_mode_1() {
     else
         echo "ENFORCE default bootloader environment..."
         # Warning: we enforce  here that there is a redundant uboot env available, even if the initial wic did'nt have one
-        run_cmd_stdout dd if=/etc/omnect/uboot-env.bin of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV1_START*1024)) || return 1
-        run_cmd_stdout dd if=/etc/omnect/uboot-env.bin of="${blk_dev_dst}" oflag=seek_bytes seek=$((OMNECT_FLASH_MODE_UBOOT_ENV2_START*1024)) || return 1
+        run_cmd_stdout dd if=/etc/omnect/uboot-env.bin of="${blk_dev_dst}" oflag=seek_bytes seek=$((UBOOT_ENV1_START*1024)) || return 1
+        run_cmd_stdout dd if=/etc/omnect/uboot-env.bin of="${blk_dev_dst}" oflag=seek_bytes seek=$((UBOOT_ENV2_START*1024)) || return 1
     fi
 
     flash_mode_efi_handling ${blk_dev_dst} ${p}
