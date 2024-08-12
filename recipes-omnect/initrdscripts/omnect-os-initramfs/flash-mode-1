@@ -10,7 +10,7 @@
 FLASH_MODE=""
 
 FLASH_MODE_VAR="flash-mode"
-FLASH_DEVPATH_VAR="flash-mode-devpath"
+FLASH_MODE_DEVPATH_VAR="flash-mode-devpath"
 
 # variable templates, which are replaced at build time
 BOOTLOADER_START="UNDEFINED"  # optionally, start of bootloader area
@@ -59,12 +59,12 @@ run_flash_mode_1() {
     echo "Entering omnect flashing mode 1 ..."
 
     # detect destination block device from environment variable
-    blk_dev_dst=$(get_bootloader_env_var ${FLASH_DEVPATH_VAR} | cut -d= -f2)
+    blk_dev_dst=$(get_bootloader_env_var ${FLASH_MODE_DEVPATH_VAR} | cut -d= -f2)
     blk_dev_dst=$(readlink -f ${blk_dev_dst})
 
     # disable flash mode for subsequent restarts
     set_bootloader_env_var ${FLASH_MODE_VAR}
-    set_bootloader_env_var ${FLASH_DEVPATH_VAR}
+    set_bootloader_env_var ${FLASH_MODE_DEVPATH_VAR}
 
     # we already mounted /dev/omnect/boot when we're using grub. so we unmount before copying boot.
     if [ -f /usr/bin/grub-editenv ]; then
@@ -82,7 +82,7 @@ run_flash_mode_1() {
     if [ "${DATA_SIZE}"        == "UNDEFINED" ]; then stderr_fatal "missing definition DATA_SIZE"; return 1; fi
 
     if [ -z "${blk_dev_dst}" ]; then
-        stderr_fatal "bootloader environment variable \"${FLASH_DEVPATH_VAR}\" not set"
+        stderr_fatal "bootloader environment variable \"${FLASH_MODE_DEVPATH_VAR}\" not set"
         return 1
     fi
     for i in $(seq 1 30); do
