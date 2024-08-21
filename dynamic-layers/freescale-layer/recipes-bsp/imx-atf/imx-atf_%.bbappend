@@ -4,7 +4,6 @@ SRC_URI += "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'file://release_lo
 
 ATF_DEBUG = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '0', '1', d)}"
 OUTPUT_FOLDER ?= "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'release', 'debug', d)}"
-OUTPUT_FOLDER = "release"
 
 EXTRA_OEMAKE += " \
 	V=1 \
