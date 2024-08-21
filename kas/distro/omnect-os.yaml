@@ -9,33 +9,36 @@ repos:
   meta-omnect:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    branch: "kirkstone"
-    commit: "4052c97dc83d0c88fc277d6fc1815e0699020daa"
+    branch: "scarthgap"
+    commit: "64c481d017c1b5b5eae619a367a5e8fa00f1b156"
     layers:
+      # meta-multimedia is used by qemu_8.2.2.imx.bb (tauri) ToDo: possible to handle that in the machine specific kas file?
+      meta-multimedia:
       meta-filesystems:
       meta-networking:
       meta-oe:
       meta-python:
+
     patches:
       p001:
         repo: "meta-omnect"
-        path: "kas/patches/meta-openembedded_nspr_do_not_install_perl_to_image.patch"
+        path: "kas/patches/meta-openembedded.patch"
   # we need meta-tpm independend of feature/tpm.yaml to be able
   # to build iot-identity-service
   ext/meta-security:
     url: "https://git.yoctoproject.org/meta-security"
-    branch: "kirkstone"
-    commit: "353078bc06c8b471736daab6ed193e30d533d1f1"
+    branch: "scarthgap"
+    commit: "2d5aaeb70501953ce29641cdcb01857827510fe9"
     layers:
       meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    branch: "kirkstone"
-    commit: "6918be849ddf1fed5b7a0173e51c7a136e8d4101"
+    branch: "scarthgap"
+    commit: "1600c74ed6d9eabc15a680a7a4cb359aa537bd65"
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
-    branch: "kirkstone"
-    commit: "ef76369f844f8b5afea416372172824987ad4fec"
+    branch: "scarthgap"
+    commit: "54b806b1985f3989722ee308e1073530fe3328c1"
     patches:
       p001:
         repo: "meta-omnect"
@@ -84,6 +87,9 @@ env:
 
   # (plain) password of omnect user
   OMNECT_USER_PASSWORD: ""
+
+  # enable to set LICENSE_FLAGS_ACCEPTED via env
+  LICENSE_FLAGS_ACCEPTED:
 
 local_conf_header:
   meta-omnect_distro_omnect-os: |

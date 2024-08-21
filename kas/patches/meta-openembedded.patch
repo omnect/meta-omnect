@@ -1,3 +1,24 @@
+diff --git a/meta-networking/recipes-connectivity/networkmanager/networkmanager_1.46.0.bb b/meta-networking/recipes-connectivity/networkmanager/networkmanager_1.46.0.bb
+index 8184fcf1a..da5236069 100644
+--- a/meta-networking/recipes-connectivity/networkmanager/networkmanager_1.46.0.bb
++++ b/meta-networking/recipes-connectivity/networkmanager/networkmanager_1.46.0.bb
+@@ -76,11 +76,11 @@ EXTRA_OEMESON = "\
+ CFLAGS:append:libc-musl = " \
+     -DRTLD_DEEPBIND=0 \
+ "
+-do_configure:prepend() {
+-    cp -f ${STAGING_LIBDIR}/girepository-1.0/GObject*typelib ${STAGING_LIBDIR_NATIVE}/girepository-1.0/
+-    cp -f ${STAGING_LIBDIR}/girepository-1.0/Gio*typelib ${STAGING_LIBDIR_NATIVE}/girepository-1.0/
+-    cp -f ${STAGING_LIBDIR}/girepository-1.0/GModule*typelib ${STAGING_LIBDIR_NATIVE}/girepository-1.0/
+-}
++# do_configure:prepend() {
++#     cp -f ${STAGING_LIBDIR}/girepository-1.0/GObject*typelib ${STAGING_LIBDIR_NATIVE}/girepository-1.0/
++#     cp -f ${STAGING_LIBDIR}/girepository-1.0/Gio*typelib ${STAGING_LIBDIR_NATIVE}/girepository-1.0/
++#     cp -f ${STAGING_LIBDIR}/girepository-1.0/GModule*typelib ${STAGING_LIBDIR_NATIVE}/girepository-1.0/
++# }
+ 
+ PACKAGECONFIG ??= "readline nss ifupdown dnsmasq nmcli vala \
+     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', bb.utils.contains('DISTRO_FEATURES', 'x11', 'consolekit', '', d), d)} \
 diff --git a/meta-oe/recipes-support/nspr/nspr_4.35.bb b/meta-oe/recipes-support/nspr/nspr_4.35.bb
 index f8d329398..5db8e2624 100644
 --- a/meta-oe/recipes-support/nspr/nspr_4.35.bb

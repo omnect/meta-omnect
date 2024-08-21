@@ -43,6 +43,8 @@ IMAGE_LINGUAS = "en-us"
 
 IMAGE_BASENAME = "omnect-os"
 
+IMAGE_LINK_NAME= "${IMAGE_BASENAME}${IMAGE_MACHINE_SUFFIX}"
+
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 EXTRA_PACKAGES_CELLULAR = "\
@@ -148,8 +150,6 @@ python () {
 }
 
 inherit omnect_user
-
-inherit logging
 
 # positive test for packages, i.e. check if installed
 check_installed_packages() {

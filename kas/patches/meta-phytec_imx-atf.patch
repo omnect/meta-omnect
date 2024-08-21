@@ -1,0 +1,23 @@
+diff --git a/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/imx-atf_2.8.bbappend b/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/imx-atf_%.bbappend
+similarity index 79%
+rename from dynamic-layers/freescale-layer/recipes-bsp/imx-atf/imx-atf_2.8.bbappend
+rename to dynamic-layers/freescale-layer/recipes-bsp/imx-atf/imx-atf_%.bbappend
+index 5cbaa516..52c048a5 100644
+--- a/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/imx-atf_2.8.bbappend
++++ b/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/imx-atf_%.bbappend
+@@ -3,11 +3,11 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+ SRC_URI:append:phygate-tauri-l-imx8mm-2 = "\
+     file://0001-plat-imx8mm-disable-uart4-assigned-to-arm-cortex-m4.patch \
+ "
+-EXTRA_OEMAKE += " \
+-        IMX_BOOT_UART_BASE="${IMX_UART_BASE}" \
+-"
++# EXTRA_OEMAKE += " \
++#         IMX_BOOT_UART_BASE="${IMX_UART_BASE}" \
++# "
+ 
+-EXTRA_OEMAKE:append:mx8mm-generic-bsp = ' BL32_BASE="0x56000000" '
++#EXTRA_OEMAKE:append:mx8mm-generic-bsp = ' BL32_BASE="0x56000000" '
+ # NOTE: Uncomment for debug build:
+ #EXTRA_OEMAKE += " \
+ #	DEBUG=1 \
