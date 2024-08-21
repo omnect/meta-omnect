@@ -16,9 +16,17 @@ OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGESIZE ?= ""
 OMNECT_BOOTLOADER_EMBEDDED_VERSION_LOCATION ?= ""
 OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGESIZE ?= ""
 
-inherit deploy omnect_uboot_embedded_version
+inherit omnect_uboot_embedded_version
 
-do_compile:append() {
+# relying on SSTATE cache showed that re-building of verisioned bootlaoder
+# artefact didn't work reliably, often an old version was unexpectedly used,
+# even though above a dependency to u-boot-karo is defined through variable
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBTARGET.
+# so, switch off SSTATE for this recipe in the hope that this will cause
+# proper rebuilding.
+SKIP_SSTATE_CREATION:task-deploy = "1"
+
+do_compile() {
     cp "${WORKDIR}/omnect_get_bootloader_version.sh.template" "${WORKDIR}/omnect_get_bootloader_version.sh"
     sed -i -e 's,@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC@@,${OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC},g' \
            -e 's,@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_PARAMSIZE@@,${OMNECT_BOOTLOADER_EMBEDDED_VERSION_PARAMSIZE},g' \

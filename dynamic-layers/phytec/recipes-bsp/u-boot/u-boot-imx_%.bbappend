@@ -8,6 +8,7 @@ SRC_URI += " \
     file://phycore_imx8mm.patch \
     file://boot_retry.cfg \
     file://disable_android_boot_image.cfg \
+    file://disable-nfs.cfg \
     file://disable-usb.cfg \
     file://do_not_use_default_bootcommand.cfg \
     file://enable_generic_console_fs_cmds.cfg \
@@ -30,6 +31,9 @@ SRC_URI += " \
 # file://phycore-imx8mm_defconfig.patch
 # file://silent_console_early.patch
 #
+
+CVE_PRODUCT = "u-boot-imx u-boot"
+
 OMNECT_BOOTLOADER_CHECKSUM_FILES  = "${LAYERDIR_omnect}/classes/u-boot-scr.bbclass"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot-scr.bb"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot/*"
@@ -50,6 +54,10 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/dynamic-layers/freescale
 
 # TODO scarthgap:
 #OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_fsl-bsp-release}/recipes-bsp/imx-atf/imx-atf_*.bb"
+
+# since bootloader version gets embedded in bootloader file also
+# settings thereof need to be fed into checksumming
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/classes/omnect_uboot_embedded_version.bbclass"
 
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE = "${LAYERDIR_omnect}/recipes-bsp/u-boot/.gitignore"
 # we don't use rauc and overwrite the u-boot env with omnect_env.patch

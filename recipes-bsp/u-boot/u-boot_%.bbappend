@@ -9,6 +9,7 @@ SRC_URI += "\
     file://omnect_env.patch \
     file://boot_retry.cfg \
     file://do_not_use_default_bootcommand.cfg \
+    file://disable-nfs.cfg \
     file://lock-env.cfg \
     file://reloc_gd_env.cfg \
     file://silent_console.cfg \

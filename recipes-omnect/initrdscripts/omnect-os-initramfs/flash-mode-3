@@ -7,15 +7,15 @@
 # Flash Mode
 #     3    flash disk image from network to active block device
 #
-OMNECT_FLASH_MODE=""
+FLASH_MODE=""
 
 # called by generic INITRAMFS
 flash_mode_3_enabled() {
-    debug "flash mode 3: ${OMNECT_FLASH_MODE}"
+    debug "flash mode 3: ${FLASH_MODE}"
 
     # flash mode triggered at runtime
-    OMNECT_FLASH_MODE=$(get_bootloader_env_var flash-mode)
-    if [ "${OMNECT_FLASH_MODE}" == "3" ]; then
+    FLASH_MODE=$(get_bootloader_env_var flash-mode)
+    if [ "${FLASH_MODE}" == "3" ]; then
         return 0  # enable flash mode; call main entry point
     fi
 
