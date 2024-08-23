@@ -8,7 +8,7 @@ inherit cargo
 # how to get aziot-edged could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/aziot-edged/0.1.0"
 SRC_URI += "git://github.com/Azure/iotedge.git;protocol=https;nobranch=1"
-SRCREV = "7523e680ae9feacaa54df13de80fa82a2b2e7b74"
+SRCREV = "1f97918e98cb6e0b8358ccb86294cd719002d4bd"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = "aziot-edged"
 
