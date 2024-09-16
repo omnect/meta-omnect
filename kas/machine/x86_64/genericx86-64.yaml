@@ -7,8 +7,8 @@ repos:
   ext/meta-yocto-bsp:
     url: "https://git.yoctoproject.org/meta-yocto"
     branch: kirkstone
-    # yocto 4.0.20 (no tag)
-    commit: "c4c74d1e575217ddc4b74759cd83186a70940ef9"
+    # yocto 4.0.21 (no tag)
+    commit: "10911ca9695f096a6415ac026d6aefe3ea78adea"
     layers:
       meta-yocto-bsp:
 
