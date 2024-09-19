@@ -60,6 +60,9 @@ See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedde
 # OMNECT_BOOTLOADER_EMBEDDED_VERSION_TYPE
 See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
 
+# OMNECT_BOOTLOADER_EMBEDDED_VERSION_UUUTAG
+See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_uboot_embedded_version.bbclass.
+
 # OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE
 See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_versioning.bbclass.
 
