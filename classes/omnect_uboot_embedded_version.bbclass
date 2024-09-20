@@ -58,6 +58,12 @@
 #    up to defined size of resulting file; default value is 0x00
 #    however, for NOR flashes it would be better to have an 0xff, therefore
 #    this variable
+#  - OMNECT_BOOTLOADER_EMBEDDED_VERSION_UUUTAG
+#    if bootloader is used for production programming, i.e. uuu tool flashes
+#    boot medium via ROM serial boot, it needs an end tag for the tool to
+#    detect its size.
+#    if this option is set to anything but the empty string the binary gets
+#    tagged, by default no tagging happens.
 #
 # format of version information is:
 #
@@ -146,8 +152,22 @@ python omnect_uboot_embed_version() {
         bb.fatal("Unable to stat bootloader binary \"%s\"" % (version_file))
     filesize = st.st_size
 
+    # do we need an end tag which will be searched for by uuu tool during
+    # initial flashing in production process?
+    # NOTE:
+    #   this handling is normally found in yocto layer meta-freescale in
+    #   classes file uuu_bootloader_tag.bbclass.
+    #   in order to be independend of this meta layer this is handled here,
+    #   too, we're processing the binary here anyway.
+    version_uuutag = d.getVar("OMNECT_BOOTLOADER_EMBEDDED_VERSION_UUUTAG")
+    uuutag_str = ""
+    if version_uuutag != "":
+        uuutag_str = "UUUBURNXXOEUZX7+A-XY5601QQWWZ%sEND" % (filesize)
+        # already increase image size here so that subsequent size calculations
+        # will take this tag already into account
+        filesize += len(uuutag_str)
+
     if version_type == "file":
-        expand_size = version_paramsize
         # we want to have some space after last original byte
         if filesize % version_paramsize == 0:
             expand_size = version_paramsize
@@ -166,6 +186,14 @@ python omnect_uboot_embed_version() {
 
     # 1st make copy of original file
     version_file_new = shutil.copyfile(version_file, version_file + '.versioned')
+
+    # append uuu tag, if any
+    if len(uuutag_str) > 0:
+        with open(version_file_new, 'ab') as f:
+            f.write(bytearray(uuutag_str, "utf-8"))
+            f.close()
+
+    # now written length always equals filesize
     written_length = filesize
 
     # 2nd write version info as parameter block
