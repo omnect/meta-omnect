@@ -62,6 +62,8 @@
 #    if bootloader is used for production programming, i.e. uuu tool flashes
 #    boot medium via ROM serial boot, it needs an end tag for the tool to
 #    detect its size.
+#    if this option is set to anything but the empty string the binary gets
+#    tagged, by default no tagging happens.
 #
 # format of version information is:
 #
@@ -155,7 +157,7 @@ python omnect_uboot_embed_version() {
     # NOTE:
     #   this handling is normally found in yocto layer meta-freescale in
     #   classes file uuu_bootloader_tag.bbclass.
-    #   in order to be independend of thos meta layer this is handled here,
+    #   in order to be independend of this meta layer this is handled here,
     #   too, we're processing the binary here anyway.
     version_uuutag = d.getVar("OMNECT_BOOTLOADER_EMBEDDED_VERSION_UUUTAG")
     uuutag_str = ""
