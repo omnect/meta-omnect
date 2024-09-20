@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot:${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot:${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot:${LAYERDIR_core}/recipes-bsp/u-boot/files:"
 
 # THISDIR is only save during recipe parsing
 OMNECT_THISDIR_SAVED := "${THISDIR}/"
@@ -20,6 +20,11 @@ SRC_URI += " \
     file://silent_console.cfg \
     file://omnect_env.h \
     file://omnect_env_phycore_imx8mm.h \
+"
+
+# cve patches from openembedded-core u-boot recipe
+SRC_URI += " \
+    file://0001-i2c-fix-stack-buffer-overflow-vulnerability-in-i2c-m.patch \
 "
 
 CVE_PRODUCT = "u-boot-imx u-boot"
