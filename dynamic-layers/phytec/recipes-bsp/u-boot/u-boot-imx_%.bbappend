@@ -49,8 +49,8 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/${PN}_%.bbappend"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/u-boot/*"
 # imx-atf and u-boot are part of imx-boot(-phytec). (tbd: imx-boot(-phytec) recipe
 # is more or less copying thus currently not reflected here.)
-OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/imx-atf*.bbappend"
-OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/files/*"
+#TODO OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/imx-atf*.bbappend"
+#TODO OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/files/*"
 
 # TODO scarthgap:
 #OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_fsl-bsp-release}/recipes-bsp/imx-atf/imx-atf_*.bb"
