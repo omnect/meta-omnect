@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.22.4"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.23.0"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "456e33dcd02ad3fa1112f1333e8309f14fb26edf"
+SRCREV = "de67793be3553fd2bbbb14fcc30033dde6bceb86"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -328,6 +328,7 @@ SRC_URI += " \
     crate://crates.io/tokio-native-tls/0.3.1 \
     crate://crates.io/tokio-openssl/0.6.5 \
     crate://crates.io/tokio-rustls/0.26.0 \
+    crate://crates.io/tokio-stream/0.1.16 \
     crate://crates.io/tokio-util/0.7.12 \
     crate://crates.io/tokio/1.40.0 \
     crate://crates.io/toml/0.8.19 \
@@ -465,7 +466,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.13.2"
+SRCREV_azure-iot-sdk = "0.13.3"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.1"
