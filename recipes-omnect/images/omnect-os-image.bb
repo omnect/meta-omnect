@@ -64,6 +64,7 @@ IMAGE_INSTALL = "\
     coreutils \
     e2fsprogs-tune2fs \
     iot-hub-device-update \
+    iproute2-ip \
     iptables \
     jq \
     kernel-image \
