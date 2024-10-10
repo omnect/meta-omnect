@@ -21,6 +21,7 @@ addtask do_bootloader_package before do_swuimage
 do_bootloader_package_extra_depends = ""
 do_bootloader_package_extra_depends:omnect_uboot = "u-boot-scr:do_deploy bootloader-versioned:do_deploy"
 do_bootloader_package_extra_depends:omnect_grub = "grub-cfg:do_deploy"
+do_bootloader_package_extra_depends:rpi = "u-boot-scr:do_deploy bootloader-versioned:do_deploy rpi-config:do_deploy rpi-cmdline:do_deploy"
 do_bootloader_package[depends] += "virtual/bootloader:do_deploy virtual/kernel:do_deploy ${do_bootloader_package_extra_depends}"
 
 # set OMNECT_BOOTLOADER_VERSION for swupdate description
