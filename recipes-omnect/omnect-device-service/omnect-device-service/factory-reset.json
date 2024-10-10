@@ -1,0 +1,14 @@
+{
+    "network": [
+      "/etc/NetworkManager/system-connections/",
+      "/etc/systemd/network/",
+      "/etc/wpa_supplicant.conf"
+    ],
+    "firewall": [
+      "/etc/iptables/"
+    ],
+    "certificates": [
+      "/var/lib/aziot/certd/",
+      "/var/lib/aziot/keyd/"
+    ]
+  }

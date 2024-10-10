@@ -22,6 +22,10 @@ msg_error() {
     echo "<3>omnect-os-initramfs: ERROR: ${@}" > /dev/kmsg
 }
 
+msg_warning() {
+    echo "<4>omnect-os-initramfs: WARNING: ${@}" > /dev/kmsg
+}
+
 stderr_error() {
     echo "ERROR: $@" >&2
 }

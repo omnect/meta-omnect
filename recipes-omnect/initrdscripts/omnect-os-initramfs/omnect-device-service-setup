@@ -4,6 +4,11 @@
 #  Setup files used to trigger factory reset and reboot
 #
 
+omnect_device_service_group="not set yet"
+omnect_device_service_user="not set yet"
+omnect_run_dir="${ROOTFS_DIR}/run/omnect-device-service"
+omnect_os_initramfs_json="${omnect_run_dir}/omnect-os-initramfs.json"
+
 omnect_device_service_setup_enabled() {
     return 0
 }
@@ -20,58 +25,43 @@ get_id() {
 }
 
 fsck_handling() {
-    local omnect_run_dir=$1
-    local omnect_device_service_user=$2
-    local omnect_device_service_group=$3
     local labels=("boot" "cert" "data" "etc")
 
-    echo "{}" > ${omnect_run_dir}/fsck.json
+    echo "{}" > /tmp/fsck.json
     for i in ${labels[@]}; do
         local content=$(get_fsck_status ${i})
         if [ -n "${content}" ]; then
-            jq --arg i "${i}" --arg content "${content}" '{($i): ($content)}' ${omnect_run_dir}/fsck.json > ${omnect_run_dir}/fsck.json.tmp || return 1
-            mv ${omnect_run_dir}/fsck.json.tmp ${omnect_run_dir}/fsck.json
+            jq --arg i "${i}" --arg content "${content}" '{($i): ($content)}' /tmp/fsck.json > /tmp/fsck.json.tmp || return 1
+            mv /tmp/fsck.json.tmp /tmp/fsck.json
             set_bootloader_env_var omnect_fsck_${i} ""
         fi
     done
 
-    run_cmd chown ${omnect_device_service_user}:${omnect_device_service_group} ${omnect_run_dir}/fsck.json || return 1
-    run_cmd chmod 600 ${omnect_run_dir}/fsck.json || return 1
-
-    return 0
+    cat ${omnect_os_initramfs_json} | jq --argjson fsck "$(cat /tmp/fsck.json)" '.fsck=$fsck' > /tmp/omnect-os-initramfs.json
+    [ 0 -ne $? ] && msg "fsck_handling set json failed"
+    mv /tmp/omnect-os-initramfs.json ${omnect_os_initramfs_json}
+    rm /tmp/fsck.json
 }
 
 factory_reset_status_handling() {
-    local omnect_run_dir=$1
-    local omnect_device_service_user=$2
-    local omnect_device_service_group=$3
-
-    echo -n "" > ${omnect_run_dir}/factory-reset-status
-
-    local status=$(get_bootloader_env_var "${FACTORY_RESET_STATUS_VAR}")
-    if [ -n "${status}" ]; then
-        echo ${status} > ${omnect_run_dir}/factory-reset-status
-        set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR}
-    fi
-
-    run_cmd chown ${omnect_device_service_user}:${omnect_device_service_group} ${omnect_run_dir}/factory-reset-status || return 1
-    run_cmd chmod 600 ${omnect_run_dir}/factory-reset-status || return 1
-
-    return 0
+    cat ${omnect_os_initramfs_json} | jq --argjson factory_reset "$(cat /tmp/factory-reset.json)" '."factory-reset"=$factory_reset' > /tmp/omnect-os-initramfs.json
+    [ 0 -ne $? ] && msg "factory_reset_status_handling set json failed"
+    mv /tmp/omnect-os-initramfs.json ${omnect_os_initramfs_json}
+    rm /tmp/factory-reset.json
 }
 
 # setup conditional temp files for omnect-device-service, e.g. for the update workflow handling;
 # (static temp files for omnect-device-service are created via systemd-tmpfiles.d)
 run_omnect_device_service_setup () {
-    local omnect_device_service_group="$(get_id omnect_device_service ${ROOTFS_DIR}/etc/group)"
-    local omnect_device_service_user="$(get_id omnect_device_service ${ROOTFS_DIR}/etc/passwd)"
-    local omnect_run_dir="${ROOTFS_DIR}/run/omnect-device-service"  # /run is available in the INITRAMFS
     local omnect_validate_update_failed_file="${omnect_run_dir}/omnect_validate_update_failed"
     local omnect_validate_update_failed_flag="$(get_bootloader_env_var omnect_validate_update_failed)"
     local omnect_validate_update_file="${omnect_run_dir}/omnect_validate_update"
     local omnect_validate_update_flag="$(get_bootloader_env_var omnect_validate_update)"
     local omnect_bootloader_updated_file="${omnect_run_dir}/omnect_bootloader_updated"
     local omnect_bootloader_updated_flag="$(get_bootloader_env_var omnect_bootloader_updated)"
+
+    omnect_device_service_group="$(get_id omnect_device_service ${ROOTFS_DIR}/etc/group)"
+    omnect_device_service_user="$(get_id omnect_device_service ${ROOTFS_DIR}/etc/passwd)"
 
     [ -z "${omnect_device_service_user}" ] && msg "ERROR: user omnect_device_service not found in rootfs" && return 1
     [ -z "${omnect_device_service_group}" ] && msg "ERROR: group omnect_device_service not found in rootfs" && return 1
@@ -108,8 +98,13 @@ run_omnect_device_service_setup () {
         && set_bootloader_env_var omnect_bootloader_updated ""
     fi
 
-    fsck_handling "${omnect_run_dir}" "${omnect_device_service_user}" "${omnect_device_service_group}"  || return 1
-    factory_reset_status_handling "${omnect_run_dir}" "${omnect_device_service_user}" "${omnect_device_service_group}"  || return 1
+    run_cmd "echo \"{}\" > ${omnect_os_initramfs_json}"
+
+    fsck_handling || return 1
+    factory_reset_status_handling || return 1
+
+    run_cmd chown ${omnect_device_service_user}:${omnect_device_service_group} ${omnect_os_initramfs_json} \
+    && run_cmd chmod 600 ${omnect_os_initramfs_json}
 
     return 0
 }
