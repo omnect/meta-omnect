@@ -13,9 +13,6 @@ SRC_URI = "file://sw-description"
 
 COMPATIBLE_MACHINE = "rpi|phytec-imx8mm|omnect_grub"
 
-# needed to get access to PKGV
-DEPENDS += "virtual/bootloader"
-
 addtask do_bootloader_package before do_swuimage
 do_bootloader_package[depends] = "omnect-os-image:do_image_wic"
 
