@@ -1,4 +1,4 @@
-PROVIDES = "virtual/bootloader"
+PROVIDES:omnect_grub = "virtual/bootloader"
 
 # we do not include grub-efi, resp grub upstream recipes, because
 # updates in openembedded_core should be handled by `PV` increase
