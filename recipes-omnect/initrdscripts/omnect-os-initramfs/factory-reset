@@ -121,6 +121,8 @@ factory_reset_backup() {
 factory_reset_restore() {
     local path_name="$1"  # file or directory
     local ret=0
+    local destpath=$(dirname ${ROOTFS_DIR}${path_name})
+    local nested_mount=""
 
     msg "restore: ${path_name}"
 
@@ -129,11 +131,24 @@ factory_reset_restore() {
         return 0
     fi
 
-    cd ${factory_reset_backup_dir}/${ROOTFS_DIR}
-        # do restore, keep permissions and ownership
-        run_cmd cp --parents -av "${path_name:1}" "${ROOTFS_DIR}"
+    while [[ "${destpath}" != "${ROOTFS_DIR}" ]]; do
+        mountpoint -q ${destpath} && nested_mount=${destpath/${ROOTFS_DIR}} && break
+        destpath=${destpath%\/*}
+    done
+
+    # do restore, keep permissions and ownership
+    if [ -n "${nested_mount}" ]; then
+        msg "nested mount: ${factory_reset_backup_dir}/${ROOTFS_DIR}${nested_mount}"
+        cd ${factory_reset_backup_dir}/${ROOTFS_DIR}${nested_mount}
+        path_name=${path_name/${nested_mount}}
+        run_cmd cp --parents -av "${path_name:1}" "${ROOTFS_DIR}${nested_mount}"
         ret=$?
-    cd -
+        cd - &>/dev/null
+    else
+        msg_error "restore: no mountpoint found in destination path: ${destpath}"
+        ret=66
+    fi
+
 
     sync
     return ${ret}
@@ -236,14 +251,13 @@ factory_reset_run() {
     else
         preserve=()
     fi
-    #TODO preserve=${preserve//$'\n'/ }
+    preserve=${preserve//$'\n'/ }
 
-    msg "Running factory-reset [mode=${mode}, preserve=${preserve}]..."
+    msg "Running factory-reset [mode=${mode}, preserve=${preserve[@]}]..."
     factory_reset_mount
 
     # create preserve_list
     declare -a preserve_list
-    preserve_list+=("/etc/omnect/factory-reset.json")
     preserve_list+=("/etc/omnect/factory-reset.d/")
     if [[ " ${preserve[@]} " =~ " applications " ]]; then
         preserve="${preserve[@]/applications}"
@@ -296,7 +310,6 @@ factory_reset_run() {
     reformat_ext4_fs "/dev/omnect/etc" "etc"
 
     # restore
-    run_cmd "ls -lR ${factory_reset_backup_dir}/${ROOTFS_DIR}"
     factory_reset_mount  # logical filesystem tree
     iterate_restore_list 0 "${preserve_list[@]}"
     factory_reset_umount

@@ -8,7 +8,7 @@
       "/etc/iptables/"
     ],
     "certificates": [
-      "/mnt/data/var/lib/aziot/certd/",
-      "/mnt/data/var/lib/aziot/keyd/"
+      "/var/lib/aziot/certd/",
+      "/var/lib/aziot/keyd/"
     ]
 }

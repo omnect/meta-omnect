@@ -67,7 +67,7 @@ do_install:append() {
 
     # factory-reset
     install -d -D ${D}${sysconfdir}/omnect/
-    install -m 0644 -D ${WORKDIR}/factory-reset.json ${D}${sysconfdir}/omnect/
+    install -m 0444 -D ${WORKDIR}/factory-reset.json ${D}${sysconfdir}/omnect/
     install -m 0777 -d ${D}${sysconfdir}/omnect/factory-reset.d
 }
 
