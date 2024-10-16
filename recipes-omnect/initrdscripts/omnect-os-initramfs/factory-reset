@@ -296,6 +296,7 @@ factory_reset_run() {
     reformat_ext4_fs "/dev/omnect/etc" "etc"
 
     # restore
+    run_cmd "ls -lR ${factory_reset_backup_dir}/${ROOTFS_DIR}"
     factory_reset_mount  # logical filesystem tree
     iterate_restore_list 0 "${preserve_list[@]}"
     factory_reset_umount
