@@ -206,9 +206,9 @@ factory_reset_umount() {
 }
 
 handle_status() {
-    status=${1}
-    error=${2}
-    preserve_paths=${@:3}
+    local status=${1}
+    local error=${2}
+    local preserve_paths=${@:3}
     msg "status: status=${status}, error=${error}, preserve_path=${preserve_paths[@]}"
 
     echo "{}" | jq -e \
@@ -219,10 +219,10 @@ handle_status() {
 }
 
 handle_status_with_context() {
-    status=${1}
-    error=${2}
-    context=${3}
-    preserve_paths=${@:4}
+    local status=${1}
+    local error=${2}
+    local context=${3}
+    local preserve_paths=${@:4}
 
     msg "status: status=${status}, error=${error}, context=${context}, preserve_path=${preserve_paths[@]}"
 
@@ -243,15 +243,14 @@ factory_reset_run() {
         return 1
     fi
 
-    mode=$(echo "${factory_reset}" | jq -e -r .mode) || { handle_status_with_context "1" "-" "mode_not_set" ""; return 0; }
+    local mode=$(echo "${factory_reset}" | jq -e -r .mode) || { handle_status_with_context "1" "-" "mode_not_set" ""; return 0; }
     # don't error if preserve is not set
-    preserve=$(echo "${factory_reset}" | jq -r '.preserve')
+    local preserve=$(echo "${factory_reset}" | jq -r '.preserve')
     if [[ "null" != "${preserve}" ]]; then
         preserve=($(echo "${factory_reset}" | jq -e -r '.preserve | .[]')) || { handle_status_with_context "3" "-" "could_not_parse_preserve_array" ""; return 0; }
     else
         preserve=()
     fi
-    preserve=${preserve//$'\n'/ }
 
     msg "Running factory-reset [mode=${mode}, preserve=${preserve[@]}]..."
     factory_reset_mount
@@ -260,7 +259,7 @@ factory_reset_run() {
     declare -a preserve_list
     preserve_list+=("/etc/omnect/factory-reset.d/")
     if [[ " ${preserve[@]} " =~ " applications " ]]; then
-        preserve="${preserve[@]/applications}"
+        preserve=( ${preserve[@]/applications} )
         for i in $(find ${ROOTFS_DIR}/etc/omnect/factory-reset.d/ -iname *.json); do
             preserve_list+=( $(cat ${i} | jq -r -e '.paths[]') )
             preserve_list_err=$?
