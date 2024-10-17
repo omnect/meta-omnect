@@ -24,14 +24,14 @@ function list(){
 function set () {
     [[ ${argsc} -ne 3 ]] && help && exit 1
     local key=${1}
-    local value=${2}
-    fw_setenv ${key} ${value}
+    local value=${@:2}
+    fw_setenv "${key}" "${value}"
 }
 
 function unset() {
     [[ ${argsc} -ne 2 ]] && help && exit 1
     local key=${1}
-    fw_setenv ${key}
+    fw_setenv "${key}"
 }
 
 [[ ${#} -lt 1 ]] && help && exit 1

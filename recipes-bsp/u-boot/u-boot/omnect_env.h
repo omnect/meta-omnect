@@ -10,9 +10,7 @@
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS \
     "data-mount-options:sw," \
-    "factory-reset:dw," \
-    "factory-reset-restore-list:sw," \
-    "factory-reset-status:sw," \
+    "factory-reset:sw," \
     "flash-mode:dw," \
     "flash-mode-devpath:sw," \
     "omnect_bootloader_updated:bw," \
