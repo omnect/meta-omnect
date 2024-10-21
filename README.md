@@ -339,9 +339,10 @@ The bootloader environment variables *flash-mode*, *flash-mode-url* and
 ### Factory Reset
 Set the OS bootloader environment variable `factory-reset`, in order to reset `data` and `etc` partitions
 ```sh
-sudo bootloader_env.sh set factory-reset 1
+sudo bootloader_env.sh set factory-reset '{"mode": 1, "preserve": ["network", "firewall", "certificates", "applications"]}'
 sudo reboot
 ```
+**Note**: The key "preserve" is optional.
 
 This re-creates the corresponding filesystems of partitions `data` and `etc` on the next boot (in the initramfs context).
 If the `factory` partition contains a directory `etc`, then the content is copied to the `etc` partition.
@@ -366,6 +367,7 @@ There is also the custom wipe mode. This mode provides the possibility to addres
 In the case of custom wipe, the factory reset (initramfs context) calls `/opt/factory_reset/custom-wipe` before re-creating the filesystems inside the partitions `etc` and `data`.
 In order to establish the custom wipe mode, a Yocto recipe `omnect-os-initramfs-scripts.bbappend` has to be supplied, which has to install the required utilities.
 
+<!-- @ToDo -->
 The factory reset provides the option to exclude particular files or directories.
 For example, it may make sense to keep the WIFI configuration, in order to prevent loosing the network connectivity.
 For this purpose, the OS bootloader environment variable `factory-reset-restore-list` has to be used for.
@@ -397,6 +399,7 @@ The overall `factory reset status` consists of two parts:
   - 0: wipe mode supported
   - 1: wipe mode unsupported
   - 2: backup/restore failure
+  - 3: @ToDo
 - *subordinated status* (execution exit status): in case of *main status* == 0 (success)
 
 In the case of a successfully performed factory reset, the OS bootloader environment variable `factory-reset-status` is set to the value `0:0`.
