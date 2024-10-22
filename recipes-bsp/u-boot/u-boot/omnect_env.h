@@ -40,13 +40,14 @@
 #define OMNECT_ENV_UPDATE_WORKFLOW \
     "omnect_update_flow=" \
         "printenv;env exists omnect_os_bootpart || echo \"initializing omnect_os_bootpart=2\" && setenv omnect_os_bootpart 2 && saveenv;" \
-        "if test \"${omnect_bootloader_updated}\" == \"1\"; then echo \"bootloader updated.\";saveenv;fi;" \
+        "if test \"${omnect_bootloader_updated}\" = \"1\"; then echo \"bootloader updated.\";saveenv;fi;" \
         "if test -n ${omnect_validate_update}; then " \
             "echo \"Update validation failed - booting from partition ${omnect_os_bootpart}\";" \
             "setenv omnect_validate_update_part;" \
             "setenv omnect_validate_update;" \
             "setenv omnect_validate_update_failed 1;" \
             "saveenv;" \
+            "printenv;" \
             "run distro_bootcmd;" \
         "else " \
             "if test -n ${omnect_validate_update_part}; then " \
@@ -54,6 +55,7 @@
                 "setenv omnect_validate_update 1;" \
                 "saveenv;" \
                 "setenv omnect_os_bootpart ${omnect_validate_update_part};" \
+                "printenv;" \
                 "run distro_bootcmd;" \
             "else "\
                 "echo \"Normal boot - booting from partition ${omnect_os_bootpart}\";" \
