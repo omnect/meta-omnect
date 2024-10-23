@@ -6,12 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.25.0"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.26.0"
 SRC_URI += "git://github.com/mlilien/omnect-device-service.git;protocol=https;nobranch=1;branch=factory-reset"
-SRCREV = "8039ad7850cb5e9a52fe899ae866f338dfe39777"
+SRCREV = "fbba0acbd63a4687b389d9361296a4288db07e0c"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+8039ad7850"
+PV:append = ".AUTOINC+fbba0acbd6"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -35,7 +35,7 @@ SRC_URI += " \
     crate://crates.io/android-tzdata/0.1.1 \
     crate://crates.io/android_system_properties/0.1.5 \
     crate://crates.io/anstyle/1.0.8 \
-    crate://crates.io/anyhow/1.0.89 \
+    crate://crates.io/anyhow/1.0.90 \
     crate://crates.io/asn1-rs-derive/0.5.1 \
     crate://crates.io/asn1-rs-impl/0.2.0 \
     crate://crates.io/asn1-rs/0.6.2 \
@@ -70,7 +70,7 @@ SRC_URI += " \
     crate://crates.io/byteorder/1.5.0 \
     crate://crates.io/bytes/1.7.2 \
     crate://crates.io/bytestring/1.3.1 \
-    crate://crates.io/cc/1.1.28 \
+    crate://crates.io/cc/1.1.30 \
     crate://crates.io/cexpr/0.6.0 \
     crate://crates.io/cfg-if/1.0.0 \
     crate://crates.io/cfg_aliases/0.2.1 \
@@ -162,13 +162,13 @@ SRC_URI += " \
     crate://crates.io/hyper-timeout/0.5.1 \
     crate://crates.io/hyper-tls/0.6.0 \
     crate://crates.io/hyper-util/0.1.9 \
-    crate://crates.io/hyper/0.14.30 \
-    crate://crates.io/hyper/1.4.1 \
+    crate://crates.io/hyper/0.14.31 \
+    crate://crates.io/hyper/1.5.0 \
     crate://crates.io/iana-time-zone-haiku/0.1.2 \
     crate://crates.io/iana-time-zone/0.1.61 \
     crate://crates.io/ident_case/1.0.1 \
     crate://crates.io/idna/0.5.0 \
-    crate://crates.io/impl-more/0.1.6 \
+    crate://crates.io/impl-more/0.1.8 \
     crate://crates.io/indexmap/1.9.3 \
     crate://crates.io/indexmap/2.6.0 \
     crate://crates.io/inotify-sys/0.1.5 \
@@ -179,13 +179,13 @@ SRC_URI += " \
     crate://crates.io/itertools/0.12.1 \
     crate://crates.io/itoa/1.0.11 \
     crate://crates.io/jobserver/0.1.32 \
-    crate://crates.io/js-sys/0.3.71 \
+    crate://crates.io/js-sys/0.3.72 \
     crate://crates.io/kqueue-sys/1.0.4 \
     crate://crates.io/kqueue/1.0.8 \
     crate://crates.io/language-tags/0.3.2 \
     crate://crates.io/lazy_static/1.5.0 \
     crate://crates.io/lazycell/1.3.0 \
-    crate://crates.io/libc/0.2.159 \
+    crate://crates.io/libc/0.2.161 \
     crate://crates.io/libloading/0.8.5 \
     crate://crates.io/libredox/0.1.3 \
     crate://crates.io/linked-hash-map/0.5.6 \
@@ -227,8 +227,8 @@ SRC_URI += " \
     crate://crates.io/once_cell/1.20.2 \
     crate://crates.io/openssl-macros/0.1.1 \
     crate://crates.io/openssl-probe/0.1.5 \
-    crate://crates.io/openssl-sys/0.9.103 \
-    crate://crates.io/openssl/0.10.66 \
+    crate://crates.io/openssl-sys/0.9.104 \
+    crate://crates.io/openssl/0.10.68 \
     crate://crates.io/ordered-stream/0.2.0 \
     crate://crates.io/parking/2.2.1 \
     crate://crates.io/parking_lot/0.12.3 \
@@ -248,7 +248,7 @@ SRC_URI += " \
     crate://crates.io/predicates/3.1.2 \
     crate://crates.io/prettyplease/0.2.22 \
     crate://crates.io/proc-macro-crate/1.3.1 \
-    crate://crates.io/proc-macro2/1.0.87 \
+    crate://crates.io/proc-macro2/1.0.88 \
     crate://crates.io/quote/1.0.37 \
     crate://crates.io/rand/0.8.5 \
     crate://crates.io/rand_chacha/0.3.1 \
@@ -267,10 +267,10 @@ SRC_URI += " \
     crate://crates.io/rustix/0.37.27 \
     crate://crates.io/rustix/0.38.37 \
     crate://crates.io/rustls-pemfile/2.2.0 \
-    crate://crates.io/rustls-pki-types/1.9.0 \
+    crate://crates.io/rustls-pki-types/1.10.0 \
     crate://crates.io/rustls-webpki/0.102.8 \
-    crate://crates.io/rustls/0.23.14 \
-    crate://crates.io/rustversion/1.0.17 \
+    crate://crates.io/rustls/0.23.15 \
+    crate://crates.io/rustversion/1.0.18 \
     crate://crates.io/ryu/1.0.18 \
     crate://crates.io/same-file/1.0.6 \
     crate://crates.io/schannel/0.1.26 \
@@ -281,7 +281,7 @@ SRC_URI += " \
     crate://crates.io/semver/1.0.23 \
     crate://crates.io/serde/1.0.210 \
     crate://crates.io/serde_derive/1.0.210 \
-    crate://crates.io/serde_json/1.0.128 \
+    crate://crates.io/serde_json/1.0.131 \
     crate://crates.io/serde_repr/0.1.19 \
     crate://crates.io/serde_spanned/0.6.8 \
     crate://crates.io/serde_urlencoded/0.7.1 \
@@ -345,20 +345,20 @@ SRC_URI += " \
     crate://crates.io/unicode-normalization/0.1.24 \
     crate://crates.io/untrusted/0.9.0 \
     crate://crates.io/url/2.5.2 \
-    crate://crates.io/uuid/1.10.0 \
+    crate://crates.io/uuid/1.11.0 \
     crate://crates.io/vcpkg/0.2.15 \
     crate://crates.io/version_check/0.9.5 \
     crate://crates.io/waker-fn/1.2.0 \
     crate://crates.io/walkdir/2.5.0 \
     crate://crates.io/want/0.3.1 \
     crate://crates.io/wasi/0.11.0+wasi-snapshot-preview1 \
-    crate://crates.io/wasm-bindgen-backend/0.2.94 \
-    crate://crates.io/wasm-bindgen-futures/0.4.44 \
-    crate://crates.io/wasm-bindgen-macro-support/0.2.94 \
-    crate://crates.io/wasm-bindgen-macro/0.2.94 \
-    crate://crates.io/wasm-bindgen-shared/0.2.94 \
-    crate://crates.io/wasm-bindgen/0.2.94 \
-    crate://crates.io/web-sys/0.3.71 \
+    crate://crates.io/wasm-bindgen-backend/0.2.95 \
+    crate://crates.io/wasm-bindgen-futures/0.4.45 \
+    crate://crates.io/wasm-bindgen-macro-support/0.2.95 \
+    crate://crates.io/wasm-bindgen-macro/0.2.95 \
+    crate://crates.io/wasm-bindgen-shared/0.2.95 \
+    crate://crates.io/wasm-bindgen/0.2.95 \
+    crate://crates.io/web-sys/0.3.72 \
     crate://crates.io/which/4.4.2 \
     crate://crates.io/winapi-i686-pc-windows-gnu/0.4.0 \
     crate://crates.io/winapi-util/0.1.9 \
