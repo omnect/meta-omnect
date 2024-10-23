@@ -421,22 +421,15 @@ Example for an error, where ´/etc/omnect/factory-reset.d/restore_file_error.jso
 }
 ```
 
-
-
-It has the following format:
-```bnf
-<factory reset status> ::= <main status>':'<subordinated status>
-<main status>          ::= <unsigned integer>
-<subordinated status>  ::= <unsigned integer> | '-'
-```
-
-The overall `factory reset status` consists of two parts:
+The overall `factory reset status` consists of:
 - `status` (general processing state):
   - 0: wipe mode supported
   - 1: wipe mode unsupported
   - 2: backup/restore failure
   - 3: configuration error; see "context" for details
 - `error`:  execution exit status. in case of of success == 0, if not applicaple: `-`.
+- optional: `context` on warnings or errors
+- array `paths` of preserved files or directories
 
 ### Debug Mount Options of Data Partition
 
