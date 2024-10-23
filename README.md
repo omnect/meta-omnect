@@ -367,26 +367,62 @@ There is also the custom wipe mode. This mode provides the possibility to addres
 In the case of custom wipe, the factory reset (initramfs context) calls `/opt/factory_reset/custom-wipe` before re-creating the filesystems inside the partitions `etc` and `data`.
 In order to establish the custom wipe mode, a Yocto recipe `omnect-os-initramfs-scripts.bbappend` has to be supplied, which has to install the required utilities.
 
-<!-- @ToDo -->
-The factory reset provides the option to exclude particular files or directories.
-For example, it may make sense to keep the WIFI configuration, in order to prevent loosing the network connectivity.
-For this purpose, the OS bootloader environment variable `factory-reset-restore-list` has to be used for.
-In the following example, the regular file `/etc/wpa_supplicant.conf` and the directory
-`/etc/aziot/identityd/` survives the factory reset:<br>
-```sh
-sudo bootloader_env.sh set factory-reset-restore-list '/etc/wpa_supplicant.conf;/etc/aziot/identityd/'
+The factory reset provides the option "preserve" to exclude particular files or directories.
+The topics in the array "preserve" are defined by the keys of [`/etc/omnect/factory-reset.json`](recipes-omnect/omnect-device-service/omnect-device-service/factory-reset.json).<br>
+Furthermore the topic "applications" preserves custom
+configurations defined by configurations in `/etc/omnect/factory-reset.d`.
+#### Custom Factory Reset Configuration
+A custom configuration to preserve files from a factory reset is a json file in `/etc/omnect/factory-reset.d` with the format:<br>
+
+```json
+{
+  "paths": [
+    "/home/omnect/.bash_history",
+    "/home/root/.bash_history"
+  ]
+}
 ```
+This example preserves the `bash_history` of the users `omnect` and `root`.
 
-The list of path names is separated by the character `;` and is enclosed by the `'` quotation mark.
-The factory reset is directed to the partitions `etc` and `data`.
-Therefore, path names with the following prefixes are allowed: `/etc/`, `/home/`, `/var/lib/`, `/var/log/`, `/usr/local/` and /mnt/data.
-
-In the case of an error during the backup of a file or directory part of the restore list, the whole factory reset will be aborted
+#### Factory Reset Result
+In the case of an error during the backup of a files or directories the whole factory reset will be aborted
 and the partitions `etc` and `data` remain untouched.
-In the case of an error during the restore of a file or directory, the restore processing will be continued with other paths part of the restore list.
+In the case of an error during the restore of a file or directory, the restore processing will be continued for the other files or directories.
 In both cases, the error will be indicated by the factory reset status (see below).
 
-The status of the factory reset is returned by the OS bootloader environment variable `factory-reset-status`.
+The status of the factory reset is returned by the json object `factory-reset` in `/run/omnect-device-service/omnect-os-initramfs.json`.
+
+Example for a success:
+```sh
+# jq '."factory-reset"' /run/omnect-device-service/omnect-os-initramfs.json
+```
+```json
+{
+  "status": 0,
+  "error": "0",
+  "paths": [
+    "/etc/omnect/factory-reset.d/",
+    "/etc/restore_file",
+    "/home/omnect/.bash_history",
+    "/home/root/.bash_history"
+  ]
+}
+```
+
+Example for an error, where ´/etc/omnect/factory-reset.d/restore_file_error.json´ doesn't have a `paths` object.:
+```json
+{
+  "status": 3,
+  "error": "5",
+  "context": "/etc/omnect/factory-reset.d/restore_file_error.json:paths",
+  "paths": [
+    "/etc/omnect/factory-reset.d/"
+  ]
+}
+```
+
+
+
 It has the following format:
 ```bnf
 <factory reset status> ::= <main status>':'<subordinated status>
@@ -395,14 +431,12 @@ It has the following format:
 ```
 
 The overall `factory reset status` consists of two parts:
-- *main status* (general processing state):
+- `status` (general processing state):
   - 0: wipe mode supported
   - 1: wipe mode unsupported
   - 2: backup/restore failure
-  - 3: @ToDo
-- *subordinated status* (execution exit status): in case of *main status* == 0 (success)
-
-In the case of a successfully performed factory reset, the OS bootloader environment variable `factory-reset-status` is set to the value `0:0`.
+  - 3: configuration error; see "context" for details
+- `error`:  execution exit status. in case of of success == 0, if not applicaple: `-`.
 
 ### Debug Mount Options of Data Partition
 

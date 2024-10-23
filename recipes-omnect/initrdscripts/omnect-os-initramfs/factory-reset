@@ -212,7 +212,7 @@ handle_status() {
     msg "status: status=${status}, error=${error}, preserve_path=${preserve_paths[@]}"
 
     echo "{}" | jq -e \
-        --arg status "${status}" \
+        --argjson status "${status}" \
         --arg error "${error}" \
         '.status=$status | .error=$error | .paths=$ARGS.positional' --args ${preserve_paths[@]} > \
         /tmp/factory-reset.json
@@ -227,7 +227,7 @@ handle_status_with_context() {
     msg "status: status=${status}, error=${error}, context=${context}, preserve_path=${preserve_paths[@]}"
 
     echo "{}" | jq -e \
-        --arg status "${status}" \
+        --argjson status "${status}" \
         --arg error "${error}" \
         --arg context "${context}" \
         '.status=$status | .error=$error | .context=$context | .paths=$ARGS.positional' --args ${preserve_paths[@]} > \
@@ -263,7 +263,7 @@ factory_reset_run() {
         for i in $(find ${ROOTFS_DIR}/etc/omnect/factory-reset.d/ -iname *.json); do
             preserve_list+=( $(cat ${i} | jq -r -e '.paths[]') )
             preserve_list_err=$?
-            [[ 0 -ne ${preserve_list_err} ]] && { handle_status_with_context "3" "${preserve_list_err}" "${i}:paths" "${preserve_list}"; factory_reset_umount; return 0; }
+            [[ 0 -ne ${preserve_list_err} ]] && { handle_status_with_context "3" "${preserve_list_err}" "${i/${ROOTFS_DIR}}:paths" "${preserve_list}"; factory_reset_umount; return 0; }
         done
     fi
 
