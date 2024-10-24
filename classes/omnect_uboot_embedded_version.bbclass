@@ -89,23 +89,15 @@ python omnect_uboot_embed_version() {
     import os
     import shutil
     import gzip
-    import time
     from pathlib import Path
 
     # read the previously calculated version information
-    # NOTE:
-    #   yes, the following polling is rather ugly, but due to the nature of how
-    #   the checksum file is generated (done during recipe parsing) there is no
-    #   other possibility to busy-wait for the file to appear ...
-    while True:
-        bootloader_version_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version"
-        try:
-            with open( bootloader_version_file, "r", encoding="utf-8") as f:
-                omnect_bootloader_version = f.read()
-            break
-        except OSError:
-            bb.warn("Unable to read from bootloader version file \"%s\" wait for it to appear" % (bootloader_version_file))
-            time.sleep(3)
+    bootloader_version_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version"
+    try:
+        with open( bootloader_version_file, "r", encoding="utf-8") as f:
+            omnect_bootloader_version = f.read()
+    except OSError:
+        bb.fatal("Unable to read from bootloader version file \"%s\"" % (bootloader_version_file))
 
     # be prepared for the case that the one byte version length possibly
     # becomes insufficient! maybe we want to handle most significant bit for
