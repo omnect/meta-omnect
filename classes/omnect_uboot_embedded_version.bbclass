@@ -77,9 +77,9 @@
 #  - <version string> is the actual version, w/o terminating character
 #
 
-# we need the calculated bootloader version, so inherit class
-# omnect_bootloader_versioning alongside deploy
-inherit deploy omnect_bootloader_versioning
+SRC_URI += "file://${DEPLOY_DIR_IMAGE}/omnect_bootloader_version"
+
+inherit deploy
 
 # define magic number for embedded bootloader version
 OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC = "19 69 02 28"
