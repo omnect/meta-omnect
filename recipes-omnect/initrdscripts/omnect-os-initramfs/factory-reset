@@ -8,6 +8,7 @@
 
 factory_reset_backup_dir="/tmp/factory_reset/backup"
 factory_reset=""
+warnings=""
 
 # called by generic INITRAMFS
 factory_reset_enabled() {
@@ -165,7 +166,7 @@ iterate_restore_list() {
     for i in ${restore_list[@]}; do
         if [ ${do_backup} -eq 1 ]; then
             factory_reset_backup "${i}"; ret=$?
-            [[ ${ret} -ne 0 ]] && { handle_status_with_context "2" "${ret}" "${i}:backup" "${restore_list[@]}"; return ${ret}; }
+            [[ ${ret} -ne 0 ]] && { handle_status "2" "${ret}" "${i}:backup" "${restore_list[@]}"; return ${ret}; }
         else
             factory_reset_restore "${i}"; ret=$?
             if [ ${ret} -ne 0 ]; then
@@ -177,12 +178,12 @@ iterate_restore_list() {
 
     if [ 2 -eq ${status} ]; then
         context="${context%?}:restore"
-        handle_status_with_context "${status}" "${ret}" "${context}" "${restore_list[@]}"
+        handle_status "${status}" "${ret}" "${context}" "${restore_list[@]}"
         return ${ret}
     fi
 
     # ToDO reflect possible wiper error in status?
-    [[ 0 -eq ${do_backup} ]] && handle_status "0" "0" "${restore_list[@]}"
+    [[ 0 -eq ${do_backup} ]] && handle_status "0" "0" "" "${restore_list[@]}"
     sync
     return 0
 }
@@ -208,30 +209,29 @@ factory_reset_umount() {
 handle_status() {
     local status=${1}
     local error=${2}
-    local preserve_paths=${@:3}
-    msg "status: status=${status}, error=${error}, preserve_path=${preserve_paths[@]}"
-
-    echo "{}" | jq -e \
-        --argjson status "${status}" \
-        --arg error "${error}" \
-        '.status=$status | .error=$error | .paths=$ARGS.positional' --args ${preserve_paths[@]} > \
-        /tmp/factory-reset.json
-}
-
-handle_status_with_context() {
-    local status=${1}
-    local error=${2}
     local context=${3}
     local preserve_paths=${@:4}
 
     msg "status: status=${status}, error=${error}, context=${context}, preserve_path=${preserve_paths[@]}"
+    if [ -n "${warnings}" ]; then
+        [[ -n "${context}" ]] && context+=";"
+        context+="${warnings}"
+    fi
 
-    echo "{}" | jq -e \
-        --argjson status "${status}" \
-        --arg error "${error}" \
-        --arg context "${context}" \
-        '.status=$status | .error=$error | .context=$context | .paths=$ARGS.positional' --args ${preserve_paths[@]} > \
-        /tmp/factory-reset.json
+    if [ -n "${context}" ]; then
+        echo "{}" | jq -e \
+            --argjson status "${status}" \
+            --arg error "${error}" \
+            --arg context "${context}" \
+            '.status=$status | .error=$error | .context=$context | .paths=$ARGS.positional' --args ${preserve_paths[@]} > \
+            /tmp/factory-reset.json
+    else
+        echo "{}" | jq -e \
+            --argjson status "${status}" \
+            --arg error "${error}" \
+            '.status=$status | .error=$error | .paths=$ARGS.positional' --args ${preserve_paths[@]} > \
+            /tmp/factory-reset.json
+    fi
 }
 
 # main entry point
@@ -243,11 +243,11 @@ factory_reset_run() {
         return 1
     fi
 
-    local mode=$(echo "${factory_reset}" | jq -e -r .mode) || { handle_status_with_context "1" "-" "mode_not_set" ""; return 0; }
+    local mode=$(echo "${factory_reset}" | jq -e -r .mode) || { handle_status "1" "-" "mode_not_set" ""; return 0; }
     # don't error if preserve is not set
     local preserve=$(echo "${factory_reset}" | jq -r '.preserve')
     if [[ "null" != "${preserve}" ]]; then
-        preserve=($(echo "${factory_reset}" | jq -e -r '.preserve | .[]')) || { handle_status_with_context "3" "-" "could_not_parse_preserve_array" ""; return 0; }
+        preserve=($(echo "${factory_reset}" | jq -e -r '.preserve | .[]')) || { handle_status "3" "-" "could_not_parse_preserve_array" ""; return 0; }
     else
         preserve=()
     fi
@@ -263,14 +263,14 @@ factory_reset_run() {
         for i in $(find ${ROOTFS_DIR}/etc/omnect/factory-reset.d/ -iname *.json); do
             preserve_list+=( $(cat ${i} | jq -r -e '.paths[]') )
             preserve_list_err=$?
-            [[ 0 -ne ${preserve_list_err} ]] && { handle_status_with_context "3" "${preserve_list_err}" "${i/${ROOTFS_DIR}}:paths" "${preserve_list}"; factory_reset_umount; return 0; }
+            [[ 0 -ne ${preserve_list_err} ]] && { handle_status "3" "${preserve_list_err}" "${i/${ROOTFS_DIR}}:paths" "${preserve_list}"; factory_reset_umount; return 0; }
         done
     fi
 
     for key in ${preserve[@]}; do
         preserve_list+=( $(cat ${ROOTFS_DIR}/etc/omnect/factory-reset.json | jq -r -e --arg key "${key}" .$key[]) )
         preserve_list_err=$?
-        [[ 0 -ne ${preserve_list_err} ]] && { handle_status_with_context "3" "${preserve_list_err}" "${ROOTFS_DIR}/etc/omnect/factory-reset.json:${key}" "${preserve_list[@]}"; factory_reset_umount; return 0; }
+        [[ 0 -ne ${preserve_list_err} ]] && { handle_status "3" "${preserve_list_err}" "${ROOTFS_DIR}/etc/omnect/factory-reset.json:${key}" "${preserve_list[@]}"; factory_reset_umount; return 0; }
     done
 
     msg "factor-reset preserve_list=${preserve_list[@]}"
@@ -295,14 +295,18 @@ factory_reset_run() {
            wipe_ret=$?
            ;;
         *) msg "ERROR: factory reset mode \"${mode}\" not supported; abort..."
-           handle_status "1" "-" "${preserve_list[@]}"
+           handle_status "1" "-" "" "${preserve_list[@]}"
            return 0
            ;;
     esac
 
     # if we had a wipe error, we will try to continue anyway
-    # ToDo currently we don't reflect a wipe_error in the resulting factory-reset.json
-    [[ 0 -ne ${wipe_ret} ]] && msg_warning "wipe failed with \"${wipe_ret}\""
+    if [ 0 -ne ${wipe_ret} ]; then
+        warning_wipe="warning: wipe failed with \"${wipe_ret}\""
+        [[ -n "${warnings}" ]] && warnings+=";"
+        warnings+="${warning_wipe}"
+        msg_warning "${warning_wipe/"warning: "}"
+    fi
 
     # enforce mkfs
     reformat_ext4_fs "/dev/omnect/data" "data"
