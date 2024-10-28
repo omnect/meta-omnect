@@ -7,7 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "kirkstone"
-    commit: "683d976af780003b647a6144bde3cdd1ec7f240a"
+    commit: "54a6cce191886cb97c259ebdd344e05cbadd3e8f"
     patches:
       p001:
         repo: "meta-omnect"
