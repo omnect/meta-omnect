@@ -385,7 +385,7 @@ A custom configuration to preserve files from a factory reset is a json file in 
 This example preserves the `bash_history` of the users `omnect` and `root`.
 
 #### Factory Reset Result
-In the case of an error during the backup of a files or directories the whole factory reset will be aborted
+In the case of an error during the backup of files or directories the whole factory reset will be aborted
 and the partitions `etc` and `data` remain untouched.
 In the case of an error during the restore of a file or directory, the restore processing will be continued for the other files or directories.
 In both cases, the error will be indicated by the factory reset status (see below).
