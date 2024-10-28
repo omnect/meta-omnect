@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.25.0"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.26.0"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "e1a69ec6d0686da406aafdc9ed7537392e1d660e"
+SRCREV = "264c290c83f74a024104be09558306261965e900"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -35,7 +35,7 @@ SRC_URI += " \
     crate://crates.io/android-tzdata/0.1.1 \
     crate://crates.io/android_system_properties/0.1.5 \
     crate://crates.io/anstyle/1.0.8 \
-    crate://crates.io/anyhow/1.0.90 \
+    crate://crates.io/anyhow/1.0.91 \
     crate://crates.io/asn1-rs-derive/0.5.1 \
     crate://crates.io/asn1-rs-impl/0.2.0 \
     crate://crates.io/asn1-rs/0.6.2 \
@@ -68,9 +68,9 @@ SRC_URI += " \
     crate://crates.io/brotli/6.0.0 \
     crate://crates.io/bumpalo/3.16.0 \
     crate://crates.io/byteorder/1.5.0 \
-    crate://crates.io/bytes/1.7.2 \
+    crate://crates.io/bytes/1.8.0 \
     crate://crates.io/bytestring/1.3.1 \
-    crate://crates.io/cc/1.1.30 \
+    crate://crates.io/cc/1.1.31 \
     crate://crates.io/cexpr/0.6.0 \
     crate://crates.io/cfg-if/1.0.0 \
     crate://crates.io/cfg_aliases/0.2.1 \
@@ -246,9 +246,9 @@ SRC_URI += " \
     crate://crates.io/predicates-core/1.0.8 \
     crate://crates.io/predicates-tree/1.0.11 \
     crate://crates.io/predicates/3.1.2 \
-    crate://crates.io/prettyplease/0.2.22 \
+    crate://crates.io/prettyplease/0.2.25 \
     crate://crates.io/proc-macro-crate/1.3.1 \
-    crate://crates.io/proc-macro2/1.0.88 \
+    crate://crates.io/proc-macro2/1.0.89 \
     crate://crates.io/quote/1.0.37 \
     crate://crates.io/rand/0.8.5 \
     crate://crates.io/rand_chacha/0.3.1 \
@@ -279,9 +279,9 @@ SRC_URI += " \
     crate://crates.io/security-framework-sys/2.12.0 \
     crate://crates.io/security-framework/2.11.1 \
     crate://crates.io/semver/1.0.23 \
-    crate://crates.io/serde/1.0.210 \
-    crate://crates.io/serde_derive/1.0.210 \
-    crate://crates.io/serde_json/1.0.131 \
+    crate://crates.io/serde/1.0.213 \
+    crate://crates.io/serde_derive/1.0.213 \
+    crate://crates.io/serde_json/1.0.132 \
     crate://crates.io/serde_repr/0.1.19 \
     crate://crates.io/serde_spanned/0.6.8 \
     crate://crates.io/serde_urlencoded/0.7.1 \
@@ -306,7 +306,7 @@ SRC_URI += " \
     crate://crates.io/strum_macros/0.26.4 \
     crate://crates.io/subtle/2.6.1 \
     crate://crates.io/syn/1.0.109 \
-    crate://crates.io/syn/2.0.79 \
+    crate://crates.io/syn/2.0.85 \
     crate://crates.io/sync_wrapper/1.0.1 \
     crate://crates.io/synstructure/0.13.1 \
     crate://crates.io/system-configuration-sys/0.6.0 \
@@ -314,8 +314,8 @@ SRC_URI += " \
     crate://crates.io/systemd-zbus/0.1.1 \
     crate://crates.io/tempfile/3.13.0 \
     crate://crates.io/termtree/0.4.1 \
-    crate://crates.io/thiserror-impl/1.0.64 \
-    crate://crates.io/thiserror/1.0.64 \
+    crate://crates.io/thiserror-impl/1.0.65 \
+    crate://crates.io/thiserror/1.0.65 \
     crate://crates.io/time-core/0.1.2 \
     crate://crates.io/time-macros/0.2.18 \
     crate://crates.io/time/0.3.36 \
@@ -327,7 +327,7 @@ SRC_URI += " \
     crate://crates.io/tokio-rustls/0.26.0 \
     crate://crates.io/tokio-stream/0.1.16 \
     crate://crates.io/tokio-util/0.7.12 \
-    crate://crates.io/tokio/1.40.0 \
+    crate://crates.io/tokio/1.41.0 \
     crate://crates.io/toml/0.8.19 \
     crate://crates.io/toml_datetime/0.6.8 \
     crate://crates.io/toml_edit/0.19.15 \

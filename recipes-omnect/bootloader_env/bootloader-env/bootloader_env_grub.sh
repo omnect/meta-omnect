@@ -12,7 +12,8 @@ function help() {
 function get() {
     [[ ${argsc} -ne 2 ]] && help && exit 1
     local key=${1}
-    local value=$(grub-editenv ${grubenv} list | grep ^${key}= | awk -F'=' '{print $2}')
+    local value=$(grub-editenv ${grubenv} list)
+    value=${value/${key}=}
     [[ -z "${value}" ]] && echo && exit 2
     echo ${value}
 }
@@ -25,14 +26,14 @@ function list(){
 function set () {
     [[ ${argsc} -ne 3 ]] && help && exit 1
     local key=${1}
-    local value=${2}
-    grub-editenv ${grubenv} set ${key}=${value}
+    local value=${@:2}
+    grub-editenv ${grubenv} set "${key}"="${value}"
 }
 
 function unset() {
     [[ ${argsc} -ne 2 ]] && help && exit 1
     local key=${1}
-    grub-editenv ${grubenv} unset ${key}
+    grub-editenv ${grubenv} unset "${key}"
 }
 
 [[ ${#} -lt 1 ]] && help && exit 1
