@@ -236,16 +236,17 @@ handle_status() {
 
 # main entry point
 factory_reset_run() {
+    local mode=""
+    local preserve=""
     # explictly no exit hook handling here
 
     if [ -z "${ROOTFS_DIR}" ]; then
         fatal "no ROOTFS_DIR"
         return 1
     fi
-
-    local mode=$(echo "${factory_reset}" | jq -e -r .mode) || { handle_status "1" "-" "mode_not_set" ""; return 0; }
+    mode=$(echo "${factory_reset}" | jq -e -r '.mode') || { handle_status "1" "-" "mode_not_set" ""; return 0; }
     # don't error if preserve is not set
-    local preserve=$(echo "${factory_reset}" | jq -r '.preserve')
+    preserve=$(echo "${factory_reset}" | jq -r '.preserve')
     if [[ "null" != "${preserve}" ]]; then
         preserve=($(echo "${factory_reset}" | jq -e -r '.preserve | .[]')) || { handle_status "3" "-" "could_not_parse_preserve_array" ""; return 0; }
     else
