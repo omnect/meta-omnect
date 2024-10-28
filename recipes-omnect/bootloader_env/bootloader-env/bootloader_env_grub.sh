@@ -12,7 +12,7 @@ function help() {
 function get() {
     [[ ${argsc} -ne 2 ]] && help && exit 1
     local key=${1}
-    local value=$(grub-editenv ${grubenv} list)
+    local value=$(grub-editenv ${grubenv} list | grep ^${key}=)
     value=${value/${key}=}
     [[ -z "${value}" ]] && echo && exit 2
     echo ${value}
