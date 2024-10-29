@@ -245,9 +245,9 @@ factory_reset_run() {
         return 1
     fi
     mode=$(echo "${factory_reset}" | jq -e -r '.mode') || { handle_status "1" "-" "mode_not_set" ""; return 0; }
-    # don't error if preserve is not set
+    # don't error if preserve is an empty array or even not set
     preserve=$(echo "${factory_reset}" | jq -r '.preserve')
-    if [[ "null" != "${preserve}" ]]; then
+    if [[ "null" != "${preserve}" && "[]" != "${preserve}" ]]; then
         preserve=($(echo "${factory_reset}" | jq -e -r '.preserve | .[]')) || { handle_status "3" "-" "could_not_parse_preserve_array" ""; return 0; }
     else
         preserve=()
