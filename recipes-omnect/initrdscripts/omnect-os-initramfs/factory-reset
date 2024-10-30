@@ -9,6 +9,7 @@
 factory_reset_backup_dir="/tmp/factory_reset/backup"
 factory_reset=""
 warnings=""
+mount=0
 
 # called by generic INITRAMFS
 factory_reset_enabled() {
@@ -134,15 +135,15 @@ factory_reset_restore() {
 
     while [[ "${destpath}" != "${ROOTFS_DIR}" ]]; do
         mountpoint -q ${destpath} && nested_mount=${destpath/${ROOTFS_DIR}} && break
-        destpath=${destpath%\/*}
+        destpath=$(dirname ${destpath})
     done
 
     # do restore, keep permissions and ownership
     if [ -n "${nested_mount}" ]; then
         msg "nested mount: ${factory_reset_backup_dir}/${ROOTFS_DIR}${nested_mount}"
         cd ${factory_reset_backup_dir}/${ROOTFS_DIR}${nested_mount}
-        path_name=${path_name/${nested_mount}}
-        run_cmd cp --parents -av "${path_name:1}" "${ROOTFS_DIR}${nested_mount}"
+        path_name=${path_name#${nested_mount}\/}
+        run_cmd cp --parents -av "${path_name}" "${ROOTFS_DIR}${nested_mount}"
         ret=$?
         cd - &>/dev/null
     else
@@ -157,7 +158,7 @@ factory_reset_restore() {
 
 iterate_restore_list() {
     local    do_backup="${1}"
-    local restore_list="${@:2}"
+    local restore_list=( "${@:2}" )
 
     local ret=0
     local status=0
@@ -189,6 +190,7 @@ iterate_restore_list() {
 }
 
 factory_reset_mount() {
+    mount=1
     mount_partition "ext4" "/dev/omnect/rootCurrent" "${ROOTFS_DIR}" "defaults,ro"
     mount_partition "ext4" "/dev/omnect/factory" "${ROOTFS_DIR}/mnt/factory" "defaults,ro"
     setup_etc_partition  "${ROOTFS_DIR}" "defaults,rw"
@@ -197,6 +199,7 @@ factory_reset_mount() {
 }
 
 factory_reset_umount() {
+    mount=0
     umount_persistent_var_log "${ROOTFS_DIR}"
     umount_data_partition "${ROOTFS_DIR}"
     umount_etc_partition  "${ROOTFS_DIR}"
@@ -210,7 +213,7 @@ handle_status() {
     local status=${1}
     local error=${2}
     local context=${3}
-    local preserve_paths=${@:4}
+    local preserve_paths=( "${@:4}" )
 
     msg "status: status=${status}, error=${error}, context=${context}, preserve_path=${preserve_paths[@]}"
     if [ -n "${warnings}" ]; then
@@ -234,21 +237,25 @@ handle_status() {
     fi
 }
 
+factory_reset_post () {
+    [[ ${mount} -eq 1 ]] && factory_reset_umount
+}
+
 # main entry point
 factory_reset_run() {
     local mode=""
     local preserve=""
-    # explictly no exit hook handling here
+
+    add_module_post_hook factory_reset_post
 
     if [ -z "${ROOTFS_DIR}" ]; then
         fatal "no ROOTFS_DIR"
         return 1
     fi
-    mode=$(echo "${factory_reset}" | jq -e -r '.mode') || { handle_status "1" "-" "mode_not_set" ""; return 0; }
-    # don't error if preserve is an empty array or even not set
-    preserve=$(echo "${factory_reset}" | jq -r '.preserve')
-    if [[ "null" != "${preserve}" && "[]" != "${preserve}" ]]; then
-        preserve=($(echo "${factory_reset}" | jq -e -r '.preserve | .[]')) || { handle_status "3" "-" "could_not_parse_preserve_array" ""; return 0; }
+    mode=$(echo "${factory_reset}" | jq -e -r '.mode') || { handle_status "1" "-" "mode not set" ""; return; }
+    preserve=$(echo "${factory_reset}" | jq -e -r '.preserve') || { handle_status "1" "-" "preserve object not set" ""; return; }
+    if [ "[]" != "${preserve}" ]; then
+        preserve=($(echo "${factory_reset}" | jq -e -r '.preserve | .[]')) || { handle_status "3" "-" "could_not_parse_preserve_array" ""; return; }
     else
         preserve=()
     fi
@@ -261,24 +268,24 @@ factory_reset_run() {
     preserve_list+=("/etc/omnect/factory-reset.d/")
     if [[ " ${preserve[@]} " =~ " applications " ]]; then
         preserve=( ${preserve[@]/applications} )
+        local preserve_path="";
         for i in $(find ${ROOTFS_DIR}/etc/omnect/factory-reset.d/ -iname *.json); do
-            preserve_list+=( $(cat ${i} | jq -r -e '.paths[]') )
-            preserve_list_err=$?
-            [[ 0 -ne ${preserve_list_err} ]] && { handle_status "3" "${preserve_list_err}" "${i/${ROOTFS_DIR}}:paths" "${preserve_list}"; factory_reset_umount; return 0; }
+            preserve_path=$(jq -r -e '.paths' ${i}) || { handle_status "3" "-" "${i/${ROOTFS_DIR}}: no path object" "${preserve_list}"; return; }
+            [[ "[]" != ${preserve_path} ]] && \
+                preserve_list+=( $(jq -r -e '.paths[]' ${i}) ) || { handle_status "3" "${?}" "${i/${ROOTFS_DIR}}: could parse paths array" "${preserve_list}"; return; }
         done
     fi
 
-    for key in ${preserve[@]}; do
-        preserve_list+=( $(cat ${ROOTFS_DIR}/etc/omnect/factory-reset.json | jq -r -e --arg key "${key}" .$key[]) )
-        preserve_list_err=$?
-        [[ 0 -ne ${preserve_list_err} ]] && { handle_status "3" "${preserve_list_err}" "${ROOTFS_DIR}/etc/omnect/factory-reset.json:${key}" "${preserve_list[@]}"; factory_reset_umount; return 0; }
+    for key in "${preserve[@]}"; do
+        preserve_list+=( $(jq -r -e --arg key "${key}" .$key[] ${ROOTFS_DIR}/etc/omnect/factory-reset.json) ) || \
+            { handle_status "3" "${?}" "${ROOTFS_DIR}/etc/omnect/factory-reset.json:${key}" "${preserve_list[@]}"; return; }
     done
 
     msg "factor-reset preserve_list=${preserve_list[@]}"
 
     # do the backup
     run_cmd mkdir -p ${factory_reset_backup_dir}
-    iterate_restore_list 1 "${preserve_list[@]}" || { factory_reset_umount; return 0; }
+    iterate_restore_list 1 "${preserve_list[@]}" || return;
     factory_reset_umount
 
     # possibly wipe
