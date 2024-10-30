@@ -253,7 +253,7 @@ factory_reset_run() {
         return 1
     fi
     mode=$(echo "${factory_reset}" | jq -e -r '.mode') || { handle_status "1" "-" "mode not set" ""; return; }
-    preserve=$(echo "${factory_reset}" | jq -e -r '.preserve') || { handle_status "1" "-" "preserve object not set" ""; return; }
+    preserve=$(echo "${factory_reset}" | jq -e -r '.preserve') || { handle_status "3" "-" "preserve object not set" ""; return; }
     if [ "[]" != "${preserve}" ]; then
         preserve=($(echo "${factory_reset}" | jq -e -r '.preserve | .[]')) || { handle_status "3" "-" "could_not_parse_preserve_array" ""; return; }
     else
