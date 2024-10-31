@@ -270,9 +270,12 @@ factory_reset_run() {
         preserve=( ${preserve[@]/applications} )
         local preserve_path="";
         for i in $(find ${ROOTFS_DIR}/etc/omnect/factory-reset.d/ -iname *.json); do
-            preserve_path=$(jq -r -e '.paths' ${i}) || { handle_status "3" "-" "${i/${ROOTFS_DIR}}: no path object" "${preserve_list}"; return; }
-            [[ "[]" != ${preserve_path} ]] && \
-                preserve_list+=( $(jq -r -e '.paths[]' ${i}) ) || { handle_status "3" "${?}" "${i/${ROOTFS_DIR}}: could parse paths array" "${preserve_list}"; return; }
+            preserve_path=$(jq -r -e '.paths' ${i}) || \
+                { handle_status "3" "-" "${i/${ROOTFS_DIR}}: no path object" "${preserve_list}"; return; }
+            if [ "[]" != "${preserve_path}" ]; then
+                preserve_list+=( $(jq -r -e '.paths[]' ${i}) ) || \
+                    { handle_status "3" "${?}" "${i/${ROOTFS_DIR}}: couldn't parse paths array" "${preserve_list}"; return; }
+            fi
         done
     fi
 
