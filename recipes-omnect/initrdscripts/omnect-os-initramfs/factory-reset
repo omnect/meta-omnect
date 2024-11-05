@@ -271,17 +271,21 @@ factory_reset_run() {
         local preserve_path="";
         for i in $(find ${ROOTFS_DIR}/etc/omnect/factory-reset.d/ -iname *.json); do
             preserve_path=$(jq -r -e '.paths' ${i}) || \
-                { handle_status "3" "-" "${i/${ROOTFS_DIR}}: no path object" "${preserve_list}"; return; }
+                { handle_status "3" "-" "${i/${ROOTFS_DIR}}: no path object" "${preserve_list[@]}"; return; }
             if [ "[]" != "${preserve_path}" ]; then
                 preserve_list+=( $(jq -r -e '.paths[]' ${i}) ) || \
-                    { handle_status "3" "${?}" "${i/${ROOTFS_DIR}}: couldn't parse paths array" "${preserve_list}"; return; }
+                    { handle_status "3" "${?}" "${i/${ROOTFS_DIR}}: couldn't parse paths array" "${preserve_list[@]}"; return; }
             fi
         done
     fi
 
     for key in "${preserve[@]}"; do
-        preserve_list+=( $(jq -r -e --arg key "${key}" .$key[] ${ROOTFS_DIR}/etc/omnect/factory-reset.json) ) || \
-            { handle_status "3" "${?}" "${ROOTFS_DIR}/etc/omnect/factory-reset.json:${key}" "${preserve_list[@]}"; return; }
+        preserve_path=$(jq -r -e --arg key "${key}" .$key ${ROOTFS_DIR}/etc/omnect/factory-reset.json) || \
+                { handle_status "3" "-" "${i/${ROOTFS_DIR}}: no ${key} object" "${preserve_list[@]}"; return; }
+        if [ "[]" != "${preserve_path}" ]; then
+            preserve_list+=( $(jq -r -e --arg key "${key}" .$key[] ${ROOTFS_DIR}/etc/omnect/factory-reset.json) ) || \
+                { handle_status "3" "${?}" "${ROOTFS_DIR}/etc/omnect/factory-reset.json:${key}" "${preserve_list[@]}"; return; }
+        fi
     done
 
     msg "factor-reset preserve_list=${preserve_list[@]}"
