@@ -13,7 +13,6 @@
 #   corresponding sha256 checksums
 #
 # This class uses the following environment variables:
-# - `OMNECT_BOOTLOADER` - package name (PN) of used bootloader
 # - `OMNECT_BOOTLOADER_CHECKSUM_FILES` - list of input files (full path),
 #   wildcards are allowed
 # - `OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE` - list of files removed from
@@ -26,6 +25,7 @@
 #   content is different from the computed checksum, the build will fail
 #   note: if `OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE` is set, this var should be
 #         set to <old checksum>
+# - `OMNECT_BOOTLOADER_RECIPE_PATH` - path of bootloader recipe (mandatory)
 # - `OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE` - disable fatal error when version
 #   check fails. (still produces an error.)
 
@@ -38,14 +38,14 @@ python() {
     import os
     from pathlib import Path
 
-    package_name = d.getVar("PN")
-    bootloader_name = d.getVar("OMNECT_BOOTLOADER")
-    if not bootloader_name:
-        bb.fatal("OMNECT_BOOTLOADER not set")
+    file = d.getVar("FILE")
+    bootloader_file = d.getVar("OMNECT_BOOTLOADER_RECIPE_PATH")
+    if not bootloader_file:
+        bb.fatal("OMNECT_BOOTLOADER_RECIPE_PATH not set")
 
     # since this runs at parse time, we have to ignore parsing of grub-efi for
-    # u-boot devices and vice versa
-    if package_name != bootloader_name:
+    # u-boot devices and vice versa, or recipes with the same PN and PV
+    if file != bootloader_file:
         return 0
 
     checksum_files = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_FILES").split(" ")
