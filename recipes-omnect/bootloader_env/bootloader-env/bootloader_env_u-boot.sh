@@ -12,7 +12,7 @@ function get() {
     [[ ${argsc} -ne 2 ]] && help && exit 1
     local key=${1}
     local value=$(fw_printenv ${key})
-    value=${value/${key}=}
+    value=${value#${key}=}
     [[ -z "${value}" ]] && echo && exit 2
     echo ${value}
 }
