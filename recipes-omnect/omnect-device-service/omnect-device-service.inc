@@ -1,6 +1,7 @@
 FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:${THISDIR}/${PN}:"
 
 SRC_URI += "\
+  file://factory-reset.json \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
   file://omnect-device-service.tmpfilesd \
@@ -62,6 +63,11 @@ do_install:append() {
 
     # create tmpfiles.d entry to (re)create dir + permissions
     install -m 0644 -D ${WORKDIR}/omnect-device-service.tmpfilesd ${D}${libdir}/tmpfiles.d/omnect-device-service.conf
+
+    # factory-reset
+    install -d -D ${D}${sysconfdir}/omnect/
+    install -m 0444 -D ${WORKDIR}/factory-reset.json ${D}${sysconfdir}/omnect/
+    install -m 0777 -d ${D}${sysconfdir}/omnect/factory-reset.d
 }
 
 # health-check stuff
@@ -104,6 +110,8 @@ FILES:${PN} += "\
     ${bindir}/omnect-device-service.exec_stop_post.sh \
     ${datadir}/polkit-1/rules.d/omnect-device-service.rules \
     ${libdir}/tmpfiles.d/omnect-device-service.conf \
+    ${sysconfdir}/omnect/factory-reset.d \
+    ${sysconfdir}/omnect/factory-reset.json \
     ${sysconfdir}/sudoers.d/omnect-device-service \
     ${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env \
 "

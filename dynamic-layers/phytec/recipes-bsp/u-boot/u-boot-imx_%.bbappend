@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot:${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot:${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot:${LAYERDIR_core}/recipes-bsp/u-boot/files:"
 
 # THISDIR is only save during recipe parsing
 OMNECT_THISDIR_SAVED := "${THISDIR}/"

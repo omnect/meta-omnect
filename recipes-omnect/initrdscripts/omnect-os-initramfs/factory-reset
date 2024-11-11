@@ -5,32 +5,29 @@
 #
 #   + The factory reset has to be performed before mounting the logical filesystem tree,
 #     because it re-formats the filesystems part of the partitions etc and data.
-#
-#   + In the case of a present restore list (see FACTORY_RESET_RESTORE_LIST_VAR, below),
-#     the filesystems etc and data have to be mounted, in order to establish the logical
-#     filesystem tree, needed for backup and restore.
-#
 
-# name of u-boot environment variable used for factory reset (trigger and wipe mode)
-FACTORY_RESET_VAR="factory-reset"
-
-# name of u-boot environment variable used for optional list of path names to be restored,
-# surviving the factory reset
-FACTORY_RESET_RESTORE_LIST_VAR="factory-reset-restore-list"
-
-# directory used to backup and restore paths in FACTORY_RESET_RESTORE_LIST_VAR
-FACTORY_RESET_BACKUP_DIR="/tmp/factory_reset/backup"
-
-# u-boot environment variable used to return factory reset status
-FACTORY_RESET_STATUS_VAR="factory-reset-status"
-
-# factory reset status
-FACTORY_RESET_RET1=""
-FACTORY_RESET_RET2=""
+factory_reset_backup_dir="/tmp/factory_reset/backup"
+factory_reset=""
+warnings=""
 
 # called by generic INITRAMFS
 factory_reset_enabled() {
-    return 0  # enable main entry point
+    ret=0
+    factory_reset=$(get_bootloader_env_var "factory-reset")
+    echo "{}" > /tmp/factory-reset.json
+    if [ -z "${factory_reset}" ]; then
+        ret=1 # no factory reset triggered; normal boot
+    else
+        set_bootloader_env_var "factory-reset" ""
+    fi
+
+    # we already mounted /dev/omnect/boot when we're using grub. so we unmount so we don't disturb the restore mount/umount handling
+    if [ -f /usr/bin/grub-editenv ]; then
+        sync
+        run_cmd umount ${ROOTFS_DIR}/boot
+    fi
+
+    return ${ret}
 }
 
 # wipe a partition using dd command
@@ -102,33 +99,6 @@ factory_reset_wipe_custom() {
     return 0
 }
 
-factory_reset_finish() {
-    # remove factory reset trigger at this point
-    # interrupted factory reset will be replayed
-    # this causes a new udev event regarding (new) partitions sent by the kernel; the reboot below handles this
-    set_bootloader_env_var ${FACTORY_RESET_VAR}
-    set_bootloader_env_var ${FACTORY_RESET_RESTORE_LIST_VAR}
-
-    # set return status
-    set_bootloader_env_var ${FACTORY_RESET_STATUS_VAR} "${FACTORY_RESET_RET1}:${FACTORY_RESET_RET2}"
-
-    # we already mounted /dev/omnect/boot when we're using grub. so we unmount.
-    if [ -f /usr/bin/grub-editenv ]; then
-        sync
-        run_cmd umount ${ROOTFS_DIR}/boot
-    fi
-
-    # if we had restore handling we have to clean unmount
-    if [ -n "${factory_reset_restore_list}" ]; then
-        factory_reset_umount
-    fi
-
-    # get into normal startup
-    msg "Rebooting system..."
-    run_cmd reboot -f
-    # -- never reached --
-}
-
 # backup file or directory
 factory_reset_backup() {
     local path_name="$1"  # file or directory
@@ -142,7 +112,7 @@ factory_reset_backup() {
     fi
 
     # do backup, keep permissions and ownership
-    run_cmd cp --parents -av "${ROOTFS_DIR}/${path_name}" "${FACTORY_RESET_BACKUP_DIR}"
+    run_cmd cp --parents -av "${ROOTFS_DIR}/${path_name}" "${factory_reset_backup_dir}"
     ret=$?
 
     sync
@@ -152,41 +122,70 @@ factory_reset_backup() {
 factory_reset_restore() {
     local path_name="$1"  # file or directory
     local ret=0
+    local destpath=$(dirname ${ROOTFS_DIR}${path_name})
+    local nested_mount=""
 
     msg "restore: ${path_name}"
 
-    if [ ! -e "${FACTORY_RESET_BACKUP_DIR}/${ROOTFS_DIR}/${path_name}" ]; then
+    if [ ! -e "${factory_reset_backup_dir}/${ROOTFS_DIR}/${path_name}" ]; then
         msg "->does not exist; ignore..."
         return 0
     fi
 
-    cd ${FACTORY_RESET_BACKUP_DIR}/${ROOTFS_DIR}
-        # do restore, keep permissions and ownership
-        run_cmd cp --parents -av "${path_name:1}" "${ROOTFS_DIR}"
+    while [[ "${destpath}" != "${ROOTFS_DIR}" ]]; do
+        mountpoint -q ${destpath} && nested_mount=${destpath/${ROOTFS_DIR}} && break
+        destpath=${destpath%\/*}
+    done
+
+    # do restore, keep permissions and ownership
+    if [ -n "${nested_mount}" ]; then
+        msg "nested mount: ${factory_reset_backup_dir}/${ROOTFS_DIR}${nested_mount}"
+        cd ${factory_reset_backup_dir}/${ROOTFS_DIR}${nested_mount}
+        path_name=${path_name/${nested_mount}}
+        run_cmd cp --parents -av "${path_name:1}" "${ROOTFS_DIR}${nested_mount}"
         ret=$?
-    cd -
+        cd - &>/dev/null
+    else
+        msg_error "restore: no mountpoint found in destination path: ${destpath}"
+        ret=66
+    fi
+
 
     sync
     return ${ret}
 }
 
 iterate_restore_list() {
-    local restore_list="$1"
-    local    do_backup="$2"
+    local    do_backup="${1}"
+    local restore_list="${@:2}"
+
     local ret=0
     local status=0
+    local context=""
 
-    restore_list=${restore_list//;/ }
-    for i in ${restore_list}; do
+    for i in ${restore_list[@]}; do
         if [ ${do_backup} -eq 1 ]; then
             factory_reset_backup "${i}"; ret=$?
-            if [ ${ret} -ne 0 ]; then status=${ret}; break; fi  # break backup ; deliver failure
+            [[ ${ret} -ne 0 ]] && { handle_status "2" "${ret}" "${i}:backup" "${restore_list[@]}"; return ${ret}; }
         else
             factory_reset_restore "${i}"; ret=$?
-            if [ ${ret} -ne 0 ]; then status=${ret}; fi  # continue restoring next paths; deliver failure
+            if [ ${ret} -ne 0 ]; then
+                status=2;
+                context+="${i};"
+            fi  # continue restoring next paths; deliver failure
         fi
     done
-    return ${status}
+
+    if [ 2 -eq ${status} ]; then
+        context="${context%?}:restore"
+        handle_status "${status}" "${ret}" "${context}" "${restore_list[@]}"
+        return ${ret}
+    fi
+
+    # ToDO reflect possible wiper error in status?
+    [[ 0 -eq ${do_backup} ]] && handle_status "0" "0" "" "${restore_list[@]}"
+    sync
+    return 0
 }
 
 factory_reset_mount() {
@@ -207,79 +206,116 @@ factory_reset_umount() {
     run_cmd mount
 }
 
+handle_status() {
+    local status=${1}
+    local error=${2}
+    local context=${3}
+    local preserve_paths=${@:4}
+
+    msg "status: status=${status}, error=${error}, context=${context}, preserve_path=${preserve_paths[@]}"
+    if [ -n "${warnings}" ]; then
+        [[ -n "${context}" ]] && context+=";"
+        context+="${warnings}"
+    fi
+
+    if [ -n "${context}" ]; then
+        echo "{}" | jq -e \
+            --argjson status "${status}" \
+            --arg error "${error}" \
+            --arg context "${context}" \
+            '.status=$status | .error=$error | .context=$context | .paths=$ARGS.positional' --args ${preserve_paths[@]} > \
+            /tmp/factory-reset.json
+    else
+        echo "{}" | jq -e \
+            --argjson status "${status}" \
+            --arg error "${error}" \
+            '.status=$status | .error=$error | .paths=$ARGS.positional' --args ${preserve_paths[@]} > \
+            /tmp/factory-reset.json
+    fi
+}
+
 # main entry point
 factory_reset_run() {
+    local mode=""
+    local preserve=""
     # explictly no exit hook handling here
 
     if [ -z "${ROOTFS_DIR}" ]; then
         fatal "no ROOTFS_DIR"
         return 1
     fi
-
-    factory_reset_mode=$(get_bootloader_env_var "${FACTORY_RESET_VAR}")
-    if [ -z "${factory_reset_mode}" ]; then
-        return  # no factory reset triggered; normal boot
+    mode=$(echo "${factory_reset}" | jq -e -r '.mode') || { handle_status "1" "-" "mode_not_set" ""; return 0; }
+    # don't error if preserve is an empty array or even not set
+    preserve=$(echo "${factory_reset}" | jq -r '.preserve')
+    if [[ "null" != "${preserve}" && "[]" != "${preserve}" ]]; then
+        preserve=($(echo "${factory_reset}" | jq -e -r '.preserve | .[]')) || { handle_status "3" "-" "could_not_parse_preserve_array" ""; return 0; }
+    else
+        preserve=()
     fi
 
-    factory_reset_restore_list=$(get_bootloader_env_var "${FACTORY_RESET_RESTORE_LIST_VAR}")
+    msg "Running factory-reset [mode=${mode}, preserve=${preserve[@]}]..."
+    factory_reset_mount
 
-    # we already mounted /dev/omnect/boot when we're using grub. so we unmount so we don't disturb the restore mount/umount handling
-    if [ -f /usr/bin/grub-editenv ]; then
-        sync
-        run_cmd umount ${ROOTFS_DIR}/boot
+    # create preserve_list
+    declare -a preserve_list
+    preserve_list+=("/etc/omnect/factory-reset.d/")
+    if [[ " ${preserve[@]} " =~ " applications " ]]; then
+        preserve=( ${preserve[@]/applications} )
+        for i in $(find ${ROOTFS_DIR}/etc/omnect/factory-reset.d/ -iname *.json); do
+            preserve_list+=( $(cat ${i} | jq -r -e '.paths[]') )
+            preserve_list_err=$?
+            [[ 0 -ne ${preserve_list_err} ]] && { handle_status "3" "${preserve_list_err}" "${i/${ROOTFS_DIR}}:paths" "${preserve_list}"; factory_reset_umount; return 0; }
+        done
     fi
 
-    msg "Running Factory Reset [mode=${factory_reset_mode}]..."
+    for key in ${preserve[@]}; do
+        preserve_list+=( $(cat ${ROOTFS_DIR}/etc/omnect/factory-reset.json | jq -r -e --arg key "${key}" .$key[]) )
+        preserve_list_err=$?
+        [[ 0 -ne ${preserve_list_err} ]] && { handle_status "3" "${preserve_list_err}" "${ROOTFS_DIR}/etc/omnect/factory-reset.json:${key}" "${preserve_list[@]}"; factory_reset_umount; return 0; }
+    done
 
-    if [ -n "${factory_reset_restore_list}" ]; then
-        msg "restore list present"
-        factory_reset_mount  # logical filesystem tree
+    msg "factor-reset preserve_list=${preserve_list[@]}"
 
-        # do the backup
-        run_cmd mkdir -p ${FACTORY_RESET_BACKUP_DIR}
-        iterate_restore_list "${factory_reset_restore_list}" 1
-        if [ $? -ne 0 ]; then
-            # severe error; do not continue with factory reset
-            FACTORY_RESET_RET2="-"; FACTORY_RESET_RET1=2
-            factory_reset_finish  # does not return
-        fi
+    # do the backup
+    run_cmd mkdir -p ${factory_reset_backup_dir}
+    iterate_restore_list 1 "${preserve_list[@]}" || { factory_reset_umount; return 0; }
+    factory_reset_umount
 
-        factory_reset_umount  # prepare subsequent re-format
-    fi
-
-    case ${factory_reset_mode} in
-        1) FACTORY_RESET_RET2=0; FACTORY_RESET_RET1=0  # no wipe
+    # possibly wipe
+    wipe_ret=0
+    case ${mode} in
+        1) wipe_ret=0 # no wipe
            ;;
         2) factory_reset_wipe_dd
-           FACTORY_RESET_RET2=$?; FACTORY_RESET_RET1=0
+           wipe_ret=$?
            ;;
         3) factory_reset_wipe_fstrim
-           FACTORY_RESET_RET2=$?; FACTORY_RESET_RET1=0
+           wipe_ret=$?
            ;;
         4) factory_reset_wipe_custom
-           FACTORY_RESET_RET2=$?; FACTORY_RESET_RET1=0
+           wipe_ret=$?
            ;;
-        *) msg "ERROR: factory reset mode ${factory_reset_mode} not supported; abort..."
-           FACTORY_RESET_RET2="-"; FACTORY_RESET_RET1=1
+        *) msg "ERROR: factory reset mode \"${mode}\" not supported; abort..."
+           handle_status "1" "-" "" "${preserve_list[@]}"
+           return 0
            ;;
     esac
 
-    # severe errors
-    if [ ${FACTORY_RESET_RET1} -ne 0 ] || [ ${FACTORY_RESET_RET2} -ne 0 ]; then factory_reset_finish; fi
+    # if we had a wipe error, we will try to continue anyway
+    if [ 0 -ne ${wipe_ret} ]; then
+        warning_wipe="warning: wipe failed with \"${wipe_ret}\""
+        [[ -n "${warnings}" ]] && warnings+=";"
+        warnings+="${warning_wipe}"
+        msg_warning "${warning_wipe/"warning: "}"
+    fi
 
-    # no severe errors; enforce mkfs
+    # enforce mkfs
     reformat_ext4_fs "/dev/omnect/data" "data"
     reformat_ext4_fs "/dev/omnect/etc" "etc"
 
-    if [ -n "${factory_reset_restore_list}" ]; then
-        factory_reset_mount  # logical filesystem tree
-
-        # restore backup
-        iterate_restore_list "${factory_reset_restore_list}" 0
-        if [ $? -ne 0 ]; then
-            FACTORY_RESET_RET2="-"; FACTORY_RESET_RET1=2
-        fi
-    fi
-
-    factory_reset_finish  # does not return
+    # restore
+    factory_reset_mount  # logical filesystem tree
+    iterate_restore_list 0 "${preserve_list[@]}"
+    factory_reset_umount
+    msg "factory-reset done"
 }

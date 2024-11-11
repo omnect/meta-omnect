@@ -1,8 +1,8 @@
 require conf/machine/include/phytec-imx8mm_bootloader_embedded_version.inc
 
-PREFERRED_PROVIDER_virtual/kernel:mx8-nxp-bsp = "linux-imx"
-PREFERRED_VERSION_linux-imx = "6.6.23-2.0.0-phy1"
-PREFERRED_VERSION_imx-atf = "2.8%"
+PREFERRED_PROVIDER_virtual/kernel:mx8-nxp-bsp = "linux-phytec-imx"
+#PREFERRED_VERSION_linux-imx = "6.6.23-2.0.0-phy1"
+#PREFERRED_VERSION_imx-atf = "2.8%"
 
 # WIC config
 WKS_FILE = "omnect-os.phytec.wks.in"
@@ -116,6 +116,6 @@ OMNECT_BOOTLOADER = "u-boot-imx"
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot-imx - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "48c3090a9fa11bfc566f1df91d59d842f37ab7ca487b457b80b0efd42d876066"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "ebab81558d8fd4adae663f5d028c1833d6d1a92fa2406f1d04f49008f76486fd"
 # TODO remove!!!:
 OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE = "1"

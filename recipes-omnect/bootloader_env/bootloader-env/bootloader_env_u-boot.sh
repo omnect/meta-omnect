@@ -11,7 +11,8 @@ function help() {
 function get() {
     [[ ${argsc} -ne 2 ]] && help && exit 1
     local key=${1}
-    local value=$(fw_printenv ${key} | grep ^${key}= | awk -F'=' '{print $2}')
+    local value=$(fw_printenv ${key})
+    value=${value/${key}=}
     [[ -z "${value}" ]] && echo && exit 2
     echo ${value}
 }
@@ -24,14 +25,14 @@ function list(){
 function set () {
     [[ ${argsc} -ne 3 ]] && help && exit 1
     local key=${1}
-    local value=${2}
-    fw_setenv ${key} ${value}
+    local value=${@:2}
+    fw_setenv "${key}" "${value}"
 }
 
 function unset() {
     [[ ${argsc} -ne 2 ]] && help && exit 1
     local key=${1}
-    fw_setenv ${key}
+    fw_setenv "${key}"
 }
 
 [[ ${#} -lt 1 ]] && help && exit 1
