@@ -1,0 +1,28 @@
+diff -Naur cargo_home.old/bitbake/cc-1.1.35/src/lib.rs cargo_home/bitbake/cc-1.1.35/src/lib.rs
+--- cargo_home.old/bitbake/cc-1.1.35/src/lib.rs	2024-11-14 13:04:59.902124422 +0000
++++ cargo_home/bitbake/cc-1.1.35/src/lib.rs	2024-11-14 13:15:21.784310450 +0000
+@@ -2193,15 +2193,15 @@
+                 }
+ 
+                 // For us arm == armv6 by default
+-                if target.full_arch == "arm" && target.os == "linux" {
+-                    cmd.args.push("-march=armv6".into());
+-                    cmd.args.push("-marm".into());
+-                    if target.abi == "eabihf" {
+-                        cmd.args.push("-mfpu=vfp".into());
+-                    } else {
+-                        cmd.args.push("-mfloat-abi=soft".into());
+-                    }
+-                }
++//                if target.full_arch == "arm" && target.os == "linux" {
++//                    cmd.args.push("-march=armv6".into());
++//                    cmd.args.push("-marm".into());
++//                    if target.abi == "eabihf" {
++//                        cmd.args.push("-mfpu=vfp".into());
++//                    } else {
++//                        cmd.args.push("-mfloat-abi=soft".into());
++//                    }
++//                }
+ 
+                 // Turn codegen down on i586 to avoid some instructions.
+                 if target.full_arch == "i586" && target.os == "linux" {
