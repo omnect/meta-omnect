@@ -1,7 +1,7 @@
 FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:${THISDIR}/${PN}:"
 
 SRC_URI += "\
-  file://cc_dont_guess.patch \
+  file://cc_dont_guess.patch;patchdir=../ \
   file://factory-reset.json \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
