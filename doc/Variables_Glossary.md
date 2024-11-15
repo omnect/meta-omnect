@@ -129,6 +129,9 @@ Size of u-boot environment.
 *Note*: This variable is used to create u-boot userspace runtime config files and the omnect-os-image. If you want to configure the u-boot env size for u-boot, you have to set it in the appropriate u-boot redundant-env.cfg file, e.g.
 https://github.com/omnect/meta-omnect/blob/main/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot/redundant-env.cfg.
 
+# OMNECT_PART_TYPE
+TODO gpt ms msdos
+
 # OMNECT_RELEASE_IMAGE
 Boolean to reflect if a devel or a release image gets build.
 If set to `OMNECT_RELEASE_IMAGE=1` no `OMNECT_DEVEL_TOOLS` get installed. Getty is disabled. U-boot and grub are configured to be non-interruptible and silent as possible. Kernel is silent on ttyS0. Local ssh access via omnect user is disabled.
