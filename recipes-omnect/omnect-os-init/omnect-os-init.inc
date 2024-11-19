@@ -1,4 +1,5 @@
 CARGO_BUILD_FLAGS .= " --features=ptable_${OMNECT_PART_TYPE}"
+CARGO_BUILD_FLAGS .= "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ',persistent_var_log', '', d)}"
 
 LICENSE = "MIT | Apache-2.0"
 
