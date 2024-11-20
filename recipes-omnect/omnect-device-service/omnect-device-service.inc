@@ -1,7 +1,6 @@
 FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:${THISDIR}/${PN}:"
 
 SRC_URI += "\
-  file://cc_dont_guess.patch;patchdir=../ \
   file://factory-reset.json \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
@@ -48,6 +47,9 @@ CARGO_BUILD_FLAGS:append:omnect_uboot = " --features=bootloader_uboot"
 CARGO_BUILD_FLAGS:append = "${@bb.utils.contains('MACHINE_FEATURES', '3g', ',modem_info', '', d)}"
 
 export SOCKET_DIR = "/run/aziot"
+
+#prevent cc crate from setting compile flags
+export CRATE_CC_NO_DEFAULTS = "1"
 
 do_install:append() {
     install -m 0644 -D ${S}/systemd/omnect-device-service.service ${D}${systemd_system_unitdir}/omnect-device-service.service
