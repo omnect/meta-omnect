@@ -25,7 +25,7 @@ repos:
   ext/meta-security:
     url: "https://git.yoctoproject.org/meta-security"
     branch: "kirkstone"
-    commit: "353078bc06c8b471736daab6ed193e30d533d1f1"
+    commit: "b9cf9cd639bc8d1b4828eb0bd012b71486d35176"
     layers:
       meta-tpm:
   ext/meta-swupdate:
@@ -35,7 +35,7 @@ repos:
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     branch: "kirkstone"
-    commit: "02a6c00d9370992a54296633de26a13a9a08ca2a"
+    commit: "c996df33763f292da5e7513c574272d7de23eafc"
     patches:
       p001:
         repo: "meta-omnect"
