@@ -26,7 +26,7 @@ FILES:${PN} += "\
     ${systemd_system_unitdir}/wifi-commissioning-gatt@.service \
 "
 
-inherit useradd
+inherit cargo_cyclonedx useradd
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM:${PN} += "-r wifi-commissioning-gatt;"
 USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -g wifi-commissioning-gatt wifi-commissioning-gatt;"
