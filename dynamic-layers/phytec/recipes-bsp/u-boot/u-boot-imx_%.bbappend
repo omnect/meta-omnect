@@ -3,6 +3,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot:${LAYERDIR_omnect}/recipes-bsp/u-b
 # THISDIR is only save during recipe parsing
 OMNECT_THISDIR_SAVED := "${THISDIR}/"
 
+# TODO remove as soon as this is available upstream
+SRC_URI += "file://clk-imx8mm.patch"
+
 SRC_URI += " \
     file://omnect_env.patch \
     file://phycore_imx8mm.patch \
