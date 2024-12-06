@@ -33,8 +33,7 @@ SRC_URI += " \
 # file://add-reset-info.patch
 #
 # file://phycore-imx8mm_defconfig.patch
-# file://silent_console_early.patch
-#
+
 
 CVE_PRODUCT = "u-boot-imx u-boot"
 

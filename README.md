@@ -382,7 +382,9 @@ A custom configuration to preserve files from a factory reset is a json file in 
   ]
 }
 ```
-This example preserves the `bash_history` of the users `omnect` and `root`.
+This example preserves the `bash_history` of the users `omnect` and `root`.<br>
+Nonexisting files listed here, will produce a warning during the factory reset process, but will result in a success.<br>
+Note that home directories in the example above work, because they are actually located on the data partition via overlay mount. Paths which are not overlayed respectively not located in the data partition, will result in a failure of the factory reset on restore.
 
 #### Factory Reset Result
 In the case of an error during the backup of files or directories the whole factory reset will be aborted
@@ -427,9 +429,9 @@ The overall `factory reset status` consists of:
   - 1: wipe mode unsupported
   - 2: backup/restore failure
   - 3: configuration error; see "context" for details
-- `error`:  execution exit status. in case of of success == 0, if not applicaple: `-`.
+- `error`:  execution exit status; in case of of success == 0, if not applicaple: `-`
 - optional: `context` on warnings or errors
-- array `paths` of preserved files or directories
+- array `paths` of preserved files or directories; this array reflects the configured paths not the actual restored path, e.g. if a path doesn't exist
 
 ### Debug Mount Options of Data Partition
 
