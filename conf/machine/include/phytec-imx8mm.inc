@@ -64,6 +64,7 @@ BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
 # masks necessary to build with our bblayers.conf:
 BBMASK:append = " \
     meta-freescale/recipes-kernel/linux/linux-imx_6.6.bb \
+    meta-imx/meta-imx-sdk/dynamic-layers/virtualization-layer/recipes-fsl/packagegroup/packagegroup-fsl-tools-testapps.bbappend \
     meta-imx/meta-imx-bsp/recipes-kernel/linux/linux-imx_6.6.bb \
     meta-imx/meta-imx-bsp/recipes-multimedia/wireplumber/wireplumber_%.bbappend \
     meta-imx/meta-imx-sdk/recipes-fsl/fsl-rc-local/fsl-rc-local.bbappend \
@@ -74,7 +75,7 @@ BBMASK:append = " \
     meta-imx/meta-imx-sdk/recipes-fsl/packagegroup/packagegroup-fsl-tools-testapps.bbappend \
     meta-imx/meta-imx-sdk/recipes-graphics/devil/devil_%.bbappend \
     meta-imx/meta-imx-sdk/dynamic-layers/openembedded-layer/recipes-multimedia/dvb-apps/dvb-apps_%.bbappend \
-    meta-phytec/dynamic-layers/fsl-bsp-release/recipes-bsp/isp-imx/isp-imx-phycam_4.2.2.22.0.bb \
+    meta-phytec/dynamic-layers/fsl-bsp-release/recipes-bsp/isp-imx/isp-imx-phycam_4.2.2.24.2.bb \
     meta-phytec/dynamic-layers/fsl-bsp-release/recipes-fsl/mcore-demos/imx-m33-demos_2.14.2.bbappend \
     meta-phytec/dynamic-layers/fsl-bsp-release/recipes-kernel/kernel-modules/kernel-module-isp-vvcam_4.2.2.20.0.bbappend \
     meta-phytec/dynamic-layers/fsl-bsp-release/recipes-kernel/linux/linux-imx_5.15.71_2.2.2-phy5.bb \
