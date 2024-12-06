@@ -9,11 +9,13 @@ SRC_URI += "file://clk-imx8mm.patch"
 SRC_URI += " \
     file://omnect_env.patch \
     file://phycore_imx8mm.patch \
+    file://silent_console_early.patch \
     file://boot_retry.cfg \
     file://disable_android_boot_image.cfg \
     file://disable-nfs.cfg \
     file://disable-usb.cfg \
     file://do_not_use_default_bootcommand.cfg \
+    file://enable-gpt.cfg \
     file://enable_generic_console_fs_cmds.cfg \
     file://enable-reset-info-cmd-fragment.cfg \
     file://enable-pxe-cmd.cfg \
@@ -28,7 +30,6 @@ SRC_URI += " \
 "
 
 # todo
-# file://mmc.patch
 # file://add-reset-info.patch
 #
 # file://phycore-imx8mm_defconfig.patch

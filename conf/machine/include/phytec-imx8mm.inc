@@ -13,12 +13,16 @@ IMAGE_CLASSES:remove = " wic-helper wic-imx8-helper"
 # don't install imx-m4-demos
 MACHINE_EXTRA_RRECOMMENDS:remove = "imx-m4-demos"
 
-# install kernel-devicetree to 'root' partition instead of 'boot'
+# install kernel-devicetree to 'root' partition instead of 'boot' and only install boot scripts to boot
 IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
     ${KERNEL_DEVICETREE_FN} \
+    boot.scr.uimg \
+    fitImage  \
     oftree \
     bootenv.txt \
 "
+IMAGE_BOOT_FILES:append = " fdt-load.scr"
+
 IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
 # Todo add 'oftree' to rootfs?
 
