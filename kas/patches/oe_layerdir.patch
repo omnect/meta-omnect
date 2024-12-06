@@ -1,10 +1,10 @@
 diff --git a/meta/conf/layer.conf b/meta/conf/layer.conf
-index 1f329c3efe..f906531327 100644
+index efbf2610f9..330c964f87 100644
 --- a/meta/conf/layer.conf
 +++ b/meta/conf/layer.conf
-@@ -123,3 +123,5 @@ SSTATE_EXCLUDEDEPS_SYSROOT += ".*->autoconf-archive-native"
- # Avoid empty path entries
- BITBAKEPATH := "${@os.path.dirname(bb.utils.which(d.getVar('PATH'),'bitbake'))}"
- PATH := "${@'${BITBAKEPATH}:' if '${BITBAKEPATH}' != '' else ''}${HOSTTOOLS_DIR}"
+@@ -132,3 +132,5 @@ PATH := "${@'${BITBAKEPATH}:' if '${BITBAKEPATH}' != '' else ''}${HOSTTOOLS_DIR}
+ BB_GLOBAL_PYMODULES = "os sys time"
+ 
+ addpylib ${LAYERDIR}/lib oe
 +
 +LAYERDIR_core = "${LAYERDIR}"

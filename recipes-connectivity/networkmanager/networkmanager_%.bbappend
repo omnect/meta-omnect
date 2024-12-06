@@ -1,14 +1,10 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += " \
-	file://0001-wwan-fix-provision-of-IPv6-addresses.patch \
 	file://NetworkManager.conf \
 	file://cellular.generic \
 "
-
-# NOTE: the patch is only needed with NetworkManager 1.36, in 1.38 and above it
-#       is already there
-
+# todo: we configure PACKAGECONFIG of networkmanager in distro conf as well: move it heres
 PACKAGECONFIG:append = " modemmanager"
 PACKAGECONFIG:remove = " dnsmasq"
 

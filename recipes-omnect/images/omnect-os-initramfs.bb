@@ -14,7 +14,7 @@ inherit omnect_initramfs
 IMAGE_NAME = "${OMNECT_INITRAMFS_IMAGE_NAME}"
 
 FLASH_MODE_X_PACKAGES = " \
-    bmap-tools \
+    bmaptool \
     dhcpcd \
     xz \
 "

@@ -6,35 +6,35 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    branch: "kirkstone"
-    commit: "8ec6082d4652024d4b74bcb4e2f6c39075a71f12"
+    branch: "scarthgap"
+    commit: "f5bfd5587a92f6d4c603ca8221e9503843076f7c"
     patches:
       p001:
         repo: "meta-omnect"
-        path: "kas/patches/meta-phytec_layerdir.patch"
+        path: "kas/patches/meta-phytec.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
-    branch: "kirkstone"
-    commit: "c525e0c19bdc46d45f71873b5f286f49abb69418"
+    branch: "scarthgap"
+    commit: "54e726319af15b18880c814530e8d9c38258250a"
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-freescale_layerdir.patch"
-  ext/meta-freescale-distro:
-    url: "https://github.com/Freescale/meta-freescale-distro.git"
-    branch: "kirkstone"
-    commit: "d5bbb487b2816dfc74984a78b67f7361ce404253"
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
-    branch: "kirkstone-5.15.71-2.2.2"
-    commit: "ca68ab5d25322b51f54564275c84ab8de3c74ea6"
+    branch: "scarthgap-6.6.23-2.0.0"
+    branch: "scarthgap-6.6.52-2.2.0"
+    commit: "f08206cdb6a47f5f52ec84e6286bcc5d8fd53cec"
+    commit: "219f6d04a4c339eb6f2dc626f944bbdf9a716ff5"
     layers:
-      meta-bsp:
-      meta-sdk:
-    patches:
-      p001:
-        repo: "meta-omnect"
-        path: "kas/patches/meta-imx_meta-bsp_layerdir.patch"
-
+      meta-imx-bsp:
+      meta-imx-sdk:
+  ext/meta-arm:
+    url: "https://git.yoctoproject.org/meta-arm"
+    branch: "scarthgap"
+    commit: "7088279c0ab00c7dabefdd4544951b4746b48476"
+    layers:
+      meta-arm:
+      meta-arm-toolchain:
 env:
   ACCEPT_FSL_EULA: "0"
