@@ -62,8 +62,10 @@ OMNECT_PART_OFFSET_BOOT = "4096"
 # mask fw_env.config configuration of meta-phytec, we generate that ourselves
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
 # masks necessary to build with our bblayers.conf:
+# TODO review
 BBMASK:append = " \
     meta-freescale/recipes-kernel/linux/linux-imx_6.6.bb \
+    meta-imx/meta-imx-sdk/dynamic-layers/virtualization-layer/recipes-fsl/packagegroup/packagegroup-fsl-tools-testapps.bbappend \
     meta-imx/meta-imx-bsp/recipes-kernel/linux/linux-imx_6.6.bb \
     meta-imx/meta-imx-bsp/recipes-multimedia/wireplumber/wireplumber_%.bbappend \
     meta-imx/meta-imx-sdk/recipes-fsl/fsl-rc-local/fsl-rc-local.bbappend \
@@ -74,7 +76,7 @@ BBMASK:append = " \
     meta-imx/meta-imx-sdk/recipes-fsl/packagegroup/packagegroup-fsl-tools-testapps.bbappend \
     meta-imx/meta-imx-sdk/recipes-graphics/devil/devil_%.bbappend \
     meta-imx/meta-imx-sdk/dynamic-layers/openembedded-layer/recipes-multimedia/dvb-apps/dvb-apps_%.bbappend \
-    meta-phytec/dynamic-layers/fsl-bsp-release/recipes-bsp/isp-imx/isp-imx-phycam_4.2.2.22.0.bb \
+    meta-phytec/dynamic-layers/fsl-bsp-release/recipes-bsp/isp-imx/isp-imx-phycam_4.2.2.24.2.bb \
     meta-phytec/dynamic-layers/fsl-bsp-release/recipes-fsl/mcore-demos/imx-m33-demos_2.14.2.bbappend \
     meta-phytec/dynamic-layers/fsl-bsp-release/recipes-kernel/kernel-modules/kernel-module-isp-vvcam_4.2.2.20.0.bbappend \
     meta-phytec/dynamic-layers/fsl-bsp-release/recipes-kernel/linux/linux-imx_5.15.71_2.2.2-phy5.bb \
@@ -111,7 +113,7 @@ MACHINE_FEATURES:remove = " \
     optee \
 "
 
-OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-imx_2024.04_2.0.0-phy7.bb"
+OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-imx_2024.04-2.0.0-phy7.bb"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "<newchecksum> <oldchecksum>"
 # e.g.:
@@ -120,6 +122,6 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-im
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot-imx - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "8755c5a930ebcb35841a0592a724eeb70d2db9b92b49eade333f22673eaee00f"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "c1e71771f17a15a127df1e67b6b0108b9cd0815034050dd953fe0819b5eb8095"
 # TODO remove!!!:
 OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE = "1"
