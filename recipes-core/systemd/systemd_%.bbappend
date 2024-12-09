@@ -57,8 +57,8 @@ do_install:append() {
 
     # delete systemd-journald-audit.socket if audit is not in DISTRO_FEATURES
     if ${@bb.utils.contains('DISTRO_FEATURES', 'audit', 'false', 'true', d)}; then
-        rm ${D}${systemd_system_unitdir}/sockets.target.wants/systemd-journald-audit.socket
-        rm ${D}${systemd_system_unitdir}/systemd-journald-audit.socket
+        rm -f ${D}${systemd_system_unitdir}/sockets.target.wants/systemd-journald-audit.socket
+        rm -f ${D}${systemd_system_unitdir}/systemd-journald-audit.socket
     fi
 
     # sync time on sysinit
