@@ -12,7 +12,6 @@ SRCREV = "c0e2a0155ece246bf40b8305ef4065d8370b6aa6"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
-
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
 SRC_URI += " \
