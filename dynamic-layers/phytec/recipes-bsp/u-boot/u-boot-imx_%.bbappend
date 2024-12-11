@@ -7,6 +7,7 @@ OMNECT_THISDIR_SAVED := "${THISDIR}/"
 SRC_URI += "file://clk-imx8mm.patch"
 
 SRC_URI += " \
+    file://add-reset-info.patch \
     file://omnect_env.patch \
     file://phycore_imx8mm.patch \
     file://silent_console_early.patch \
@@ -28,12 +29,6 @@ SRC_URI += " \
     file://omnect_env.env \
     file://phycore_imx8mm.env \
 "
-
-# todo
-# file://add-reset-info.patch
-#
-# file://phycore-imx8mm_defconfig.patch
-
 
 CVE_PRODUCT = "u-boot-imx u-boot"
 
