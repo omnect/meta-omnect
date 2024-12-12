@@ -1,49 +1,20 @@
-From 6b15141c292e91c8b566c3b80e5fa4fdf188447c Mon Sep 17 00:00:00 2001
-From: SteffenRumler <steffen.rumler@conplement.de>
-Date: Wed, 14 Sep 2022 14:47:06 +0200
-Subject: [PATCH] add reset info
-
----
- arch/arm/include/asm/arch-imx8m/imx-regs.h | 11 +++++++--
- arch/arm/mach-imx/cpu.c                    | 12 +++++++++-
- arch/arm/mach-imx/imx8m/soc.c              | 12 ++++++++++
- cmd/Kconfig                                |  7 ++++++
- cmd/Makefile                               |  1 +
- cmd/rstinfo.c                              | 26 ++++++++++++++++++++++
- 6 files changed, 66 insertions(+), 3 deletions(-)
- create mode 100644 cmd/rstinfo.c
-
 diff --git a/arch/arm/include/asm/arch-imx8m/imx-regs.h b/arch/arm/include/asm/arch-imx8m/imx-regs.h
-index 333e57c603..8d90435fc4 100644
+index ccae29ec9a9..78a31d6d2f0 100644
 --- a/arch/arm/include/asm/arch-imx8m/imx-regs.h
 +++ b/arch/arm/include/asm/arch-imx8m/imx-regs.h
-@@ -47,7 +47,7 @@
- #define IOMUXC_GPR_BASE_ADDR	0x30340000
- #define OCOTP_BASE_ADDR		0x30350000
- #define ANATOP_BASE_ADDR	0x30360000
--#define SNVS_HP_BASE_ADDR	0x30370000
-+#define SNVS_BASE_ADDR		0x30370000
- #define CCM_BASE_ADDR		0x30380000
- #define SRC_BASE_ADDR		0x30390000
- #define GPC_BASE_ADDR		0x303A0000
-@@ -256,7 +256,14 @@
- #define IOMUXC_GPR_GPR1_GPR_ENET1_TX_CLK_SEL_SHIFT 13
- #define IOMUXC_GPR_GPR1_GPR_ENET_QOS_INTF_SEL_MASK 0x70000
+@@ -284,6 +284,10 @@
+ #define SNVS_LPSR			0x4c
+ #define SNVS_LPLVDR			0x64
+ #define SNVS_LPPGDR_INIT		0x41736166
++#define SNVS_LPGPR0			0x90
++#define SNVS_LPGPR1			0x94
++#define SNVS_LPGPR2			0x98
++#define SNVS_LPGPR3			0x9C
  
--#define SNVS_HPSR              (SNVS_HP_BASE_ADDR + 0x14)
-+#define SNVS_HPSR              (SNVS_BASE_ADDR + 0x14)
-+#define SNVS_LPSR		0x4c
-+#define SNVS_LPLVDR		0x64
-+#define SNVS_LPPGDR_INIT	0x41736166
-+#define SNVS_LPGPR0		0x90
-+#define SNVS_LPGPR1		0x94
-+#define SNVS_LPGPR2		0x98
-+#define SNVS_LPGPR3		0x9C
+ #define SNVS_HPSR              (SNVS_BASE_ADDR + 0x14)
  
- struct iomuxc_gpr_base_regs {
- 	u32 gpr[48];
 diff --git a/arch/arm/mach-imx/cpu.c b/arch/arm/mach-imx/cpu.c
-index fce63eb192..517d0a420a 100644
+index 39b4be8b9cf..d0b1dc9097a 100644
 --- a/arch/arm/mach-imx/cpu.c
 +++ b/arch/arm/mach-imx/cpu.c
 @@ -26,6 +26,7 @@
@@ -52,9 +23,9 @@ index fce63eb192..517d0a420a 100644
  #include <dm/uclass-internal.h>
 +#include <fsl_wdog.h>
  
- #ifdef CONFIG_VIDEO_GIS
- #include <gis.h>
-@@ -56,11 +57,20 @@ u32 get_imx_reset_cause(void)
+ #ifdef CONFIG_FSL_ESDHC_IMX
+ #include <fsl_esdhc_imx.h>
+@@ -52,11 +53,20 @@ u32 get_imx_reset_cause(void)
  }
  
  #if defined(CONFIG_DISPLAY_CPUINFO) && !defined(CONFIG_SPL_BUILD)
@@ -76,41 +47,11 @@ index fce63eb192..517d0a420a 100644
  		return "POR";
  	case 0x00004:
  		return "CSU";
-diff --git a/arch/arm/mach-imx/imx8m/soc.c b/arch/arm/mach-imx/imx8m/soc.c
-index 0d2f7a5897..bf6c789f48 100644
---- a/arch/arm/mach-imx/imx8m/soc.c
-+++ b/arch/arm/mach-imx/imx8m/soc.c
-@@ -578,6 +578,16 @@ static void secure_lockup(void)
- }
- #endif
- 
-+static void imx8m_setup_snvs(void)
-+{
-+	/* Enable SNVS clock */
-+	clock_enable(CCGR_SNVS, 1);
-+	/* Initialize glitch detect */
-+	writel(SNVS_LPPGDR_INIT, SNVS_BASE_ADDR + SNVS_LPLVDR);
-+	/* Clear interrupt status */
-+	writel(0xffffffff, SNVS_BASE_ADDR + SNVS_LPSR);
-+}
-+
- int arch_cpu_init(void)
- {
- 	struct ocotp_regs *ocotp = (struct ocotp_regs *)OCOTP_BASE_ADDR;
-@@ -631,6 +641,8 @@ int arch_cpu_init(void)
- 			writel(0x200, &ocotp->ctrl_clr);
- 	}
- 
-+	imx8m_setup_snvs();  /* Secure Non-Volatile Storage */
-+
- 	return 0;
- }
- 
 diff --git a/cmd/Kconfig b/cmd/Kconfig
-index f6bd71451b..2ac781f468 100644
+index 413051ac4a1..edbb26f6c61 100644
 --- a/cmd/Kconfig
 +++ b/cmd/Kconfig
-@@ -157,6 +157,13 @@ config CMD_REGINFO
+@@ -210,6 +210,13 @@ config CMD_REGINFO
  	help
  	  Register dump
  
@@ -125,12 +66,12 @@ index f6bd71451b..2ac781f468 100644
  	bool "tlv_eeprom"
  	depends on I2C_EEPROM
 diff --git a/cmd/Makefile b/cmd/Makefile
-index 166c652d98..5b4837b7a3 100644
+index 0337a53b6e9..047f66c8884 100644
 --- a/cmd/Makefile
 +++ b/cmd/Makefile
-@@ -132,6 +132,7 @@ obj-$(CONFIG_CMD_REMOTEPROC) += remoteproc.o
- obj-$(CONFIG_CMD_RNG) += rng.o
+@@ -155,6 +155,7 @@ obj-$(CONFIG_CMD_RNG) += rng.o
  obj-$(CONFIG_CMD_KASLRSEED) += kaslrseed.o
+ obj-$(CONFIG_CMD_RKMTD) += rkmtd.o
  obj-$(CONFIG_CMD_ROCKUSB) += rockusb.o
 +obj-$(CONFIG_CMD_RSTINFO) += rstinfo.o
  obj-$(CONFIG_CMD_RTC) += rtc.o
@@ -138,7 +79,7 @@ index 166c652d98..5b4837b7a3 100644
  obj-$(CONFIG_CMD_SATA) += sata.o
 diff --git a/cmd/rstinfo.c b/cmd/rstinfo.c
 new file mode 100644
-index 0000000000..29f5d99332
+index 00000000000..29f5d99332e
 --- /dev/null
 +++ b/cmd/rstinfo.c
 @@ -0,0 +1,26 @@

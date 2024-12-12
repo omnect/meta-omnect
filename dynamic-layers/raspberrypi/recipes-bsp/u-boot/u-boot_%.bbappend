@@ -1,9 +1,9 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/files:"
 
 SRC_URI += "\
+    file://0001-rpi-always-set-fdt_addr-with-firmware-provided-FDT-address.patch \
     file://add-reset-info.patch \
-    file://omnect_env.patch \
-    file://rpi-always-set-fdt_addr-with-firmware-provided-FDT-address.patch \
+    file://omnect_env_rpi.patch \
     file://enable-reset-info-cmd-fragment.cfg \
     file://redundant-env.cfg \
     file://omnect_env_rpi.h \
@@ -20,7 +20,7 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/conf/machine/include/rpi
 # also embedding bootloader version influences u-boot binary, so file below has
 # also to be taken into account for version checksumming
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/conf/machine/include/rpi_bootloader_embedded_version.inc"
-OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/dynamic-layers/raspberrypi/recipes-bsp/rpi-bootfiles/*"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/bootfiles/rpi-config/*"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/bootfiles/*"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/common/*"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${@bb.utils.contains('MACHINE_FEATURES', 'armstub', '${LAYERDIR_raspberrypi}/recipes-bsp/armstubs/*', '', d)}"
@@ -28,6 +28,8 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${@bb.utils.contains('MACHINE_FEATURES', 'a
 # we don't use fw_env.config from meta-raspberrypi
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/files/fw_env.config"
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${@bb.utils.contains('MACHINE_FEATURES', 'armstub', '', '${LAYERDIR_raspberrypi}/recipes-bsp/common/raspberrypi-tools.inc', d)}"
+# todo ignore dirs in subpath as alternative to:
+OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_raspberrypi}/recipes-bsp/bootfiles/rpi-config"
 
 do_configure:prepend() {
     cp -f ${WORKDIR}/omnect_env_rpi.h ${S}/include/configs/omnect_env_machine.h
