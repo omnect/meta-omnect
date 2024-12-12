@@ -122,6 +122,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-im
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot-imx - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "48f78161bc95919e1899f593809f7eecb1a0dcdc72b43d9fdbcceb9211c39883"
-# TODO remove!!!:
-OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE = "1"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "0bcea614a2d0cc02b472e5e59dcb5bfc482c47eba1be4875157125f6097ff61f"
