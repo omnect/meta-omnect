@@ -16,6 +16,8 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/
 # we have to update the raspberrypi firmware if basic configuration of the bsp changes
 # per convention such changes should be made in the following file:
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/conf/machine/include/rpi_firmware_settings.inc"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/conf/machine/include/rpi-slb9670.inc"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/conf/machine/include/tpm-slb9670.inc"
 
 # also embedding bootloader version influences u-boot binary, so file below has
 # also to be taken into account for version checksumming
