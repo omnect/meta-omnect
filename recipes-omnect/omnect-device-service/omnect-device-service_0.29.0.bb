@@ -6,11 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.28.4"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.29.0"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "c0e2a0155ece246bf40b8305ef4065d8370b6aa6"
+SRCREV = "ebb0c31053deff59f12a30959d225620d4aa97ce"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
+
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -213,6 +214,7 @@ SRC_URI += " \
     crate://crates.io/notify-debouncer-full/0.4.0 \
     crate://crates.io/notify-types/1.0.0 \
     crate://crates.io/notify/7.0.0 \
+    crate://crates.io/ntapi/0.4.1 \
     crate://crates.io/num-bigint/0.4.6 \
     crate://crates.io/num-complex/0.4.6 \
     crate://crates.io/num-conv/0.1.0 \
@@ -299,6 +301,7 @@ SRC_URI += " \
     crate://crates.io/syn/2.0.87 \
     crate://crates.io/sync_wrapper/1.0.1 \
     crate://crates.io/synstructure/0.13.1 \
+    crate://crates.io/sysinfo/0.32.0 \
     crate://crates.io/systemd-zbus/0.3.3 \
     crate://crates.io/tempfile/3.14.0 \
     crate://crates.io/termtree/0.4.1 \
@@ -348,12 +351,17 @@ SRC_URI += " \
     crate://crates.io/winapi-x86_64-pc-windows-gnu/0.4.0 \
     crate://crates.io/winapi/0.3.9 \
     crate://crates.io/windows-core/0.52.0 \
+    crate://crates.io/windows-core/0.57.0 \
+    crate://crates.io/windows-implement/0.57.0 \
+    crate://crates.io/windows-interface/0.57.0 \
     crate://crates.io/windows-registry/0.2.0 \
+    crate://crates.io/windows-result/0.1.2 \
     crate://crates.io/windows-result/0.2.0 \
     crate://crates.io/windows-strings/0.1.0 \
     crate://crates.io/windows-sys/0.52.0 \
     crate://crates.io/windows-sys/0.59.0 \
     crate://crates.io/windows-targets/0.52.6 \
+    crate://crates.io/windows/0.57.0 \
     crate://crates.io/windows_aarch64_gnullvm/0.52.6 \
     crate://crates.io/windows_aarch64_msvc/0.52.6 \
     crate://crates.io/windows_i686_gnu/0.52.6 \
