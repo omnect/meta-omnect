@@ -3,9 +3,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot:${LAYERDIR_omnect}/recipes-bsp/u-b
 # THISDIR is only save during recipe parsing
 OMNECT_THISDIR_SAVED := "${THISDIR}/"
 
-# TODO remove as soon as this is available upstream
-SRC_URI += "file://clk-imx8mm.patch"
-
 SRC_URI += " \
     file://add-reset-info.patch \
     file://omnect_env.patch \
@@ -31,15 +28,14 @@ SRC_URI += " \
 "
 
 CVE_PRODUCT = "u-boot-imx u-boot"
+OMNECT_BOOTLOADER_CHECKSUM_FILES = "${OMNECT_BOOTLOADER_RECIPE_PATH}"
 
-OMNECT_BOOTLOADER_CHECKSUM_FILES  = "${LAYERDIR_omnect}/classes/u-boot-scr.bbclass"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/classes/u-boot-scr.bbclass"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot-scr.bb"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot/*"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/conf/machine/include/phytec-imx8mm_bootloader_embedded_version.inc"
 
-# TODO scarthgap:
-#OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/recipes-bsp/u-boot/${PN}_${PV}_*.bb"
-
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/recipes-bsp/u-boot/${PN}_${PV}.bb"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-*.inc"
 # included by "${LAYERDIR_phytec}/recipes-bsp/u-boot/${PN}_${PV}_*.bb" - how do we know it's still the case on update?:
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_core}/recipes-bsp/u-boot/u-boot.inc"
@@ -47,11 +43,9 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/${PN}_%.bbappend"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/u-boot/*"
 # imx-atf and u-boot are part of imx-boot(-phytec). (tbd: imx-boot(-phytec) recipe
 # is more or less copying thus currently not reflected here.)
-#TODO OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/imx-atf*.bbappend"
-#TODO OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/files/*"
-
-# TODO scarthgap:
-#OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_fsl-bsp-release}/recipes-bsp/imx-atf/imx-atf_*.bb"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/dynamic-layers/fsl-bsp-release/recipes-bsp/imx-atf/imx-atf_2.10.bbappend"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/imx-atf/*"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_fsl-bsp-release}/recipes-bsp/imx-atf/imx-atf_*.bb"
 
 # since bootloader version gets embedded in bootloader file also
 # settings thereof need to be fed into checksumming

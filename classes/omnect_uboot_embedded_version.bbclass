@@ -224,9 +224,9 @@ omnect_uboot_get_plain_artefact() {
     cp "${DEPLOY_DIR_IMAGE}/${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BINFILE}" "${WORKDIR}/bootloader.bin"
 }
 
-do_compile[depends]  += "${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBTARGET}:do_deploy "
+do_compile[depends]  += "${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBTARGET}:do_deploy"
 do_compile[prefuncs] += "omnect_uboot_get_plain_artefact"
-do_deploy[prefuncs]  += "omnect_uboot_embed_version"
+do_compile[prefuncs] += "omnect_uboot_embed_version"
 
 do_deploy() {
     install -m 0644 -D ${WORKDIR}/bootloader.bin.versioned ${DEPLOYDIR}/bootloader.versioned.bin

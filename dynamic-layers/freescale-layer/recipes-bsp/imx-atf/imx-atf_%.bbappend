@@ -9,7 +9,7 @@ EXTRA_OEMAKE += " \
 	V=1 \
 	CRASH_REPORTING=1 \
 "
-EXTRA_OEMAKE:append:mx8mm-generic-bsp = ' BL32_BASE="0x56000000" '
+
 do_deploy:append() {
     install -Dm 0644 ${S}/build/${ATF_PLATFORM}/${OUTPUT_FOLDER}/bl31.bin ${DEPLOYDIR}/imx-boot-tools/bl31-${ATF_PLATFORM}.bin
 }

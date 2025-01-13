@@ -7,32 +7,34 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "scarthgap"
-    commit: "f5bfd5587a92f6d4c603ca8221e9503843076f7c"
+    commit: "c9dd15e3fd4198d3eb1ffee4029588cd14cdf83f"
     patches:
       p001:
         repo: "meta-omnect"
-        path: "kas/patches/meta-phytec.patch"
+        path: "kas/patches/meta-phytec_layerdir.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: "scarthgap"
-    commit: "54e726319af15b18880c814530e8d9c38258250a"
+    commit: "a839e9ebe75e2bfd53024e5132414481c0a72bf7"
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-freescale_layerdir.patch"
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
-    branch: "scarthgap-6.6.23-2.0.0"
     branch: "scarthgap-6.6.52-2.2.0"
-    commit: "f08206cdb6a47f5f52ec84e6286bcc5d8fd53cec"
     commit: "219f6d04a4c339eb6f2dc626f944bbdf9a716ff5"
     layers:
       meta-imx-bsp:
       meta-imx-sdk:
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/meta-imx_layerdir.patch"
   ext/meta-arm:
     url: "https://git.yoctoproject.org/meta-arm"
     branch: "scarthgap"
-    commit: "7088279c0ab00c7dabefdd4544951b4746b48476"
+    commit: "a8fe9d22eaefc294f91096c6a32663e2f4ab3b10"
     layers:
       meta-arm:
       meta-arm-toolchain:

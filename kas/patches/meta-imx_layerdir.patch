@@ -1,0 +1,10 @@
+diff --git a/meta-imx-bsp/conf/layer.conf b/meta-imx-bsp/conf/layer.conf
+index 850bced589..e4941302f9 100644
+--- a/meta-imx-bsp/conf/layer.conf
++++ b/meta-imx-bsp/conf/layer.conf
+@@ -418,3 +418,5 @@ IMAGE_BOOT_FILES:append:imx93-14x14-lpddr4x-evk = " \
+ IMXBOOT_TARGETS:imx93-14x14-lpddr4x-evk = "${@bb.utils.contains('UBOOT_CONFIG', 'fspi', '${IMXBOOT_TARGETS_FSPI}', \
+                                               bb.utils.contains('UBOOT_CONFIG',   'sd', '${IMXBOOT_TARGETS_SD}', \
+                                                                                                       'INVALID', d), d)}"
++
++LAYERDIR_fsl-bsp-release = "${LAYERDIR}"
