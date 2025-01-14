@@ -153,6 +153,8 @@ python do_configure() {
 
     with open("config.toml", "w") as f:
         f.write('change-id = 115898\n\n')
+        f.write('[llvm]\n')
+        f.write( 'download-ci-llvm=false\n\n')
         config.write(f)
 
     # set up ${WORKDIR}/cargo_home
