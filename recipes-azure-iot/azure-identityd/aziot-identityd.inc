@@ -63,6 +63,9 @@ do_compile() {
     sed -i 's/^RELEASE = 0$/RELEASE = 1/'       ${S}/Makefile
     sed -i -e 's/CARGO_TARGET = \(.*\)/CARGO_TARGET = ${TARGET_SYS}/g' ${S}/Makefile
 
+    # for rust toolchain >= 1.82: extend the linker library search path via RUSTFLAGS
+    sed -i -e 's/CARGO = \(.*\)/CARGO = VENDOR_PREFIX="$(VENDOR_PREFIX)" VENDOR_PKGCONFIG="$(VENDOR_PKGCONFIG)" RUSTFLAGS="$(RUSTFLAGS) -L $(CARGO_OUTPUT_ABSPATH)" \\/g' ${S}/Makefile
+
     # we don't build tpm2-tss as part of this build
     rm -rf third-party/tpm2-tss
 
