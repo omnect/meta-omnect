@@ -25,6 +25,9 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/bootfil
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/common/*"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${@bb.utils.contains('MACHINE_FEATURES', 'armstub', '${LAYERDIR_raspberrypi}/recipes-bsp/armstubs/*', '', d)}"
 
+# this one might seem strange, but it changes bootloader /wrt DT overlays
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/dynamic-layers/raspberrypi/recipes-kernel/linux/linux/0000-ramops-pi4-overlay.patch"
+
 # we don't use fw_env.config from meta-raspberrypi
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/files/fw_env.config"
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${@bb.utils.contains('MACHINE_FEATURES', 'armstub', '', '${LAYERDIR_raspberrypi}/recipes-bsp/common/raspberrypi-tools.inc', d)}"
