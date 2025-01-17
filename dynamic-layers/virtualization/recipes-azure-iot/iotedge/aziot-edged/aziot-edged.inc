@@ -1,6 +1,10 @@
 # overwrite LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 
+SRC_URI += "\
+  file://fix_compiler_toolchain_1.8x.patch \
+"
+
 # overwrite CARGO_SRC_DIR from cargo-bitbake generated recipe
 CARGO_SRC_DIR = "edgelet/aziot-edged"
 CARGO_LOCK_PATH = "${S}/edgelet/Cargo.lock"

@@ -7,7 +7,10 @@ CARGO_LOCK_PATH = "${S}/edgelet/Cargo.lock"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:"
 
-SRC_URI += "file://apply_doesnt_restart_services.patch"
+SRC_URI += "\
+  file://apply_doesnt_restart_services.patch \
+  file://fix_compiler_toolchain_1.8x.patch \
+"
 
 DEPENDS += "openssl"
 RDEPENDS:${PN} += "aziot-identityd"
