@@ -7,9 +7,11 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
 
 # patches
+# hint: fix_warnings.patch must be applied after send_sd_notify.patch
 SRC_URI += " \
     file://apply_doesnt_restart_services.patch \
     file://send_sd_notify.patch \
+    file://fix_warnings.patch \
 "
 # workspace
 SRC_URI += " \
@@ -50,7 +52,7 @@ do_compile:prepend:raspberrypi3() {
 
 do_compile() {
     oe_cargo_fix_env
-    export RUSTFLAGS="${RUSTFLAGS}"
+    export RUSTFLAGS="${RUSTFLAGS} -D warnings"
     export RUST_TARGET_PATH="${RUST_TARGET_PATH}"
 
     # pkg specific exports
