@@ -1,16 +1,14 @@
-diff --git a/aziotctl/aziotctl-common/src/host_info.rs b/aziotctl/aziotctl-common/src/host_info.rs
-index 862485c..ba2c924 100644
---- a/aziotctl/aziotctl-common/src/host_info.rs
-+++ b/aziotctl/aziotctl-common/src/host_info.rs
-@@ -11,8 +11,6 @@ use serde_with::skip_serializing_none;
- const BITNESS: usize = 32;
- #[cfg(target_pointer_width = "64")]
- const BITNESS: usize = 64;
--#[cfg(target_pointer_width = "128")]
--const BITNESS: usize = 128;
+diff --git a/aziotctl/aziotctl-common/Cargo.toml b/aziotctl/aziotctl-common/Cargo.toml
+index 7fa3832..b6270cb 100644
+--- a/aziotctl/aziotctl-common/Cargo.toml
++++ b/aziotctl/aziotctl-common/Cargo.toml
+@@ -29,3 +29,6 @@ toml = "0.7"
  
- /// A subset of the DMI variables exposed through /sys/devices/virtual/dmi/id.
- ///
+ [features]
+ snapctl = []
++
++[lints.rust]
++unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_pointer_width,values("128"))'] }
 diff --git a/identity/aziot-identity-common/src/lib.rs b/identity/aziot-identity-common/src/lib.rs
 index 3a49e4e..24942da 100644
 --- a/identity/aziot-identity-common/src/lib.rs
