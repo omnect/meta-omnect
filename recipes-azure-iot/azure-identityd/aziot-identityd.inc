@@ -7,11 +7,11 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
 
 # patches
-# hint: fix_warnings.patch must be after send_sd_notify.patch applied
+# hint: fix_linter_findings.patch must be after send_sd_notify.patch applied
 SRC_URI += " \
     file://apply_doesnt_restart_services.patch \
     file://send_sd_notify.patch \
-    file://fix_warnings.patch \
+    file://fix_linter_findings.patch \
 "
 # workspace
 SRC_URI += " \
