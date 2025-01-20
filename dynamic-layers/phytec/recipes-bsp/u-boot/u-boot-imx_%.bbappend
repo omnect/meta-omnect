@@ -6,7 +6,6 @@ OMNECT_THISDIR_SAVED := "${THISDIR}/"
 SRC_URI += " \
     file://add-reset-info.patch \
     file://omnect_env.patch \
-    file://phycore_imx8mm.patch \
     file://silent_console_early.patch \
     file://boot_retry.cfg \
     file://disable_android_boot_image.cfg \
