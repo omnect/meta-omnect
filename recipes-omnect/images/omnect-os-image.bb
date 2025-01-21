@@ -25,7 +25,7 @@ do_rootfs[depends] += "virtual/kernel:do_deploy"
 do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
 IMAGE_BOOT_FILES:append:omnect_uboot = " boot.scr"
-IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
+IMAGE_BOOT_FILES:append = "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', ' fdt-load.scr', '', d)}"
 
 do_image_wic[depends] += "virtual/bootloader:do_deploy"
 do_image_wic_extra_depends = ""

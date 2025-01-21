@@ -19,7 +19,6 @@ IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
     oftree \
     bootenv.txt \
 "
-IMAGE_BOOT_FILES:append = " fdt-load.scr"
 
 IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
 
