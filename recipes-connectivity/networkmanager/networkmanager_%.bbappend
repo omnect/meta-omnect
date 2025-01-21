@@ -4,7 +4,7 @@ SRC_URI += " \
 	file://NetworkManager.conf \
 	file://cellular.generic \
 "
-# todo: we configure PACKAGECONFIG of networkmanager in distro conf as well: move it heres
+# todo: we configure PACKAGECONFIG of networkmanager in distro conf as well: move it here
 PACKAGECONFIG:append = " modemmanager"
 PACKAGECONFIG:remove = " dnsmasq"
 

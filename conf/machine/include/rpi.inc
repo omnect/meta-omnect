@@ -40,4 +40,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_core}/recipes-bsp/u-boot/u-boot_2024
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "0362327449f9ef5d9757d9f8311db723a0673e1eb02278d25a85abda9a9ef28e"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "10d6aadb0dc784057ccab9ae3444c520e4d90110a124316b10511b66815e7214"

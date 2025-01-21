@@ -19,7 +19,6 @@ IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
     oftree \
     bootenv.txt \
 "
-IMAGE_BOOT_FILES:append = " fdt-load.scr"
 
 IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
 
@@ -97,4 +96,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-im
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot-imx - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "7e45b4e1c3f898b5f416bde37d9f5c153f09ac99fff96dcfde0edc36c2b0c3bc"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "c7f418a9147044923ec6d42d538fac70d5f0876813c9d863c3c4f52811f0dcd2"
