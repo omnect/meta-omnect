@@ -86,7 +86,7 @@ MACHINE_FEATURES:remove = " \
     optee \
 "
 
-OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-imx_2024.04-2.2.0-phy1.bb"
+OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-imx_2024.04-2.2.0-phy3.bb"
 
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "<newchecksum> <oldchecksum>"
@@ -96,4 +96,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-im
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot-imx - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "c7f418a9147044923ec6d42d538fac70d5f0876813c9d863c3c4f52811f0dcd2"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "05eedba299329896fad55b42c8f290dcc2a1fa888e753cd288a71a9c25eaf7af"
