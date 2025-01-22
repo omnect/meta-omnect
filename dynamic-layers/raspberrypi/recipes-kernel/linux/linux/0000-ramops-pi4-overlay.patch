@@ -1,5 +1,5 @@
 diff --git a/arch/arm/boot/dts/overlays/ramoops-pi4-overlay.dts b/arch/arm/boot/dts/overlays/ramoops-pi4-overlay.dts
-index 4f3d30ef0..af246d3ac 100644
+index 4f3d30ef0..c3c5ab565 100644
 --- a/arch/arm/boot/dts/overlays/ramoops-pi4-overlay.dts
 +++ b/arch/arm/boot/dts/overlays/ramoops-pi4-overlay.dts
 @@ -9,9 +9,12 @@ fragment@0 {
@@ -10,9 +10,9 @@ index 4f3d30ef0..af246d3ac 100644
 +				reg = <0x0 0x0b000000 0x40000>; /* 256kB */
  				record-size = <0x4000>; /* 16kB */
  				console-size = <0>; /* disabled by default */
++				ecc-size = <0>; /* disabled by default */
 +				pmsg-size = <0>; /* disabled by default */
 +				ftrace-size = <0>; /* disabled by default */
-+				ecc = <0>; /* disabled by default */
  			};
  		};
  	};
@@ -20,8 +20,8 @@ index 4f3d30ef0..af246d3ac 100644
  		total-size = <&ramoops>,"reg:8";
  		record-size = <&ramoops>,"record-size:0";
  		console-size = <&ramoops>,"console-size:0";
++		ecc-size = <&ramoops>,"ecc-size:0";
 +		pmsg-size = <&ramoops>,"pmsg-size:0";
 +		ftrace-size = <&ramoops>,"ftrace-size:0";
-+		ecc = <&ramoops>,"ecc:0";
  	};
  };
