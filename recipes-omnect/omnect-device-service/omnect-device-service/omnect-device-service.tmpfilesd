@@ -6,7 +6,3 @@ z /mnt/cert/ssh/*                       0644 root            root            -  
 # health check ...
 #  - create log directory with desired permissions
 d /run/omnect_health_log 0775 root root -
-
-#  - requirements for reboot reasons tracking
-z /dev/pmsg0                            0660 omnect          omnect          - -
-d /var/lib/omnect/reboot-reason         0775 omnect          omnect          - -
