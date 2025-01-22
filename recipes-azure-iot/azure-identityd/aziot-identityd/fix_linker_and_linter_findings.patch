@@ -33,6 +33,20 @@ index e940e38..e5b300c 100644
 +
 +[lints.rust]
 +unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ossl300)'] }
+diff --git a/identity/aziot-identityd/build.rs b/identity/aziot-identityd/build.rs
+index 32ac86f..fcf7a50 100644
+--- a/identity/aziot-identityd/build.rs
++++ b/identity/aziot-identityd/build.rs
+@@ -3,6 +3,9 @@
+ #![deny(rust_2018_idioms)]
+ #![warn(clippy::all, clippy::pedantic)]
+ 
++use std::env;
+ fn main() {
++    let target_dir = env::var("TARGET_BUILD_DIR").unwrap();
++    println!("cargo:rustc-link-search=native={}", target_dir);
+     openssl_build::define_version_number_cfg();
+ }
 diff --git a/key/aziot-key-openssl-engine/Cargo.toml b/key/aziot-key-openssl-engine/Cargo.toml
 index 4704682..ee5af74 100644
 --- a/key/aziot-key-openssl-engine/Cargo.toml
