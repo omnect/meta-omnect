@@ -7,10 +7,13 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
 
 # patches
+# hint: fix_linker_and_linter_findings.patch must be after send_sd_notify.patch applied
 SRC_URI += " \
     file://apply_doesnt_restart_services.patch \
     file://send_sd_notify.patch \
+    file://fix_linker_and_linter_findings.patch \
 "
+
 # workspace
 SRC_URI += " \
     file://aziot-identityd-precondition.service \
@@ -50,7 +53,8 @@ do_compile:prepend:raspberrypi3() {
 
 do_compile() {
     oe_cargo_fix_env
-    export RUSTFLAGS="${RUSTFLAGS}"
+    export RUSTFLAGS="${RUSTFLAGS} -D warnings"
+    export CARGO_BUILD_FLAGS="${CARGO_BUILD_FLAGS}"
     export RUST_TARGET_PATH="${RUST_TARGET_PATH}"
 
     # pkg specific exports
@@ -62,6 +66,7 @@ do_compile() {
 
     sed -i 's/^RELEASE = 0$/RELEASE = 1/'       ${S}/Makefile
     sed -i -e 's/CARGO_TARGET = \(.*\)/CARGO_TARGET = ${TARGET_SYS}/g' ${S}/Makefile
+    sed -i -e '/^CARGO_OUTPUT_ABSPATH =/ a\export TARGET_BUILD_DIR = $(CARGO_OUTPUT_ABSPATH)' ${S}/Makefile
 
     # we don't build tpm2-tss as part of this build
     rm -rf third-party/tpm2-tss

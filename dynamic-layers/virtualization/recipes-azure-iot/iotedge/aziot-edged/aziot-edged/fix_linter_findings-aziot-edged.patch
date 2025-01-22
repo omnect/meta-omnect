@@ -1,0 +1,12 @@
+diff --git a/edgelet/docker-rs/Cargo.toml b/edgelet/docker-rs/Cargo.toml
+index f2ef566db..97eb26311 100644
+--- a/edgelet/docker-rs/Cargo.toml
++++ b/edgelet/docker-rs/Cargo.toml
+@@ -18,3 +18,6 @@ url = "2"
+ tokio = { version = "1", features = ["macros", "rt"] }
+
+ edgelet-test-utils = { path = "../edgelet-test-utils" }
++
++[lints.rust]
++unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
+\ No newline at end of file

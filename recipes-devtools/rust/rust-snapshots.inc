@@ -5,13 +5,13 @@
 ## The version is replicated here.
 ## TODO: find a way to add additional SRC_URIs based on the contents of an
 ##       earlier SRC_URI.
-RS_VERSION = "1.74.0"
-CARGO_VERSION = "1.74.0"
+RS_VERSION = "1.82.0"
+CARGO_VERSION = "1.82.0"
 
 # TODO: Add hashes for other architecture toolchains as well. Make a script?
-SRC_URI[rust-std-snapshot-x86_64.sha256sum] = "548413213012e2f62b08ed8a913a51210ae7402619027224580176031f2789ea"
-SRC_URI[rustc-snapshot-x86_64.sha256sum] = "7d464be2ae0d6ce69f056d1ea9a8ce2b3b1d537418caea216fdd303903972181"
-SRC_URI[cargo-snapshot-x86_64.sha256sum] = "f219386d4569c40b660518e99267afff428c13bf980bda7a614c8d4038d013f6"
+SRC_URI[rust-std-snapshot-x86_64.sha256sum] = "2eca3d36f7928f877c334909f35fe202fbcecce109ccf3b439284c2cb7849594"
+SRC_URI[rustc-snapshot-x86_64.sha256sum]    = "90b61494f5ccfd4d1ca9a5ce4a0af49a253ca435c701d9c44e3e44b5faf70cb8"
+SRC_URI[cargo-snapshot-x86_64.sha256sum]    = "97aeae783874a932c4500f4d36473297945edf6294d63871784217d608718e70"
 
 # currently we only build on x86 machines, we should groom this, as soon we support building on arch64 systems like mac
 
