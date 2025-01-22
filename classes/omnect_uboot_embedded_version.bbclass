@@ -45,7 +45,7 @@
 #  - OMNECT_BOOTLOADER_EMBEDDED_VERSION_LOCATION
 #    defines the run-time location of the bootloader and is a file path for
 #    type "file"; in case boot loader is part of flash it is assumed that it
-#    resides in the same device as the root filesystem 
+#    resides in the same device as the root filesystem
 #  - OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC
 #    a magic number precedes the actual version string, followed by a length
 #    byte containing the length of the following string, i.e. w/o magic number
@@ -76,8 +76,6 @@
 #  - <length> is one byte specifying length of <version string>
 #  - <version string> is the actual version, w/o terminating character
 #
-
-SRC_URI += "file://${DEPLOY_DIR_IMAGE}/omnect_bootloader_version"
 
 inherit deploy
 
@@ -226,9 +224,9 @@ omnect_uboot_get_plain_artefact() {
     cp "${DEPLOY_DIR_IMAGE}/${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BINFILE}" "${WORKDIR}/bootloader.bin"
 }
 
-do_compile[depends]  += "${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBTARGET}:do_deploy "
+do_compile[depends]  += "${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBTARGET}:do_deploy"
 do_compile[prefuncs] += "omnect_uboot_get_plain_artefact"
-do_deploy[prefuncs]  += "omnect_uboot_embed_version"
+do_compile[prefuncs] += "omnect_uboot_embed_version"
 
 do_deploy() {
     install -m 0644 -D ${WORKDIR}/bootloader.bin.versioned ${DEPLOYDIR}/bootloader.versioned.bin

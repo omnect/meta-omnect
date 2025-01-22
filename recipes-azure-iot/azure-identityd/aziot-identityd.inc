@@ -61,7 +61,7 @@ do_compile() {
     export FORCE_NO_UNITTEST="ON"
 
     sed -i 's/^RELEASE = 0$/RELEASE = 1/'       ${S}/Makefile
-    sed -i -e 's/CARGO_TARGET = \(.*\)/CARGO_TARGET = ${TARGET_SYS}/g' ${S}/Makefile
+    sed -i -e 's/CARGO_TARGET = \(.*\)/CARGO_TARGET = ${RUST_TARGET_SYS}/g' ${S}/Makefile
 
     # we don't build tpm2-tss as part of this build
     rm -rf third-party/tpm2-tss
@@ -91,10 +91,10 @@ do_install() {
 
     # binaries
     install -d -m 0755  ${D}${bindir}
-    install -m 0755     ${B}/target/${TARGET_SYS}/release/aziotctl ${D}${bindir}
+    install -m 0755     ${B}/target/${CARGO_TARGET_SUBDIR}/aziotctl ${D}${bindir}
 
     install -d -m 0750 -g aziot ${D}${libexecdir}/aziot-identity-service
-    install -m 0750 -g aziot ${B}/target/${TARGET_SYS}/release/aziotd ${D}${libexecdir}/aziot-identity-service
+    install -m 0750 -g aziot ${B}/target/${CARGO_TARGET_SUBDIR}/aziotd ${D}${libexecdir}/aziot-identity-service
 
     ln -rs ${D}${libexecdir}/aziot-identity-service/aziotd ${D}${libexecdir}/aziot-identity-service/aziot-certd
     ln -rs ${D}${libexecdir}/aziot-identity-service/aziotd ${D}${libexecdir}/aziot-identity-service/aziot-identityd
@@ -106,7 +106,7 @@ do_install() {
 
     # libaziot-keys
     install -d -m 0755  ${D}${libdir}
-    install -m 0644 -D  ${B}/target/${TARGET_SYS}/release/libaziot_keys.so ${D}${libdir}
+    install -m 0644 -D  ${B}/target/${CARGO_TARGET_SUBDIR}/libaziot_keys.so ${D}${libdir}
 
     # default configs and config directories
     install -m 0644 -D  ${WORKDIR}/iot-identity-service.conf ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
@@ -184,7 +184,7 @@ do_install() {
 
     # libaziot-key-openssl-engine-shared
     install -d -m 0755  ${D}${libdir}/engines-3
-    install -m 0644     ${B}/target/${TARGET_SYS}/release/libaziot_key_openssl_engine_shared.so ${D}${libdir}/engines-3/aziot_keys.so
+    install -m 0644     ${B}/target/${CARGO_TARGET_SUBDIR}/libaziot_key_openssl_engine_shared.so ${D}${libdir}/engines-3/aziot_keys.so
 
     # devel
     install -d -m 0755  ${D}${includedir}/aziot-identity-service

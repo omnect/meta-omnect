@@ -1,8 +1,8 @@
 diff --git a/conf/layer.conf b/conf/layer.conf
-index 7f4c6e0d..516b5377 100644
+index 7c8e3701..04bbe9fd 100644
 --- a/conf/layer.conf
 +++ b/conf/layer.conf
-@@ -60,3 +60,5 @@ USER_CLASSES:append = " meta-virt-xen-cfg"
+@@ -62,3 +62,5 @@ USER_CLASSES:append = " meta-virt-xen-cfg"
  USER_CLASSES:append = " meta-virt-hosts"
  
  HOSTTOOLS_NONFATAL += "getent"

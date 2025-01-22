@@ -29,8 +29,6 @@
 # - `OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE` - disable fatal error when version
 #   check fails. (still produces an error.)
 
-SRC_URI += "file://${DEPLOY_DIR_IMAGE}/omnect_bootloader_version"
-
 # create omnect_bootloader_version on recipe parse
 python() {
     import glob

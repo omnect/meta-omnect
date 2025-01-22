@@ -25,7 +25,7 @@ do_rootfs[depends] += "virtual/kernel:do_deploy"
 do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
 IMAGE_BOOT_FILES:append:omnect_uboot = " boot.scr"
-IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr', '', d)}"
+IMAGE_BOOT_FILES:append = "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', ' fdt-load.scr', '', d)}"
 
 do_image_wic[depends] += "virtual/bootloader:do_deploy"
 do_image_wic_extra_depends = ""
@@ -42,6 +42,8 @@ do_rootfs[depends] += "openssl-native:do_populate_sysroot"
 IMAGE_LINGUAS = "en-us"
 
 IMAGE_BASENAME = "omnect-os"
+
+IMAGE_LINK_NAME= "${IMAGE_BASENAME}${IMAGE_MACHINE_SUFFIX}"
 
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
@@ -149,8 +151,6 @@ python () {
 }
 
 inherit omnect_user
-
-inherit logging
 
 # positive test for packages, i.e. check if installed
 check_installed_packages() {

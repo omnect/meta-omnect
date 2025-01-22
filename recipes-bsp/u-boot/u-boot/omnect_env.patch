@@ -1,0 +1,25 @@
+diff --git a/include/env_default.h b/include/env_default.h
+index 2ca4a087d3..659487c0b5 100644
+--- a/include/env_default.h
++++ b/include/env_default.h
+@@ -11,6 +11,7 @@
+ #include <linux/stringify.h>
+ 
+ #include <generated/environment.h>
++#include <configs/omnect_env.h>
+ 
+ #ifdef DEFAULT_ENV_INSTANCE_EMBEDDED
+ env_t embedded_environment __UBOOT_ENV_SECTION__(environment) = {
+diff --git a/include/env_flags.h b/include/env_flags.h
+index d785f87cdc..eb793b28cb 100644
+--- a/include/env_flags.h
++++ b/include/env_flags.h
+@@ -7,6 +7,8 @@
+ #ifndef __ENV_FLAGS_H__
+ #define __ENV_FLAGS_H__
+ 
++#include <configs/omnect_env.h>
++
+ enum env_flags_vartype {
+ 	env_flags_vartype_string,
+ 	env_flags_vartype_decimal,

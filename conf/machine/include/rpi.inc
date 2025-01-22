@@ -31,7 +31,7 @@ MACHINEOVERRIDES:prepend = "omnect_uboot:"
 # optional tpm2 support
 MACHINE_FEATURES += "tpm2"
 
-OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_core}/recipes-bsp/u-boot/u-boot_2022.01.bb"
+OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_core}/recipes-bsp/u-boot/u-boot_2024.01.bb"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot = "<newchecksum> <oldchecksum>"
 # e.g.:
@@ -40,5 +40,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_core}/recipes-bsp/u-boot/u-boot_2022
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "dd60b88d74c8fa852915e3024368f53a4c6ced8fe7578248f57ae65a9d82e48e"
-OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot = "54ccb63280eea11057ac12ae7b7d429e0dfd936c4c1f60609c4ac63c8c31ae76 dd60b88d74c8fa852915e3024368f53a4c6ced8fe7578248f57ae65a9d82e48e"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "10d6aadb0dc784057ccab9ae3444c520e4d90110a124316b10511b66815e7214"

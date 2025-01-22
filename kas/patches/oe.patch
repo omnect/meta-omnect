@@ -1,11 +1,11 @@
 diff --git a/scripts/lib/wic/plugins/source/bootimg-efi.py b/scripts/lib/wic/plugins/source/bootimg-efi.py
-index a2b9f4c893..355cd1b417 100644
+index 13a9cddf4e..6095c7cc75 100644
 --- a/scripts/lib/wic/plugins/source/bootimg-efi.py
 +++ b/scripts/lib/wic/plugins/source/bootimg-efi.py
-@@ -285,67 +285,75 @@ class BootimgEFIPlugin(SourcePlugin):
-
+@@ -297,113 +297,121 @@ class BootimgEFIPlugin(SourcePlugin):
+ 
          hdddir = "%s/hdd/boot" % cr_workdir
-
+ 
 -        kernel = get_bitbake_var("KERNEL_IMAGETYPE")
 -        if get_bitbake_var("INITRAMFS_IMAGE_BUNDLE") == "1":
 -            if get_bitbake_var("INITRAMFS_IMAGE"):
@@ -49,24 +49,70 @@ index a2b9f4c893..355cd1b417 100644
 -                staging_dir_host = get_bitbake_var("STAGING_DIR_HOST")
 -                target_sys = get_bitbake_var("TARGET_SYS")
 -
+-                objdump_cmd = "%s-objdump" % target_sys
+-                objdump_cmd += " -p %s" % efi_stub
+-                objdump_cmd += " | awk '{ if ($1 == \"SectionAlignment\"){print $2} }'"
+-
+-                ret, align_str = exec_native_cmd(objdump_cmd, native_sysroot)
+-                align = int(align_str, 16)
+-
+-                objdump_cmd = "%s-objdump" % target_sys
+-                objdump_cmd += " -h %s | tail -2" % efi_stub
+-                ret, output = exec_native_cmd(objdump_cmd, native_sysroot)
+-
+-                offset = int(output.split()[2], 16) + int(output.split()[3], 16)
+-
+-                osrel_off = offset + align - offset % align
+-                osrel_path = "%s/usr/lib/os-release" % staging_dir_host
+-                osrel_sz = os.stat(osrel_path).st_size
+-
+-                cmdline_off = osrel_off + osrel_sz
+-                cmdline_off = cmdline_off + align - cmdline_off % align
+-                cmdline_sz = os.stat(cmdline.name).st_size
+-
+-                dtb_off = cmdline_off + cmdline_sz
+-                dtb_off = dtb_off + align - dtb_off % align
+-
+-                dtb = source_params.get('dtb')
+-                if dtb:
+-                    if ';' in dtb:
+-                        raise WicError("Only one DTB supported, exiting")
+-                    dtb_path = "%s/%s" % (deploy_dir, dtb)
+-                    dtb_params = '--add-section .dtb=%s --change-section-vma .dtb=0x%x' % \
+-                            (dtb_path, dtb_off)
+-                    linux_off = dtb_off + os.stat(dtb_path).st_size
+-                    linux_off = linux_off + align - linux_off % align
+-                else:
+-                    dtb_params = ''
+-                    linux_off = dtb_off
+-
+-                linux_path = "%s/%s" % (staging_kernel_dir, kernel)
+-                linux_sz = os.stat(linux_path).st_size
+-
+-                initrd_off = linux_off + linux_sz
+-                initrd_off = initrd_off + align - initrd_off % align
+-
 -                # https://www.freedesktop.org/software/systemd/man/systemd-stub.html
 -                objcopy_cmd = "%s-objcopy" % target_sys
 -                objcopy_cmd += " --enable-deterministic-archives"
 -                objcopy_cmd += " --preserve-dates"
--                objcopy_cmd += " --add-section .osrel=%s/usr/lib/os-release" % staging_dir_host
--                objcopy_cmd += " --change-section-vma .osrel=0x20000"
+-                objcopy_cmd += " --add-section .osrel=%s" % osrel_path
+-                objcopy_cmd += " --change-section-vma .osrel=0x%x" % osrel_off
 -                objcopy_cmd += " --add-section .cmdline=%s" % cmdline.name
--                objcopy_cmd += " --change-section-vma .cmdline=0x30000"
--                objcopy_cmd += " --add-section .linux=%s/%s" % (staging_kernel_dir, kernel)
--                objcopy_cmd += " --change-section-vma .linux=0x2000000"
+-                objcopy_cmd += " --change-section-vma .cmdline=0x%x" % cmdline_off
+-                objcopy_cmd += dtb_params
+-                objcopy_cmd += " --add-section .linux=%s" % linux_path
+-                objcopy_cmd += " --change-section-vma .linux=0x%x" % linux_off
 -                objcopy_cmd += " --add-section .initrd=%s" % initrd.name
--                objcopy_cmd += " --change-section-vma .initrd=0x3000000"
+-                objcopy_cmd += " --change-section-vma .initrd=0x%x" % initrd_off
 -                objcopy_cmd += " %s %s/EFI/Linux/linux.efi" % (efi_stub, hdddir)
+-
 -                exec_native_cmd(objcopy_cmd, native_sysroot)
 -        else:
--            install_cmd = "install -m 0644 %s/%s %s/%s" % \
--                (staging_kernel_dir, kernel, hdddir, kernel)
--            exec_cmd(install_cmd)
+-            if source_params.get('install-kernel-into-boot-dir') != 'false':
+-                install_cmd = "install -m 0644 %s/%s %s/%s" % \
+-                    (staging_kernel_dir, kernel, hdddir, kernel)
+-                exec_cmd(install_cmd)
 +        # kernel = get_bitbake_var("KERNEL_IMAGETYPE")
 +        # if get_bitbake_var("INITRAMFS_IMAGE_BUNDLE") == "1":
 +        #     if get_bitbake_var("INITRAMFS_IMAGE"):
@@ -110,24 +156,70 @@ index a2b9f4c893..355cd1b417 100644
 +        #         staging_dir_host = get_bitbake_var("STAGING_DIR_HOST")
 +        #         target_sys = get_bitbake_var("TARGET_SYS")
 +
++        #         objdump_cmd = "%s-objdump" % target_sys
++        #         objdump_cmd += " -p %s" % efi_stub
++        #         objdump_cmd += " | awk '{ if ($1 == \"SectionAlignment\"){print $2} }'"
++
++        #         ret, align_str = exec_native_cmd(objdump_cmd, native_sysroot)
++        #         align = int(align_str, 16)
++
++        #         objdump_cmd = "%s-objdump" % target_sys
++        #         objdump_cmd += " -h %s | tail -2" % efi_stub
++        #         ret, output = exec_native_cmd(objdump_cmd, native_sysroot)
++
++        #         offset = int(output.split()[2], 16) + int(output.split()[3], 16)
++
++        #         osrel_off = offset + align - offset % align
++        #         osrel_path = "%s/usr/lib/os-release" % staging_dir_host
++        #         osrel_sz = os.stat(osrel_path).st_size
++
++        #         cmdline_off = osrel_off + osrel_sz
++        #         cmdline_off = cmdline_off + align - cmdline_off % align
++        #         cmdline_sz = os.stat(cmdline.name).st_size
++
++        #         dtb_off = cmdline_off + cmdline_sz
++        #         dtb_off = dtb_off + align - dtb_off % align
++
++        #         dtb = source_params.get('dtb')
++        #         if dtb:
++        #             if ';' in dtb:
++        #                 raise WicError("Only one DTB supported, exiting")
++        #             dtb_path = "%s/%s" % (deploy_dir, dtb)
++        #             dtb_params = '--add-section .dtb=%s --change-section-vma .dtb=0x%x' % \
++        #                     (dtb_path, dtb_off)
++        #             linux_off = dtb_off + os.stat(dtb_path).st_size
++        #             linux_off = linux_off + align - linux_off % align
++        #         else:
++        #             dtb_params = ''
++        #             linux_off = dtb_off
++
++        #         linux_path = "%s/%s" % (staging_kernel_dir, kernel)
++        #         linux_sz = os.stat(linux_path).st_size
++
++        #         initrd_off = linux_off + linux_sz
++        #         initrd_off = initrd_off + align - initrd_off % align
++
 +        #         # https://www.freedesktop.org/software/systemd/man/systemd-stub.html
 +        #         objcopy_cmd = "%s-objcopy" % target_sys
 +        #         objcopy_cmd += " --enable-deterministic-archives"
 +        #         objcopy_cmd += " --preserve-dates"
-+        #         objcopy_cmd += " --add-section .osrel=%s/usr/lib/os-release" % staging_dir_host
-+        #         objcopy_cmd += " --change-section-vma .osrel=0x20000"
++        #         objcopy_cmd += " --add-section .osrel=%s" % osrel_path
++        #         objcopy_cmd += " --change-section-vma .osrel=0x%x" % osrel_off
 +        #         objcopy_cmd += " --add-section .cmdline=%s" % cmdline.name
-+        #         objcopy_cmd += " --change-section-vma .cmdline=0x30000"
-+        #         objcopy_cmd += " --add-section .linux=%s/%s" % (staging_kernel_dir, kernel)
-+        #         objcopy_cmd += " --change-section-vma .linux=0x2000000"
++        #         objcopy_cmd += " --change-section-vma .cmdline=0x%x" % cmdline_off
++        #         objcopy_cmd += dtb_params
++        #         objcopy_cmd += " --add-section .linux=%s" % linux_path
++        #         objcopy_cmd += " --change-section-vma .linux=0x%x" % linux_off
 +        #         objcopy_cmd += " --add-section .initrd=%s" % initrd.name
-+        #         objcopy_cmd += " --change-section-vma .initrd=0x3000000"
++        #         objcopy_cmd += " --change-section-vma .initrd=0x%x" % initrd_off
 +        #         objcopy_cmd += " %s %s/EFI/Linux/linux.efi" % (efi_stub, hdddir)
++
 +        #         exec_native_cmd(objcopy_cmd, native_sysroot)
 +        # else:
-+        #     install_cmd = "install -m 0644 %s/%s %s/%s" % \
-+        #         (staging_kernel_dir, kernel, hdddir, kernel)
-+        #     exec_cmd(install_cmd)
++        #     if source_params.get('install-kernel-into-boot-dir') != 'false':
++        #         install_cmd = "install -m 0644 %s/%s %s/%s" % \
++        #             (staging_kernel_dir, kernel, hdddir, kernel)
++        #         exec_cmd(install_cmd)
 +
 +        # install grubenv file
 +        omnect_grubenv_file = get_bitbake_var("OMNECT_GRUBENV_FILE")
@@ -136,176 +228,16 @@ index a2b9f4c893..355cd1b417 100644
 +        deploy_dir_img = get_bitbake_var("DEPLOY_DIR_IMAGE")
 +        bootloader_version_install_cmd = "install -m 0644 -D %s/omnect_bootloader_version %s/EFI/BOOT/omnect_bootloader_version" % (deploy_dir_img, hdddir)
 +        exec_cmd(bootloader_version_install_cmd)
-
+ 
          if get_bitbake_var("IMAGE_EFI_BOOT_FILES"):
              for src_path, dst_path in cls.install_task:
-diff --git a/meta/classes/cargo.bbclass b/meta/classes/cargo.bbclass
-index 6df3b19b00..fa593b86b9 100644
---- a/meta/classes/cargo.bbclass
-+++ b/meta/classes/cargo.bbclass
-@@ -32,7 +32,7 @@ MANIFEST_PATH ??= "${S}/${CARGO_SRC_DIR}/Cargo.toml"
- 
- RUSTFLAGS ??= ""
- BUILD_MODE = "${@['--release', ''][d.getVar('DEBUG_BUILD') == '1']}"
--CARGO_BUILD_FLAGS = "-v --target ${HOST_SYS} ${BUILD_MODE} --manifest-path=${MANIFEST_PATH}"
-+CARGO_BUILD_FLAGS = "-v --frozen --target ${HOST_SYS} ${BUILD_MODE} --manifest-path=${MANIFEST_PATH}"
- 
- # This is based on the content of CARGO_BUILD_FLAGS and generally will need to
- # change if CARGO_BUILD_FLAGS changes.
-diff --git a/meta/classes/cargo_common.bbclass b/meta/classes/cargo_common.bbclass
-index c1bc142d85..c89ac38f5e 100644
---- a/meta/classes/cargo_common.bbclass
-+++ b/meta/classes/cargo_common.bbclass
-@@ -22,12 +22,22 @@ export PKG_CONFIG_ALLOW_CROSS = "1"
- # Don't instruct cargo to use crates downloaded by bitbake. Some rust packages,
- # for example the rust compiler itself, come with their own vendored sources.
- # Specifying two [source.crates-io] will not work.
--CARGO_DISABLE_BITBAKE_VENDORING ?= "0"
-+CARGO_DISABLE_BITBAKE_VENDORING ??= "0"
- 
- # Used by libstd-rs to point to the vendor dir included in rustc src
--CARGO_VENDORING_DIRECTORY ?= "${CARGO_HOME}/bitbake"
-+CARGO_VENDORING_DIRECTORY ??= "${CARGO_HOME}/bitbake"
- 
--CARGO_RUST_TARGET_CCLD ?= "${RUST_TARGET_CCLD}"
-+# The directory of the Cargo.toml relative to the root directory, per default
-+# assume there's a Cargo.toml directly in the root directory
-+CARGO_SRC_DIR ??= ""
-+
-+# The actual path to the Cargo.toml
-+CARGO_MANIFEST_PATH ??= "${S}/${CARGO_SRC_DIR}/Cargo.toml"
-+
-+# Path to Cargo.lock
-+CARGO_LOCK_PATH ??= "${@ os.path.join(os.path.dirname(d.getVar('CARGO_MANIFEST_PATH', True)), 'Cargo.lock')}"
-+
-+CARGO_RUST_TARGET_CCLD ??= "${RUST_TARGET_CCLD}"
- cargo_common_do_configure () {
- 	mkdir -p ${CARGO_HOME}/bitbake
- 
-@@ -101,6 +111,79 @@ cargo_common_do_configure () {
- 	EOF
- }
- 
-+python cargo_common_do_patch_paths() {
-+    import shutil
-+
-+    cargo_config = os.path.join(d.getVar("CARGO_HOME"), "config")
-+    if not os.path.exists(cargo_config):
-+        return
-+
-+    src_uri = (d.getVar('SRC_URI') or "").split()
-+    if len(src_uri) == 0:
-+        return
-+
-+    patches = dict()
-+    workdir = d.getVar('WORKDIR')
-+    fetcher = bb.fetch2.Fetch(src_uri, d)
-+    for url in fetcher.urls:
-+        ud = fetcher.ud[url]
-+        if ud.type == 'git':
-+            name = ud.parm.get('name')
-+            destsuffix = ud.parm.get('destsuffix')
-+            if name is not None and destsuffix is not None:
-+                if ud.user:
-+                    repo = '%s://%s@%s%s' % (ud.proto, ud.user, ud.host, ud.path)
-+                else:
-+                    repo = '%s://%s%s' % (ud.proto, ud.host, ud.path)
-+                path = '%s = { path = "%s" }' % (name, os.path.join(workdir, destsuffix))
-+                patches.setdefault(repo, []).append(path)
-+
-+    with open(cargo_config, "a+") as config:
-+        for k, v in patches.items():
-+            print('\n[patch."%s"]' % k, file=config)
-+            for name in v:
-+                print(name, file=config)
-+
-+    if not patches:
-+        return
-+
-+    # Cargo.lock file is needed for to be sure that artifacts
-+    # downloaded by the fetch steps are those expected by the
-+    # project and that the possible patches are correctly applied.
-+    # Moreover since we do not want any modification
-+    # of this file (for reproducibility purpose), we prevent it by
-+    # using --frozen flag (in CARGO_BUILD_FLAGS) and raise a clear error
-+    # here is better than letting cargo tell (in case the file is missing)
-+    # "Cargo.lock should be modified but --frozen was given"
-+
-+    lockfile = d.getVar("CARGO_LOCK_PATH", True)
-+    if not os.path.exists(lockfile):
-+        bb.fatal(f"{lockfile} file doesn't exist")
-+
-+    # There are patched files and so Cargo.lock should be modified but we use
-+    # --frozen so let's handle that modifications here.
-+    #
-+    # Note that a "better" (more elegant ?) would have been to use cargo update for
-+    # patched packages:
-+    #  cargo update --offline -p package_1 -p package_2
-+    # But this is not possible since it requires that cargo local git db
-+    # to be populated and this is not the case as we fetch git repo ourself.
-+
-+    lockfile_orig = lockfile + ".orig"
-+    if not os.path.exists(lockfile_orig):
-+        shutil.copy(lockfile, lockfile_orig)
-+
-+    newlines = []
-+    with open(lockfile_orig, "r") as f:
-+        for line in f.readlines():
-+            if not line.startswith("source = \"git"):
-+                newlines.append(line)
-+
-+    with open(lockfile, "w") as f:
-+        f.writelines(newlines)
-+}
-+do_configure[postfuncs] += "cargo_common_do_patch_paths"
-+
- do_compile:prepend () {
-         oe_cargo_fix_env
- }
-diff --git a/meta/classes/image.bbclass b/meta/classes/image.bbclass
-index 00413d56d1..cef10c5fde 100644
---- a/meta/classes/image.bbclass
-+++ b/meta/classes/image.bbclass
-@@ -529,27 +529,27 @@ def get_rootfs_size(d):
-     size_kb = oe.utils.directory_size(d.getVar("IMAGE_ROOTFS")) / 1024
-
-     base_size = size_kb * overhead_factor
--    bb.debug(1, '%f = %d * %f' % (base_size, size_kb, overhead_factor))
-+    bb.verbnote('%f = %d * %f' % (base_size, size_kb, overhead_factor))
-     base_size2 = max(base_size, rootfs_req_size) + rootfs_extra_space
--    bb.debug(1, '%f = max(%f, %d)[%f] + %d' % (base_size2, base_size, rootfs_req_size, max(base_size, rootfs_req_size), rootfs_extra_space))
-+    bb.verbnote('%f = max(%f, %d)[%f] + %d' % (base_size2, base_size, rootfs_req_size, max(base_size, rootfs_req_size), rootfs_extra_space))
-
-     base_size = base_size2
-     if base_size != int(base_size):
-         base_size = int(base_size + 1)
-     else:
-         base_size = int(base_size)
--    bb.debug(1, '%f = int(%f)' % (base_size, base_size2))
-+    bb.verbnote('%f = int(%f)' % (base_size, base_size2))
-
-     base_size_saved = base_size
-     base_size += rootfs_alignment - 1
-     base_size -= base_size % rootfs_alignment
--    bb.debug(1, '%d = aligned(%d)' % (base_size, base_size_saved))
-+    bb.verbnote('%d = aligned(%d) [max: %d]' % (base_size, base_size_saved, int(rootfs_maxsize)))
-
-     # Do not check image size of the debugfs image. This is not supposed
-     # to be deployed, etc. so it doesn't make sense to limit the size
-     # of the debug.
-     if (d.getVar('IMAGE_BUILDING_DEBUGFS') or "") == "true":
--        bb.debug(1, 'returning debugfs size %d' % (base_size))
-+        bb.verbnote('returning debugfs size %d' % (base_size))
-         return base_size
-
-     # Check the rootfs size against IMAGE_ROOTFS_MAXSIZE (if set)
 diff --git a/meta/conf/layer.conf b/meta/conf/layer.conf
-index 1f329c3efe..f906531327 100644
+index efbf2610f9..330c964f87 100644
 --- a/meta/conf/layer.conf
 +++ b/meta/conf/layer.conf
-@@ -123,3 +123,5 @@ SSTATE_EXCLUDEDEPS_SYSROOT += ".*->autoconf-archive-native"
- # Avoid empty path entries
- BITBAKEPATH := "${@os.path.dirname(bb.utils.which(d.getVar('PATH'),'bitbake'))}"
- PATH := "${@'${BITBAKEPATH}:' if '${BITBAKEPATH}' != '' else ''}${HOSTTOOLS_DIR}"
+@@ -132,3 +132,5 @@ PATH := "${@'${BITBAKEPATH}:' if '${BITBAKEPATH}' != '' else ''}${HOSTTOOLS_DIR}
+ BB_GLOBAL_PYMODULES = "os sys time"
+ 
+ addpylib ${LAYERDIR}/lib oe
 +
 +LAYERDIR_core = "${LAYERDIR}"
