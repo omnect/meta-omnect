@@ -73,6 +73,13 @@ do_install:append() {
             -e 's/^#ReserveVT=\(.*\)$/ReserveVT=0 /' \
             ${D}${sysconfdir}/systemd/logind.conf
     fi
+
+    # disable pstore support, we want to do that on our own
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'ramoops', 'true', 'false', d)}; then
+        sed -i \
+            -e 's/^#Storage=\(.*\)$/Storage=none /' \
+            ${D}${sysconfdir}/systemd/pstore.conf
+    fi
 }
 
 enable_hardware_watchdog() {
