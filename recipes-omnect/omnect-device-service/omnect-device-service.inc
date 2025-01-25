@@ -91,8 +91,10 @@ do_install:append() {
     install -m 0755 -D ${S}/healthcheck/omnect_pmsg_to_reboot_reason.sh  ${D}/${sbindir}/omnect_pmsg_to_reboot_reason.sh
     install -m 0755 -D ${S}/healthcheck/omnect_log_reboot_reason_to_pmsg.sh ${D}/${sbindir}/omnect_log_reboot_reason_to_pmsg.sh
     # and here the configuration files
+    install -m 0644 -D ${S}/healthcheck/omnect-pstore-log-shutdown.service   ${D}${systemd_system_unitdir}/omnect-pstore-log-shutdown.service
+    install -m 0644 -D ${S}/healthcheck/omnect-pstore-log-reboot.service     ${D}${systemd_system_unitdir}/omnect-pstore-log-reboot.service
     install -m 0644 -D ${S}/healthcheck/omnect_service_log_analysis.json ${D}/${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json
-    install -m 0644 -D ${S}/healthcheck/omnect_health_checks.json ${D}/${sysconfdir}/omnect/health_check/omnect_health_checks.json
+    install -m 0644 -D ${S}/healthcheck/omnect_health_checks.json        ${D}/${sysconfdir}/omnect/health_check/omnect_health_checks.json
 }
 
 do_install:append:omnect_grub() {
@@ -112,6 +114,8 @@ SYSTEMD_SERVICE:${PN} = " \
     omnect-device-service.service \
     omnect-device-service.socket \
     omnect-device-service.timer \
+    omnect-pstore-log-reboot.service \
+    omnect-pstore-log-shutdown.service \
 "
 
 FILES:${PN} += "\
