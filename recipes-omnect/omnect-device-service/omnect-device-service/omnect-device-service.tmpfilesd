@@ -8,5 +8,5 @@ z /mnt/cert/ssh/*                       0644 root            root            -  
 d /run/omnect_health_log 0775 root root -
 
 #  - create reboot reason log directory
-z /dev/pmsg0                            0660 omnect          omnect          - -
-d /var/lib/omnect/reboot-reason         0775 omnect          omnect          - -
+z /dev/pmsg0                            0660 omnect_device_service  omnect_device_service - -
+d /var/lib/omnect/reboot-reason         0775 omnect_device_service  omnect_device_service - -
