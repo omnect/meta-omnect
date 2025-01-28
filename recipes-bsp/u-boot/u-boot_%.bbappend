@@ -2,9 +2,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 DEPENDS += "bc-native"
 
-# THISDIR is only save during recipe parsing
-OMNECT_THISDIR_SAVED := "${THISDIR}/"
-
 # At bootm compile time, the CONFIG_SYS_BOOTM_LEN setting from the soc config
 # is not honored. E.g. rpi.h sets 64M, but bootm refuses to boot an image with
 # 9MB. This patch isn't a real fix, it is a workaround because the soc config
@@ -31,19 +28,5 @@ SRC_URI:append = "\
     file://disable-usb.cfg \
 "
 
-# we do not include u-boot upstream recipe, because
-# updates in openembedded_core should be handled by `PV` increase
-OMNECT_BOOTLOADER_CHECKSUM_FILES = "${OMNECT_THISDIR_SAVED}/u-boot_%.bbappend"
-OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/u-boot-scr.bb"
-OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/u-boot/*"
-
-# since bootloader version gets embedded in bootloader file also
-# settings thereof need to be fed into checksumming
-OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/classes/omnect_uboot_embedded_version.bbclass"
-
-OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE = "${OMNECT_THISDIR_SAVED}/u-boot/.gitignore"
-# don't include files which are generated on build:
-OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${OMNECT_THISDIR_SAVED}/u-boot/redundant-env-fragment.cfg"
-
-inherit omnect_bootloader_versioning
 inherit omnect_uboot_configure_env
+inherit omnect_bootloader_check

@@ -33,12 +33,12 @@ MACHINE_FEATURES += "tpm2"
 
 OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_core}/recipes-bsp/u-boot/u-boot_2022.01.bb"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
-# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot = "<newchecksum> <oldchecksum>"
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned = "<newchecksum> <oldchecksum>"
 # e.g.:
-# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot = "2cf3dd5f692d9ed563f06ecf80d0cb566ddc165fa01a37b4eba663dc7b7b9087 ebe0e595a3efb112b7495a14f9562d89d00041390f26a9ad4985435687bf2310"
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned = "2cf3dd5f692d9ed563f06ecf80d0cb566ddc165fa01a37b4eba663dc7b7b9087 ebe0e595a3efb112b7495a14f9562d89d00041390f26a9ad4985435687bf2310"
 #
-# OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot - build will fail, if the
+# OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-bootloader-versioned - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
-# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot = "dd60b88d74c8fa852915e3024368f53a4c6ced8fe7578248f57ae65a9d82e48e"
-OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot = "54ccb63280eea11057ac12ae7b7d429e0dfd936c4c1f60609c4ac63c8c31ae76 dd60b88d74c8fa852915e3024368f53a4c6ced8fe7578248f57ae65a9d82e48e"
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned is set
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "dd60b88d74c8fa852915e3024368f53a4c6ced8fe7578248f57ae65a9d82e48e"
+OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned = "54ccb63280eea11057ac12ae7b7d429e0dfd936c4c1f60609c4ac63c8c31ae76 dd60b88d74c8fa852915e3024368f53a4c6ced8fe7578248f57ae65a9d82e48e"

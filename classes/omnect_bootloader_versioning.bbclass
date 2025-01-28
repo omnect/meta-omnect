@@ -29,8 +29,6 @@
 # - `OMNECT_BOOTLOADER_VERSION_CHECK_DISABLE` - disable fatal error when version
 #   check fails. (still produces an error.)
 
-SRC_URI += "file://${DEPLOY_DIR_IMAGE}/omnect_bootloader_version"
-
 # create omnect_bootloader_version on recipe parse
 python() {
     import glob
@@ -42,11 +40,8 @@ python() {
     bootloader_file = d.getVar("OMNECT_BOOTLOADER_RECIPE_PATH")
     if not bootloader_file:
         bb.fatal("OMNECT_BOOTLOADER_RECIPE_PATH not set")
-
-    # since this runs at parse time, we have to ignore parsing of grub-efi for
-    # u-boot devices and vice versa, or recipes with the same PN and PV
-    if file != bootloader_file:
-        return 0
+    # OMNECT_BOOTLOADER_RECIPE_PATH is part of OMNECT_BOOTLOADER_CHECKSUM_FILES
+    # we test the bootloader recipe, if it matches this path
 
     checksum_files = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_FILES").split(" ")
     checksum_files_ignore = []
