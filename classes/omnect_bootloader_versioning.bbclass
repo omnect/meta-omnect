@@ -99,13 +99,12 @@ python() {
         else:
             bb.error("expected bootloader checksum (OMNECT_BOOTLOADER_CHECKSUM_EXPECTED): \"%s\" is different from computed: \"%s\"" % (version_checksum_expected, version_checksum))
 
-    omnect_bootloader_version = d.getVar("PV") + "-" + version_checksum
-    bootloader_version_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version"
+    bootloader_checksum_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_checksum"
     try:
-        with open( bootloader_version_file, "w" ) as f:
-            f.write("%s" % omnect_bootloader_version)
+        with open( bootloader_checksum_file, "w" ) as f:
+            f.write("%s" % version_checksum)
     except OSError:
-        bb.fatal("Unable to open \"%s\"" % (bootloader_version_file))
+        bb.fatal("Unable to open \"%s\"" % (bootloader_checksum_file))
 
     # bb.debug is shown when using param -D (1) or -DD (2)
     bb.debug(1,"version_checksum: %s" % version_checksum)

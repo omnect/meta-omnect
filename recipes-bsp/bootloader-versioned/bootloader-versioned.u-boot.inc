@@ -41,4 +41,4 @@ do_install() {
 
 FILES:${PN} = "/usr/bin/omnect_get_bootloader_version.sh"
 
-TEST2 = "2"
+inherit omnect_uboot_embedded_version

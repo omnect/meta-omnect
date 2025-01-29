@@ -28,5 +28,4 @@ SRC_URI:append = "\
     file://disable-usb.cfg \
 "
 
-inherit omnect_uboot_configure_env
-inherit omnect_bootloader_check
+inherit omnect_uboot_configure_env omnect_bootloader

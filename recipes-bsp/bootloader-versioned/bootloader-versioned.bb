@@ -13,5 +13,6 @@ include_recipe:omnect_uboot = "bootloader-versioned.u-boot.inc"
 include_recipe:omnect_grub = "bootloader-versioned.grub.inc"
 require ${include_recipe}
 
-inherit omnect_bootloader_versioning
-inherit omnect_uboot_embedded_version
+addtask do_deploy after do_compile before do_build
+
+INHIBIT_DEFAULT_DEPS = "1"

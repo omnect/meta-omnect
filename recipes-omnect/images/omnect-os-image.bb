@@ -30,7 +30,7 @@ IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr',
 do_image_wic[depends] += "virtual/bootloader:do_deploy"
 do_image_wic_extra_depends = ""
 # we adapt grub.cfg before writing it to image in do_image_wic
-do_image_wic_extra_depends:omnect_grub = "grub-cfg:do_deploy"
+do_image_wic_extra_depends:omnect_grub = "grub-cfg:do_deploy bootloader-versioned:do_deploy"
 # we add boot.scr to the image on condition
 do_image_wic_extra_depends:omnect_uboot = "u-boot-scr:do_deploy bootloader-versioned:do_deploy"
 do_image_wic_extra_depends:rpi = "u-boot-scr:do_deploy bootloader-versioned:do_deploy rpi-bootfiles:do_deploy rpi-config:do_deploy rpi-cmdline:do_deploy"

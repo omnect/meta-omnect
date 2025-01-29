@@ -26,10 +26,9 @@ SRC_URI += " \
 
 CVE_PRODUCT = "u-boot-imx u-boot"
 
-inherit omnect_uboot_configure_env
+inherit omnect_uboot_configure_env omnect_bootloader
+
 
 do_configure:prepend:mx8mm-nxp-bsp() {
     cp -f ${WORKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h
 }
-
-inherit omnect_bootloader_check
