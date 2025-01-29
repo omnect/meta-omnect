@@ -1,7 +1,7 @@
 # /run/omnect-device-service gets created by omnect-os-initramfs
 d /run/omnect-device-service/ssh-tunnel 0700 ssh_tunnel_user ssh_tunnel_user 1h -
-z /mnt/cert/ssh                         0755 root            root            -  -
-z /mnt/cert/ssh/*                       0644 root            root            -  -
+d /mnt/cert/ssh                         0755 ssh_tunnel_user ssh_tunnel_user -  -
+Z /mnt/cert/ssh/*                       0644 ssh_tunnel_user ssh_tunnel_user -  -
 
 # health check ...
 #  - create log directory with desired permissions
