@@ -239,4 +239,5 @@ do_deploy() {
     if [ -r ${WORKDIR}/bootloader.bin.versioned.gz ]; then
         install -m 0644 -D ${WORKDIR}/bootloader.bin.versioned.gz ${DEPLOYDIR}/bootloader.versioned.bin.gz
     fi
+    echo "$(cat ${DEPLOY_DIR_IMAGE}/omnect_bootloader_pv)-$(cat ${DEPLOY_DIR_IMAGE}/omnect_bootloader_checksum)" > ${DEPLOYDIR}/omnect_bootloader_version
 }
