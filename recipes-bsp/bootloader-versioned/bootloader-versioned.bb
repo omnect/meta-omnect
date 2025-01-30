@@ -1,3 +1,5 @@
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM="\
   file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302 \
@@ -13,6 +15,9 @@ include_recipe:omnect_uboot = "bootloader-versioned.u-boot.inc"
 include_recipe:omnect_grub = "bootloader-versioned.grub.inc"
 require ${include_recipe}
 
+do_compile[vardeps] += "OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE OMNECT_BOOTLOADER_CHECKSUM_EXPECTED"
 addtask do_deploy after do_compile before do_build
+
+FILES:${PN} = "/usr/bin/omnect_get_bootloader_version.sh"
 
 INHIBIT_DEFAULT_DEPS = "1"

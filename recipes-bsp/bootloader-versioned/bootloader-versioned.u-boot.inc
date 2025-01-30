@@ -1,5 +1,3 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-
 DEPENDS = "${OMNECT_BOOTLOADER_EMBEDDED_VERSION_BBTARGET}"
 
 SRC_URI = "file://omnect_get_bootloader_version.sh.template"
@@ -40,5 +38,3 @@ do_compile() {
 do_install() {
     install -m 0755 -D ${WORKDIR}/omnect_get_bootloader_version.sh ${D}/usr/bin/omnect_get_bootloader_version.sh
 }
-
-FILES:${PN} = "/usr/bin/omnect_get_bootloader_version.sh"
