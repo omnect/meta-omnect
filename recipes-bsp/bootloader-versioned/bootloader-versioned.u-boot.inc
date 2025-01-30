@@ -24,6 +24,8 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE = "${LAYERDIR_omnect}/recipes-bsp/u
 # don't include files which are generated on build:
 OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_omnect}/recipes-bsp/u-boot/u-boot/redundant-env-fragment.cfg"
 
+inherit omnect_bootloader_versioning omnect_uboot_embedded_version
+
 do_compile() {
     cp "${WORKDIR}/omnect_get_bootloader_version.sh.template" "${WORKDIR}/omnect_get_bootloader_version.sh"
     sed -i -e 's,@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC@@,${OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC},g' \
@@ -40,5 +42,3 @@ do_install() {
 }
 
 FILES:${PN} = "/usr/bin/omnect_get_bootloader_version.sh"
-
-inherit omnect_uboot_embedded_version
