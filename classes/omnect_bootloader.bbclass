@@ -5,5 +5,5 @@ do_configure:prepend () {
 }
 
 do_deploy:append () {
-    echo "${PV}" > ${DEPLOYDIR}/omnect_bootloader_pv
+    echo -n "${PV}" > ${DEPLOYDIR}/omnect_bootloader_pv
 }

@@ -11,5 +11,6 @@ inherit deploy omnect_bootloader_versioning
 do_deploy() {
     echo "$(cat ${DEPLOY_DIR_IMAGE}/omnect_bootloader_pv)-$(cat ${DEPLOY_DIR_IMAGE}/omnect_bootloader_checksum)" > ${DEPLOYDIR}/omnect_bootloader_version
 }
+do_deploy[depends]  += "virtual/bootloader:do_deploy "
 
 # Note: version is written to boot partition by kas/patches/oe_bootimg_efi_wic.patch
