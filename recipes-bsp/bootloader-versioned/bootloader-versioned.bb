@@ -15,7 +15,7 @@ include_recipe:omnect_uboot = "bootloader-versioned.u-boot.inc"
 include_recipe:omnect_grub = "bootloader-versioned.grub.inc"
 require ${include_recipe}
 
-do_compile[vardeps] += "OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE OMNECT_BOOTLOADER_CHECKSUM_EXPECTED"
+do_compile[vardeps] = "OMNECT_BOOTLOADER_CHECKSUM_EXPECTED"
 addtask do_deploy after do_compile before do_build
 
 FILES:${PN} = "/usr/bin/omnect_get_bootloader_version.sh"
