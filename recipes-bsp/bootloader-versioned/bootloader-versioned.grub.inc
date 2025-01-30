@@ -9,7 +9,7 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/files/grubenv"
 inherit deploy omnect_bootloader_versioning
 
 do_deploy() {
-    echo "$(cat ${DEPLOY_DIR_IMAGE}/omnect_bootloader_pv)-$(cat ${DEPLOY_DIR_IMAGE}/omnect_bootloader_checksum)" > ${DEPLOYDIR}/omnect_bootloader_version
+    echo -n "$(cat ${DEPLOY_DIR_IMAGE}/omnect_bootloader_pv)-$(cat ${DEPLOY_DIR_IMAGE}/omnect_bootloader_checksum)" > ${DEPLOYDIR}/omnect_bootloader_version
 }
 do_deploy[depends]  += "virtual/bootloader:do_deploy "
 
