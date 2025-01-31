@@ -7,7 +7,11 @@ CARGO_LOCK_PATH = "${S}/edgelet/Cargo.lock"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:"
 
-SRC_URI += "file://apply_doesnt_restart_services.patch"
+SRC_URI += "\
+  file://apply_doesnt_restart_services.patch \
+  file://fix_linter_findings-iotedge.patch \
+  file://fix_linter_findings-aziot-cert-client-async.patch;patchdir=${WORKDIR}/aziot-cert-client-async \
+"
 
 DEPENDS += "openssl"
 RDEPENDS:${PN} += "aziot-identityd"
@@ -20,6 +24,8 @@ export IOTEDGE_CONNECT_WORKLOAD_URI = "unix:///var/run/iotedge/workload.sock"
 export IOTEDGE_LISTEN_MANAGEMENT_URI = "fd://aziot-edged.mgmt.socket"
 export IOTEDGE_LISTEN_WORKLOAD_URI = "fd://aziot-edged.workload.socket"
 export SOCKET_DIR = "/run/aziot"
+
+RUSTFLAGS+="-D warnings"
 
 do_install () {
     # Binaries

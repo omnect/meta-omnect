@@ -13,8 +13,7 @@
 #     kernel8.img)
 #
 # The bootloader version itself doesn't get computed here but in class
-# omnect_bootloader_versioning.bbclass which also writes the computed version
-# to file omnect_bootloader_version in DEPLOY_DIR_IMAGE.
+# omnect_bootloader_versioning.bbclass
 #
 # The following bitbake variables control how the version information gets
 # embedded:
@@ -90,12 +89,19 @@ python omnect_uboot_embed_version() {
     from pathlib import Path
 
     # read the previously calculated version information
-    bootloader_version_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version"
+    bootloader_pv_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_pv"
+    bootloader_checksum_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_checksum"
     try:
-        with open( bootloader_version_file, "r", encoding="utf-8") as f:
-            omnect_bootloader_version = f.read()
+        with open( bootloader_pv_file, "r", encoding="utf-8") as f:
+            omnect_bootloader_pv = f.read()
     except OSError:
-        bb.fatal("Unable to read from bootloader version file \"%s\"" % (bootloader_version_file))
+        bb.fatal("Unable to read from bootloader version file \"%s\"" % (bootloader_pv_file))
+    try:
+        with open( bootloader_checksum_file, "r", encoding="utf-8") as f:
+            omnect_bootloader_checksum = f.read()
+    except OSError:
+        bb.fatal("Unable to read from bootloader checksum file \"%s\"" % (bootloader_checksum_file))
+    omnect_bootloader_version = omnect_bootloader_pv + "-" + omnect_bootloader_checksum
 
     # be prepared for the case that the one byte version length possibly
     # becomes insufficient! maybe we want to handle most significant bit for
@@ -233,8 +239,5 @@ do_deploy() {
     if [ -r ${WORKDIR}/bootloader.bin.versioned.gz ]; then
         install -m 0644 -D ${WORKDIR}/bootloader.bin.versioned.gz ${DEPLOYDIR}/bootloader.versioned.bin.gz
     fi
+    echo -n "$(cat ${DEPLOY_DIR_IMAGE}/omnect_bootloader_pv)-$(cat ${DEPLOY_DIR_IMAGE}/omnect_bootloader_checksum)" > ${DEPLOYDIR}/omnect_bootloader_version
 }
-
-addtask do_deploy after do_compile before do_build
-
-INHIBIT_DEFAULT_DEPS = "1"
