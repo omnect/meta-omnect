@@ -9,11 +9,11 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boo
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_core}/recipes-bsp/u-boot/u-boot.inc"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/../u-boot/u-boot-imx_%.bbappend"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${OMNECT_THISDIR_SAVED}/../u-boot/u-boot/*"
-# imx-atf and u-boot are part of imx-boot(-phytec). (tbd: imx-boot(-phytec) recipe
-# is more or less copying thus currently not reflected here.)
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/imx-atf*.bbappend"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_phytec}/dynamic-layers/freescale-layer/recipes-bsp/imx-atf/files/*"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_fsl-bsp-release}/recipes-bsp/imx-atf/imx-atf_*.bb"
+# imx-atf and u-boot are part of imx-boot(-phytec). (imx-boot(-phytec) recipe
+# is more or less copying thus currently not reflected here.)
 
 # since bootloader version gets embedded in bootloader file also
 # settings thereof need to be fed into checksumming
