@@ -35,7 +35,7 @@ repos:
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     branch: "kirkstone"
-    commit: "76f2999987fa3ea30a823de3bd79d0cc0e0c287f"
+    commit: "c996df33763f292da5e7513c574272d7de23eafc"
     patches:
       p001:
         repo: "meta-omnect"
