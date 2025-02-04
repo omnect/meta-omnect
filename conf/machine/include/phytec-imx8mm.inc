@@ -76,12 +76,12 @@ MACHINE_FEATURES:remove = " \
 
 OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-imx_2022.04_2.2.2-phy7.bb"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
-# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "<newchecksum> <oldchecksum>"
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned = "<newchecksum> <oldchecksum>"
 # e.g.:
-# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "2cf3dd5f692d9ed563f06ecf80d0cb566ddc165fa01a37b4eba663dc7b7b9087 ebe0e595a3efb112b7495a14f9562d89d00041390f26a9ad4985435687bf2311"
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned = "2cf3dd5f692d9ed563f06ecf80d0cb566ddc165fa01a37b4eba663dc7b7b9087 ebe0e595a3efb112b7495a14f9562d89d00041390f26a9ad4985435687bf2311"
 #
-# OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-u-boot-imx - build will fail, if the
+# OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-bootloader-versioned - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
-# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-u-boot-imx = "2452a662c9e5a1366b36250e498f66aeb78143c4a9d1340ba5a6a25aa0c4fa3d"
-OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-u-boot-imx = "7de6d6d5ec424ecde8bcd546a90dfcfde21fa454c7ad981154eca6ce4fbd46c7 2452a662c9e5a1366b36250e498f66aeb78143c4a9d1340ba5a6a25aa0c4fa3d"
+# OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned is set
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "2452a662c9e5a1366b36250e498f66aeb78143c4a9d1340ba5a6a25aa0c4fa3d"
+OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned = "891ff1eeefc29264ccbbf755b2cb721cac0f5e4067e944e1535634195f2c4d78 2452a662c9e5a1366b36250e498f66aeb78143c4a9d1340ba5a6a25aa0c4fa3d"
