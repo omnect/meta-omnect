@@ -125,6 +125,7 @@ python do_configure() {
     # [llvm]
     config.add_section("llvm")
     config.set("llvm", "static-libstdcpp", e(False))
+    config.set("llvm", "download-ci-llvm". e(False))
     if "llvm" in (d.getVar('TC_CXX_RUNTIME') or ""):
         config.set("llvm", "use-libcxx", e(True))
 
@@ -176,8 +177,6 @@ python do_configure() {
 
     with open("config.toml", "w") as f:
         f.write('change-id = 131075\n\n')
-        f.write('[llvm]\n')
-        f.write( 'download-ci-llvm=false\n\n')
         config.write(f)
 
     # set up ${WORKDIR}/cargo_home
