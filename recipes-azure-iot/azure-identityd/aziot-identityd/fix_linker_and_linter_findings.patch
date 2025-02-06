@@ -1,0 +1,110 @@
+diff --git a/aziotctl/aziotctl-common/Cargo.toml b/aziotctl/aziotctl-common/Cargo.toml
+index 7fa3832..b6270cb 100644
+--- a/aziotctl/aziotctl-common/Cargo.toml
++++ b/aziotctl/aziotctl-common/Cargo.toml
+@@ -29,3 +29,6 @@ toml = "0.7"
+ 
+ [features]
+ snapctl = []
++
++[lints.rust]
++unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_pointer_width,values("128"))'] }
+diff --git a/identity/aziot-identity-common/src/lib.rs b/identity/aziot-identity-common/src/lib.rs
+index 3a49e4e..24942da 100644
+--- a/identity/aziot-identity-common/src/lib.rs
++++ b/identity/aziot-identity-common/src/lib.rs
+@@ -98,7 +98,7 @@ impl std::fmt::Display for AuthenticationType {
+     }
+ }
+ 
+-pub struct Uid(u32);
++pub struct Uid();
+ 
+ #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, serde::Deserialize, serde::Serialize)]
+ #[serde(rename_all = "lowercase")]
+diff --git a/identity/aziot-identityd/Cargo.toml b/identity/aziot-identityd/Cargo.toml
+index e940e38..e5b300c 100644
+--- a/identity/aziot-identityd/Cargo.toml
++++ b/identity/aziot-identityd/Cargo.toml
+@@ -53,3 +53,6 @@ openssl2 = { path = "../../openssl2" }
+ openssl-build = { path = "../../openssl-build/" }
+ 
+ [dev-dependencies]
++
++[lints.rust]
++unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ossl300)'] }
+diff --git a/identity/aziot-identityd/build.rs b/identity/aziot-identityd/build.rs
+index 32ac86f..fcf7a50 100644
+--- a/identity/aziot-identityd/build.rs
++++ b/identity/aziot-identityd/build.rs
+@@ -3,6 +3,9 @@
+ #![deny(rust_2018_idioms)]
+ #![warn(clippy::all, clippy::pedantic)]
+ 
++use std::env;
+ fn main() {
++    let target_dir = env::var("TARGET_BUILD_DIR").unwrap();
++    println!("cargo:rustc-link-search=native={}", target_dir);
+     openssl_build::define_version_number_cfg();
+ }
+diff --git a/key/aziot-key-openssl-engine/Cargo.toml b/key/aziot-key-openssl-engine/Cargo.toml
+index 4704682..ee5af74 100644
+--- a/key/aziot-key-openssl-engine/Cargo.toml
++++ b/key/aziot-key-openssl-engine/Cargo.toml
+@@ -23,3 +23,6 @@ openssl-sys2 = { path = "../../openssl-sys2" }
+ 
+ [build-dependencies]
+ openssl-build = { path = "../../openssl-build" }
++
++[lints.rust]
++unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ossl110)', 'cfg(ossl300)'] }
+diff --git a/openssl-sys2/Cargo.toml b/openssl-sys2/Cargo.toml
+index dad9eeb..9f7f1db 100644
+--- a/openssl-sys2/Cargo.toml
++++ b/openssl-sys2/Cargo.toml
+@@ -11,3 +11,6 @@ openssl-sys = "0.9"
+ 
+ [build-dependencies]
+ openssl-build = { path = "../openssl-build/" }
++
++[lints.rust]
++unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ossl110)'] }
+diff --git a/openssl-sys2/src/lib.rs b/openssl-sys2/src/lib.rs
+index 595c4e7..24d2d87 100644
+--- a/openssl-sys2/src/lib.rs
++++ b/openssl-sys2/src/lib.rs
+@@ -11,7 +11,6 @@ mod ec;
+ pub use ec::*;
+ 
+ mod ecdsa;
+-pub use ecdsa::*;
+ 
+ mod engine;
+ pub use engine::*;
+diff --git a/openssl2/Cargo.toml b/openssl2/Cargo.toml
+index 666c181..316e34b 100644
+--- a/openssl2/Cargo.toml
++++ b/openssl2/Cargo.toml
+@@ -18,3 +18,6 @@ openssl-sys2 = { path = "../openssl-sys2/" }
+ 
+ [build-dependencies]
+ openssl-build = { path = "../openssl-build/" }
++
++[lints.rust]
++unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ossl110)'] }
+diff --git a/tpm/aziot-tpmd/src/http/get_tpm_keys.rs b/tpm/aziot-tpmd/src/http/get_tpm_keys.rs
+index 181e6c6..883b44e 100644
+--- a/tpm/aziot-tpmd/src/http/get_tpm_keys.rs
++++ b/tpm/aziot-tpmd/src/http/get_tpm_keys.rs
+@@ -42,9 +42,9 @@ impl http_common::server::Route for Route {
+             .map_err(|e| super::to_http_error(&Error::Internal(InternalError::GetTpmKeys(e))))?;
+ 
+         let res = aziot_tpm_common_http::get_tpm_keys::Response {
+-            /// The TPM's Endorsement Key
++            // The TPM's Endorsement Key
+             endorsement_key: http_common::ByteString(endorsement_key),
+-            /// The TPM's Storage Root Key
++            // The TPM's Storage Root Key
+             storage_root_key: http_common::ByteString(storage_root_key),
+         };
+ 

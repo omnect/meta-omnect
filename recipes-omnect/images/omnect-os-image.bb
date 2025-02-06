@@ -30,7 +30,7 @@ IMAGE_BOOT_FILES:append = "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', ' fdt-loa
 do_image_wic[depends] += "virtual/bootloader:do_deploy"
 do_image_wic_extra_depends = ""
 # we adapt grub.cfg before writing it to image in do_image_wic
-do_image_wic_extra_depends:omnect_grub = "grub-cfg:do_deploy"
+do_image_wic_extra_depends:omnect_grub = "grub-cfg:do_deploy bootloader-versioned:do_deploy"
 # we add boot.scr to the image on condition
 do_image_wic_extra_depends:omnect_uboot = "u-boot-scr:do_deploy bootloader-versioned:do_deploy"
 do_image_wic_extra_depends:rpi = "u-boot-scr:do_deploy bootloader-versioned:do_deploy rpi-bootfiles:do_deploy rpi-config:do_deploy rpi-cmdline:do_deploy"
@@ -63,6 +63,7 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     bootloader-env \
+    bootloader-versioned \
     coreutils \
     e2fsprogs-tune2fs \
     iot-hub-device-update \
@@ -79,8 +80,6 @@ IMAGE_INSTALL = "\
     systemd-analyze \
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
-
-IMAGE_INSTALL:append:omnect_uboot = " bootloader-versioned"
 
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
