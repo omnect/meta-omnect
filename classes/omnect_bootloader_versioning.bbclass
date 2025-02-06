@@ -40,11 +40,8 @@ python() {
     bootloader_file = d.getVar("OMNECT_BOOTLOADER_RECIPE_PATH")
     if not bootloader_file:
         bb.fatal("OMNECT_BOOTLOADER_RECIPE_PATH not set")
-
-    # since this runs at parse time, we have to ignore parsing of grub-efi for
-    # u-boot devices and vice versa, or recipes with the same PN and PV
-    if file != bootloader_file:
-        return 0
+    # OMNECT_BOOTLOADER_RECIPE_PATH is part of OMNECT_BOOTLOADER_CHECKSUM_FILES
+    # we test the bootloader recipe, if it matches this path
 
     checksum_files = d.getVar("OMNECT_BOOTLOADER_CHECKSUM_FILES").split(" ")
     checksum_files_ignore = []
@@ -102,13 +99,12 @@ python() {
         else:
             bb.error("expected bootloader checksum (OMNECT_BOOTLOADER_CHECKSUM_EXPECTED): \"%s\" is different from computed: \"%s\"" % (version_checksum_expected, version_checksum))
 
-    omnect_bootloader_version = d.getVar("PV") + "-" + version_checksum
-    bootloader_version_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_version"
+    bootloader_checksum_file = d.getVar("DEPLOY_DIR_IMAGE") + "/omnect_bootloader_checksum"
     try:
-        with open( bootloader_version_file, "w" ) as f:
-            f.write("%s" % omnect_bootloader_version)
+        with open( bootloader_checksum_file, "w" ) as f:
+            f.write("%s" % version_checksum)
     except OSError:
-        bb.fatal("Unable to open \"%s\"" % (bootloader_version_file))
+        bb.fatal("Unable to open \"%s\"" % (bootloader_checksum_file))
 
     # bb.debug is shown when using param -D (1) or -DD (2)
     bb.debug(1,"version_checksum: %s" % version_checksum)

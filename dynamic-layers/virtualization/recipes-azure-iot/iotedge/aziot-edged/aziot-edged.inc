@@ -1,6 +1,11 @@
 # overwrite LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 
+SRC_URI += "\
+  file://fix_linter_findings-aziot-edged.patch \
+  file://fix_linter_findings-aziot-cert-client-async.patch;patchdir=${WORKDIR}/aziot-cert-client-async \
+"
+
 # overwrite CARGO_SRC_DIR from cargo-bitbake generated recipe
 CARGO_SRC_DIR = "edgelet/aziot-edged"
 CARGO_LOCK_PATH = "${S}/edgelet/Cargo.lock"
@@ -16,6 +21,8 @@ export IOTEDGE_LISTEN_WORKLOAD_URI = "fd://aziot-edged.workload.socket"
 export SOCKET_DIR = "/run/aziot"
 
 inherit aziot features_check omnect_rust_aziot-identityd_deps systemd
+
+RUSTFLAGS+="-D warnings"
 
 do_install () {
     # binaries
