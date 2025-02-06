@@ -7,7 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "scarthgap"
-    commit: "867eed95ce2f6da2bef35ef3aefd1065d7cfb967"
+    commit: "2f41a8644ebf976c5f92ab03a4d370fdb34d21e0"
     patches:
       p001:
         repo: "meta-omnect"
