@@ -81,20 +81,21 @@ do_install:append() {
     # FIXME: the shell helper library should really be located somewhere else,
     #        probably all of the health check stuff shoul reside in a dedicated
     #        folder
-    install -m 0755 -D ${S}/healthcheck/healthchecklib.sh                ${D}/${sbindir}/healthchecklib.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_health_check.sh           ${D}/${sbindir}/omnect_health_check.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_health__coredumps.sh      ${D}/${sbindir}/omnect_health__coredumps.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_health__services.sh       ${D}/${sbindir}/omnect_health__services.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_health__system_running.sh ${D}/${sbindir}/omnect_health__system_running.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_health__timesync.sh       ${D}/${sbindir}/omnect_health__timesync.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_service_log.sh            ${D}/${sbindir}/omnect_service_log.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_pmsg_to_reboot_reason.sh  ${D}/${sbindir}/omnect_pmsg_to_reboot_reason.sh
+    install -m 0755 -D ${S}/healthcheck/healthchecklib.sh                   ${D}/${sbindir}/healthchecklib.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health_check.sh              ${D}/${sbindir}/omnect_health_check.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__coredumps.sh         ${D}/${sbindir}/omnect_health__coredumps.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__services.sh          ${D}/${sbindir}/omnect_health__services.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__system_running.sh    ${D}/${sbindir}/omnect_health__system_running.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__timesync.sh          ${D}/${sbindir}/omnect_health__timesync.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_service_log.sh               ${D}/${sbindir}/omnect_service_log.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_pmsg_to_reboot_reason.sh     ${D}/${sbindir}/omnect_pmsg_to_reboot_reason.sh
     install -m 0755 -D ${S}/healthcheck/omnect_log_reboot_reason_to_pmsg.sh ${D}/${sbindir}/omnect_log_reboot_reason_to_pmsg.sh
     # and here the configuration files
     install -m 0644 -D ${S}/healthcheck/omnect-pstore-log-shutdown.service   ${D}${systemd_system_unitdir}/omnect-pstore-log-shutdown.service
     install -m 0644 -D ${S}/healthcheck/omnect-pstore-log-reboot.service     ${D}${systemd_system_unitdir}/omnect-pstore-log-reboot.service
-    install -m 0644 -D ${S}/healthcheck/omnect_service_log_analysis.json ${D}/${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json
-    install -m 0644 -D ${S}/healthcheck/omnect_health_checks.json        ${D}/${sysconfdir}/omnect/health_check/omnect_health_checks.json
+    install -m 0644 -D ${S}/healthcheck/omnect-reboot-reason.service         ${D}${systemd_system_unitdir}/omnect-reboot-reason.service
+    install -m 0644 -D ${S}/healthcheck/omnect_service_log_analysis.json     ${D}/${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json
+    install -m 0644 -D ${S}/healthcheck/omnect_health_checks.json            ${D}/${sysconfdir}/omnect/health_check/omnect_health_checks.json
 }
 
 do_install:append:omnect_grub() {
@@ -116,6 +117,7 @@ SYSTEMD_SERVICE:${PN} = " \
     omnect-device-service.timer \
     omnect-pstore-log-reboot.service \
     omnect-pstore-log-shutdown.service \
+    omnect-reboot-reason.service \
 "
 
 FILES:${PN} += "\
