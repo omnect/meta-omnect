@@ -4,9 +4,11 @@ SRC_URI += " \
 	file://NetworkManager.conf \
 	file://cellular.generic \
 "
-# todo: we configure PACKAGECONFIG of networkmanager in distro conf as well: move it here
+# networkmanager: we removed qemu-usermode from MACHINE_FEATURES, this results
+# in failure of networkmanager configuration step for gobject-introspection,
+# unless we build without vala support
 PACKAGECONFIG:append = " modemmanager"
-PACKAGECONFIG:remove = " dnsmasq"
+PACKAGECONFIG:remove = "dnsmasq vala"
 
 do_install:append() {
     install -D -m 0600 ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/
