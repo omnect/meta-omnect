@@ -91,13 +91,13 @@ Device         Boot   Start      End  Sectors  Size Id Type
 - `OMNECT_PART_SIZE_UBOOT_ENV`: size of one u-boot environment bank (in KiB, decimal)
 
 ## Compatibility
-`meta-omnect` is compatible with the current yocto LTS release branch `kirkstone`.
+`meta-omnect` is compatible with the current yocto LTS release branch `scarthgap`.
 
 ## Supported Devices
 See board specific documents [doc](/doc/) folder.
 
 ## Versioning
-We reflect the used yocto version in our version schema. `omnect-os` is versioned `4.0.x.y` where `x` is yocto kirkstone's patch version and `y` is the build number.
+We reflect the used yocto version in our version schema. `omnect-os` is versioned `5.0.x.y` where `x` is yocto scarthgap's patch version and `y` is the build number.
 
 ## Dependencies
 Aside from hardware specific meta layers `meta-omnect` depends on:
