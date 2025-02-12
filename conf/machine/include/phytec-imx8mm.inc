@@ -24,7 +24,7 @@ OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 # Set Serial console
 SERIAL_CONSOLES ="${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '115200;ttymxc2', d)}"
 #bootargs console is not part of the devictree, so we have to append it to kernel commandline
-APPEND += "console=ttymxc2,115200"
+APPEND += "console=ttymxc2,115200 ramoops.dump_oops=1 ramoops.ecc=1 printk.always_kmsg_dump=Y crash_kexec_post_notifiers=Y"
 
 # https://github.com/phytec/meta-phytec/commit/6d71e11b4fc1ee8196e579e4de73ed3197e0e4be
 APPEND += "clk-imx8mm.mcore_booted"
@@ -72,6 +72,10 @@ MACHINEOVERRIDES:append = ":phytec-imx8mm"
 MACHINE_FEATURES:remove = " \
     nxp8987 \
     optee \
+"
+
+MACHINE_FEATURES:append = " \
+    ramoops \
 "
 
 OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-imx_2022.04_2.2.2-phy7.bb"
