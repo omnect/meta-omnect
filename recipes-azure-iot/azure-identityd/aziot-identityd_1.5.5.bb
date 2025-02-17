@@ -183,7 +183,6 @@ SRC_URI += " \
     crate://crates.io/ryu/1.0.13 \
     crate://crates.io/same-file/1.0.6 \
     crate://crates.io/scopeguard/1.1.0 \
-    crate://crates.io/sd-notify/0.4.1 \
     crate://crates.io/semver/1.0.22 \
     crate://crates.io/serde/1.0.164 \
     crate://crates.io/serde_derive/1.0.164 \
