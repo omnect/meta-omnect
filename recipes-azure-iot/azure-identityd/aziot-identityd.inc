@@ -21,11 +21,6 @@ SRC_URI += " \
     file://iot-identity-service-certd.template.toml \
 "
 
-# ToDo: remove this on next update; since `send_sd_notify.patch` will always
-# patch the lock file anyway, we have no benefit with generating the
-# recipe without the patched Cargo.toml
-SRC_URI += "crate://crates.io/sd-notify/0.4.1"
-
 CARGO_BUILD_FLAGS += "--offline"
 
 B = "${S}"
