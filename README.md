@@ -1,6 +1,6 @@
 # omnect device management - meta-omnect yocto layer
 
-What is omnect device management?: https://lp.conplement.de/omnect-devicemanagement
+Product page: <www.omnect.io>
 
 ## Features
 This yocto meta layer provides the device management distribution `omnect-os`. It includes recipes for:
