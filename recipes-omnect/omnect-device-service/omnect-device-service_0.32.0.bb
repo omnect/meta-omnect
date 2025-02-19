@@ -6,11 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.30.4"
-SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "b1faa7f9b32fcc164f2563d6e98d051e81fa81dd"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.32.0"
+SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=local-update"
+SRCREV = "c345c3712e3fe9e041ec30d2b667b0ac0d5b428a"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
+PV:append = ".AUTOINC+c345c3712e"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -67,7 +68,7 @@ SRC_URI += " \
     crate://crates.io/byteorder/1.5.0 \
     crate://crates.io/bytes/1.10.0 \
     crate://crates.io/bytestring/1.4.0 \
-    crate://crates.io/cc/1.2.12 \
+    crate://crates.io/cc/1.2.13 \
     crate://crates.io/cexpr/0.6.0 \
     crate://crates.io/cfg-if/1.0.0 \
     crate://crates.io/cfg_aliases/0.2.1 \
@@ -86,7 +87,7 @@ SRC_URI += " \
     crate://crates.io/darling/0.20.10 \
     crate://crates.io/darling_core/0.20.10 \
     crate://crates.io/darling_macro/0.20.10 \
-    crate://crates.io/data-encoding/2.7.0 \
+    crate://crates.io/data-encoding/2.8.0 \
     crate://crates.io/der-parser/9.0.0 \
     crate://crates.io/deranged/0.3.11 \
     crate://crates.io/derive_more/0.99.19 \
@@ -174,7 +175,7 @@ SRC_URI += " \
     crate://crates.io/inotify-sys/0.1.5 \
     crate://crates.io/inotify/0.11.0 \
     crate://crates.io/ipnet/2.11.0 \
-    crate://crates.io/itertools/0.12.1 \
+    crate://crates.io/itertools/0.13.0 \
     crate://crates.io/itoa/1.0.14 \
     crate://crates.io/jobserver/0.1.32 \
     crate://crates.io/js-sys/0.3.77 \
@@ -199,7 +200,7 @@ SRC_URI += " \
     crate://crates.io/memoffset/0.9.1 \
     crate://crates.io/mime/0.3.17 \
     crate://crates.io/minimal-lexical/0.2.1 \
-    crate://crates.io/miniz_oxide/0.8.3 \
+    crate://crates.io/miniz_oxide/0.8.4 \
     crate://crates.io/mio/1.0.3 \
     crate://crates.io/mockall/0.13.1 \
     crate://crates.io/mockall_derive/0.13.1 \
@@ -222,7 +223,7 @@ SRC_URI += " \
     crate://crates.io/num/0.4.3 \
     crate://crates.io/object/0.36.7 \
     crate://crates.io/oid-registry/0.7.1 \
-    crate://crates.io/once_cell/1.20.2 \
+    crate://crates.io/once_cell/1.20.3 \
     crate://crates.io/openssl-macros/0.1.1 \
     crate://crates.io/openssl-probe/0.1.6 \
     crate://crates.io/openssl-sys/0.9.105 \
@@ -257,7 +258,7 @@ SRC_URI += " \
     crate://crates.io/regex/1.11.1 \
     crate://crates.io/reqwest/0.12.12 \
     crate://crates.io/rustc-demangle/0.1.24 \
-    crate://crates.io/rustc-hash/2.1.0 \
+    crate://crates.io/rustc-hash/2.1.1 \
     crate://crates.io/rustc_version/0.4.1 \
     crate://crates.io/rusticata-macros/4.1.0 \
     crate://crates.io/rustix/0.38.44 \
@@ -283,6 +284,7 @@ SRC_URI += " \
     crate://crates.io/serde_with_macros/2.3.3 \
     crate://crates.io/serde_with_macros/3.12.0 \
     crate://crates.io/sha1/0.10.6 \
+    crate://crates.io/sha2/0.10.8 \
     crate://crates.io/shlex/1.3.0 \
     crate://crates.io/signal-hook-registry/1.4.2 \
     crate://crates.io/signal-hook-tokio/0.3.1 \
@@ -299,6 +301,7 @@ SRC_URI += " \
     crate://crates.io/synstructure/0.13.1 \
     crate://crates.io/sysinfo/0.33.1 \
     crate://crates.io/systemd-zbus/5.1.0 \
+    crate://crates.io/tar/0.4.43 \
     crate://crates.io/tempfile/3.16.0 \
     crate://crates.io/termtree/0.5.1 \
     crate://crates.io/thiserror-impl/1.0.69 \
@@ -313,9 +316,9 @@ SRC_URI += " \
     crate://crates.io/tokio-stream/0.1.17 \
     crate://crates.io/tokio-util/0.7.13 \
     crate://crates.io/tokio/1.43.0 \
-    crate://crates.io/toml/0.8.19 \
+    crate://crates.io/toml/0.8.20 \
     crate://crates.io/toml_datetime/0.6.8 \
-    crate://crates.io/toml_edit/0.22.23 \
+    crate://crates.io/toml_edit/0.22.24 \
     crate://crates.io/tower-layer/0.3.3 \
     crate://crates.io/tower-service/0.3.3 \
     crate://crates.io/tower/0.5.2 \
@@ -329,7 +332,7 @@ SRC_URI += " \
     crate://crates.io/url/2.5.4 \
     crate://crates.io/utf16_iter/1.0.5 \
     crate://crates.io/utf8_iter/1.0.4 \
-    crate://crates.io/uuid/1.12.1 \
+    crate://crates.io/uuid/1.13.1 \
     crate://crates.io/vcpkg/0.2.15 \
     crate://crates.io/version_check/0.9.5 \
     crate://crates.io/walkdir/2.5.0 \
@@ -367,8 +370,7 @@ SRC_URI += " \
     crate://crates.io/windows_x86_64_gnu/0.52.6 \
     crate://crates.io/windows_x86_64_gnullvm/0.52.6 \
     crate://crates.io/windows_x86_64_msvc/0.52.6 \
-    crate://crates.io/winnow/0.6.26 \
-    crate://crates.io/winnow/0.7.1 \
+    crate://crates.io/winnow/0.7.2 \
     crate://crates.io/wit-bindgen-rt/0.33.0 \
     crate://crates.io/write16/1.0.0 \
     crate://crates.io/writeable/0.5.5 \
@@ -376,9 +378,9 @@ SRC_URI += " \
     crate://crates.io/xdg-home/1.3.0 \
     crate://crates.io/yoke-derive/0.7.5 \
     crate://crates.io/yoke/0.7.5 \
-    crate://crates.io/zbus/5.3.1 \
-    crate://crates.io/zbus_macros/5.3.1 \
-    crate://crates.io/zbus_names/4.1.1 \
+    crate://crates.io/zbus/5.5.0 \
+    crate://crates.io/zbus_macros/5.5.0 \
+    crate://crates.io/zbus_names/4.2.0 \
     crate://crates.io/zerocopy-derive/0.7.35 \
     crate://crates.io/zerocopy/0.7.35 \
     crate://crates.io/zerofrom-derive/0.1.5 \
@@ -388,9 +390,9 @@ SRC_URI += " \
     crate://crates.io/zstd-safe/7.2.1 \
     crate://crates.io/zstd-sys/2.0.13+zstd.1.5.6 \
     crate://crates.io/zstd/0.13.2 \
-    crate://crates.io/zvariant/5.2.0 \
-    crate://crates.io/zvariant_derive/5.2.0 \
-    crate://crates.io/zvariant_utils/3.1.0 \
+    crate://crates.io/zvariant/5.4.0 \
+    crate://crates.io/zvariant_derive/5.4.0 \
+    crate://crates.io/zvariant_utils/3.2.0 \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-client-async;destsuffix=aziot-cert-client-async \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-common-http;destsuffix=aziot-cert-common-http \
     git://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1;name=aziot-cert-common;destsuffix=aziot-cert-common \
@@ -476,7 +478,7 @@ LIC_FILES_CHKSUM = " \
 "
 
 SUMMARY = "This service allows remote features like: user fw update consent, factory reset, network adapter status and reboot."
-HOMEPAGE = "https://www.omnect.io/home"
+HOMEPAGE = "www.omnect.io"
 LICENSE = "MIT OR Apache-2.0"
 
 # includes this file if it exists but does not fail
