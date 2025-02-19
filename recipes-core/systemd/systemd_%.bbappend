@@ -91,9 +91,6 @@ do_install:append:rpi() {
 do_install:append:phygate-tauri-l-imx8mm-2() {
     enable_hardware_watchdog
 }
-do_install:append:phyboard-polis-imx8mm-4() {
-    enable_hardware_watchdog
-}
 
 do_install:append() {
     sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \

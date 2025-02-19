@@ -1,3 +1,0 @@
-include omnect-os.rpi.wks.inc
-
-bootloader --ptable msdos
