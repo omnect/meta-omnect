@@ -67,6 +67,8 @@ python() {
         for checksum_glob_file in checksum_glob_files:
             if checksum_glob_file in checksum_files_ignore:
                 continue
+            if os.path.isdir(checksum_glob_file):
+                continue
             try:
                 with open(checksum_glob_file, "rb") as f:
                     digest = hashlib.file_digest(f, "sha256")
