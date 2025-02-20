@@ -4,4 +4,5 @@ d /mnt/cert/ssh                         0755 ssh_tunnel_user ssh_tunnel_user -  
 Z /mnt/cert/ssh/*                       0644 ssh_tunnel_user ssh_tunnel_user -  -
 # create healthcheck log directory with desired permissions
 d /run/omnect_health_log 0775 root root -
-d /var/lib/omnect-device-service 0700 omnect_device_service omnect_device_service -
+d /var/lib/omnect-device-service 0751 omnect_device_service omnect_device_service -
+d /var/lib/omnect-device-service/local_update 0750 omnect_device_service adu -

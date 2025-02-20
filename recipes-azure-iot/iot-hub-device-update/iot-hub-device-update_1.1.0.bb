@@ -148,4 +148,4 @@ GROUPADD_PARAM:${PN} += " \
   -r adu; \
   -r do; \
 "
-USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,do -g adu adu;"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,disk,do -g adu adu;"
