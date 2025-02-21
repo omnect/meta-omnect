@@ -8,10 +8,10 @@ inherit cargo
 # how to get omnect-device-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/omnect-device-service/0.32.0"
 SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=local-update"
-SRCREV = "4253d2c19fa851de76af932304e92631a49d445a"
+SRCREV = "fce86872509b517c41b72ce6668733e9cc6957d1"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+4253d2c19f"
+PV:append = ".AUTOINC+fce8687250"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
