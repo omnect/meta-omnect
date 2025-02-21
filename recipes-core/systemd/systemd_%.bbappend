@@ -103,7 +103,7 @@ do_install:append:phyboard-polis-imx8mm-4() {
 }
 
 do_install:append() {
-    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27\nExecStopPost=/bin/sh -c \x27if [ "$$EXIT_STATUS" != 0 -o "$$EXIT_CODE" != exited ]; then /usr/sbin/omnect_log_reboot_reason_to_pmsg.sh systemd-networkd-wait-online "service failed with [$$EXIT_CODE/$$EXIT_STATUS]"; fi\x27#' \
+    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27\nExecStopPost=/bin/sh -c \x27if [ "$$EXIT_STATUS" != 0 -o "$$EXIT_CODE" != exited ]; then /usr/sbin/omnect_reboot_reason.sh log systemd-networkd-wait-online "service failed with [$$EXIT_CODE/$$EXIT_STATUS]"; fi\x27#' \
         ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 

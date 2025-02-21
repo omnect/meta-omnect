@@ -89,6 +89,7 @@ do_install:append() {
     install -m 0755 -D ${S}/healthcheck/omnect_health__timesync.sh          ${D}/${sbindir}/omnect_health__timesync.sh
     install -m 0755 -D ${S}/healthcheck/omnect_service_log.sh               ${D}/${sbindir}/omnect_service_log.sh
     install -m 0755 -D ${S}/healthcheck/omnect_pmsg_to_reboot_reason.sh     ${D}/${sbindir}/omnect_pmsg_to_reboot_reason.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_reboot_reason.sh             ${D}/${sbindir}/omnect_reboot_reason.sh
     install -m 0755 -D ${S}/healthcheck/omnect_log_reboot_reason_to_pmsg.sh ${D}/${sbindir}/omnect_log_reboot_reason_to_pmsg.sh
     # and here the configuration files
     install -m 0644 -D ${S}/healthcheck/omnect-pstore-log-shutdown.service   ${D}${systemd_system_unitdir}/omnect-pstore-log-shutdown.service
@@ -141,6 +142,7 @@ FILES:${PN} += "\
 	${sbindir}/omnect_service_log.sh \
 	${sbindir}/omnect_pmsg_to_reboot_reason.sh \
 	${sbindir}/omnect_log_reboot_reason_to_pmsg.sh \
+	${sbindir}/omnect_reboot_reason.sh \
 	${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json \
 	${sysconfdir}/omnect/health_check/omnect_health_checks.json \
 "
