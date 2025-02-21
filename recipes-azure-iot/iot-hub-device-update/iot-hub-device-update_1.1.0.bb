@@ -4,7 +4,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
 SRC_URI = " \
-  git://github.com/HarryWaschkeit/iot-hub-device-update.git;protocol=https;nobranch=1;branch=hwt-2025-01-20-feat-reboot-reason;rev=761177c058eec907559329ee8e9a15ad49850216 \
+  git://github.com/HarryWaschkeit/iot-hub-device-update.git;protocol=https;nobranch=1;branch=hwt-2025-01-20-feat-reboot-reason;rev=5053107a1616c12ad433d712603f51fe434aeeb0 \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
   file://du-config.json \
