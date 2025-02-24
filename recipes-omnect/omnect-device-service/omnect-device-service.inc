@@ -92,6 +92,7 @@ do_install:append() {
     # and here the configuration files
     install -m 0644 -D ${S}/healthcheck/omnect-pstore-log-shutdown.service   ${D}${systemd_system_unitdir}/omnect-pstore-log-shutdown.service
     install -m 0644 -D ${S}/healthcheck/omnect-pstore-log-reboot.service     ${D}${systemd_system_unitdir}/omnect-pstore-log-reboot.service
+    install -m 0644 -D ${S}/healthcheck/omnect-pstore-boottag.service        ${D}${systemd_system_unitdir}/omnect-pstore-boottag.service
     install -m 0644 -D ${S}/healthcheck/omnect-reboot-reason.service         ${D}${systemd_system_unitdir}/omnect-reboot-reason.service
     install -m 0644 -D ${S}/healthcheck/omnect_service_log_analysis.json     ${D}/${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json
     install -m 0644 -D ${S}/healthcheck/omnect_health_checks.json            ${D}/${sysconfdir}/omnect/health_check/omnect_health_checks.json
@@ -116,6 +117,7 @@ SYSTEMD_SERVICE:${PN} = " \
     omnect-device-service.timer \
     omnect-pstore-log-reboot.service \
     omnect-pstore-log-shutdown.service \
+    omnect-pstore-boottag.service \
     omnect-reboot-reason.service \
 "
 
