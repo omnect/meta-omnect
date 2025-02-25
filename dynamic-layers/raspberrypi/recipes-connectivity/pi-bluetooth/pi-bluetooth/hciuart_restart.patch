@@ -1,0 +1,19 @@
+diff --git a/debian/pi-bluetooth.hciuart.service b/debian/pi-bluetooth.hciuart.service
+index 5c866de..c64b392 100644
+--- a/debian/pi-bluetooth.hciuart.service
++++ b/debian/pi-bluetooth.hciuart.service
+@@ -3,9 +3,14 @@ Description=Configure Bluetooth Modems connected by UART
+ ConditionFileNotEmpty=/proc/device-tree/soc/gpio@7e200000/bt_pins/brcm,pins
+ After=dev-serial1.device
+ 
++StartLimitBurst=10
++StartLimitIntervalSec=120
++
+ [Service]
+ Type=forking
+ ExecStart=/usr/bin/btuart
++Restart=on-failure
++RestartSec=10
+ 
+ [Install]
+ WantedBy=dev-serial1.device
