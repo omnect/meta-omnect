@@ -75,7 +75,7 @@ MACHINE_FEATURES:remove = " \
 "
 
 MACHINE_FEATURES:append = " \
-    ramoops \
+    pstore \
 "
 
 OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-imx_2022.04_2.2.2-phy7.bb"

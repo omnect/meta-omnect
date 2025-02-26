@@ -75,7 +75,7 @@ do_install:append() {
     fi
 
     # disable pstore support, we want to do that on our own
-    if ${@bb.utils.contains('MACHINE_FEATURES', 'ramoops', 'true', 'false', d)}; then
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'pstore', 'true', 'false', d)}; then
         sed -i \
             -e 's/^#Storage=\(.*\)$/Storage=none /' \
             ${D}${sysconfdir}/systemd/pstore.conf

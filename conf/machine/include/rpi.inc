@@ -28,8 +28,11 @@ PACKAGECONFIG:pn-bluez5:append = " deprecated tools"
 # this machine uses uboot
 MACHINEOVERRIDES:prepend = "omnect_uboot:"
 
+# reboot reason support via pstore/ramoops
+MACHINE_FEATURES += "pstore"
+
 # optional tpm2 support
-MACHINE_FEATURES += "tpm2 ramoops"
+MACHINE_FEATURES += "tpm2"
 
 OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_core}/recipes-bsp/u-boot/u-boot_2022.01.bb"
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
