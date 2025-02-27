@@ -98,6 +98,9 @@ do_install:append:rpi() {
 do_install:append:phygate-tauri-l-imx8mm-2() {
     enable_hardware_watchdog
 }
+do_install:append:genericx86-64() {
+    enable_hardware_watchdog
+}
 
 do_install:append() {
     sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27\nExecStopPost=/bin/sh -c \x27if [ "$$EXIT_STATUS" != 0 -o "$$EXIT_CODE" != exited ]; then /usr/sbin/omnect_reboot_reason.sh log systemd-networkd-wait-online "service failed with [$$EXIT_CODE/$$EXIT_STATUS]"; fi\x27#' \
