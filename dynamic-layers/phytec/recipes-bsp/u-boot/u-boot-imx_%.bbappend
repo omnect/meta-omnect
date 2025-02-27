@@ -10,6 +10,7 @@ SRC_URI += " \
     file://disable-usb.cfg \
     file://do_not_use_default_bootcommand.cfg \
     file://enable-gpt.cfg \
+    file://enable_dm_rng.cfg \
     file://enable_generic_console_fs_cmds.cfg \
     file://enable-reset-info-cmd-fragment.cfg \
     file://enable-pxe-cmd.cfg \
