@@ -1,18 +1,19 @@
 diff --git a/include/configs/phycore_imx8mm.h b/include/configs/phycore_imx8mm.h
-index 177b6278..b44bf1d0 100644
+index f9eabc8a822..04b4d37ecf9 100644
 --- a/include/configs/phycore_imx8mm.h
 +++ b/include/configs/phycore_imx8mm.h
-@@ -11,8 +11,7 @@
+@@ -11,8 +11,8 @@
  #include <linux/stringify.h>
  #include <asm/arch/imx-regs.h>
  
 -#include "phycore_rauc_env.h"
 -#include "phycore_fitimage_env.h"
 +#include <configs/omnect_env.h>
++
  
  #define CONFIG_SYS_BOOTM_LEN		SZ_64M
  #define CONFIG_SPL_MAX_SIZE		0x26000
-@@ -33,119 +32,6 @@
+@@ -33,120 +33,6 @@
  #define CONFIG_SPL_ABORT_ON_RAW_IMAGE
  #endif
  
@@ -127,11 +128,12 @@ index 177b6278..b44bf1d0 100644
 -
 -#ifdef CONFIG_ENV_WRITEABLE_LIST
 -/* Set environment flag validation to a list of env vars that must be writable */
--#define CONFIG_ENV_FLAGS_LIST_STATIC RAUC_REQUIRED_WRITABLE_ENV_FLAGS",dofitboot:dw"
+-#define CONFIG_ENV_FLAGS_LIST_STATIC RAUC_REQUIRED_WRITABLE_ENV_FLAGS",dofitboot:dw,mcore_clk:sw"
 -#endif
- 
+-
  /* Link Definitions */
  
+ #define CONFIG_SYS_INIT_RAM_ADDR	0x40000000
 @@ -179,4 +65,26 @@
  #define CONFIG_USB_MAX_CONTROLLER_COUNT	2
  #define CONFIG_SERIAL_TAG

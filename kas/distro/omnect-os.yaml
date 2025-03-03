@@ -31,11 +31,11 @@ repos:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     branch: "kirkstone"
-    commit: "6918be849ddf1fed5b7a0173e51c7a136e8d4101"
+    commit: "b43bb01bbdfe8b7be3e9d4521e5871766db39ba3"
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     branch: "kirkstone"
-    commit: "c996df33763f292da5e7513c574272d7de23eafc"
+    commit: "b5a1645250c17fb657b7f10166f1c665ce192aaf"
     patches:
       p001:
         repo: "meta-omnect"
