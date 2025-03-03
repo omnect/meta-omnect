@@ -429,7 +429,7 @@ The overall `factory reset status` consists of:
   - 1: wipe mode unsupported
   - 2: backup/restore failure
   - 3: configuration error; see "context" for details
-- `error`:  execution exit status; in case of of success == 0, if not applicaple: `-`
+- `error`:  execution exit status; in case of of status == 0, if not applicaple: `-`
 - optional: `context` on warnings or errors
 - array `paths` of preserved files or directories; this array reflects the configured paths not the actual restored path, e.g. if a path doesn't exist
 
