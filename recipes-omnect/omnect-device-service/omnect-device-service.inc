@@ -87,15 +87,23 @@ do_install:append() {
     install -m 0755 -D ${S}/healthcheck/omnect_health__services.sh          ${D}/${sbindir}/omnect_health__services.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health__system_running.sh    ${D}/${sbindir}/omnect_health__system_running.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health__timesync.sh          ${D}/${sbindir}/omnect_health__timesync.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_service_log.sh               ${D}/${sbindir}/omnect_service_log.sh
+install -m 0755 -D ${S}/healthcheck/omnect_service_log.sh               ${D}/${sbindir}/omnect_service_log.sh
+    # NOTE:
+    #    the next script needs to be always there, regardless of whether
+    #    feature reboot reason is available or not!
+    #    however, we need to set the variable is_enabled properly.
     install -m 0755 -D ${S}/healthcheck/omnect_reboot_reason.sh             ${D}/${sbindir}/omnect_reboot_reason.sh
+    sed -i 's,@@OMNECT_REBOOT_REASON_ENABLED@@,'${@bb.utils.contains('MACHINE_FEATURES', 'pstore', 'true', 'false', d)}',g' ${D}/${sbindir}/omnect_reboot_reason.sh
     # and here the configuration files
+    install -m 0644 -D ${S}/healthcheck/omnect_service_log_analysis.json     ${D}/${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json
+    install -m 0644 -D ${S}/healthcheck/omnect_health_checks.json            ${D}/${sysconfdir}/omnect/health_check/omnect_health_checks.json
+}
+
+do_install:append:omnect_pstore() {
     install -m 0644 -D ${S}/healthcheck/omnect-pstore-log-shutdown.service   ${D}${systemd_system_unitdir}/omnect-pstore-log-shutdown.service
     install -m 0644 -D ${S}/healthcheck/omnect-pstore-log-reboot.service     ${D}${systemd_system_unitdir}/omnect-pstore-log-reboot.service
     install -m 0644 -D ${S}/healthcheck/omnect-pstore-boottag.service        ${D}${systemd_system_unitdir}/omnect-pstore-boottag.service
     install -m 0644 -D ${S}/healthcheck/omnect-reboot-reason.service         ${D}${systemd_system_unitdir}/omnect-reboot-reason.service
-    install -m 0644 -D ${S}/healthcheck/omnect_service_log_analysis.json     ${D}/${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json
-    install -m 0644 -D ${S}/healthcheck/omnect_health_checks.json            ${D}/${sysconfdir}/omnect/health_check/omnect_health_checks.json
 }
 
 do_install:append:omnect_grub() {
@@ -111,14 +119,18 @@ pkg_postinst:${PN}() {
     sed -i -e "s/@@UID@@/$(id -u omnect_device_service)/" -e "s/@@NAME@@/omnect-device-service/"    $D${sysconfdir}/aziot/identityd/config.d/omnect-device-service.toml
 }
 
+SYSTEMD_SERVICE_PSTORE = "\
+	omnect-pstore-log-reboot.service \
+	omnect-pstore-log-shutdown.service \
+	omnect-pstore-boottag.service \
+	omnect-reboot-reason.service \
+"
+
 SYSTEMD_SERVICE:${PN} = " \
     omnect-device-service.service \
     omnect-device-service.socket \
     omnect-device-service.timer \
-    omnect-pstore-log-reboot.service \
-    omnect-pstore-log-shutdown.service \
-    omnect-pstore-boottag.service \
-    omnect-reboot-reason.service \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'pstore', "${SYSTEMD_SERVICE_PSTORE}", '', d)} \
 "
 
 FILES:${PN} += "\

@@ -25,8 +25,8 @@ SYSTEMD_RebootWatchdogSec   = "15"
 # rpi bluetooth needs hciattach, which is marked deprecated
 PACKAGECONFIG:pn-bluez5:append = " deprecated tools"
 
-# this machine uses uboot
-MACHINEOVERRIDES:prepend = "omnect_uboot:"
+# this machine uses uboot and pstore feature
+MACHINEOVERRIDES:prepend = "omnect_uboot:omnect_pstore:"
 
 # reboot reason support via pstore/ramoops
 MACHINE_FEATURES += "pstore"
