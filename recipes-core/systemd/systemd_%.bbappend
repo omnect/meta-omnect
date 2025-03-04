@@ -75,9 +75,6 @@ do_install:append() {
     fi
 }
 
-enable_hardware_watchdog() {
-}
-
 # enable hardware watchdog as defined via variables
 # SYSTEMD_RuntimeWatchdogSec and SYSTEMD_RebootWatchdogSec
 do_install:append() {
