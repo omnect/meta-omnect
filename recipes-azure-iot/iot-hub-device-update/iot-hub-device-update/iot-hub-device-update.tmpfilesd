@@ -3,7 +3,8 @@ d /var/lib/adu/downloads 0770 adu adu -
 d /run/adu 0755 adu adu -
 Z /var/lib/adu 0770 adu adu -
 d /var/log/aduc-logs 1775 adu adu -
-# pre-create swupdate.log (otherwise would be created and owned by root)
+# pre-create swupdate.log for local update via ods
+# (otherwise it would be created and owned by root since adu runs swupdate as root)
 f /var/log/aduc-logs/swupdate.log 0660 adu adu -
 Z /etc/adu 0750 adu adu -
 z /etc/adu/du-config.json 0444 adu adu -
