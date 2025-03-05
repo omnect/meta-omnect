@@ -3,6 +3,8 @@ d /var/lib/adu/downloads 0770 adu adu -
 d /run/adu 0755 adu adu -
 Z /var/lib/adu 0770 adu adu -
 d /var/log/aduc-logs 1775 adu adu -
+# "enforce swupdate.log is owned by adu (otherwise would be created by root)
+f /var/log/aduc-logs/swupdate.log 0660 adu adu -
 Z /etc/adu 0750 adu adu -
 z /etc/adu/du-config.json 0444 adu adu -
 z /etc/adu/du-diagnostics-config.json 0444 adu adu -
