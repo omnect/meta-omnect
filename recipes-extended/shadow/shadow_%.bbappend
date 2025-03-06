@@ -1,0 +1,1 @@
+EXTRA_OECONF += "--with-group-name-max-length=32"
