@@ -35,9 +35,11 @@ fsck_handling() {
     for i in ${labels[@]}; do
         local content=$(get_fsck_status ${i})
         if [ -n "${content}" ]; then
-            jq --arg i "${i}" --arg content "${content}" '{($i): ($content)}' /tmp/fsck.json > /tmp/fsck.json.tmp || return 1
+            jq --arg i "${i}" --arg content "${content}" '. += {($i): ($content)}' /tmp/fsck.json > /tmp/fsck.json.tmp || { msg "omnect_fsck_${i} json handling error"; return 1; }
             mv /tmp/fsck.json.tmp /tmp/fsck.json
             set_bootloader_env_var omnect_fsck_${i} ""
+        else
+            msg "no omnect_fsck_${i} available"
         fi
     done
 
