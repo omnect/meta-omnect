@@ -82,24 +82,15 @@ do_install:append() {
     fi
 }
 
-enable_hardware_watchdog() {
+# enable hardware watchdog as defined via variables
+# SYSTEMD_RuntimeWatchdogSec and SYSTEMD_RebootWatchdogSec
+do_install:append() {
     local cfg_file="${D}${sysconfdir}/systemd/system.conf"
 
     [ -n "${SYSTEMD_RuntimeWatchdogSec}"  ] && \
         sed -i 's|^#\(RuntimeWatchdogSec\)=.*$|\1=${SYSTEMD_RuntimeWatchdogSec}|' ${cfg_file}
     [ -n "${SYSTEMD_RebootWatchdogSec}"   ] && \
         sed -i 's|^#\(RebootWatchdogSec\)=.*$|\1=${SYSTEMD_RebootWatchdogSec}|' ${cfg_file}
-}
-
-# enable hardware watchdog for rpi3, rpi4, phygate tauri-l and phyboard polis (see MACHINEOVERRIDES)
-do_install:append:rpi() {
-    enable_hardware_watchdog
-}
-do_install:append:phygate-tauri-l-imx8mm-2() {
-    enable_hardware_watchdog
-}
-do_install:append:genericx86-64() {
-    enable_hardware_watchdog
 }
 
 do_install:append() {
