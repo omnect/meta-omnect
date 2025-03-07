@@ -26,10 +26,6 @@ get_id() {
 
 fsck_handling() {
     local labels=("boot" "cert" "data" "etc")
-    msg omnect_fsck_boot=$(get_bootloader_env_var "omnect_fsck_boot")
-    msg omnect_fsck_cert=$(get_bootloader_env_var "omnect_fsck_cert")
-    msg omnect_fsck_data=$(get_bootloader_env_var "omnect_fsck_data")
-    msg omnect_fsck_etc=$(get_bootloader_env_var "omnect_fsck_etc")
 
     echo "{}" > /tmp/fsck.json
     for i in ${labels[@]}; do
