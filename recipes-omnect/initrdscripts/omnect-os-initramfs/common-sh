@@ -63,14 +63,19 @@ check_fs()
     msg "check_fs /dev/omnect/${label}"
     echo "on" > /proc/sys/kernel/printk_devkmsg
 
-    # regular boot; fsck handles unclean state (i.e.; not unmounted)
-    fsck -y /dev/omnect/${label} &> /tmp/fsck_out
+    # in case of EFI the boot partition gets checked multiple times
+    if [ -f /tmp/fsck_out.${label} ]; then
+        msg "already run fsck for \"${label}\""
+        return 0
+    fi
+
+    fsck -y /dev/omnect/${label} &> /tmp/fsck_out.${label}
     fsck_res=$?
     msg "fsck result for \"${label}\" is ${fsck_res}"
-    msg "$(</tmp/fsck_out)"
+    msg "$(</tmp/fsck_out.${label})"
 
     if [ ${fsck_res} -ne 0 ]; then
-        save_fsck_status "${label}" "/tmp/fsck_out" "${fsck_res}"
+        save_fsck_status "${label}" "/tmp/fsck_out.${label}" "${fsck_res}"
         msg_error "command \"fsck -y /dev/omnect/${label}\" failed: ${fsck_res}"
     fi
 
