@@ -56,10 +56,10 @@ software =
             swupdate.trace(\"bootloader_version: \" .. bootloader_version)
             swupdate.trace(\"image.version: \" .. image.version)
             if bootloader_version == image.version then
-                f = io.open(\"/run/omnect-bootloader-update-not-necessary\", \"w\")
+                f = io.open(\"/run/adu/omnect-bootloader-update-not-necessary\", \"w\")
                 result = nil
             else
-                f = io.open(\"/run/omnect-bootloader-update\", \"w\")
+                f = io.open(\"/run/adu/omnect-bootloader-update\", \"w\")
                 result = image
             end
             f:close()
