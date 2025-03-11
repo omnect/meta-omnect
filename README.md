@@ -435,7 +435,7 @@ The overall `factory reset status` consists of:
 
 ### Filesystem ckeck
 
-The `boot`, `cert`, `etc` and `data` Partition get checked non-interactively at boot via `fsck`. All questions of `fsck` regarding repairing the filesystem are answered with `yes`. The result of this process is returned as part of `/run/omnect-device-service/omnect-os-initramfs.json` via json object `fsck`.<br>
+The `boot`, `cert`, `etc` and `data` partition get checked non-interactively at boot via `fsck`. All questions of `fsck` regarding repairing the filesystem are answered with `yes`. The result of this process is returned as part of `/run/omnect-device-service/omnect-os-initramfs.json` via json object `fsck`.<br>
 If the object is empty, there were no filesystem issues. If the filesystem check encounters an error for a partition, the output of `fsck` for this parition is stored as json object named after the partition, e.g. if we encountered an error checking the `boot` partition the resulting `omnect-os-initramfs.json` has an entry `fsck.boot`.:
 
 ```json
