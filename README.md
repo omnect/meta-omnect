@@ -35,11 +35,19 @@ Depending on `MACHINE_FEATURES` we also set `3g`, `bluetooth` and `wifi`.
     - adds a service which enables wifi commissioning via bluetooth
     - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
     - **note**: this is only intended for demo purposes; this is not a production ready service
-
+3
 ### `MACHINE_FEATURES`
 `meta-omnect` extends the following `MACHINE_FEATURES`:
 - `tpm2`
     - adds tpm kernel overlay, driver and auto modprobe for raspberry pi
+
+- omnect Secure OS feature `pstore`: add tracking of reboot reasons
+	- uses either RAM of EFI variables to store kernel messages
+	- adds services and scripts for setting and determining reboot
+      reasons
+	- for detailed information see
+      [description](/doc/Feature-pstore.md) of this feature in
+      [doc](/doc/) folder
 
 ### Partition Layout
 `omnect-os` uses an `A/B` update partition layout with two readonly rootfs partitions.
