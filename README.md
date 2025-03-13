@@ -433,6 +433,28 @@ The overall `factory reset status` consists of:
 - optional: `context` on warnings or errors
 - array `paths` of preserved files or directories; this array reflects the configured paths not the actual restored path, e.g. if a path doesn't exist
 
+### Filesystem ckeck
+
+The `boot`, `cert`, `etc` and `data` partition get checked non-interactively at boot via `fsck`. All questions of `fsck` regarding repairing the filesystem are answered with `yes`. The result of this process is returned as part of `/run/omnect-device-service/omnect-os-initramfs.json` via json object `fsck`.<br>
+If the object is empty, there were no filesystem issues. If the filesystem check encounters an error for a partition, the output of `fsck` for this parition is stored as json object named after the partition, e.g. if we encountered an error checking the `boot` partition the resulting `omnect-os-initramfs.json` has an entry `fsck.boot`.:
+
+```json
+{
+
+  "fsck": {
+
+    "boot": "fsck from util-linux 2.37.4\nfsck.fat 4.2 (2021-01-31)\nDirty bit is set. Fs was not properly unmounted and some data may be corrupt.\n Automatically removing dirty bit.\n\n*** Filesystem was changed ***\nWriting changes.\n/dev/mmcblk0p1: 75 files, 11264/20431 clusters"
+
+  },
+
+  "factory-reset": {}
+
+}
+
+```
+
+
+
 ### Debug Mount Options of Data Partition
 
 The filesystem inside the data partition is mounted using the mount options `defaults,noatime,nodiratime,async,rw`, per default.
