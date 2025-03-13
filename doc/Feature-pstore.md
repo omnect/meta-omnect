@@ -178,6 +178,10 @@ directory with involved files and the result file `reboot-reason.json`
 
 - `omnect-pstore-boottag.service`
 
+This service is specific to EFI systems. See chapter
+[Specialities: EFI Systems](#Specialities: EFI Systems) below for
+explanation of its purpose.
+
 ## Specialities: U-Boot Systems
 
 As already mentioned in [chapter Motivation](#Motivation) systems
@@ -205,4 +209,23 @@ RAM contents will be lost.
 
 ## Specialities: EFI Systems
 
+The persistent memory available in EFI systems allow for more complete
+system start tracking, because even an intentional shutdown followed
+by a power cycle can be detected: the reboot reason "shutdown" can be
+seen in next system run and logged as correct reason.
 
+However, keeping track of multiple reboots/power failures can be
+tricky or even impossible.
+
+The introduction of another EFI variable holding UUIDs of system
+starts - made available by kernel through sysfs path
+`/proc/sys/kernel/random/boot_id` - tries mitigating this gap by
+logging the current boot_id as early as possible during system
+startup.
+
+Any intentional reboot will take care of removing the current ID from
+the variable.
+So. analysis of contained IDs upon `get` operation of reboot reason
+script invokedd during system start can deduce that if the EFI
+variable holds more than the current ID, then there was definitely (at
+least) one unintentional reboot.
