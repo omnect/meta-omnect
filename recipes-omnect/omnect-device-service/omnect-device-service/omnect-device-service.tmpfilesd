@@ -7,6 +7,11 @@ Z /mnt/cert/ssh/*                       0644 ssh_tunnel_user ssh_tunnel_user -  
 #  - create log directory with desired permissions
 d /run/omnect_health_log 0775 root root -
 
+# reboot reason ...
+#  - make pmsg device file writable for use/group omnect-device-service so that
+#    also ADU can log proper reboot reason
+z /dev/pmsg0                            0660 omnect_device_service  omnect_device_service - -
+
 #  - create reboot reason log directory and ensure that subdirectories also
 #    are created with the same group
 d /var/lib/omnect/reboot-reason        02775 omnect_device_service  omnect_device_service - -
