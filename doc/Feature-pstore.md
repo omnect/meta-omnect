@@ -26,6 +26,11 @@ However, power cycles or power fails cannot be distinguished from
 intentional shutdowns on such systems while lacking means to store an
 appropriate hint that survives an accompanying powerless state.
 
+This document is about general aspects of feature `omnect_pstore` and
+reboot reason detection.
+Have also a look at [device documentation](doc) for specific
+information.
+
 ## The Mechanisms Used
 
 As already mentioned above, the fundament for most reboot reason
