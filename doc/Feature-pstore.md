@@ -199,7 +199,7 @@ disadvantages.
 
 Firstly, any permanent kernel logging to it, possibly happening in
 addition to the standard kernel logging, can lead to the storage
-waering off earlier.
+wearing off earlier.
 
 But more important is the fact that this type of logging requires a
 lot more intact kernel infrastructure to carry out write operations in
@@ -214,10 +214,11 @@ RAM contents will be lost.
 
 ## Specialities: EFI Systems
 
-The persistent memory available in EFI systems allow for more complete
-system start tracking, because even an intentional shutdown followed
-by a power cycle can be detected: the reboot reason "shutdown" can be
-seen in next system run and logged as correct reason.
+The persistent memory available in EFI systems allows for more
+complete system start tracking, because even an intentional shutdown
+followed by a power cycle can be detected: the reboot reason
+"shutdown" can be seen in next system run and logged as correct
+reason.
 
 However, keeping track of multiple reboots/power failures can be
 tricky or even impossible.
@@ -231,6 +232,6 @@ startup.
 Any intentional reboot will take care of removing the current ID from
 the variable.
 So. analysis of contained IDs upon `get` operation of reboot reason
-script invokedd during system start can deduce that if the EFI
+script invoked during system start can deduce that if the EFI
 variable holds more than the current ID, then there was definitely (at
 least) one unintentional reboot.

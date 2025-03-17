@@ -24,7 +24,9 @@ contents.
 There is a docker image available which allows to check current EEPROM
 version as well as upgrading to this very version:
 
-[root@dut2-rpi4-x509-gateway-devel ~]# docker run --rm -ti --privileged -v /boot:/boot docker.io/omnect/rpi-eeprom:20250313-6aacd80-2024.11.08-2712
+```bash
+# docker run --rm -ti --privileged -v /boot:/boot docker.io/omnect/rpi-eeprom:20250313-6aacd80-2024.11.08-2712
+```
 
 To check current EEPROM version simply launch `rpi-eeprom-update` in
 container:
@@ -58,7 +60,7 @@ Copying recovery.bin to /boot for EEPROM update
 EEPROM updates pending. Please reboot to apply the update.
 To cancel a pending update run "sudo rpi-eeprom-update -r".
 root@67542ffde28e:/# exit
-[root@dut2-rpi4-x509-gateway-devel ~]# reboot
+# reboot
 ```
 
 ## Device Tree Overlays

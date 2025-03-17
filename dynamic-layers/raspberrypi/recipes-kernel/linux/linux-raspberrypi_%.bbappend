@@ -1,3 +1,3 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/linux:"
 
-SRC_URI += "file://0000-ramops-pi4-overlay.patch"
+SRC_URI += "file://ramoops-pi4-overlay.patch"

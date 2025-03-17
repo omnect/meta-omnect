@@ -87,7 +87,7 @@ do_install:append() {
     install -m 0755 -D ${S}/healthcheck/omnect_health__services.sh          ${D}/${sbindir}/omnect_health__services.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health__system_running.sh    ${D}/${sbindir}/omnect_health__system_running.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health__timesync.sh          ${D}/${sbindir}/omnect_health__timesync.sh
-install -m 0755 -D ${S}/healthcheck/omnect_service_log.sh               ${D}/${sbindir}/omnect_service_log.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_service_log.sh               ${D}/${sbindir}/omnect_service_log.sh
     # NOTE:
     #    the next script needs to be always there, regardless of whether
     #    feature reboot reason is available or not!
