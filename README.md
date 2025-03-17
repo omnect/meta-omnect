@@ -35,7 +35,7 @@ Depending on `MACHINE_FEATURES` we also set `3g`, `bluetooth` and `wifi`.
     - adds a service which enables wifi commissioning via bluetooth
     - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
     - **note**: this is only intended for demo purposes; this is not a production ready service
-3
+
 ### `MACHINE_FEATURES`
 `meta-omnect` extends the following `MACHINE_FEATURES`:
 - `tpm2`
