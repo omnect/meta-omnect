@@ -30,7 +30,7 @@ appropriate hint that survives an accompanying powerless state.
 
 As already mentioned above, the fundament for most reboot reason
 detection functionality forms Linux kernel sub-system `pstore`
-together with some extra drivers depending on the type of the system
+together with some extra drivers depending on the type of the device
 used.
 
 ### `pstore`
@@ -39,19 +39,19 @@ The `pstore` sub-system contains a dedicated filesystem which gets
 automatically mounted during system start under `/sys/fs/pstore`.
 
 Depending on configuration and system status, the kernel places
-various files into that file system, reflecting the start-up history
-to some extent.
+various files into that file system, reflecting the system's run
+history to some extent.
 
 Files named after the following schemes can appear there, depending on
 system type:
 - for `ramoops` devices:
   - `console-ramoops-0`
 	contains kernel log messages of previous system run in general,
-	limited to the available space in the defined RAm area
+	limited to the available space in the defined RAM area
   - `pmsg-ramoops-0`
 	contains whatever was written to device `/dev/pmsg0` during
-	previous system run which will be reboot hints only, because this
-	kernel device isn't used by any other instances
+	previous system run; this is used to record reboot hints only, no
+	other system instance uses it
   - `dmesg-ramoops-0`
 	again contains kernel log messages of previous system run, but
 	here belonging to a kernel crash/oops; as with console messages
@@ -109,7 +109,7 @@ This feature consists of several parts:
 	- driver `ramoops`
 - a script allowing for ...
   - registering of annotations for intentional system reboots
-  - analysis of boot annotations to yield a reboot reason
+  - analysis of boot annotations to determine the reason of last reboot
 - instrumentation of reboot reason annotation scripts for intentional
   reboots, like:
   - reboot via omnect-device-service
@@ -137,7 +137,7 @@ It is activated via machine feature `omnect_pstore`.
 ### Reboot Reason Script
 
 At the core of the reboot reason feature there is the script
-`Omnect_reboot_reason.sh` which is located in repository of
+`omnect_reboot_reason.sh` which is located in repository of
 [omnect-device-service](https://github.com/omnect/omnect-device-service/healthcheck/omnect_reboot_reason.sh).
 
 It supports several commands:
@@ -160,9 +160,9 @@ documentation.
 ### Dedicated System Services
 
 To able of tracking reboot reasons, standard reboot paths need to be
-tracked regularly.
+tracked.
 
-This is done by adding two services activated in the wake systemd
+This is done by adding two services activated in the wake of systemd
 reboots or shutdowns:
 - `omnect-pstore-log-shutdown.service`
 - `omnect-pstore-log-reboot.service`
@@ -193,7 +193,7 @@ storage device - eMMC or SATA/PCIe/NVMe disk - this has also
 disadvantages.
 
 Firstly, any permanent kernel logging to it, possibly happening in
-addition to the standard kernel logging, can lead to the device
+addition to the standard kernel logging, can lead to the storage
 waering off earlier.
 
 But more important is the fact that this type of logging requires a
