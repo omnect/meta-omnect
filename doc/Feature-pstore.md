@@ -26,7 +26,7 @@ However, power cycles or power fails cannot be distinguished from
 intentional shutdowns on such systems while lacking means to store an
 appropriate hint that survives an accompanying powerless state.
 
-This document is about general aspects of feature `omnect_pstore` and
+This document is about general aspects of feature `pstore` and
 reboot reason detection.
 Have also a look at [device documentation](doc) for specific
 information.
@@ -137,7 +137,7 @@ instrumentation are part of repository
 The kernel configuration required for reboot reason support is managed
 in a [kernel config fragment](../recipes-kernel/linux/files/pstore.cfg).
 
-It is activated via machine feature `omnect_pstore`.
+It is activated via machine feature `pstore`.
 
 ### Reboot Reason Script
 
