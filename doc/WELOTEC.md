@@ -21,5 +21,6 @@
 | **Factory Reset**                    | yes             |
 | **Wifi Commissioning via Bluetooth** | no              |
 | **LTE Support** [^1]                 | optional        |
+| **omnect_pstore** aka reboot reasons | planned         |
 
 [^1]: in [LTE documentation](LTE.md) you can find more details concerning configuration
