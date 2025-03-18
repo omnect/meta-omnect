@@ -13,7 +13,7 @@
 | **Factory Reset**                    | yes             	  |
 | **Wifi Commissioning via Bluetooth** | yes             	  |
 | **LTE Support**                      | no                   |
-| **omnect_pstore** aka reboot reasons | yes (see note below) |
+| **pstore** aka reboot reasons        | yes (see note below) |
 
 **Note:** More features can easily be enabled by adding appropriate expansion boards, e.g. TPM module or LTE modem.
 
