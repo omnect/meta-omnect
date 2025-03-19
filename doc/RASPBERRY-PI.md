@@ -7,11 +7,11 @@
 ## Omnect Feature Support:
 
 | Feature | Availability |
-| ------------------------------------ | :-------------: 	  |
-| **Device Provisioning via**          | x509            	  |
-| **OTA Update**                       | yes             	  |
-| **Factory Reset**                    | yes             	  |
-| **Wifi Commissioning via Bluetooth** | yes             	  |
+| ------------------------------------ | :-------------:      |
+| **Device Provisioning via**          | x509                 |
+| **OTA Update**                       | yes                  |
+| **Factory Reset**                    | yes                  |
+| **Wifi Commissioning via Bluetooth** | yes                  |
 | **LTE Support**                      | no                   |
 | **pstore** aka reboot reasons        | yes (see note below) |
 
