@@ -25,8 +25,11 @@ SYSTEMD_RebootWatchdogSec   = "15"
 # rpi bluetooth needs hciattach, which is marked deprecated
 PACKAGECONFIG:pn-bluez5:append = " deprecated tools"
 
-# this machine uses uboot
-MACHINEOVERRIDES:prepend = "omnect_uboot:"
+# this machine uses uboot and pstore feature
+MACHINEOVERRIDES:prepend = "omnect_uboot:omnect_pstore:"
+
+# reboot reason support via pstore/ramoops
+MACHINE_FEATURES += "pstore"
 
 # optional tpm2 support
 MACHINE_FEATURES += "tpm2"
@@ -40,4 +43,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_core}/recipes-bsp/u-boot/u-boot_2024
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-bootloader-versioned - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "c83b1bc7b0d584ebb629508ab9a4357f54b4e096eb64c8ecad3cdd71928cb9c5"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "5286676ad0cb57c7c7e641f14024ac76102de0b9406e7ef5857d60834891caf0"
