@@ -22,6 +22,7 @@
 | **Factory Reset**                    | yes             |
 | **Wifi Commissioning via Bluetooth** | no              |
 | **LTE Support**                      | no              |
+| **pstore** aka reboot reasons        | yes             |
 
 ## Device Tree Overlays
 

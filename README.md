@@ -41,8 +41,16 @@ Depending on `MACHINE_FEATURES` we also set `3g`, `bluetooth` and `wifi`.
 - `tpm2`
     - adds tpm kernel overlay, driver and auto modprobe for raspberry pi
 
+- omnect Secure OS feature `pstore`: add tracking of reboot reasons
+	- uses either RAM of EFI variables to store kernel messages
+	- adds services and scripts for setting and determining reboot
+      reasons
+	- for detailed information see
+      [description](/doc/Feature-pstore.md) of this feature in
+      [doc](/doc/) folder
+
 ### Partition Layout
-`omnect-os` uses an `A/B` update partition layout with two readonly rootfs partitions.
+`omnect-os` uses an `A/B` update partition layout with two read-only rootfs partitions.
 The partition layout for devices supporting gpt:
 ```sh
 Device           Start      End  Sectors  Size Type
@@ -56,8 +64,8 @@ Device           Start      End  Sectors  Size Type
 
 ```
 - `mmcblkXp1` is the `boot` partition with vfat filesystem
-- `mmcblkXp2` is the readonly `rootA` partition with ext4 filesystem
-- `mmcblkXp3` is the readonly `rootB` partition with ext4 filesystem
+- `mmcblkXp2` is the read-only `rootA` partition with ext4 filesystem
+- `mmcblkXp3` is the read-only `rootB` partition with ext4 filesystem
 - `mmcblkXp4` is the writable `factory` partition with ext4 filesystem
 - `mmcblkXp5` is the writable `certificate` partition with ext4 filesystem
 - `mmcblkXp6` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
@@ -76,9 +84,9 @@ Device         Boot   Start      End  Sectors  Size Id Type
 /dev/mmcblkXp8      3424256 31116287 27692032 13.2G 83 Linux
 ```
 - `mmcblkXp1` is the `boot` partition with vfat filesystem
-- `mmcblkXp2` is the readonly `rootA` partition with ext4 filesystem
-- `mmcblkXp3` is the readonly `rootB` partition with ext4 filesystem
-- `mmcblkXp5` is the writable `factory` partition with ext4 filesystem
+- `mmcblkXp2` is the read-only `rootA` partition with ext4 filesystem
+- `mmcblkXp3` is the read-only `rootB` partition with ext4 filesystem
+- `mmcblkXp5` is the read-only `factory` partition with ext4 filesystem
 - `mmcblkXp6` is the writable `certificate` partition with ext4 filesystem
 - `mmcblkXp7` is the writable `etc` overlay partition (ext4 filesystem mounted as overlayfs on `/etc`)
 - `mmcblkXp8` is the writable `data` partition with ext4 filesystem

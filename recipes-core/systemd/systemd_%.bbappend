@@ -73,6 +73,13 @@ do_install:append() {
             -e 's/^#ReserveVT=\(.*\)$/ReserveVT=0 /' \
             ${D}${sysconfdir}/systemd/logind.conf
     fi
+
+    # disable pstore support, we want to do that on our own
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'pstore', 'true', 'false', d)}; then
+        sed -i \
+            -e 's/^#Storage=\(.*\)$/Storage=none /' \
+            ${D}${sysconfdir}/systemd/pstore.conf
+    fi
 }
 
 # enable hardware watchdog as defined via variables
@@ -87,7 +94,7 @@ do_install:append() {
 }
 
 do_install:append() {
-    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27\nExecStopPost=/bin/sh -c \x27if [ "$$EXIT_STATUS" != 0 -o "$$EXIT_CODE" != exited ]; then /usr/sbin/omnect_reboot_reason.sh log systemd-networkd-wait-online "service failed with [$$EXIT_CODE/$$EXIT_STATUS]"; fi\x27#' \
         ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
 }
 
