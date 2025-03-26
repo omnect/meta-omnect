@@ -2,4 +2,4 @@ part --offset ${OMNECT_PART_OFFSET_BOOT}K --fixed-size ${OMNECT_PART_SIZE_BOOT}K
 
 include omnect-os.common.wks.inc
 
-bootloader --ptable gpt --configfile ${DEPLOY_DIR_IMAGE}/grub.cfg
+bootloader --ptable gpt

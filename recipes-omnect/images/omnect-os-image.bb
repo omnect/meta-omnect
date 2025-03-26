@@ -29,8 +29,7 @@ IMAGE_BOOT_FILES += "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', 'fdt-load.scr',
 
 do_image_wic[depends] += "virtual/bootloader:do_deploy"
 do_image_wic_extra_depends = ""
-# we adapt grub.cfg before writing it to image in do_image_wic
-do_image_wic_extra_depends:omnect_grub = "grub-cfg:do_deploy bootloader-versioned:do_deploy"
+do_image_wic_extra_depends:omnect_grub = "bootloader-versioned:do_deploy efitools:do_deploy seloader:do_deploy shim:do_deploy"
 # we add boot.scr to the image on condition
 do_image_wic_extra_depends:omnect_uboot = "u-boot-scr:do_deploy bootloader-versioned:do_deploy"
 do_image_wic_extra_depends:rpi = "u-boot-scr:do_deploy bootloader-versioned:do_deploy rpi-bootfiles:do_deploy rpi-config:do_deploy rpi-cmdline:do_deploy"
@@ -56,6 +55,7 @@ EXTRA_PACKAGES_CELLULAR = "\
 
 IMAGE_INSTALL = "\
     ${@bb.utils.contains('MACHINE_FEATURES', '3g', '${EXTRA_PACKAGES_CELLULAR}', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', ' mokutil', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' aziot-edged iotedge kernel-modules', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd-bash-completion', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
@@ -95,8 +95,18 @@ add_kernel_and_initramfs() {
         ln -sf ${KERNEL_IMAGETYPE} $D/boot/Image
         # do that also for post processing working on DEPLOY_DIR_IMAGE
         ln -sf ${KERNEL_IMAGETYPE} ${DEPLOY_DIR_IMAGE}/Image
+
+        if [ -n "${SB_FILE_EXT}" ]; then
+            ln -sf ${KERNEL_IMAGETYPE}${SB_FILE_EXT} $D/boot/Image${SB_FILE_EXT}
+            ln -sf ${KERNEL_IMAGETYPE}${SB_FILE_EXT} ${DEPLOY_DIR_IMAGE}/Image${SB_FILE_EXT}
+        fi
     fi
     ln -sf $(basename ${initramfs}) $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}
+
+    if [ -n "${SB_FILE_EXT}" ]; then
+        install -m 0644 ${initramfs}${SB_FILE_EXT} $D/boot/
+        ln -sf $(basename ${initramfs}${SB_FILE_EXT}) $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}${SB_FILE_EXT}
+    fi
 }
 
 # setup omnect specific sysctl configuration (see systemd-sysctl.service)

@@ -11,5 +11,19 @@ repos:
     commit: "2999fecd926976a1ea517c14e5dee996649dc80a"
     layers:
       meta-yocto-bsp:
+  ext/meta-secure-core:
+    url: "https://github.com/Wind-River/meta-secure-core.git"
+    branch: kirkstone
+    commit: 0f59e4ad923c751e412a724a50d98b8955f0ca50
+    layers:
+      meta:
+      meta-efi-secure-boot:
+      meta-signing-key:
+  ext/meta-perl:
+    url: "https://github.com/openembedded/meta-openembedded.git"
+    branch: "kirkstone"
+    commit: "de8681b4a2a101b99dd2c48d89a7de2ccd9a961f"
+    layers:
+      meta-perl:
 
 machine: "genericx86-64"
