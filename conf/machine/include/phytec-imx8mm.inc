@@ -26,6 +26,9 @@ SERIAL_CONSOLES ="${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '115200;
 #bootargs console is not part of the devictree, so we have to append it to kernel commandline
 APPEND += "console=ttymxc2,115200"
 
+# next APPEND options are only needed for pstore feature
+APPEND += "ramoops.dump_oops=1 ramoops.ecc=1 printk.always_kmsg_dump=Y crash_kexec_post_notifiers=Y"
+
 # https://github.com/phytec/meta-phytec/commit/6d71e11b4fc1ee8196e579e4de73ed3197e0e4be
 APPEND += "clk-imx8mm.mcore_booted"
 
@@ -60,8 +63,8 @@ FILESEXTRAPATHS:prepend:pn-imx-boot-phytec := "${LAYERDIR_freescale-layer}/recip
 SYSTEMD_RuntimeWatchdogSec  = "60"
 SYSTEMD_RebootWatchdogSec   = "60"
 
-# this machine uses uboot
-MACHINEOVERRIDES:prepend = "omnect_uboot:"
+# this machine uses uboot and pstore feature
+MACHINEOVERRIDES:prepend = "omnect_uboot:omnect_pstore:"
 MACHINEOVERRIDES:append = ":phytec-imx8mm"
 
 # For now remove optee from MACHINE_FEATURES. We don't support secure boot at
@@ -72,6 +75,10 @@ MACHINEOVERRIDES:append = ":phytec-imx8mm"
 MACHINE_FEATURES:remove = " \
     nxp8987 \
     optee \
+"
+
+MACHINE_FEATURES:append = " \
+    pstore \
 "
 
 OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-imx_2022.04_2.2.2-phy8.bb"
