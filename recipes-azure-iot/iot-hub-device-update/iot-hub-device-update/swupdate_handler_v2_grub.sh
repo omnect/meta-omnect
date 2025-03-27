@@ -724,18 +724,18 @@ InstallUpdate() {
                 if [ ${ret_val} -eq 0 ]; then
                     # workaround for update from image without set bootloader version
                     [ -f /boot/EFI/BOOT/omnect_bootloader_version ] || echo > /boot/EFI/BOOT/omnect_bootloader_version
-                    rm -f /run/adu/omnect-bootloader-update-not-necessary
+                    rm -f /tmp/omnect-bootloader-update-not-necessary
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,bootloader &>> "${swupdate_log_file}"
                     ret_val=$?
                     if [ ${ret_val} -eq 0 ]; then
-                        if [ -f "/run/adu/omnect-bootloader-update" ]; then
+                        if [ -f "/tmp/omnect-bootloader-update" ]; then
                             bootloader_env.sh set omnect_bootloader_updated 1
                             ret_val=$?
                         fi
                     else
-                        if [ -f "/run/adu/omnect-bootloader-update-not-necessary" ]; then
+                        if [ -f "/tmp/omnect-bootloader-update-not-necessary" ]; then
                             ret_val=0
-                            rm /run/adu/omnect-bootloader-update-not-necessary
+                            rm /tmp/omnect-bootloader-update-not-necessary
                         fi
                     fi
                 fi
@@ -792,7 +792,7 @@ ApplyUpdate() {
 
     echo "Applying." >> "${log_file}"
 
-    if [ -f "/run/adu/omnect-bootloader-update" ]; then
+    if [ -f "/tmp/omnect-bootloader-update" ]; then
         bootloader_env.sh set omnect_os_bootpart $update_part
         echo "use omnect_os_bootpart environment" >> "${log_file}"
     else
