@@ -87,9 +87,13 @@ IMAGE_INSTALL = "\
 # updatable via swupdate.
 ROOTFS_POSTPROCESS_COMMAND:append = " add_kernel_and_initramfs;"
 add_kernel_and_initramfs() {
+    rm -rf $D/boot/*
     initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${OMNECT_INITRAMFS_IMAGE_NAME}.${OMNECT_INITRAMFS_FSTYPE})
-    install -m 0644 ${initramfs} $D/boot/
-    ln -sf ${KERNEL_IMAGETYPE} $D/boot/${KERNEL_IMAGETYPE}.bin
+    kernel=$(readlink -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE})
+    #install -m 0644 ${initramfs} $D/boot/
+    install -m 0644 ${initramfs} $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}
+    #ln -sf ${KERNEL_IMAGETYPE} $D/boot/${KERNEL_IMAGETYPE}.bin
+    install -m 0644 ${kernel} $D/boot/${KERNEL_IMAGETYPE}
     if [ "${KERNEL_IMAGETYPE}" != "Image"  ]; then
         # we uniformly want kernel image named Image
         ln -sf ${KERNEL_IMAGETYPE} $D/boot/Image
@@ -101,11 +105,13 @@ add_kernel_and_initramfs() {
             ln -sf ${KERNEL_IMAGETYPE}${SB_FILE_EXT} ${DEPLOY_DIR_IMAGE}/Image${SB_FILE_EXT}
         fi
     fi
-    ln -sf $(basename ${initramfs}) $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}
+    #ln -sf $(basename ${initramfs}) $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}
 
     if [ -n "${SB_FILE_EXT}" ]; then
-        install -m 0644 ${initramfs}${SB_FILE_EXT} $D/boot/
-        ln -sf $(basename ${initramfs}${SB_FILE_EXT}) $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}${SB_FILE_EXT}
+        install -m 0644 ${initramfs}${SB_FILE_EXT} $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}${SB_FILE_EXT}
+        install -m 0644 ${kernel}${SB_FILE_EXT} $D/boot/${KERNEL_IMAGETYPE}${SB_FILE_EXT}
+        #install -m 0644 ${initramfs}${SB_FILE_EXT} $D/boot/
+        #ln -sf $(basename ${initramfs}${SB_FILE_EXT}) $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}${SB_FILE_EXT}
     fi
 }
 

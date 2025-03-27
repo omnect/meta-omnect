@@ -32,10 +32,15 @@ fi
 if [ "${default}" != "Automatic Certificate Provision" ]; then
   set root=(hd0,gpt${omnect_os_bootpart})
   set default="omnect-os"
+  set check_signatures=enforce
+  set debug=all
 fi
 
 # to be able to use the timeout, we do need an menuentry. otherwise we could boot directly without one
-menuentry 'omnect-os' {
-    linux /boot/bzImage rootpart=${omnect_os_bootpart} ${kernel_param_rootblk} @@APPEND@@
-    initrd /boot/initramfs.cpio.gz
+menuentry 'omnect-os' --unrestricted {
+    #TEST: does verifying kernel work, when from same root as SELoader.efi
+    set root=(hd0,gpt1)
+    linux /EFI/BOOT/bzImage rootpart=${omnect_os_bootpart} ${kernel_param_rootblk} @@APPEND@@
+    set root=(hd0,gpt${omnect_os_bootpart})
+    initrd (hd0,gpt${omnect_os_bootpart})/boot/initramfs.cpio.gz
 }
