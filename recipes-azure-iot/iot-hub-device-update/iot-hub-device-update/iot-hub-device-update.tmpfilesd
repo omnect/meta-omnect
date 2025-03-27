@@ -1,6 +1,5 @@
 d /var/lib/adu 0770 adu adu -
 d /var/lib/adu/downloads 0770 adu adu -
-d /run/adu 0755 adu adu -
 Z /var/lib/adu 0770 adu adu -
 d /var/log/aduc-logs 1775 adu adu -
 # pre-create swupdate.log for local update via ods
