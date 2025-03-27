@@ -795,7 +795,7 @@ ApplyUpdate() {
     # omnect_os_bootpart variable is specific to our boot.scr script.
     # if the bootloader is also updated, the update will not be validated.
     # -> revert to old rootFS not possible
-    if [ -f "/run/adu/omnect-bootloader-update" ]; then
+    if [ -f "/tmp/omnect-bootloader-update" ]; then
         bootloader_env.sh set omnect_os_bootpart $update_part
         echo "use omnect_os_bootpart environment" >> "${log_file}"
     else
