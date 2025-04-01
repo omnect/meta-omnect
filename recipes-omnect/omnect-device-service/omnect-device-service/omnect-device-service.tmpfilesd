@@ -1,17 +1,22 @@
 # /run/omnect-device-service gets created by omnect-os-initramfs
+
+# ssh-tunnel:
 d /run/omnect-device-service/ssh-tunnel 0700 ssh_tunnel_user ssh_tunnel_user 1h -
 d /mnt/cert/ssh                         0755 ssh_tunnel_user ssh_tunnel_user -  -
 Z /mnt/cert/ssh/*                       0644 ssh_tunnel_user ssh_tunnel_user -  -
 
-# health check ...
+# health check:
 #  - create log directory with desired permissions
 d /run/omnect_health_log 0775 root root -
 
-# reboot reason ...
+# reboot reason:
 #  - make pmsg device file writable for use/group omnect-device-service so that
 #    also ADU can log proper reboot reason
-z /dev/pmsg0                            0660 omnect_device_service  omnect_device_service - -
-
+z /dev/pmsg0 0660 omnect_device_service  omnect_device_service - -
 #  - create reboot reason log directory and ensure that subdirectories also
 #    are created with the same group
-d /var/lib/omnect/reboot-reason        02775 omnect_device_service  omnect_device_service - -
+d /var/lib/omnect/reboot-reason 02775 omnect_device_service omnect_device_service - -
+
+# omnect-device-service working directories:
+d /var/lib/omnect-device-service              0751 omnect_device_service omnect_device_service -
+d /var/lib/omnect-device-service/local_update 0750 omnect_device_service adu                   -

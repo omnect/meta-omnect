@@ -6,11 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.31.0"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.32.2"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "2e8f7333f223fbb95abfb9a1634036d49a4c24bd"
+SRCREV = "784f993cf3d716f89702e5b9994dfabe33900e6f"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
+
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -34,9 +35,9 @@ SRC_URI += " \
     crate://crates.io/android_system_properties/0.1.5 \
     crate://crates.io/anstyle/1.0.10 \
     crate://crates.io/anyhow/1.0.97 \
-    crate://crates.io/asn1-rs-derive/0.5.1 \
+    crate://crates.io/asn1-rs-derive/0.6.0 \
     crate://crates.io/asn1-rs-impl/0.2.0 \
-    crate://crates.io/asn1-rs/0.6.2 \
+    crate://crates.io/asn1-rs/0.7.1 \
     crate://crates.io/assert-json-diff/2.0.2 \
     crate://crates.io/async-broadcast/0.7.2 \
     crate://crates.io/async-channel/2.3.1 \
@@ -84,7 +85,7 @@ SRC_URI += " \
     crate://crates.io/darling_core/0.20.10 \
     crate://crates.io/darling_macro/0.20.10 \
     crate://crates.io/data-encoding/2.8.0 \
-    crate://crates.io/der-parser/9.0.0 \
+    crate://crates.io/der-parser/10.0.0 \
     crate://crates.io/deranged/0.4.1 \
     crate://crates.io/derive_more-impl/2.0.1 \
     crate://crates.io/derive_more/2.0.1 \
@@ -92,6 +93,8 @@ SRC_URI += " \
     crate://crates.io/displaydoc/0.2.5 \
     crate://crates.io/dotenvy/0.15.7 \
     crate://crates.io/downcast/0.11.0 \
+    crate://crates.io/dynosaur/0.2.0 \
+    crate://crates.io/dynosaur_derive/0.2.0 \
     crate://crates.io/either/1.15.0 \
     crate://crates.io/encoding_rs/0.8.35 \
     crate://crates.io/endi/1.1.0 \
@@ -101,7 +104,7 @@ SRC_URI += " \
     crate://crates.io/env_logger/0.11.7 \
     crate://crates.io/equivalent/1.0.2 \
     crate://crates.io/errno/0.3.10 \
-    crate://crates.io/event-listener-strategy/0.5.3 \
+    crate://crates.io/event-listener-strategy/0.5.4 \
     crate://crates.io/event-listener/5.4.0 \
     crate://crates.io/fastrand/2.3.0 \
     crate://crates.io/file-id/0.2.2 \
@@ -112,7 +115,7 @@ SRC_URI += " \
     crate://crates.io/foreign-types-shared/0.1.1 \
     crate://crates.io/foreign-types/0.3.2 \
     crate://crates.io/form_urlencoded/1.2.1 \
-    crate://crates.io/fragile/2.0.0 \
+    crate://crates.io/fragile/2.0.1 \
     crate://crates.io/freedesktop_entry_parser/1.3.0 \
     crate://crates.io/fsevent-sys/4.1.0 \
     crate://crates.io/futures-channel/0.3.31 \
@@ -157,11 +160,11 @@ SRC_URI += " \
     crate://crates.io/icu_collections/1.5.0 \
     crate://crates.io/icu_locid/1.5.0 \
     crate://crates.io/icu_locid_transform/1.5.0 \
-    crate://crates.io/icu_locid_transform_data/1.5.0 \
+    crate://crates.io/icu_locid_transform_data/1.5.1 \
     crate://crates.io/icu_normalizer/1.5.0 \
-    crate://crates.io/icu_normalizer_data/1.5.0 \
+    crate://crates.io/icu_normalizer_data/1.5.1 \
     crate://crates.io/icu_properties/1.5.1 \
-    crate://crates.io/icu_properties_data/1.5.0 \
+    crate://crates.io/icu_properties_data/1.5.1 \
     crate://crates.io/icu_provider/1.5.0 \
     crate://crates.io/icu_provider_macros/1.5.0 \
     crate://crates.io/ident_case/1.0.1 \
@@ -221,8 +224,8 @@ SRC_URI += " \
     crate://crates.io/num-traits/0.2.19 \
     crate://crates.io/num/0.4.3 \
     crate://crates.io/object/0.36.7 \
-    crate://crates.io/oid-registry/0.7.1 \
-    crate://crates.io/once_cell/1.21.1 \
+    crate://crates.io/oid-registry/0.8.1 \
+    crate://crates.io/once_cell/1.21.2 \
     crate://crates.io/openssl-macros/0.1.1 \
     crate://crates.io/openssl-probe/0.1.6 \
     crate://crates.io/openssl-sys/0.9.106 \
@@ -285,6 +288,7 @@ SRC_URI += " \
     crate://crates.io/serde_with_macros/2.3.3 \
     crate://crates.io/serde_with_macros/3.12.0 \
     crate://crates.io/sha1/0.10.6 \
+    crate://crates.io/sha2/0.10.8 \
     crate://crates.io/shlex/1.3.0 \
     crate://crates.io/signal-hook-registry/1.4.2 \
     crate://crates.io/signal-hook-tokio/0.3.1 \
@@ -295,16 +299,19 @@ SRC_URI += " \
     crate://crates.io/stable_deref_trait/1.2.0 \
     crate://crates.io/static_assertions/1.1.0 \
     crate://crates.io/strsim/0.11.1 \
-    crate://crates.io/strum_macros/0.26.4 \
+    crate://crates.io/strum_macros/0.27.1 \
     crate://crates.io/syn/2.0.100 \
     crate://crates.io/sync_wrapper/1.0.2 \
     crate://crates.io/synstructure/0.13.1 \
     crate://crates.io/sysinfo/0.33.1 \
     crate://crates.io/systemd-zbus/5.2.0 \
+    crate://crates.io/tar/0.4.44 \
     crate://crates.io/tempfile/3.19.1 \
     crate://crates.io/termtree/0.5.1 \
     crate://crates.io/thiserror-impl/1.0.69 \
+    crate://crates.io/thiserror-impl/2.0.12 \
     crate://crates.io/thiserror/1.0.69 \
+    crate://crates.io/thiserror/2.0.12 \
     crate://crates.io/time-core/0.1.4 \
     crate://crates.io/time-macros/0.2.22 \
     crate://crates.io/time/0.3.41 \
@@ -324,6 +331,7 @@ SRC_URI += " \
     crate://crates.io/tracing-attributes/0.1.28 \
     crate://crates.io/tracing-core/0.1.33 \
     crate://crates.io/tracing/0.1.41 \
+    crate://crates.io/trait-variant/0.1.2 \
     crate://crates.io/try-lock/0.2.5 \
     crate://crates.io/typenum/1.18.0 \
     crate://crates.io/uds_windows/1.1.0 \
@@ -384,7 +392,7 @@ SRC_URI += " \
     crate://crates.io/wit-bindgen-rt/0.39.0 \
     crate://crates.io/write16/1.0.0 \
     crate://crates.io/writeable/0.5.5 \
-    crate://crates.io/x509-parser/0.16.0 \
+    crate://crates.io/x509-parser/0.17.0 \
     crate://crates.io/xdg-home/1.3.0 \
     crate://crates.io/yoke-derive/0.7.5 \
     crate://crates.io/yoke/0.7.5 \
@@ -461,7 +469,7 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.5.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.13.9"
+SRCREV_azure-iot-sdk = "0.14.0"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
 SRCREV_azure-iot-sdk-sys = "0.6.2"
@@ -488,7 +496,7 @@ LIC_FILES_CHKSUM = " \
 "
 
 SUMMARY = "This service allows remote features like: user fw update consent, factory reset, network adapter status and reboot."
-HOMEPAGE = "https://www.omnect.io/home"
+HOMEPAGE = "www.omnect.io"
 LICENSE = "MIT OR Apache-2.0"
 
 # includes this file if it exists but does not fail
