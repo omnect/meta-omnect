@@ -6,11 +6,12 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.32.1"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.32.2"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "11d78a88165f5e4b6099ffb97b3715595af9a883"
+SRCREV = "784f993cf3d716f89702e5b9994dfabe33900e6f"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
+
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -92,6 +93,8 @@ SRC_URI += " \
     crate://crates.io/displaydoc/0.2.5 \
     crate://crates.io/dotenvy/0.15.7 \
     crate://crates.io/downcast/0.11.0 \
+    crate://crates.io/dynosaur/0.2.0 \
+    crate://crates.io/dynosaur_derive/0.2.0 \
     crate://crates.io/either/1.15.0 \
     crate://crates.io/encoding_rs/0.8.35 \
     crate://crates.io/endi/1.1.0 \
@@ -101,7 +104,7 @@ SRC_URI += " \
     crate://crates.io/env_logger/0.11.7 \
     crate://crates.io/equivalent/1.0.2 \
     crate://crates.io/errno/0.3.10 \
-    crate://crates.io/event-listener-strategy/0.5.3 \
+    crate://crates.io/event-listener-strategy/0.5.4 \
     crate://crates.io/event-listener/5.4.0 \
     crate://crates.io/fastrand/2.3.0 \
     crate://crates.io/file-id/0.2.2 \
@@ -157,11 +160,11 @@ SRC_URI += " \
     crate://crates.io/icu_collections/1.5.0 \
     crate://crates.io/icu_locid/1.5.0 \
     crate://crates.io/icu_locid_transform/1.5.0 \
-    crate://crates.io/icu_locid_transform_data/1.5.0 \
+    crate://crates.io/icu_locid_transform_data/1.5.1 \
     crate://crates.io/icu_normalizer/1.5.0 \
-    crate://crates.io/icu_normalizer_data/1.5.0 \
+    crate://crates.io/icu_normalizer_data/1.5.1 \
     crate://crates.io/icu_properties/1.5.1 \
-    crate://crates.io/icu_properties_data/1.5.0 \
+    crate://crates.io/icu_properties_data/1.5.1 \
     crate://crates.io/icu_provider/1.5.0 \
     crate://crates.io/icu_provider_macros/1.5.0 \
     crate://crates.io/ident_case/1.0.1 \
@@ -222,7 +225,7 @@ SRC_URI += " \
     crate://crates.io/num/0.4.3 \
     crate://crates.io/object/0.36.7 \
     crate://crates.io/oid-registry/0.8.1 \
-    crate://crates.io/once_cell/1.21.1 \
+    crate://crates.io/once_cell/1.21.2 \
     crate://crates.io/openssl-macros/0.1.1 \
     crate://crates.io/openssl-probe/0.1.6 \
     crate://crates.io/openssl-sys/0.9.106 \
@@ -328,6 +331,7 @@ SRC_URI += " \
     crate://crates.io/tracing-attributes/0.1.28 \
     crate://crates.io/tracing-core/0.1.33 \
     crate://crates.io/tracing/0.1.41 \
+    crate://crates.io/trait-variant/0.1.2 \
     crate://crates.io/try-lock/0.2.5 \
     crate://crates.io/typenum/1.18.0 \
     crate://crates.io/uds_windows/1.1.0 \
