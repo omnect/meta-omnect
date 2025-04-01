@@ -15,12 +15,12 @@
 ## Omnect Feature Support
 
 | Feature | Availability |
-| ------------------------------------ | :-------------: |
-| **Device Provisioning via**          | x509 or TPM     |
-| **OTA Update**                       | yes             |
-| **Factory Reset**                    | yes             |
-| **Wifi Commissioning via Bluetooth** | no              |
-| **LTE Support** [^1]                 | optional        |
-| **pstore** aka reboot reasons        | planned         |
+| ------------------------------------ | :---------------------: |
+| **Device Provisioning via**          | x509 or TPM             |
+| **OTA Update**                       | yes                     |
+| **Factory Reset**                    | yes                     |
+| **Wifi Commissioning via Bluetooth** | no                      |
+| **LTE Support** [^1]                 | optional (experimental) |
+| **pstore** aka reboot reasons        | planned                 |
 
 [^1]: in [LTE documentation](LTE.md) you can find more details concerning configuration
