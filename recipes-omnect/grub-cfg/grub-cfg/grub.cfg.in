@@ -9,16 +9,16 @@ fi
 
 if [ "x${omnect_validate_update}" = "x" ]; then
   if [ "x${omnect_validate_update_part}" = "x" ]; then
-    echo 'Normal boot - booting from partition ${omnect_os_bootpart}'
+    echo "Normal boot - booting from partition ${omnect_os_bootpart}"
   else
-    echo 'Update in progress - booting from partition ${omnect_validate_update_part}'
+    echo "Update in progress - booting from partition ${omnect_validate_update_part}"
     set omnect_validate_update=1
     save_env omnect_validate_update
     set omnect_os_bootpart=${omnect_validate_update_part}
     # no save_env omnect_os_bootpart here!
   fi
 else
-  echo 'Update validation failed - booting from partition ${omnect_os_bootpart}'
+  echo "Update validation failed - booting from partition ${omnect_os_bootpart}"
   set omnect_validate_update_part=
   save_env omnect_validate_update_part
   set omnect_validate_update=
