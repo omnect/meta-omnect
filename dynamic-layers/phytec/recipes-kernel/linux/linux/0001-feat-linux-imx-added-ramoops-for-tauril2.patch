@@ -1,7 +1,7 @@
 diff --git a/arch/arm64/boot/dts/freescale/imx8mm-phygate-tauri.dts b/arch/arm64/boot/dts/freescale/imx8mm-phygate-tauri.dts
 index 773e0a4db..9402efe75 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-phygate-tauri.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-phygate-tauri.dts
+--- a/arch/arm64/boot/dts/freescale/imx8mm-phygate-tauri-l.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mm-phygate-tauri-l.dts
 @@ -28,6 +28,18 @@ can_osc_40m: can-clock@0 {
  		};
  	};
