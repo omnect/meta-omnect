@@ -38,5 +38,9 @@ repos:
     layers:
       meta-arm:
       meta-arm-toolchain:
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/meta-arm_layerdir.patch"
 env:
   ACCEPT_FSL_EULA: "0"

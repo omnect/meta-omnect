@@ -66,6 +66,7 @@ BBMASK:append = " \
 
 # fix search path
 FILESEXTRAPATHS:prepend:pn-imx-boot-phytec := "${LAYERDIR_freescale-layer}/recipes-bsp/imx-mkimage/files:"
+FILESEXTRAPATHS:prepend:pn-optee-client := "${LAYERDIR_arm}/recipes-security/optee/optee-client:"
 
 # configure hardware watchdog
 # the maximum watchdog deadline depends on the hardware capabilities
@@ -96,4 +97,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-im
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-bootloader-versioned - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "e6e141cbb6d458cc423e65266e2120ca8b0e9eec0c764c6811473f89f686eae7"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "b3aaae1bc4fb4c2080704f911c1f9c32abe23b81eace95dc69f628acbbee5c00"
