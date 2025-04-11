@@ -1,0 +1,11 @@
+diff --git a/meta-arm/conf/layer.conf b/meta-arm/conf/layer.conf
+index 9e9c9dbd..f419c34d 100644
+--- a/meta-arm/conf/layer.conf
++++ b/meta-arm/conf/layer.conf
+@@ -21,3 +21,6 @@ HOSTTOOLS_NONFATAL += "telnet"
+ addpylib ${LAYERDIR}/lib oeqa
+ 
+ WARN_QA:append:layer-meta-arm = " patch-status"
++
++LAYERDIR_arm = "${LAYERDIR}"
++

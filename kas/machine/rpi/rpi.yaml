@@ -7,7 +7,7 @@ repos:
   ext/meta-raspberrypi:
     url: "https://github.com/agherzan/meta-raspberrypi.git"
     branch: "scarthgap"
-    commit: "e124d8284c8d9d8cda99a9fde3c12f550ca1d6c5"
+    commit: "c153c694bd7a08de474470d7c1c7fd550117b162"
     patches:
       p001:
         repo: "meta-omnect"
