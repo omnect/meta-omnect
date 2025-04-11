@@ -1,5 +1,5 @@
 RPI_EXTRA_CONFIG += "\n#Enable memory reservation for pstore/ramoops\n\
-dtoverlay=ramoops-pi4-overlay\n\
+dtoverlay=ramoops-pi4\n\
 dtparam=record-size=0x1000\n\
 dtparam=console-size=0x10000\n\
 dtparam=pmsg-size=0x4000\n\
