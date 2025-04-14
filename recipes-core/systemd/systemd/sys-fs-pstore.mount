@@ -1,0 +1,13 @@
+[Unit]
+Description=pstore filesystem
+Before=sysinit.target
+ConditionPathExists=/sys/fs/pstore
+
+[Mount]
+What=pstore
+Where=/sys/fs/pstore
+Type=pstore
+Options=rw,nosuid,nodev,noexec,relatime
+
+[Install]
+WantedBy=sysinit.target
