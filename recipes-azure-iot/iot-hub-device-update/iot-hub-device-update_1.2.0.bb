@@ -4,7 +4,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
 SRC_URI = " \
-  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.1.0;nobranch=1 \
+  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.2.0;nobranch=1 \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
   file://du-config.json \
@@ -12,7 +12,7 @@ SRC_URI = " \
   file://iot-hub-device-update.tmpfilesd \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
-  file://omnect_1.1.0.patch \
+  file://omnect_1.2.0.patch \
 "
 SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
 SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh"

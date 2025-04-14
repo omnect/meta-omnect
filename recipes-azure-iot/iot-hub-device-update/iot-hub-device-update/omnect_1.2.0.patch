@@ -1,0 +1,1395 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 03bbceb6..3913f3b0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -231,7 +231,7 @@ set (
+     ADUC_STEP_HANDLER_NAME_TO_DIRECOTRY_MAP
+     "microsoft/apt,apt_handler" "microsoft/script,script_handler"
+     "microsoft/simulator,simulator_handler" "microsoft/swupdate_v2,swupdate_handler_v2"
+-    "microsoft/wim,wim_handler")
++    "microsoft/wim,wim_handler" "omnect/swupdate_consent_v1,swupdate_consent_handler")
+ 
+ if (WIN32)
+     set (
+@@ -416,6 +416,11 @@ set (
+     "syslog"
+     CACHE STRING "The syslog group.")
+ 
++set (
++    ADUC_STORAGE_PATH
++    "/"
++    CACHE STRING "Path to mounted storage which will be considered to compute total storage")
++
+ set (
+     ADUC_IOT_HUB_PROTOCOL
+     "IotHub_Protocol_from_Config"
+diff --git a/scripts/error_code_generator_defs/result_codes.json b/scripts/error_code_generator_defs/result_codes.json
+index 6fc707cf..11d4e4b4 100644
+--- a/scripts/error_code_generator_defs/result_codes.json
++++ b/scripts/error_code_generator_defs/result_codes.json
+@@ -369,6 +369,10 @@
+                             "name": "ADUC_ERC_SWUPDATE_HANDLER_APPLY_FAILED_TO_GET_CONFIG_INSTANCE",
+                             "value": 769
+                         },
++                        {
++                            "name": "ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION",
++                            "value": 800
++                        },
+                         {
+                             "name": "ADUC_ERC_SWUPDATE_HANDLER_CANCEL_FAILURE",
+                             "value": 1024
+@@ -1461,4 +1465,4 @@
+             "name": "ADUC_FACILITY_UNUSED_F"
+         }
+     ]
+-}
++}
+\ No newline at end of file
+diff --git a/src/adu-shell/src/common_tasks.cpp b/src/adu-shell/src/common_tasks.cpp
+index b427a930..e7dc9289 100644
+--- a/src/adu-shell/src/common_tasks.cpp
++++ b/src/adu-shell/src/common_tasks.cpp
+@@ -5,6 +5,8 @@
+  * @copyright Copyright (c) Microsoft Corporation.
+  * Licensed under the MIT License.
+  */
++#include <stdlib.h> // for getenv
++
+ #include "common_tasks.hpp"
+ #include "aduc/process_utils.hpp"
+ 
+@@ -37,6 +39,30 @@ ADUShellTaskResult Reboot(const ADUShell_LaunchArguments& /*launchArgs*/)
+     return taskResult;
+ }
+ 
++#define OMNECT_DEFAULT_LOG_REBOOT_REASON_SCRIPT "/usr/sbin/omnect_reboot_reason.sh"
++
++ADUShellTaskResult DoRebootReason(const char* reason)
++{
++    ADUShellTaskResult taskResult;
++    std::vector<std::string> args{ "log", reason };
++    std::string output;
++    const char* script;
++
++    Log_Info("Launching child process to record reboot reason (\"%s\")", reason);
++
++    script = getenv("OMNECT_LOG_REBOOT_REASON_SCRIPT");
++    if (nullptr == script)
++    {
++        script = OMNECT_DEFAULT_LOG_REBOOT_REASON_SCRIPT;
++    }
++    taskResult.SetExitStatus(ADUC_LaunchChildProcess(script, args, output));
++    if (!output.empty())
++    {
++        Log_Info(output.c_str());
++    }
++    return taskResult;
++}
++
+ /**
+  * @brief Runs appropriate command based on an action and other arguments in launchArgs.
+  *
+@@ -66,6 +92,16 @@ ADUShellTaskResult DoCommonTask(const ADUShell_LaunchArguments& launchArgs)
+         taskResult.SetExitStatus(ADUSHELL_EXIT_UNSUPPORTED);
+     }
+ 
++    // we're ready now to perform the reboot, so log reboot reason right now
++    try
++    {
++        DoRebootReason("swupdate");
++    }
++    catch (const std::exception& /* ex */)
++    {
++        Log_Error("Failed to log reboot reason upon action '%s'",
++                  launchArgs.updateAction);
++    }
+     try
+     {
+         taskResult = taskProc(launchArgs);
+diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
+index b1b6ca27..5fda0bda 100644
+--- a/src/adu_workflow/src/agent_workflow.c
++++ b/src/adu_workflow/src/agent_workflow.c
+@@ -35,6 +35,10 @@
+ 
+ #include <pthread.h>
+ 
++#include <sys/inotify.h>
++#define INOTIFY_EVENT_SIZE      ( sizeof (struct inotify_event) )
++#define INOTIFY_EVENT_BUF_LEN   ( 1024 * ( INOTIFY_EVENT_SIZE + 16 ) )
++
+ // fwd decl
+ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_Result result, bool isAsync);
+ 
+@@ -349,6 +353,45 @@ void ADUC_Workflow_DoWork(ADUC_WorkflowData* workflowData)
+ 
+ void ADUC_Workflow_HandleStartupWorkflowData(ADUC_WorkflowData* currentWorkflowData)
+ {
++    char buffer[INOTIFY_EVENT_BUF_LEN];
++    const char omnectValidateUpdateCompleteBarrier[FILENAME_MAX] = "/run/omnect-device-service/omnect_validate_update_complete_barrier\0";
++    if (access(omnectValidateUpdateCompleteBarrier, F_OK) == 0) {
++        Log_Info("Startup during update validation. Stalling workflow until \"%s\" gets deleted.", omnectValidateUpdateCompleteBarrier);
++
++        int fd = inotify_init();
++        if ( fd >= 0 ) {
++            int wd = inotify_add_watch(fd, omnectValidateUpdateCompleteBarrier, IN_DELETE_SELF);
++            if ( wd >= 0)
++            {
++                // blocking read until file gets deleted
++                ssize_t length = read( fd, buffer, INOTIFY_EVENT_BUF_LEN );
++                if (length >= 0)
++                {
++                    Log_Info("Update validation succeeded, continuing workflow.");
++                }
++                else
++                {
++                    Log_Error("Read inotify event failed");
++                    exit(1);
++                }
++
++                inotify_rm_watch(fd,wd);
++            }
++            else
++            {
++                Log_Error("inotify_add_watch() failed");
++                exit(1);
++            }
++
++            close(fd);
++        }
++        else
++        {
++            Log_Error("inotify_init() failed");
++            exit(1);
++        }
++    }
++
+     if (currentWorkflowData == NULL)
+     {
+         Log_Info("No update content. Ignoring.");
+@@ -550,11 +593,17 @@ void ADUC_Workflow_HandlePropertyUpdate(
+ 
+                     Log_Debug("deferral not needed. Processing '%s' now", workflow_peek_id(nextWorkflow));
+ 
+-                    workflow_transfer_data(
+-                        currentWorkflowData->WorkflowHandle /* wfTarget */, nextWorkflow /* wfSource */);
++                    // We don't use reuse currentWorkflowData.
++                    // currentWorkflow is current resp. **old** workflow before cloud updated with nextWorkflow (**current** incoming).
++                    // workflow_transfer_data only works if version to update is equal in currentWorkflow and nextWorkflow.
++                    // Thus we disable copying transfer data between workflows and don't use currentWorkflow (**old**).
++                    // Thus we use nextWorkflow (**current** incoming).
+ 
+-                    ADUC_Workflow_HandleUpdateAction(currentWorkflowData);
+-                    goto done;
++                    // workflow_transfer_data(
++                    //     currentWorkflowData->WorkflowHandle /* wfTarget */, nextWorkflow /* wfSource */);
++
++                    // ADUC_Workflow_HandleUpdateAction(currentWorkflowData);
++                    // goto done;
+                 }
+ 
+                 // Fall through to handle new workflow
+@@ -983,7 +1032,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
+                     // Reset workflow state to process deployment and transfer
+                     // the deferred workflow to current.
+                     workflow_update_for_replacement(workflowData->WorkflowHandle);
+-
+                 }
+                 else
+                 {
+diff --git a/src/agent/command_helper/src/command_helper.c b/src/agent/command_helper/src/command_helper.c
+index 8ac861db..2b0024cc 100644
+--- a/src/agent/command_helper/src/command_helper.c
++++ b/src/agent/command_helper/src/command_helper.c
+@@ -280,7 +280,7 @@ static void* ADUC_CommandListenerThread(void* unused)
+                     char* safeCommandLine = (char*)malloc(safeReadSize + 1);
+                     if (safeCommandLine != NULL)
+                     {
+-                        memcpy(safeCommandLine, commandLine, readSize);
++                        memcpy(safeCommandLine, commandLine, (size_t)readSize);
+                         safeCommandLine[readSize] = '\0';
+ 
+                         if (strncmp(safeCommandLine, g_commands[i]->commandText, safeReadSize) == 0)
+diff --git a/src/agent/src/main.c b/src/agent/src/main.c
+index e72c42d5..0a2ac434 100644
+--- a/src/agent/src/main.c
++++ b/src/agent/src/main.c
+@@ -812,7 +812,7 @@ done:
+  */
+ void ShutdownAgent()
+ {
+-    Log_Warn("Agent is shutting down.");
++    Log_Info("Agent is shutting down.");
+     ADUC_D2C_Messaging_Uninit();
+ #ifdef ADUC_COMMAND_HELPER_H
+     UninitializeCommandListenerThread();
+diff --git a/src/communication_managers/iothub_communication_manager/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
+index 9707b069..5f47727b 100644
+--- a/src/communication_managers/iothub_communication_manager/CMakeLists.txt
++++ b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
+@@ -29,7 +29,8 @@ target_link_libraries (
+             aduc::eis_utils
+             aduc::logging
+             aduc::retry_utils
+-            aduc::url_utils)
++            aduc::url_utils
++            systemd)
+ 
+ target_link_libraries (${target_name} PRIVATE libaducpal)
+ 
+diff --git a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
+index 6397fea1..c7c1bae2 100644
+--- a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
++++ b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
+@@ -39,6 +39,8 @@
+ #include <stdlib.h> // strtol
+ #include <sys/stat.h>
+ 
++#include <systemd/sd-daemon.h>
++
+ /**
+  * @brief A pointer to ADUC_ClientHandle data. This must be initialize by the component that creates the IoT Hub connection.
+  */
+@@ -59,6 +61,11 @@ static IOTHUB_CLIENT_DEVICE_TWIN_CALLBACK g_device_twin_callback = NULL;
+  */
+ static bool g_iothub_client_initialized = false;
+ 
++/**
++ * @brief A boolean indicates whether the IoT Hub client was once authenticated to iothub.
++ */
++static bool g_iothub_client_authenticated_once = false;
++
+ /**
+  * @brief An additional data context used the caller.
+  */
+@@ -215,6 +222,11 @@ void IoTHub_CommunicationManager_ConnectionStatus_Callback(
+     case IOTHUB_CLIENT_CONNECTION_AUTHENTICATED:
+         g_last_authenticated_time = now_time;
+         g_authentication_retries = 0;
++        if (false == g_iothub_client_authenticated_once)
++        {
++            sd_notify(0, "READY=1");
++            g_iothub_client_authenticated_once = true;
++        }
+         break;
+     case IOTHUB_CLIENT_CONNECTION_UNAUTHENTICATED:
+         if (g_last_authenticated_time >= g_first_unauthenticated_time)
+diff --git a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
+index 85008278..71b9ceca 100644
+--- a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
++++ b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
+@@ -16,7 +16,7 @@ find_package (Parson REQUIRED)
+ target_link_aziotsharedutil (${target_name} PRIVATE)
+ 
+ if (NOT WIN32)
+-    target_link_libraries (${target_name} PRIVATE diagnostic_utils::file_upload_utility)
++#     target_link_libraries (${target_name} PRIVATE diagnostic_utils::file_upload_utility)
+ endif ()
+ 
+ target_link_libraries (
+diff --git a/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c b/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
+index 5c232a13..8751a294 100644
+--- a/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
++++ b/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
+@@ -11,7 +11,7 @@
+ #include <aduc/logging.h>
+ #include <aduc/string_c_utils.h>
+ 
+-#if defined(_WIN32)
++// #if defined(_WIN32)
+ typedef struct tagBlobStorageInfo
+ {
+     STRING_HANDLE virtualDirectoryPath; //!< Virtual hierarchy for the blobs
+@@ -27,9 +27,9 @@ static bool FileUploadUtility_UploadFilesToContainer(
+ 
+     return false;
+ }
+-#else
+-#    include <file_upload_utility.h>
+-#endif
++// #else
++// #    include <file_upload_utility.h>
++// #endif
+ 
+ #include <diagnostics_config_utils.h>
+ #include <diagnostics_devicename.h>
+diff --git a/src/diagnostics_component/utils/CMakeLists.txt b/src/diagnostics_component/utils/CMakeLists.txt
+index 2952f344..811a22f1 100644
+--- a/src/diagnostics_component/utils/CMakeLists.txt
++++ b/src/diagnostics_component/utils/CMakeLists.txt
+@@ -2,5 +2,5 @@ cmake_minimum_required (VERSION 3.5)
+ 
+ add_subdirectory (config_utils)
+ add_subdirectory (file_info_utils)
+-add_subdirectory (file_upload_utils)
++# add_subdirectory (file_upload_utils)
+ add_subdirectory (operation_id_utils)
+diff --git a/src/extensions/CMakeLists.txt b/src/extensions/CMakeLists.txt
+index e7bcad3c..65e92251 100644
+--- a/src/extensions/CMakeLists.txt
++++ b/src/extensions/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ add_subdirectory (content_downloaders)
+ if (NOT WIN32)
+-    add_subdirectory (component_enumerators/examples/contoso_component_enumerator)
++#     add_subdirectory (component_enumerators/examples/contoso_component_enumerator)
+ endif ()
+ add_subdirectory (download_handlers)
+ add_subdirectory (extension_manager)
+diff --git a/src/extensions/content_downloaders/CMakeLists.txt b/src/extensions/content_downloaders/CMakeLists.txt
+index d9978f00..69b3c4ab 100644
+--- a/src/extensions/content_downloaders/CMakeLists.txt
++++ b/src/extensions/content_downloaders/CMakeLists.txt
+@@ -1,4 +1,4 @@
+ cmake_minimum_required (VERSION 3.5)
+ 
+-add_subdirectory (curl_downloader)
++# add_subdirectory (curl_downloader)
+ add_subdirectory (deliveryoptimization_downloader)
+diff --git a/src/extensions/download_handlers/CMakeLists.txt b/src/extensions/download_handlers/CMakeLists.txt
+index 850c103f..bc0bb06f 100644
+--- a/src/extensions/download_handlers/CMakeLists.txt
++++ b/src/extensions/download_handlers/CMakeLists.txt
+@@ -1,3 +1,3 @@
+ add_subdirectory (download_handler_factory)
+ add_subdirectory (download_handler_plugin)
+-add_subdirectory (plugin_examples)
++# add_subdirectory (plugin_examples)
+diff --git a/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
+new file mode 100644
+index 00000000..3f9afeff
+--- /dev/null
++++ b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
+@@ -0,0 +1,41 @@
++cmake_minimum_required (VERSION 3.5)
++
++set (target_name omnect_swupdate_consent_1)
++
++set (SOURCE_ALL src/swupdate_consent_handler.cpp)
++
++
++add_library (${target_name} MODULE)
++
++add_library (aduc::${target_name} ALIAS ${target_name})
++
++find_package (Parson REQUIRED)
++
++target_sources (${target_name} PRIVATE src/swupdate_consent_handler.cpp)
++
++target_include_directories (
++    ${target_name}
++    PUBLIC inc
++    PRIVATE ${PROJECT_SOURCE_DIR}/inc
++            ${ADUC_TYPES_INCLUDES}
++            ${ADUC_EXPORT_INCLUDES}
++            ${ADU_SHELL_INCLUDES}
++            ${ADU_EXTENSION_INCLUDES})
++
++find_package (azure_c_shared_utility REQUIRED)
++
++target_link_libraries (
++    ${target_name}
++    PRIVATE aduc::contract_utils
++            aduc::logging
++            aduc::agent_workflow
++            aduc::workflow_utils
++            aduc::string_utils
++            Parson::parson
++            )
++
++target_compile_definitions (
++    ${target_name}
++    PRIVATE ADUC_VERSION_FILE="${ADUC_VERSION_FILE}")
++
++install (TARGETS ${target_name} LIBRARY DESTINATION ${ADUC_EXTENSIONS_INSTALL_FOLDER})
+diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json b/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
+new file mode 100644
+index 00000000..8e66c099
+--- /dev/null
++++ b/src/extensions/step_handlers/swupdate_consent_handler/files/consent_conf.json
+@@ -0,0 +1,6 @@
++{
++  "general_consent": [
++    "swupdate"
++  ],
++  "reset_consent_on_fail": false
++}
+\ No newline at end of file
+diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json b/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
+new file mode 100644
+index 00000000..698c790c
+--- /dev/null
++++ b/src/extensions/step_handlers/swupdate_consent_handler/files/history_consent.json
+@@ -0,0 +1,6 @@
++{
++  "user_consent_history": {
++      "swupdate": [
++      ]
++  }
++}
+\ No newline at end of file
+diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json b/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json
+new file mode 100644
+index 00000000..9f35e525
+--- /dev/null
++++ b/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json
+@@ -0,0 +1,4 @@
++{
++  "user_consent_request": [
++  ]
++}
+\ No newline at end of file
+diff --git a/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json b/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json
+new file mode 100644
+index 00000000..0e0dcd23
+--- /dev/null
++++ b/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json
+@@ -0,0 +1,3 @@
++{
++
++}
+\ No newline at end of file
+diff --git a/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp b/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
+new file mode 100644
+index 00000000..8ea0cf2a
+--- /dev/null
++++ b/src/extensions/step_handlers/swupdate_consent_handler/inc/aduc/swupdate_consent_handler.hpp
+@@ -0,0 +1,73 @@
++/**
++ * @file swupdate_consent_handler.hpp
++ * @brief Defines SWUpdateConsentHandlerImpl.
++ *
++ * @copyright Copyright (c) conplement AG.
++ * Licensed under either of Apache-2.0 or MIT license at your option.
++ */
++#ifndef ADUC_SWUPDATECONSENT_HANDLER_HPP
++#define ADUC_SWUPDATECONSENT_HANDLER_HPP
++
++#include <string>
++
++#include "aduc/content_handler.hpp"
++#include "aduc/logging.h"
++#include <parson.h>
++
++
++EXTERN_C_BEGIN
++
++/**
++ * @brief Instantiates an Update Content Handler swupdateconsent.
++ * @return A pointer to an instantiated Update Content Handler object.
++ */
++ContentHandler* CreateUpdateContentHandlerExtension(ADUC_LOG_SEVERITY logLevel);
++
++EXTERN_C_END
++
++/**
++ * @class SWUpdateConsentHandlerImpl
++ * @brief The swupdateconsent handler implementation.
++ */
++class SWUpdateConsentHandlerImpl : public ContentHandler
++{
++public:
++    static ContentHandler* CreateContentHandler();
++
++    // Delete copy ctor, copy assignment, move ctor and move assignment operators.
++    SWUpdateConsentHandlerImpl(const SWUpdateConsentHandlerImpl&) = delete;
++    SWUpdateConsentHandlerImpl& operator=(const SWUpdateConsentHandlerImpl&) = delete;
++    SWUpdateConsentHandlerImpl(SWUpdateConsentHandlerImpl&&) = delete;
++    SWUpdateConsentHandlerImpl& operator=(SWUpdateConsentHandlerImpl&&) = delete;
++
++    ~SWUpdateConsentHandlerImpl() override;
++
++    ADUC_Result Download(const tagADUC_WorkflowData* workflowData) override;
++    ADUC_Result Backup(const tagADUC_WorkflowData* workflowData) override;
++    ADUC_Result Install(const tagADUC_WorkflowData* workflowData) override;
++    ADUC_Result Apply(const tagADUC_WorkflowData* workflowData) override;
++    ADUC_Result Restore(const tagADUC_WorkflowData* workflowData) override;
++    ADUC_Result Cancel(const tagADUC_WorkflowData* workflowData) override;
++    ADUC_Result IsInstalled(const tagADUC_WorkflowData* workflowData) override;
++
++private:
++    const std::string generalConsent = "swupdate";
++
++    // Private constructor, must call CreateContentHandler factory method.
++    SWUpdateConsentHandlerImpl()
++    {
++    }
++    std::string ValueOrEmpty(const char* s);
++    std::string ReadValueFromFile(const std::string& filePath);
++    JSON_Object* ReadJsonDataFile(const std::string& filePath);
++    bool GetGeneralConsent(void);
++    ADUC_GeneralResult CleanUserConsentAgreed(void);
++    bool UserConsentAgreed(const std::string& version);
++    bool AppendArrayRecord(const JSON_Object* root, const char* arrayName, JSON_Value* record);
++    ADUC_GeneralResult UpdateConsentRequestJsonFile(const std::string& version);
++    ADUC_GeneralResult CleanConsentRequestJsonFile(void);
++    ADUC_GeneralResult UpdateConsentHistoryJsonFile(const std::string& version);
++    std::string GetVersion(const std::string& installedCriteria);
++};
++
++#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
+diff --git a/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
+new file mode 100644
+index 00000000..891e09b8
+--- /dev/null
++++ b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
+@@ -0,0 +1,599 @@
++/**
++ * @file swupdate_consent_handler.cpp
++ * @brief Implementation of ContentHandler API for update content swupdate_consent.
++ *
++ * @copyright Copyright (c) conplement AG.
++ * Licensed under either of Apache-2.0 or MIT license at your option.
++ */
++#include <fstream>
++
++#include "aduc/logging.h"
++#include "aduc/string_c_utils.h"
++#include "aduc/string_utils.hpp"
++#include "aduc/swupdate_consent_handler.hpp"
++#include "aduc/workflow_utils.h"
++#include <azure_c_shared_utility/threadapi.h> // ThreadAPI_Sleep
++#include <parson.h>
++#include <signal.h> // raise()
++
++#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/etc/omnect/consent/consent_conf.json"
++#define ADUC_SWUPDATE_CONSENT_USER_FILE "/etc/omnect/consent/swupdate/user_consent.json"
++#define ADUC_SWUPDATE_CONSENT_REQUEST_FILE "/etc/omnect/consent/request_consent.json"
++#define ADUC_SWUPDATE_CONSENT_HISTORY_FILE "/etc/omnect/consent/history_consent.json"
++
++EXTERN_C_BEGIN
++
++/////////////////////////////////////////////////////////////////////////////
++// BEGIN Shared Library Export Functions
++//
++// These are the function symbols that the device update agent will
++// lookup and call.
++//
++
++/**
++ * @brief Instantiates an SWUpdateConsent Update Content Handler
++ */
++ContentHandler* CreateUpdateContentHandlerExtension(ADUC_LOG_SEVERITY logLevel)
++{
++    ADUC_Logging_Init(logLevel, "swupdate_consent-handler");
++    Log_Info("Instantiating a SWUpdateConsent Update Content Handler");
++    try
++    {
++        return SWUpdateConsentHandlerImpl::CreateContentHandler();
++    }
++    catch (const std::exception& e)
++    {
++        const char* what = e.what();
++        Log_Error("Unhandled std exception: %s", what);
++    }
++    catch (...)
++    {
++        Log_Error("Unhandled exception");
++    }
++
++    return nullptr;
++}
++
++/**
++ * @brief Gets the extension contract info.
++ *
++ * @param[out] contractInfo The extension contract info.
++ * @return ADUC_Result The result.
++ */
++ADUC_Result GetContractInfo(ADUC_ExtensionContractInfo* contractInfo)
++{
++    contractInfo->majorVer = ADUC_V1_CONTRACT_MAJOR_VER;
++    contractInfo->minorVer = ADUC_V1_CONTRACT_MINOR_VER;
++    return ADUC_Result{ ADUC_GeneralResult_Success, 0 };
++}
++
++//
++// END Shared Library Export Functions
++/////////////////////////////////////////////////////////////////////////////
++
++EXTERN_C_END
++
++/**
++ * @brief Destructor for the SWUpdateConsent Handler Impl class.
++ */
++SWUpdateConsentHandlerImpl::~SWUpdateConsentHandlerImpl() // override
++{
++    ADUC_Logging_Uninit();
++}
++
++/**
++ * @brief Creates a new SWUpdateConsentHandlerImpl object and casts to a ContentHandler.
++ * Note that there is no way to create a SWUpdateConsentHandlerImpl directly.
++ *
++ * @return ContentHandler* SWUpdateConsentHandlerImpl object as a ContentHandler.
++ */
++ContentHandler* SWUpdateConsentHandlerImpl::CreateContentHandler()
++{
++    return new SWUpdateConsentHandlerImpl();
++}
++
++/**
++ * @brief Convert char pointer to string
++ *
++ * @param s Pointer to char
++ * @return std::string Returns the value from char pointer. Returns empty string if there was an error.
++ */
++std::string SWUpdateConsentHandlerImpl::ValueOrEmpty(const char* s)
++{
++    return s == nullptr ? std::string() : s;
++}
++
++/**
++ * @brief Reads a first line of a file, trims trailing whitespace, and returns as string.
++ *
++ * @param filePath Path to the file to read value from.
++ * @return std::string Returns the value from the file. Returns empty string if there was an error.
++ */
++std::string SWUpdateConsentHandlerImpl::ReadValueFromFile(const std::string& filePath)
++{
++    if (filePath.empty())
++    {
++        Log_Error("Empty file path.");
++        return "";
++    }
++
++    if ((filePath.length()) + 1 > PATH_MAX)
++    {
++        Log_Error("Path is too long.");
++        return "";
++    }
++
++    std::ifstream file(filePath);
++    if (!file.is_open())
++    {
++        Log_Error("File %s failed to open, error: %d", filePath.c_str(), errno);
++        return "";
++    }
++
++    std::string result;
++    std::getline(file, result);
++    if (file.bad())
++    {
++        Log_Error("Unable to read from file %s, error: %d", filePath.c_str(), errno);
++        return "";
++    }
++
++    // Trim whitespace
++    ADUC::StringUtils::Trim(result);
++    return result;
++}
++
++/**
++ * @brief Load data from given path.
++ *
++ * @param filePath Path to the file to read value from.
++ * @return JSON_Object A json object containing data.
++ *         Caller must free the wrapping JSON_Value* object to free the memory.
++ */
++JSON_Object* SWUpdateConsentHandlerImpl::ReadJsonDataFile(const std::string& filePath)
++{
++    JSON_Value* rootValue = json_parse_file(filePath.c_str());
++
++    if (nullptr == rootValue)
++    {
++        Log_Error("Cannot read file: %s", filePath);
++    }
++    return json_value_get_object(rootValue);
++}
++
++/**
++ * @brief Check general consent from configuration consent file.
++ *
++ * @return "true" in case general consent is agreed, otherwise "false" will be returned
++ */
++bool SWUpdateConsentHandlerImpl::GetGeneralConsent(void)
++{
++    bool status = false;
++    JSON_Object* data = ReadJsonDataFile(ADUC_SWUPDATE_CONSENT_CONF_FILE);
++
++    if (nullptr == data)
++    {
++        Log_Error("No ADUC_SWUPDATE_CONSENT_CONF_FILE data file provided, or missing json content");
++    }
++    else
++    {
++        JSON_Array* array = json_object_get_array(data, "general_consent");
++        if (nullptr == array)
++        {
++            Log_Error("general_consent not found in ADUC_SWUPDATE_CONSENT_CONF_FILE data file");
++        }
++        else
++        {
++            for (int i = 0; i < json_array_get_count(array); i++)
++            {
++                std::string generalConsentStatus = ValueOrEmpty(json_array_get_string(array, i));
++                Log_Info("parsing json array genenral_consent: %s \n", generalConsentStatus.c_str());
++
++                if (generalConsent == generalConsentStatus)
++                {
++                    Log_Info("genenral_consent found for swupdate\n");
++                    status = true;
++                    break;
++                }
++            }
++        }
++        json_value_free(json_object_get_wrapping_value(data));
++    }
++
++    return status;
++}
++
++/**
++ * @brief Verifys that consent has been granted
++ *
++ * @param version Version to compare with the user consent version
++ * @return "true" in case user consent is agreed, otherwise "false" will be returned
++ *
++ */
++bool SWUpdateConsentHandlerImpl::UserConsentAgreed(const std::string& version)
++{
++    bool status = false;
++    JSON_Object* data = ReadJsonDataFile(ADUC_SWUPDATE_CONSENT_USER_FILE);
++
++    if (nullptr == data)
++    {
++        Log_Error("No ADUC_SWUPDATE_CONSENT_USER_FILE data file provided, or missing json content");
++    }
++    else
++    {
++        std::string userConsent = ValueOrEmpty(json_object_get_string(data, "consent"));
++        if (userConsent == version)
++        {
++            status = true;
++        }
++        json_value_free(json_object_get_wrapping_value(data));
++    }
++    return status;
++}
++
++/**
++ * @brief Clean user consent agreed
++ *
++ * @return ADUC_GeneralResult
++ *
++ */
++ADUC_GeneralResult SWUpdateConsentHandlerImpl::CleanUserConsentAgreed(void)
++{
++    ADUC_GeneralResult result = ADUC_GeneralResult_Failure;
++    JSON_Value* rootValue = json_parse_file(ADUC_SWUPDATE_CONSENT_USER_FILE);
++    JSON_Object* data = json_value_get_object(rootValue);
++
++    Log_Info("clean user consent agreed");
++
++    if (nullptr == data)
++    {
++        Log_Error("No ADUC_SWUPDATE_CONSENT_USER_FILE data file provided, or missing json content");
++    }
++    else
++    {
++        // clean ADUC_SWUPDATE_CONSENT_USER_FILE only if consent available -> prevent file write operation
++        if (json_object_has_value(data, "consent") != 0)
++        {
++            Log_Info("clean ADUC_SWUPDATE_CONSENT_USER_FILE");
++            json_object_remove(data, "consent");
++            json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_USER_FILE);
++        }
++        result = ADUC_GeneralResult_Success;
++        json_value_free(rootValue);
++    }
++
++    return result;
++}
++
++/**
++ * @brief add records to an json array
++ *
++ * @param root  root of the parsed file
++ * @param arrayName  the value name can be hierarchical as a dot separated string.
++ * @param record  record to add
++ * @return "true" in case successfully, otherwise "false" will be returned
++ *
++ */
++bool SWUpdateConsentHandlerImpl::AppendArrayRecord(const JSON_Object* root, const char* arrayName, JSON_Value* record)
++{
++    bool result = false;
++    JSON_Array* array;
++
++    array = json_object_dotget_array(root, arrayName);
++
++    if (json_array_append_value(array, record) == JSONSuccess)
++    {
++        result = true;
++    }
++
++    return result;
++}
++
++/**
++ * @brief Request a user consent for given version
++ *
++ * @param version Version for request a user consent
++ * @return ADUC_GeneralResult
++ *
++ */
++ADUC_GeneralResult SWUpdateConsentHandlerImpl::UpdateConsentRequestJsonFile(const std::string& version)
++{
++    ADUC_GeneralResult result = ADUC_GeneralResult_Failure;
++    JSON_Value* rootValue = json_parse_file(ADUC_SWUPDATE_CONSENT_REQUEST_FILE);
++    JSON_Object* data = json_value_get_object(rootValue);
++
++    if (nullptr == data)
++    {
++        Log_Error("No ADUC_SWUPDATE_CONSENT_REQUEST_FILE data file provided");
++    }
++    else
++    {
++        JSON_Array* array = json_object_get_array(data, "user_consent_request");
++        if (nullptr == array)
++        {
++            Log_Error("No user_consent_request in ADUC_SWUPDATE_CONSENT_REQUEST_FILE data file provided");
++        }
++        else
++        {
++            JSON_Value* swupdateValue = json_value_init_object();
++            JSON_Object* swupdateObject = json_value_get_object(swupdateValue);
++            json_object_set_string(swupdateObject, "swupdate", version.c_str());
++            if (true == AppendArrayRecord(data, "user_consent_request", swupdateValue))
++            {
++                json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_REQUEST_FILE);
++                result = ADUC_GeneralResult_Success;
++            }
++            else
++            {
++                Log_Error("append to user_consent_request in ADUC_SWUPDATE_CONSENT_REQUEST_FILE not working");
++            }
++        }
++        json_value_free(rootValue);
++    }
++
++    return result;
++}
++
++/**
++ * @brief Clean request user consent
++ *
++ * @return ADUC_GeneralResult
++ *
++ */
++ADUC_GeneralResult SWUpdateConsentHandlerImpl::CleanConsentRequestJsonFile(void)
++{
++    ADUC_GeneralResult result = ADUC_GeneralResult_Failure;
++    JSON_Value* rootValue = json_parse_file(ADUC_SWUPDATE_CONSENT_REQUEST_FILE);
++    JSON_Object* data = json_value_get_object(rootValue);
++
++    Log_Info("clean consent request");
++
++    if (nullptr == data)
++    {
++        Log_Error("No ADUC_SWUPDATE_CONSENT_REQUEST_FILE data file provided");
++    }
++    else
++    {
++        JSON_Array* array = json_object_get_array(data, "user_consent_request");
++        if (nullptr == array)
++        {
++            Log_Error("No user_consent_request in ADUC_SWUPDATE_CONSENT_REQUEST_FILE data file provided");
++        }
++        else
++        {
++            // clean ADUC_SWUPDATE_CONSENT_REQUEST_FILE only if array is not empty -> prevent file write operation
++            if (json_array_get_count(array) != 0)
++            {
++                Log_Info("clean ADUC_SWUPDATE_CONSENT_REQUEST_FILE");
++                json_array_clear(array);
++                json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_REQUEST_FILE);
++            }
++            result = ADUC_GeneralResult_Success;
++        }
++        json_value_free(rootValue);
++    }
++
++    return result;
++}
++
++/**
++ * @brief store user consent version in history file
++ *
++ * @param version user consent version
++ * @return ADUC_GeneralResult
++ *
++ */
++ADUC_GeneralResult SWUpdateConsentHandlerImpl::UpdateConsentHistoryJsonFile(const std::string& version)
++{
++    ADUC_GeneralResult result = ADUC_GeneralResult_Failure;
++    JSON_Value* rootValue = json_parse_file(ADUC_SWUPDATE_CONSENT_HISTORY_FILE);
++    JSON_Object* data = json_value_get_object(rootValue);
++
++    if (nullptr == data)
++    {
++        Log_Error("No ADUC_SWUPDATE_CONSENT_HISTORY_FILE data file provided");
++    }
++    else
++    {
++        JSON_Object* data2 = json_object_get_object(data, "user_consent_history");
++        if (nullptr == data2)
++        {
++            Log_Error("No user_consent_agreed object in ADUC_SWUPDATE_CONSENT_HISTORY_FILE data file provided");
++        }
++        else
++        {
++            JSON_Array* array = json_object_get_array(data2, "swupdate");
++            if (nullptr == array)
++            {
++                Log_Error("No swupdate array in ADUC_SWUPDATE_CONSENT_HISTORY_FILE data file provided");
++            }
++            else
++            {
++                json_array_append_string(array, version.c_str());
++                json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_HISTORY_FILE);
++                result = ADUC_GeneralResult_Success;
++            }
++        }
++        json_value_free(rootValue);
++    }
++
++    return result;
++}
++
++/**
++ * @brief get version from installed criteria
++ *
++ * @param installedCriteria installed criteria info
++ * @return std::string Returns the version from given installed criteria. Returns empty string if there was an error.
++ *
++ */
++std::string SWUpdateConsentHandlerImpl::GetVersion(const std::string& installedCriteria)
++{
++    std::string version(strchr(installedCriteria.c_str(), ' '));
++
++    if (version.empty())
++    {
++        Log_Error("couldn't read version from installedCriteria");
++        return "";
++    }
++    else
++    {
++        Log_Info("read version \"%s\" from installedCriteria", version.c_str());
++        // Trim whitespace
++        ADUC::StringUtils::Trim(version);
++        return version;
++    }
++}
++
++/**
++ * @brief Implementation of download action.
++ * @return ADUC_Result return ADUC_Result_Download_Success.
++ */
++ADUC_Result SWUpdateConsentHandlerImpl::Download(const tagADUC_WorkflowData* workflowData)
++{
++    bool consent = false;
++    ADUC_WorkflowHandle workflowHandle = workflowData->WorkflowHandle;
++    char* installedCriteria_workflow = workflow_get_installed_criteria(workflowData->WorkflowHandle);
++    std::string installedCriteria = ValueOrEmpty(installedCriteria_workflow);
++    std::string version = GetVersion(installedCriteria);
++
++    Log_Info("swupdate waiting for user consent");
++
++    // cleanup request JSON file to prevent duplicate information in array due to e.g. device reboot
++    CleanConsentRequestJsonFile();
++
++    // log message already present in function, return value currently not needed to evaluate
++    UpdateConsentRequestJsonFile(version);
++
++    while (false == consent)
++    {
++        // check if general user consent agreed
++        if (false == GetGeneralConsent())
++        {
++            if (workflow_is_cancel_requested(workflowHandle))
++            {
++                // see issue: https://github.com/Azure/iot-hub-device-update/issues/511
++                // Workaround until we get a final fix from MS
++                Log_Info("Restarting ADU Agent due to cancel request!");
++                raise(SIGUSR1);
++            }
++
++            if (true == UserConsentAgreed(version))
++            {
++                // log message already present in function, return value currently not needed to evaluate
++                UpdateConsentHistoryJsonFile(version);
++                consent = true;
++            }
++        }
++        else
++            consent = true;
++
++        // 1s timeout
++        ThreadAPI_Sleep(1000);
++    }
++
++    CleanConsentRequestJsonFile();
++    Log_Info("swupdate user consent succeeded");
++
++    workflow_free_string(installedCriteria_workflow);
++    return ADUC_Result{ ADUC_Result_Download_Success };
++}
++
++/**
++ * @brief Implementation of install
++ * @return ADUC_Result return ADUC_Result_Install_Success.
++ */
++ADUC_Result SWUpdateConsentHandlerImpl::Install(const tagADUC_WorkflowData* workflowData)
++{
++    Log_Info("SWUpdate consent doesn't require a specific operation to install. (no-op) ");
++    UNREFERENCED_PARAMETER(workflowData);
++    return ADUC_Result{ ADUC_Result_Install_Success };
++}
++
++/**
++ * @brief Implementation of apply.
++ * @return ADUC_Result return ADUC_Result_Apply_Success.
++ */
++ADUC_Result SWUpdateConsentHandlerImpl::Apply(const tagADUC_WorkflowData* workflowData)
++{
++    Log_Info("SWUpdate consent doesn't require a specific operation to apply. (no-op) ");
++    UNREFERENCED_PARAMETER(workflowData);
++    return ADUC_Result{ ADUC_Result_Apply_Success };
++}
++
++/**
++ * @brief Implementation of cancel
++ * @return ADUC_Result return ADUC_Result_Cancel_Success.
++ */
++ADUC_Result SWUpdateConsentHandlerImpl::Cancel(const tagADUC_WorkflowData* workflowData)
++{
++    Log_Info("SWUpdate consent doesn't require a specific operation to cancel. (no-op) ");
++    UNREFERENCED_PARAMETER(workflowData);
++    return ADUC_Result{ ADUC_Result_Cancel_Success };
++}
++
++/**
++ * @brief Implementation of IsInstalled check.
++ * @return ADUC_Result The result based on evaluating the installed criteria an GeneralConsent.
++ */
++ADUC_Result SWUpdateConsentHandlerImpl::IsInstalled(const tagADUC_WorkflowData* workflowData)
++{
++    ADUC_Result result = { ADUC_Result_IsInstalled_NotInstalled };
++    char* installedCriteria_workflow = workflow_get_installed_criteria(workflowData->WorkflowHandle);
++    std::string installedCriteria = ValueOrEmpty(installedCriteria_workflow);
++    std::string version = ReadValueFromFile(ADUC_VERSION_FILE);
++
++    if (true == GetGeneralConsent())
++    {
++        Log_Info("consent for swupdate is available in configuration file");
++        CleanUserConsentAgreed();
++        CleanConsentRequestJsonFile();
++        result = { ADUC_Result_IsInstalled_Installed };
++    }
++    else if (version == installedCriteria)
++    {
++        Log_Info("swupdate consent for Installed criteria %s was installed", installedCriteria.c_str());
++        CleanConsentRequestJsonFile();
++        result = { ADUC_Result_IsInstalled_Installed };
++    }
++    else
++    {
++        Log_Info(
++            "swupdate consent Installed criteria %s was not installed, the current criteria is %s",
++            installedCriteria.c_str(),
++            version.c_str());
++    }
++    workflow_free_string(installedCriteria_workflow);
++    return result;
++}
++
++/**
++ * @brief Backup implementation.
++ * Calls into the swupdate wrapper script to perform backup.
++ * For swupdate, no operation is required.
++ *
++ * @return ADUC_Result The result of the backup.
++ * It will always return ADUC_Result_Backup_Success.
++ */
++ADUC_Result SWUpdateConsentHandlerImpl::Backup(const tagADUC_WorkflowData* workflowData)
++{
++    UNREFERENCED_PARAMETER(workflowData);
++    ADUC_Result result = { ADUC_Result_Backup_Success };
++    Log_Info("SWUpdate consent doesn't require a specific operation to backup. (no-op) ");
++    return result;
++}
++
++/**
++ * @brief Restore implementation.
++ * Calls into the swupdate wrapper script to perform restore.
++ * Will flip bootloader flag to boot into the previous partition for A/B update.
++ *
++ * @return ADUC_Result The result of the restore.
++ */
++ADUC_Result SWUpdateConsentHandlerImpl::Restore(const tagADUC_WorkflowData* workflowData)
++{
++    Log_Info("SWUpdate consent doesn't require a specific operation to restore. (no-op) ");
++    UNREFERENCED_PARAMETER(workflowData);
++    ADUC_Result result = { ADUC_Result_Restore_Success };
++    return result;
++}
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp b/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp
+index 3c8b2157..26843f49 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp
++++ b/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp
+@@ -82,6 +82,11 @@ private:
+      * @returns a value of ADUC_Result
+      */
+     ADUC_Result CancelApply(const tagADUC_WorkflowData* workflowData);
++    /**
++    * @brief Clean user consent agreed
++    * @return a value of ADUC_GeneralResult
++    */
++    ADUC_GeneralResult CleanUserConsentAgreed(void);
+ 
+ protected:
+     //!< Protected constructor, must call CreateContentHandler factory method or from derived simulator class
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
+index 5a5b3842..c72de56a 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
++++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
+@@ -38,6 +38,9 @@
+ #define HANDLER_PROPERTIES_API_VERSION "apiVersion"
+ #define HANDLER_ARG_ACTION "--action"
+ 
++#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/etc/omnect/consent/consent_conf.json"
++#define ADUC_SWUPDATE_CONSENT_USER_FILE "/etc/omnect/consent/swupdate/user_consent.json"
++
+ namespace adushconst = Adu::Shell::Const;
+ 
+ struct JSONValueDeleter
+@@ -58,6 +61,59 @@ SWUpdateHandlerImpl::~SWUpdateHandlerImpl() // override
+     ADUC_Logging_Uninit();
+ }
+ 
++
++/**
++ * @brief Clean user consent agreed in case reset_consent_on_fail is set to true
++ *
++ * @return ADUC_GeneralResult
++ *
++ */
++ADUC_GeneralResult SWUpdateHandlerImpl::CleanUserConsentAgreed(void)
++{
++    ADUC_GeneralResult result = ADUC_GeneralResult_Failure;
++    JSON_Value* rootValue = json_parse_file(ADUC_SWUPDATE_CONSENT_USER_FILE);
++    JSON_Object* data = json_value_get_object(rootValue);
++
++    Log_Info("clean user consent agreed");
++
++    if (nullptr == data)
++    {
++        Log_Error("No ADUC_SWUPDATE_CONSENT_USER_FILE data file provided, or missing json content");
++    }
++    else
++    {
++        // clean ADUC_SWUPDATE_CONSENT_USER_FILE only if consent available -> prevent file write operation
++        if (json_object_has_value(data, "consent") != 0)
++        {
++            // check reset_consent_on_fail configuration
++            JSON_Value* rootValueConsentConf = json_parse_file(ADUC_SWUPDATE_CONSENT_CONF_FILE);
++            JSON_Object* dataConsentConf = json_value_get_object(rootValueConsentConf);
++            if (nullptr == dataConsentConf)
++            {
++                Log_Error("No ADUC_SWUPDATE_CONSENT_CONF_FILE data file provided, or missing json content");
++            }
++            else
++            {
++                if (json_object_get_boolean(dataConsentConf, "reset_consent_on_fail") == true)
++                {
++                    Log_Info("clean ADUC_SWUPDATE_CONSENT_USER_FILE");
++                    json_object_remove(data, "consent");
++                    json_serialize_to_file_pretty(rootValue, ADUC_SWUPDATE_CONSENT_USER_FILE);
++                }
++                else
++                {
++                    Log_Info("reset_consent_on_fail: false or not present; don't change ADUC_SWUPDATE_CONSENT_USER_FILE");
++                }
++                json_value_free(rootValueConsentConf);
++            }
++        }
++        result = ADUC_GeneralResult_Success;
++        json_value_free(rootValue);
++    }
++
++    return result;
++}
++
+ /**
+  * @brief Downloads a main script file into a sandbox folder.
+  *        The 'handlerProperties["scriptFileName"]' contains the main script file name.
+@@ -332,12 +388,53 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+     memset(&fileEntity, 0, sizeof(fileEntity));
+     size_t fileCount = workflow_get_update_files_count(workflowHandle);
+     ADUC_Result result = SWUpdate_Handler_DownloadScriptFile(workflowHandle);
++    bool retry = false;
++    std::ifstream omnectValidateUpdateFailedFilePath("/run/omnect-device-service/omnect_validate_update_failed");
++    char* runtimeDir = std::getenv("RUNTIME_DIRECTORY");
++    std::string omnectFailedFileName = "/omnect_failed_state";
++    std::string omnectFailedFilePath;
+ 
+     if (IsAducResultCodeFailure(result.ResultCode))
+     {
+         goto done;
+     }
+ 
++    if (NULL == runtimeDir)
++    {
++        Log_Error("RUNTIME_DIRECTORY was not found.");
++    }
++    else
++    {
++        omnectFailedFilePath = runtimeDir + omnectFailedFileName;
++    }
++
++    // We return with an error in case we just booted into here after an update validation
++    // failed on the new partition. We do this in order to step into update failed state
++    // which also shows up in ADU cloud and offers triggering an update retry.
++    // In case we already signal the failed state, then we expect that retry or a new update will be present.
++    if (omnectValidateUpdateFailedFilePath.good())
++    {
++        std::ifstream omnectCheckFailedFilePath(omnectFailedFilePath);
++        if (0 == omnectCheckFailedFilePath.good())
++        {
++            std::ofstream omnectFailedFile(omnectFailedFilePath);
++            if (0 == omnectFailedFile.good())
++            {
++                Log_Error("Cannot create '%s'", omnectFailedFilePath);
++            }
++
++            result = { ADUC_Result_Failure };
++            Log_Error("Update validation on new boot part failed. Rebooted to old boot part.");
++            result.ExtendedResultCode = ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION;
++
++            // cleanup user consent of current update if it configured
++            CleanUserConsentAgreed();
++            goto done;
++        }
++
++        Log_Info("New update after failed update vailidation.");
++    }
++
+     // Determine whether to continue downloading the rest.
+     installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
+     result = IsInstalled(workflowData);
+@@ -348,6 +445,16 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+         goto done;
+     }
+ 
++    // we return with an error in case downgrade or equal software version
++    result = PerformAction("is-installable", workflowData);
++    if (result.ResultCode == ADUC_Result_Failure)
++    {
++        result = { ADUC_Result_Failure };
++        Log_Error("Downgrade not allowed!");
++        result.ExtendedResultCode = ADUC_ERC_SWUPDATE_HANDLER_DOWNLOAD_FAILURE_WRONG_UPDATE_VERSION;
++        goto done;
++    }
++
+     result = { ADUC_Result_Download_Success };
+ 
+     for (size_t i = 0; i < fileCount; i++)
+diff --git a/src/inc/aduc/result.h b/src/inc/aduc/result.h
+index d9e00095..9d7bbe7c 100644
+--- a/src/inc/aduc/result.h
++++ b/src/inc/aduc/result.h
+@@ -2037,4 +2037,4 @@ static inline ADUC_Result_t MAKE_ADUC_DELIVERY_OPTIMIZATION_EXTENDEDRESULTCODE(c
+ 
+ #define ADUC_ERROR_CURL_DOWNLOADER_EXTERNAL_FAILURE(exitCode) MAKE_ADUC_EXTENDEDRESULTCODE_FOR_COMPONENT_ADUC_CONTENT_DOWNLOADER_CURL_DOWNLOADER((0x1000 + exitCode))
+ 
+-#endif // ADUC_RESULT_H
++#endif // ADUC_RESULT_H
+\ No newline at end of file
+diff --git a/src/platform_layers/linux_platform_layer/CMakeLists.txt b/src/platform_layers/linux_platform_layer/CMakeLists.txt
+index 40d57d15..000e5309 100644
+--- a/src/platform_layers/linux_platform_layer/CMakeLists.txt
++++ b/src/platform_layers/linux_platform_layer/CMakeLists.txt
+@@ -47,7 +47,8 @@ target_compile_definitions (
+             ADUC_DEVICEINFO_MODEL="${ADUC_DEVICEINFO_MODEL}"
+             ADUC_FILE_GROUP="${ADUC_FILE_GROUP}"
+             ADUC_FILE_USER="${ADUC_FILE_USER}"
+-            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}")
++            ADUC_VERSION_FILE="${ADUC_VERSION_FILE}"
++            ADUC_STORAGE_PATH="${ADUC_STORAGE_PATH}")
+ 
+ if (ADUC_BUILD_UNIT_TESTS)
+     add_subdirectory (tests)
+diff --git a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
+index 5a6ab626..b3837bb0 100644
+--- a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
++++ b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
+@@ -449,7 +449,7 @@ static char* DeviceInfo_GetTotalStorage()
+     {
+     };
+ 
+-    if (statvfs("/", &buf) == -1)
++    if (statvfs(ADUC_STORAGE_PATH, &buf) == -1)
+     {
+         Log_Error("statvfs failed, error: %d", errno);
+         return nullptr;
+diff --git a/src/utils/c_utils/src/string_c_utils.c b/src/utils/c_utils/src/string_c_utils.c
+index bb5445d7..abeb5b2e 100644
+--- a/src/utils/c_utils/src/string_c_utils.c
++++ b/src/utils/c_utils/src/string_c_utils.c
+@@ -45,7 +45,7 @@ bool LoadBufferWithFileContents(const char* filePath, char* strBuffer, const siz
+         goto done;
+     }
+ 
+-    const long fileSize = bS.st_size;
++    const long long fileSize = bS.st_size;
+     if (fileSize == 0 || fileSize > strBuffSize)
+     {
+         goto done;
+diff --git a/src/utils/eis_utils/src/eis_coms.c b/src/utils/eis_utils/src/eis_coms.c
+index dba6c64e..cb25857d 100644
+--- a/src/utils/eis_utils/src/eis_coms.c
++++ b/src/utils/eis_utils/src/eis_coms.c
+@@ -140,7 +140,7 @@ typedef struct tagEIS_HTTP_WORKLOAD_CONTEXT
+ /**
+  * @brief Maximum amount of bytes for any EIS response
+  */
+-#define EIS_RESP_SIZE_MAX 4096
++#define EIS_RESP_SIZE_MAX 16384
+ 
+ //
+ // HTTP Functions
+diff --git a/src/utils/extension_utils/src/extension_utils.c b/src/utils/extension_utils/src/extension_utils.c
+index 036e195e..ac41f5fc 100644
+--- a/src/utils/extension_utils/src/extension_utils.c
++++ b/src/utils/extension_utils/src/extension_utils.c
+@@ -265,7 +265,7 @@ static bool RegisterHandlerExtension(
+         goto done;
+     }
+ 
+-    long fileSize = bS.st_size;
++    long long fileSize = bS.st_size;
+     if (!ADUC_HashUtils_GetFileHash(handlerFilePath, SHA256, &hash))
+     {
+         goto done;
+@@ -483,7 +483,7 @@ bool RegisterExtension(const char* extensionDir, const char* extensionFilePath)
+         goto done;
+     }
+ 
+-    long fileSize = bS.st_size;
++    long long fileSize = bS.st_size;
+ 
+     if (!ADUC_HashUtils_GetFileHash(extensionFilePath, SHA256, &hash))
+     {
+diff --git a/src/utils/hash_utils/src/hash_utils.c b/src/utils/hash_utils/src/hash_utils.c
+index 034bc87c..da4ffd45 100644
+--- a/src/utils/hash_utils/src/hash_utils.c
++++ b/src/utils/hash_utils/src/hash_utils.c
+@@ -124,7 +124,7 @@ static bool ADUC_HashUtils_GetIndexStrongestValidHash(
+ 
+         if (algVersion > curBestAlg)
+         {
+-            strongestIndex = i;
++            strongestIndex = (int)i;
+             curBestAlg = algVersion;
+         }
+     }
