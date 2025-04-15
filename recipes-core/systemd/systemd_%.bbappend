@@ -3,6 +3,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://80-wlan.network \
     file://80-wlan0.link \
+    file://sys-fs-pstore.mount \
 "
 
 RDEPENDS:${PN} += "bash"
@@ -87,8 +88,15 @@ do_install:append() {
 }
 
 do_install:append() {
-    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27#' \
+    sed -i -e 's#^ExecStart=\(.*\)#ExecStart=/bin/bash -c \x27\1 \${OMNECT_WAIT_ONLINE_INTERFACES:---any} --timeout=\${OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS:-300}\x27\nExecStopPost=/bin/sh -c \x27if [ "$$EXIT_STATUS" != 0 -o "$$EXIT_CODE" != exited ]; then /usr/sbin/omnect_reboot_reason.sh log systemd-networkd-wait-online "service failed with [$$EXIT_CODE/$$EXIT_STATUS]"; fi\x27#' \
         ${D}${systemd_system_unitdir}/systemd-networkd-wait-online.service
+}
+
+do_install:append:omnect_pstore() {
+    install -d ${D}${sysconfdir}/systemd/system/
+    install -d ${D}${systemd_system_unitdir}
+    install -m 0644 ${WORKDIR}/sys-fs-pstore.mount ${D}${systemd_system_unitdir}/sys-fs-pstore.mount
+    ln -rs ${D}${systemd_system_unitdir}/sys-fs-pstore.mount ${D}${sysconfdir}/systemd/system/sysinit.target.wants/sys-fs-pstore.mount
 }
 
 FILES:${PN} += "\

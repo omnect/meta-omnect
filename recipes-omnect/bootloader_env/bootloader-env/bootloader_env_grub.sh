@@ -28,12 +28,14 @@ function set () {
     local key=${1}
     local value=${@:2}
     grub-editenv ${grubenv} set "${key}"="${value}"
+    sync
 }
 
 function unset() {
     [[ ${argsc} -ne 2 ]] && help && exit 1
     local key=${1}
     grub-editenv ${grubenv} unset "${key}"
+    sync
 }
 
 [[ ${#} -lt 1 ]] && help && exit 1

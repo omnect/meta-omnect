@@ -722,18 +722,18 @@ InstallUpdate() {
                 swupdate -v -i "${image_file}" -k "${public_key_file}" -e ${selection} &>> "${swupdate_log_file}"
                 ret_val=$?
                 if [ ${ret_val} -eq 0 ]; then
-                    rm -f /run/omnect-bootloader-update-not-necessary
+                    rm -f /tmp/omnect-bootloader-update-not-necessary
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,bootloader &>> "${swupdate_log_file}"
                     ret_val=$?
                     if [ ${ret_val} -eq 0 ]; then
-                        if [ -f "/run/omnect-bootloader-update" ]; then
+                        if [ -f "/tmp/omnect-bootloader-update" ]; then
                             bootloader_env.sh set omnect_bootloader_updated 1
                             ret_val=$?
                         fi
                     else
-                        if [ -f "/run/omnect-bootloader-update-not-necessary" ]; then
+                        if [ -f "/tmp/omnect-bootloader-update-not-necessary" ]; then
                             ret_val=0
-                            rm /run/omnect-bootloader-update-not-necessary
+                            rm /tmp/omnect-bootloader-update-not-necessary
                         fi
                     fi
                 fi
@@ -795,7 +795,7 @@ ApplyUpdate() {
     # omnect_os_bootpart variable is specific to our boot.scr script.
     # if the bootloader is also updated, the update will not be validated.
     # -> revert to old rootFS not possible
-    if [ -f "/run/omnect-bootloader-update" ]; then
+    if [ -f "/tmp/omnect-bootloader-update" ]; then
         bootloader_env.sh set omnect_os_bootpart $update_part
         echo "use omnect_os_bootpart environment" >> "${log_file}"
     else
