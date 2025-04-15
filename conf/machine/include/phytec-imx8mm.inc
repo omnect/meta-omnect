@@ -30,11 +30,11 @@ SERIAL_CONSOLES ="${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '115200;
 #bootargs console is not part of the devictree, so we have to append it to kernel commandline
 APPEND += "console=ttymxc2,115200"
 
-# next APPEND options are only needed for pstore feature
-APPEND += "ramoops.dump_oops=1 ramoops.ecc=1 printk.always_kmsg_dump=Y crash_kexec_post_notifiers=Y"
-
 # https://github.com/phytec/meta-phytec/commit/6d71e11b4fc1ee8196e579e4de73ed3197e0e4be
 APPEND += "clk-imx8mm.mcore_booted"
+
+# next APPEND options are only needed for reboot reason support
+APPEND:append:omnect_pstore = " ramoops.dump_oops=1 ramoops.ecc=1 printk.always_kmsg_dump=Y crash_kexec_post_notifiers=Y"
 
 # u-boot boot.scr config
 KERNEL_BOOTCMD = "booti"
