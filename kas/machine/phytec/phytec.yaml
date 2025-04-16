@@ -7,7 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "scarthgap"
-    commit: "6098ff47a1490f789ed2bbce2af70df9cbb579b1"
+    commit: "df8ed4178aa97b1e8a805440d90c95bc80c90b9e"
     patches:
       p001:
         repo: "meta-omnect"
@@ -15,7 +15,7 @@ repos:
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: "scarthgap"
-    commit: "36accb283e2047cf52f3bc1857edad8507e049ec"
+    commit: "3db229f14e8794238fa43b4066a6439fac506622"
     patches:
       p001:
         repo: "meta-omnect"
@@ -34,9 +34,13 @@ repos:
   ext/meta-arm:
     url: "https://git.yoctoproject.org/meta-arm"
     branch: "scarthgap"
-    commit: "a8fe9d22eaefc294f91096c6a32663e2f4ab3b10"
+    commit: "f3640941c600d03ea53ce5b9254f0fead18f8bc0"
     layers:
       meta-arm:
       meta-arm-toolchain:
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/meta-arm_layerdir.patch"
 env:
   ACCEPT_FSL_EULA: "0"
