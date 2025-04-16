@@ -35,6 +35,7 @@ set_bootloader_env_var()
     else
         grub-editenv ${ROOTFS_DIR}/boot/EFI/BOOT/grubenv unset "${var_name}" || return 1
     fi
+    sync
 }
 
 save_fsck_status()
