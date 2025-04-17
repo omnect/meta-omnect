@@ -1,7 +1,3 @@
-timeout=2
-
-load_env
-
 if [ "x${omnect_os_bootpart}" = "x" ]; then
   set omnect_os_bootpart=2
   save_env omnect_os_bootpart
@@ -32,11 +28,13 @@ if [ "x${omnect_rootblk}" != "x" ]; then
   export kernel_param_rootblk
 fi
 
-set root=(hd0,gpt${omnect_os_bootpart})
-set default="omnect-os"
+if [ "${default}" != "Automatic Certificate Provision" ]; then
+  set root=(hd0,gpt${omnect_os_bootpart})
+  set default="omnect-os"
+fi
 
 # to be able to use the timeout, we do need an menuentry. otherwise we could boot directly without one
-menuentry 'omnect-os' {
+menuentry 'omnect-os' --unrestricted {
     linux /boot/bzImage rootpart=${omnect_os_bootpart} ${kernel_param_rootblk} @@APPEND@@
     initrd /boot/initramfs.cpio.gz
 }
