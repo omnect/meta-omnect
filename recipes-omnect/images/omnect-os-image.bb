@@ -29,8 +29,7 @@ IMAGE_BOOT_FILES:append = "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', ' fdt-loa
 
 do_image_wic[depends] += "virtual/bootloader:do_deploy"
 do_image_wic_extra_depends = ""
-# we adapt grub.cfg before writing it to image in do_image_wic
-do_image_wic_extra_depends:omnect_grub = "grub-cfg:do_deploy bootloader-versioned:do_deploy"
+do_image_wic_extra_depends:omnect_grub = "bootloader-versioned:do_deploy efitools:do_deploy seloader:do_deploy shim:do_deploy"
 # we add boot.scr to the image on condition
 do_image_wic_extra_depends:omnect_uboot = "u-boot-scr:do_deploy bootloader-versioned:do_deploy"
 do_image_wic_extra_depends:rpi = "u-boot-scr:do_deploy bootloader-versioned:do_deploy rpi-bootfiles:do_deploy rpi-config:do_deploy rpi-cmdline:do_deploy"
@@ -58,6 +57,7 @@ EXTRA_PACKAGES_CELLULAR = "\
 
 IMAGE_INSTALL = "\
     ${@bb.utils.contains('MACHINE_FEATURES', '3g', '${EXTRA_PACKAGES_CELLULAR}', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', ' mokutil', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' aziot-edged iotedge kernel-modules', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd-bash-completion', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-gatt-service', '', d)} \
@@ -89,16 +89,27 @@ IMAGE_INSTALL = "\
 # updatable via swupdate.
 ROOTFS_POSTPROCESS_COMMAND:append = " add_kernel_and_initramfs;"
 add_kernel_and_initramfs() {
+    rm -rf $D/boot/*
     initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${OMNECT_INITRAMFS_IMAGE_NAME}.${OMNECT_INITRAMFS_FSTYPE})
-    install -m 0644 ${initramfs} $D/boot/
-    ln -sf ${KERNEL_IMAGETYPE} $D/boot/${KERNEL_IMAGETYPE}.bin
+    kernel=$(readlink -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE})
+    install -m 0644 ${initramfs} $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}
+    install -m 0644 ${kernel} $D/boot/${KERNEL_IMAGETYPE}
     if [ "${KERNEL_IMAGETYPE}" != "Image"  ]; then
         # we uniformly want kernel image named Image
         ln -sf ${KERNEL_IMAGETYPE} $D/boot/Image
         # do that also for post processing working on DEPLOY_DIR_IMAGE
         ln -sf ${KERNEL_IMAGETYPE} ${DEPLOY_DIR_IMAGE}/Image
+
+        if [ -n "${SB_FILE_EXT}" ]; then
+            ln -sf ${KERNEL_IMAGETYPE}${SB_FILE_EXT} $D/boot/Image${SB_FILE_EXT}
+            ln -sf ${KERNEL_IMAGETYPE}${SB_FILE_EXT} ${DEPLOY_DIR_IMAGE}/Image${SB_FILE_EXT}
+        fi
     fi
-    ln -sf $(basename ${initramfs}) $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}
+
+    if [ -n "${SB_FILE_EXT}" ]; then
+        install -m 0644 ${initramfs}${SB_FILE_EXT} $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}${SB_FILE_EXT}
+        install -m 0644 ${kernel}${SB_FILE_EXT} $D/boot/${KERNEL_IMAGETYPE}${SB_FILE_EXT}
+    fi
 }
 
 # setup omnect specific sysctl configuration (see systemd-sysctl.service)
