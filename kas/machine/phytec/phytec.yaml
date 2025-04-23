@@ -7,7 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "kirkstone"
-    commit: "da6456bbe2fb514c6efdfb2326fd16b12dbb3f8e"
+    commit: "32f672dbeb24bdbcd0a53e1e15bd9c5f0d162d63"
     patches:
       p001:
         repo: "meta-omnect"
@@ -15,7 +15,7 @@ repos:
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: "kirkstone"
-    commit: "c525e0c19bdc46d45f71873b5f286f49abb69418"
+    commit: "2f83b211beff98d84632b186691ca1ffda34fa6c"
     patches:
       p001:
         repo: "meta-omnect"
@@ -27,7 +27,7 @@ repos:
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
     branch: "kirkstone-5.15.71-2.2.2"
-    commit: "ca68ab5d25322b51f54564275c84ab8de3c74ea6"
+    commit: "af4c67f25fff2dce54487ee5bfd618ab9789a8dc"
     layers:
       meta-bsp:
       meta-sdk:
