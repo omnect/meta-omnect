@@ -6,12 +6,11 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.38.1"
-SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "d2b75bd33655d39ec9597683ff8717553193ec30"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.39.0"
+SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=factory_reset_v3"
+SRCREV = "497e28850015f0add2bc699cd0355c3361e0775b"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -180,7 +179,7 @@ SRC_URI += " \
     crate://crates.io/jobserver/0.1.33 \
     crate://crates.io/js-sys/0.3.77 \
     crate://crates.io/kqueue-sys/1.0.4 \
-    crate://crates.io/kqueue/1.0.8 \
+    crate://crates.io/kqueue/1.1.0 \
     crate://crates.io/language-tags/0.3.2 \
     crate://crates.io/lazy_static/1.5.0 \
     crate://crates.io/libc/0.2.172 \
@@ -323,7 +322,7 @@ SRC_URI += " \
     crate://crates.io/tokio-openssl/0.6.5 \
     crate://crates.io/tokio-stream/0.1.17 \
     crate://crates.io/tokio-util/0.7.15 \
-    crate://crates.io/tokio/1.44.2 \
+    crate://crates.io/tokio/1.45.0 \
     crate://crates.io/toml/0.8.22 \
     crate://crates.io/toml_datetime/0.6.9 \
     crate://crates.io/toml_edit/0.22.26 \
