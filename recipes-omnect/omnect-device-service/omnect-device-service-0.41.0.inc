@@ -1,6 +1,7 @@
 # generated recipes with cargo-bitbake 0.3.16 are not compatible with scarthgap per se.
 # we have to include the sha256sum for all packages
 # (output of yocto build error when missing:)
+
 SRC_URI[actix-codec-0.5.2.sha256sum] = "5f7b0a21988c1bf877cf4759ef5ddaac04c1c9fe808c9142ecb78ba97d97a28a"
 SRC_URI[actix-http-3.10.0.sha256sum] = "0fa882656b67966045e4152c634051e70346939fced7117d5f0b52146a7c74c9"
 SRC_URI[actix-macros-0.2.4.sha256sum] = "e01ed3140b2f8d422c68afa1ed2e85d996ea619c988ac834d255db32138655cb"
@@ -165,7 +166,7 @@ SRC_URI[itoa-1.0.15.sha256sum] = "4a5f13b858c8d314ee3e8f639011f7ccefe71f97f96e50
 SRC_URI[jobserver-0.1.33.sha256sum] = "38f262f097c174adebe41eb73d66ae9c06b2844fb0da69969647bbddd9b0538a"
 SRC_URI[js-sys-0.3.77.sha256sum] = "1cfaf33c695fc6e08064efbc1f72ec937429614f25eef83af942d0e227c3a28f"
 SRC_URI[kqueue-sys-1.0.4.sha256sum] = "ed9625ffda8729b85e45cf04090035ac368927b8cebc34898e7c120f52e4838b"
-SRC_URI[kqueue-1.0.8.sha256sum] = "7447f1ca1b7b563588a205fe93dea8df60fd981423a768bc1c0ded35ed147d0c"
+SRC_URI[kqueue-1.1.0.sha256sum] = "8cf0c5a3f977f1cebd92cf05ebb14e1c941c642fb57c9a7d4302455b33ba326f"
 SRC_URI[language-tags-0.3.2.sha256sum] = "d4345964bb142484797b161f473a503a434de77149dd8c7427788c6e13379388"
 SRC_URI[lazy_static-1.5.0.sha256sum] = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 SRC_URI[libc-0.2.172.sha256sum] = "d750af042f7ef4f724306de029d18836c26c1765a54a6a3f094cbd23a7267ffa"
@@ -308,7 +309,7 @@ SRC_URI[tokio-native-tls-0.3.1.sha256sum] = "bbae76ab933c85776efabc971569dd6119c
 SRC_URI[tokio-openssl-0.6.5.sha256sum] = "59df6849caa43bb7567f9a36f863c447d95a11d5903c9cc334ba32576a27eadd"
 SRC_URI[tokio-stream-0.1.17.sha256sum] = "eca58d7bba4a75707817a2c44174253f9236b2d5fbd055602e9d5c07c139a047"
 SRC_URI[tokio-util-0.7.15.sha256sum] = "66a539a9ad6d5d281510d5bd368c973d636c02dbf8a67300bfb6b950696ad7df"
-SRC_URI[tokio-1.44.2.sha256sum] = "e6b88822cbe49de4185e3a4cbf8321dd487cf5fe0c5c65695fef6346371e9c48"
+SRC_URI[tokio-1.45.0.sha256sum] = "2513ca694ef9ede0fb23fe71a4ee4107cb102b9dc1930f6d0fd77aae068ae165"
 SRC_URI[toml-0.8.22.sha256sum] = "05ae329d1f08c4d17a59bed7ff5b5a769d062e64a62d34a3261b219e62cd5aae"
 SRC_URI[toml_datetime-0.6.9.sha256sum] = "3da5db5a963e24bc68be8b17b6fa82814bb22ee8660f192bb182771d498f09a3"
 SRC_URI[toml_edit-0.22.26.sha256sum] = "310068873db2c5b3e7659d2cc35d21855dbafa50d1ce336397c666e3cb08137e"
