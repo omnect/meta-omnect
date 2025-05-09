@@ -431,13 +431,20 @@ Example for an error, where ´/etc/omnect/factory-reset.d/restore_file_error.jso
 }
 ```
 
+Example for a boot without previous factory-reset:
+```sh
+# jq '."factory-reset"' /run/omnect-device-service/omnect-os-initramfs.json
+```json
+null
+```
+
 The overall `factory reset status` consists of:
 - `status` (general processing state):
   - 0: wipe mode supported
   - 1: wipe mode unsupported
   - 2: backup/restore failure
   - 3: configuration error; see "context" for details
-- `error`:  execution exit status; in case of of status == 0, if not applicaple: `-`
+- `error`:  execution exit status; in case of of status == 0, if not applicable: `-`
 - optional: `context` on warnings or errors
 - array `paths` of preserved files or directories; this array reflects the configured paths not the actual restored path, e.g. if a path doesn't exist
 
