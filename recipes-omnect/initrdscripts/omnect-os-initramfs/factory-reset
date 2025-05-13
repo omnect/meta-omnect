@@ -15,7 +15,7 @@ mount=0
 factory_reset_enabled() {
     ret=0
     factory_reset=$(get_bootloader_env_var "factory-reset")
-    echo "{}" > /tmp/factory-reset.json
+    echo "null" > /tmp/factory-reset.json
     if [ -z "${factory_reset}" ]; then
         ret=1 # no factory reset triggered; normal boot
     else
