@@ -58,6 +58,11 @@ python do_dependencytrack_collect() {
             purl = 'pkg:yocto/{}@{}'.format(cpe_split[4],version)
         else:
             purl = 'pkg:yocto/{}/{}@{}'.format(cpe_split[3],cpe_split[4],version)
+
+        # recompile cpe: scarthgap sets "*" for type, kirkstone did set "a"
+        cpe_split[2] = "a"
+        cpe = ":".join(cpe_split)
+
         if not next((c for c in sbom["components"] if c["cpe"] == cpe), None):
             sbom["components"].append({
                 "name": names[index],
