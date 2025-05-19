@@ -15,7 +15,7 @@ omnect_uboot_configure_env() {
 
     # set release image
     if [ "${OMNECT_RELEASE_IMAGE}" = "1" ]; then
-        sed -i -e "s|^//#define OMNECT_RELEASE_IMAGE$|#define OMNECT_RELEASE_IMAGE|g" ${S}/include/env/omnect_env.env
+        sed -i -e "s|^#ifdef OMNECT_RELEASE_IMAGE$|#define OMNECT_RELEASE_IMAGE\n#ifdef OMNECT_RELEASE_IMAGE|g" ${S}/include/env/omnect_env.env
     fi
 
     # concatenate extra writable env flags
