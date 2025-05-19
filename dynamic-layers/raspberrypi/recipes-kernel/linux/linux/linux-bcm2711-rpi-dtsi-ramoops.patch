@@ -1,0 +1,22 @@
+diff --git a/arch/arm/boot/dts/broadcom/bcm2711-rpi.dtsi b/arch/arm/boot/dts/broadcom/bcm2711-rpi.dtsi
+index 7b9e946db985..1eb71f72df2e 100644
+--- a/arch/arm/boot/dts/broadcom/bcm2711-rpi.dtsi
++++ b/arch/arm/boot/dts/broadcom/bcm2711-rpi.dtsi
+@@ -80,6 +80,17 @@ blpubkey: nvram@1 {
+ 		no-map;
+ 		status = "disabled";
+ 	};
++        /* for pstore we need ramoops memory region */
++        ramoops: ramoops@b000000 {
++                compatible = "ramoops";
++                reg = <0x0 0x0b000000 0x40000>; /* 256kB */
++                record-size = <0x4000>; /* 16kB */
++                console-size = <0x10000>; /* 64kB */
++                ecc-size = <1>; /* enabled */
++                pmsg-size = <0x4000>; /* 16kB */
++                ftrace-size = <0>; /* disabled by default */
++        };
++
+ };
+ 
+ &v3d {
