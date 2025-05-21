@@ -55,6 +55,9 @@ OMNECT_PART_OFFSET_BOOT = "4096"
 # mask fw_env.config configuration of meta-phytec, we generate that ourselves
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
 
+# mask phytecs CVE bbappend handling, which interferes with ours (u-boot-scr matches as well)
+BBMASK:append = " meta-phytec/recipes-bsp/u-boot/u-boot-%.bbappend"
+
 # masks necessary to build with our bblayers.conf:
 BBMASK:append = " \
     meta-imx/meta-imx-sdk/dynamic-layers/virtualization-layer/recipes-fsl/packagegroup/packagegroup-fsl-tools-testapps.bbappend \
