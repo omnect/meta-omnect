@@ -25,6 +25,8 @@ SRC_URI += " \
 "
 
 CVE_PRODUCT = "u-boot-phytec-imx u-boot"
+CVE_VERSION = "${@d.getVar("PV").split('-')[0]}"
+
 OMNECT_BOOTLOADER_CHECKSUM_FILES = "${OMNECT_BOOTLOADER_RECIPE_PATH}"
 
 inherit omnect_uboot_configure_env omnect_bootloader
