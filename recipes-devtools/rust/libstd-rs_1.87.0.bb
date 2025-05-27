@@ -26,6 +26,8 @@ DEPENDS:remove:riscv64 = "libunwind"
 RUSTFLAGS += "-Cembed-bitcode=yes"
 # Needed so cargo can find libbacktrace
 RUSTFLAGS += "-L ${STAGING_LIBDIR} -C link-arg=-Wl,-soname,libstd.so"
+# ref: https://github.com/rust-lang/rust/issues/133857
+RUSTFLAGS += "-Zforce-unstable-if-unmarked"
 
 CARGO_FEATURES ?= "panic-unwind backtrace"
 CARGO_BUILD_FLAGS += "--features '${CARGO_FEATURES}'"
