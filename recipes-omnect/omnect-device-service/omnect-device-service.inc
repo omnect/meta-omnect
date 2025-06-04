@@ -57,6 +57,9 @@ do_install:append() {
     install -m 0644 -D ${S}/systemd/omnect-device-service.socket ${D}${systemd_system_unitdir}/omnect-device-service.socket
     install -m 0644 -D ${S}/systemd/omnect-device-service.timer ${D}${systemd_system_unitdir}/omnect-device-service.timer
     install -m 0755 -D ${S}/systemd/omnect-device-service.exec_stop_post.sh ${D}${bindir}/omnect-device-service.exec_stop_post.sh
+    install -m 0644 -D ${S}/systemd/update-validation-observer.service ${D}${systemd_system_unitdir}/update-validation-observer.service
+    install -m 0644 -D ${S}/systemd/update-validation-observer.timer ${D}${systemd_system_unitdir}/update-validation-observer.timer
+    install -m 0755 -D ${S}/systemd/update-validation-observer.sh ${D}${bindir}/update-validation-observer.sh
     install -m 0644 -D ${S}/polkit/omnect-device-service.rules ${D}${datadir}/polkit-1/rules.d/omnect-device-service.rules
     install -m 0640 -D ${S}/sudo/omnect-device-service ${D}${sysconfdir}/sudoers.d/omnect-device-service
 
@@ -129,11 +132,14 @@ SYSTEMD_SERVICE:${PN} = " \
     omnect-device-service.service \
     omnect-device-service.socket \
     omnect-device-service.timer \
+    update-validation-observer.service \
+    update-validation-observer.timer \
     ${@bb.utils.contains('MACHINE_FEATURES', 'pstore', "${SYSTEMD_SERVICE_PSTORE}", '', d)} \
 "
 
 FILES:${PN} += "\
     ${bindir}/omnect-device-service.exec_stop_post.sh \
+    ${bindir}/update-validation-observer.sh \
     ${datadir}/polkit-1/rules.d/omnect-device-service.rules \
     ${libdir}/tmpfiles.d/omnect-device-service.conf \
     ${sysconfdir}/omnect/factory-reset.d \
