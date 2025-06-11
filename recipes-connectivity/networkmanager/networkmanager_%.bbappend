@@ -16,3 +16,6 @@ do_install:append() {
 }
 
 ALTERNATIVE_PRIORITY[resolv-conf] = "10"
+
+# Notice: we disabled the firewall configuration via the networkmanager to remove nftables and python from the root filesystem.
+NETWORKMANAGER_FIREWALL_DEFAULT = ""
