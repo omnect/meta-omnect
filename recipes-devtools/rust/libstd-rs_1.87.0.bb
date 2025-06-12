@@ -1,8 +1,8 @@
 SUMMARY = "Rust standard libaries"
 HOMEPAGE = "http://www.rust-lang.org"
 SECTION = "devel"
-LICENSE = "(MIT | Apache-2.0) & Unicode-TOU"
-LIC_FILES_CHKSUM = "file://../../COPYRIGHT;md5=c2cccf560306876da3913d79062a54b9"
+LICENSE = "(MIT | Apache-2.0)"
+LIC_FILES_CHKSUM = "file://../../COPYRIGHT;md5=11a3899825f4376896e438c8c753f8dc"
 
 require rust-source.inc
 
@@ -26,6 +26,8 @@ DEPENDS:remove:riscv64 = "libunwind"
 RUSTFLAGS += "-Cembed-bitcode=yes"
 # Needed so cargo can find libbacktrace
 RUSTFLAGS += "-L ${STAGING_LIBDIR} -C link-arg=-Wl,-soname,libstd.so"
+# ref: https://github.com/rust-lang/rust/issues/133857
+RUSTFLAGS += "-Zforce-unstable-if-unmarked"
 
 CARGO_FEATURES ?= "panic-unwind backtrace"
 CARGO_BUILD_FLAGS += "--features '${CARGO_FEATURES}'"
