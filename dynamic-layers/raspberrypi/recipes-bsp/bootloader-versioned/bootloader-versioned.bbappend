@@ -1,6 +1,7 @@
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot_%.bbappend"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot/*"
-OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/u-boot_%.bbappend"
+# the u-boot_%.bbappend from meta-raspberrypi is part of BBMASK and thus not part of OMNECT_BOOTLOADER_CHECKSUM_FILES
+#OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/u-boot_%.bbappend"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_raspberrypi}/recipes-bsp/u-boot/files/*"
 # we have to update the raspberrypi firmware if basic configuration of the bsp changes
 # per convention such changes should be made in the following file:

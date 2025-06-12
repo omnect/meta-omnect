@@ -7,7 +7,7 @@ repos:
   ext/meta-yocto-bsp:
     url: "https://git.yoctoproject.org/meta-yocto"
     branch: scarthgap
-    commit: "7f1be5a930554ea5036d2c806aa752ae0b2de826"
+    commit: "7633f51d53f535728fe035fa866416d2e5ba6a9c"
     layers:
       meta-yocto-bsp:
 
