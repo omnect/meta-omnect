@@ -18,6 +18,10 @@ repos:
       meta-efi-secure-boot:
       meta-secure-core-common:
       meta-signing-key:
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/meta-efi-secure-boot_layerdir.patch"
   ext/meta-perl:
     url: "https://github.com/openembedded/meta-openembedded.git"
     branch: "scarthgap"
