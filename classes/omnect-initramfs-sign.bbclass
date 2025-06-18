@@ -1,4 +1,4 @@
-inherit user-key-store
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', 'user-key-store', '', d)}
 
 fakeroot python sign() {
     import re
