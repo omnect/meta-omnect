@@ -6,7 +6,13 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/grub/grub-ef
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/grub/grub-efi/omnect.inc.in"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-omnect/grub-env/grub-env.bb"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/files/grubenv"
-# TODO add meta-secure-core grub files
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/files/grubenv"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_efi-secure-boot}/recipes-bsp/grub/*"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_efi-secure-boot}/recipes-bsp/grub/grub-efi/*"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_efi-secure-boot}/recipes-bsp/seloader/*"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_efi-secure-boot}/recipes-bsp/seloader/seloader/*"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_efi-secure-boot}/recipes-bsp/shim/*"
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_efi-secure-boot}/recipes-bsp/shim/shim/*"
 
 inherit deploy omnect_bootloader_versioning
 
