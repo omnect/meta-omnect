@@ -42,7 +42,7 @@ python create_boot_cmd () {
                 f.write("%s\n" % (omnect_boot_scr_test_cmds))
 
             # load kernel
-            f.write("load ${devtype} ${devnum}:${omnect_os_bootpart} ${kernel_addr_r} boot/%s.bin\n" % kernel_imagetype)
+            f.write("load ${devtype} ${devnum}:${omnect_os_bootpart} ${kernel_addr_r} boot/%s\n" % kernel_imagetype)
 
             # load initrd
             f.write("load ${devtype} ${devnum}:${omnect_os_bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % omnect_initramfs_fs_type)
