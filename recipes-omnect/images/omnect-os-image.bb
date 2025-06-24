@@ -94,11 +94,13 @@ add_kernel_and_initramfs() {
     kernel=$(readlink -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE})
     install -m 0644 ${initramfs} $D/boot/initramfs.${OMNECT_INITRAMFS_FSTYPE}
     install -m 0644 ${kernel} $D/boot/${KERNEL_IMAGETYPE}
+    ln -sf ${KERNEL_IMAGETYPE} $D/boot/${KERNEL_IMAGETYPE}.bin
     if [ "${KERNEL_IMAGETYPE}" != "Image"  ]; then
         # we uniformly want kernel image named Image
         ln -sf ${KERNEL_IMAGETYPE} $D/boot/Image
         # do that also for post processing working on DEPLOY_DIR_IMAGE
         ln -sf ${KERNEL_IMAGETYPE} ${DEPLOY_DIR_IMAGE}/Image
+
 
         if [ -n "${SB_FILE_EXT}" ]; then
             ln -sf ${KERNEL_IMAGETYPE}${SB_FILE_EXT} $D/boot/Image${SB_FILE_EXT}
