@@ -441,6 +441,10 @@ The overall `factory reset status` consists of:
 - optional: `context` on warnings or errors
 - array `paths` of preserved files or directories; this array reflects the configured paths not the actual restored path, e.g. if a path doesn't exist
 
+### Update validation
+
+An A/B update is validated after the device boots to the updated partition. Most of the logic is implemented in omnect-device-service repository and [documented there](https://github.com/omnect/omnect-device-service/blob/main/src/twin/firmware_update/update_validation.md). meta-omnect takes care of booting the right partition as well as providing appropriate states to the user space. This is done as part of [initramfs](./recipes-omnect/initrdscripts/omnect-os-initramfs/omnect-device-service-setup).
+
 ### Filesystem ckeck
 
 The `boot`, `cert`, `etc` and `data` partition get checked non-interactively at boot via `fsck`. All questions of `fsck` regarding repairing the filesystem are answered with `yes`. The result of this process is returned as part of `/run/omnect-device-service/omnect-os-initramfs.json` via json object `fsck`.<br>
@@ -460,8 +464,6 @@ If the object is empty, there were no filesystem issues. If the filesystem check
 }
 
 ```
-
-
 
 ### Debug Mount Options of Data Partition
 
