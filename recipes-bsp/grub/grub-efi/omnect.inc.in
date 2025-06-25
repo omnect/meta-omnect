@@ -33,7 +33,6 @@ if [ "${default}" != "Automatic Certificate Provision" ]; then
   set default="omnect-os"
 fi
 
-# to be able to use the timeout, we do need an menuentry. otherwise we could boot directly without one
 menuentry 'omnect-os' --unrestricted {
     linux /boot/bzImage rootpart=${omnect_os_bootpart} ${kernel_param_rootblk} @@APPEND@@
     initrd /boot/initramfs.cpio.gz
