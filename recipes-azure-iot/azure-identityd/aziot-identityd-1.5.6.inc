@@ -169,7 +169,6 @@ SRC_URI[rustix-0.37.20.sha256sum] = "b96e891d04aa506a6d1f318d2771bcb1c7dfda84e12
 SRC_URI[ryu-1.0.13.sha256sum] = "f91339c0467de62360649f8d3e185ca8de4224ff281f66000de5eb2a77a79041"
 SRC_URI[same-file-1.0.6.sha256sum] = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
 SRC_URI[scopeguard-1.1.0.sha256sum] = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
-SRC_URI[sd-notify-0.4.1.sha256sum] = "621e3680f3e07db4c9c2c3fb07c6223ab2fab2e54bd3c04c3ae037990f428c32"
 SRC_URI[semver-1.0.22.sha256sum] = "92d43fe69e652f3df9bdc2b85b2854a0825b86e4fb76bc44d945137d053639ca"
 SRC_URI[serde-1.0.164.sha256sum] = "9e8c8cf938e98f769bc164923b06dce91cea1751522f46f8466461af04c9027d"
 SRC_URI[serde_derive-1.0.164.sha256sum] = "d9735b638ccc51c28bf6914d90a2e9725b377144fc612c49a611fddd1b631d68"

@@ -8,7 +8,7 @@ inherit cargo
 # how to get aziot-identityd could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/aziot-identityd/0.1.0"
 SRC_URI += "gitsm://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1"
-SRCREV = "1e38b9e5295cc09f0fd4c6b810632fd91e0340f5"
+SRCREV = "833381accec8d53436cac20fc3fb85303e4504eb"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = "identity/aziot-identityd"
 
