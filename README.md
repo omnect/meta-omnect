@@ -443,7 +443,7 @@ The overall `factory reset status` consists of:
 
 ### Update validation
 
-An A/B update is validated after the device boots to the updated partition. Most of the logic is implemented in omnect-device-service repository and [documented there](https://github.com/omnect/omnect-device-service/blob/main/src/twin/firmware_update/update_validation.md). meta-omnect takes care of booting the right partition as well as providing appropriate states to the user space. This is done as part of [initramfs](./recipes-omnect/initrdscripts/omnect-os-initramfs/omnect-device-service-setup).
+An A/B update is validated, if the update doesn't contain a bootloader update, after the device boots to the updated partition. Most of the logic is implemented in omnect-device-service repository and [documented there](https://github.com/omnect/omnect-device-service/blob/main/src/twin/firmware_update/update_validation.md). meta-omnect takes care of booting the right partition as well as providing appropriate states to the user space. This is done as part of [initramfs](./recipes-omnect/initrdscripts/omnect-os-initramfs/omnect-device-service-setup).
 
 ### Filesystem ckeck
 
