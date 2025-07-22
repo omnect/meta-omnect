@@ -28,7 +28,7 @@ if [ "x${omnect_rootblk}" != "x" ]; then
   export kernel_param_rootblk
 fi
 
-if [ "${default}" != "Automatic Certificate Provision" ]; then
+if [ "${default}" != "Certificate Provision" ]; then
   set root=(hd0,gpt${omnect_os_bootpart})
   set default="omnect-os"
 fi
