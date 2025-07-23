@@ -7,6 +7,7 @@ Wants=network.target
 # unfortunately this has no real benefit: https://github.com/systemd/systemd/issues/985
 ConditionPathExists=/sys/class/net/%i
 
+StartLimitBurst=10
 StartLimitIntervalSec=120
 
 # NetworkManager users will probably want the dbus version instead.
