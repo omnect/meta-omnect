@@ -1,0 +1,9 @@
+diff --git a/meta-efi-secure-boot/conf/layer.conf b/meta-efi-secure-boot/conf/layer.conf
+index 0efef32..1ebddf7 100644
+--- a/meta-efi-secure-boot/conf/layer.conf
++++ b/meta-efi-secure-boot/conf/layer.conf
+@@ -20,3 +20,4 @@ LAYERDEPENDS_efi-secure-boot = "\
+ "
+ 
+ LAYERSERIES_COMPAT_efi-secure-boot = "scarthgap"
++LAYERDIR_efi-secure-boot = "${LAYERDIR}"
