@@ -29,11 +29,11 @@ if [ "x${omnect_rootblk}" != "x" ]; then
 fi
 
 if [ "${default}" != "Certificate Provision" ]; then
-  set root=(hd0,gpt${omnect_os_bootpart})
   set default="omnect-os"
 fi
 
 menuentry 'omnect-os' --unrestricted {
+    set root=(hd0,gpt${omnect_os_bootpart})
     linux /boot/bzImage rootpart=${omnect_os_bootpart} ${kernel_param_rootblk} @@APPEND@@
     initrd /boot/initramfs.cpio.gz
 }
