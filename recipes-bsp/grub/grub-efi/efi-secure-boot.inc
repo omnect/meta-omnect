@@ -1,17 +1,13 @@
 get_efivar -f uint8 -s unprovisioned SetupMode
 
 # load_env is done by grub-efi.cfg
-if [ "${omnect_force_sb_provision}" = "1" ]; then
-    if [ "${unprovisioned}" = "1" ]; then
+if [ "${omnect_force_sb_provision}" = "1" -a "${unprovisioned}" = "1" ]; then
+
     # Create a boot entry for Automatic Certificate Provision.
     # This is especially useful for certain hardware, e.g,
     # Intel NUC5i3MYHE, doedn't support to display a customized
     # BIOS boot option used to launch LockDown.efi.
-    if [ "x${provision_failed}" = "x" ]; then
-        set default="Certificate Provision"
-    fi
-    # using || (OR) did result in a parse error
-    if  [ "x${provision_failed}" = "x0" ]; then
+    if [ "x${provision_failed}" = "x" -o "x${provision_failed}" = "x0" ]; then
         set default="Certificate Provision"
     fi
 
@@ -28,7 +24,6 @@ if [ "${omnect_force_sb_provision}" = "1" ]; then
         save_env provision_failed
         set omnect_force_sb_provision="1"
         save_env omnect_force_sb_provision
-        #reboot
+        reboot
     }
-    fi
 fi
