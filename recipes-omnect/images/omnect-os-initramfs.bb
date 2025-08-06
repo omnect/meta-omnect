@@ -20,7 +20,6 @@ FLASH_MODE_X_PACKAGES = " \
 "
 
 GRUB_SUPPORT_PACKAGES = " \
-    grub-cfg \
     grub-editenv \
     grub-env \
 "
@@ -76,3 +75,5 @@ add_fsck_vfat_support() {
 }
 
 inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'omnect_user', '', d)}
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', 'user-key-store', '', d)}
+inherit omnect-initramfs-sign

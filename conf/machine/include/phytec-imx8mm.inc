@@ -107,3 +107,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-ph
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned is set
 OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "aabb383cafd6f082e0e5c2d7d4eec6f1c5daa10d3613e73d5c659d981be8401a"
+OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned= "ad08b27e6274141bfe09931eb1f635478f15027cee2e81eee86eebfdd2f62363 aabb383cafd6f082e0e5c2d7d4eec6f1c5daa10d3613e73d5c659d981be8401a"

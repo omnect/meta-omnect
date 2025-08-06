@@ -82,6 +82,9 @@ Name of u-boot device-tree bootscript to be generated for devices using u-boot a
 If value is 1 [flash-mode-2](https://github.com/omnect/meta-omnect?tab=readme-ov-file#flash-mode-2) directly flashes the image. Default is unset.
 Normally we save the incoming image to RAM and verify it before we flash. On devices with a minimal RAM configuration this can fail. In this case you can skip the verifying and flash directly.
 
+# OMNECT_GRUB_EFI_SB_FILES
+Files to add from deploydir to grub-efi dir in boot partition. E.g. "grub.cfg grubenv" etc..
+
 # OMNECT_GRUBENV_FILE
 Path to grubenv file in buildsystem. Defaults to `${LAYERDIR_omnect}/files/grubenv`. Relevant for devices which use grub as bootloader, such as genericx86-64.
 
