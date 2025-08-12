@@ -90,7 +90,7 @@ IMAGE_INSTALL = "\
 ROOTFS_POSTPROCESS_COMMAND:append = " add_kernel_and_initramfs;"
 add_kernel_and_initramfs() {
     # delete everything in boot dir excepte device tree files
-    bash -c -O extglob 'cd $D/boot/;rm -rf !(*.dtb);'
+    bash -c -O extglob 'cd $D/boot/;rm -rf !(*.dtb|*.dtbo);'
 
     initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${OMNECT_INITRAMFS_IMAGE_NAME}.${OMNECT_INITRAMFS_FSTYPE})
     kernel=$(readlink -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE})
