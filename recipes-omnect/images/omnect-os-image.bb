@@ -89,8 +89,8 @@ IMAGE_INSTALL = "\
 # updatable via swupdate.
 ROOTFS_POSTPROCESS_COMMAND:append = " add_kernel_and_initramfs;"
 add_kernel_and_initramfs() {
-    # delete everything in boot dir excepte device tree files
-    bash -c -O extglob 'cd $D/boot/;rm -rf !(*.dtb|*.dtbo);'
+    # delete everything in boot dir except device tree files
+    find $D/boot \! \( -name '*.dtb' -o -name '*.dtbo' \) \! -type d -delete
 
     initramfs=$(readlink -f ${DEPLOY_DIR_IMAGE}/${OMNECT_INITRAMFS_IMAGE_NAME}.${OMNECT_INITRAMFS_FSTYPE})
     kernel=$(readlink -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE})
