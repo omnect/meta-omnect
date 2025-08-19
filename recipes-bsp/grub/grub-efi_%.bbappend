@@ -19,4 +19,4 @@ do_compile:append:class-target() {
 
 }
 
-GRUB_BUILDIN:append = " echo"
+GRUB_BUILDIN:append = " echo sleep"

@@ -12,18 +12,18 @@ if [ "${omnect_force_sb_provision}" = "1" -a "${unprovisioned}" = "1" ]; then
     fi
 
     menuentry "Certificate Provision" --unrestricted {
-        set provision_failed="0"
+        unset provision_failed
         save_env provision_failed
-        set omnect_force_sb_provision="0"
+        unset omnect_force_sb_provision
         save_env omnect_force_sb_provision
 
         chainloader "${prefix}/LockDown.efi"
-
-        # Refuse to unlimitedly run into auto provision if failed.
+        boot
         set provision_failed="1"
         save_env provision_failed
         set omnect_force_sb_provision="1"
         save_env omnect_force_sb_provision
+        sleep 60
         reboot
     }
 fi
