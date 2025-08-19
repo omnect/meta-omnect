@@ -1,10 +1,12 @@
 diff --git a/meta-imx-bsp/conf/layer.conf b/meta-imx-bsp/conf/layer.conf
-index 850bced589..e4941302f9 100644
+index 94bea8fe36..5b3d59930f 100644
 --- a/meta-imx-bsp/conf/layer.conf
 +++ b/meta-imx-bsp/conf/layer.conf
-@@ -418,3 +418,5 @@ IMAGE_BOOT_FILES:append:imx93-14x14-lpddr4x-evk = " \
- IMXBOOT_TARGETS:imx93-14x14-lpddr4x-evk = "${@bb.utils.contains('UBOOT_CONFIG', 'fspi', '${IMXBOOT_TARGETS_FSPI}', \
-                                               bb.utils.contains('UBOOT_CONFIG',   'sd', '${IMXBOOT_TARGETS_SD}', \
-                                                                                                       'INVALID', d), d)}"
-+
+@@ -9,6 +9,7 @@ BBFILE_COLLECTIONS += "fsl-bsp-release"
+ BBFILE_PATTERN_fsl-bsp-release := "^${LAYERDIR}/"
+ BBFILE_PRIORITY_fsl-bsp-release = "8"
+ LAYERSERIES_COMPAT_fsl-bsp-release = "mickledore nanbield scarthgap"
 +LAYERDIR_fsl-bsp-release = "${LAYERDIR}"
+ 
+ # Create a mirror for unreliable packages
+ MIRRORS += "http://sourceforge.net/.* http://www.nxp.com/lgfiles/updates/other"
