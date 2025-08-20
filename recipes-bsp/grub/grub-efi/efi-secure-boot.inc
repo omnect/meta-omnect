@@ -19,6 +19,7 @@ if [ "${omnect_force_sb_provision}" = "1" -a "${unprovisioned}" = "1" ]; then
 
         chainloader "${prefix}/LockDown.efi"
         boot
+        # Refuse to unlimitedly run into auto provision if failed.
         set provision_failed="1"
         save_env provision_failed
         set omnect_force_sb_provision="1"
