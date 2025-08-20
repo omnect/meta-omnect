@@ -13,6 +13,7 @@ This yocto meta layer provides the device management distribution `omnect-os`. I
     - First boot script `/usr/bin/omnect_first_boot.sh` which is executed at first boot of the device; it can be adapted via `meta-omnect/recipes-core/systemd/systemd/omnect_first_boot.sh`
     - Factory reset via OS bootloader environment variable `factory-reset`
       - **Note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset) below.
+    - [Secure Boot for x86 UEFI devices](doc/efi_secure_boot.md).
 - `omnect-os update image`: the [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image with the following implicit features:
     - Updating the bootloader
 
