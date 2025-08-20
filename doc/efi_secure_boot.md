@@ -1,5 +1,5 @@
 # UEFI secure boot
-Currently we support secure boot only for x86 plattforms.
+Currently we support secure boot only for x86 platforms.
 
 ## Certificate/Key Provisioning
 - Enable Secure Boot in UEFI (Bios).
@@ -15,7 +15,6 @@ Currently we support secure boot only for x86 plattforms.
     - `sudo reboot`
 
     These steps result in a preselected grub menu entry "Certificate Provision". After executing this menu entry, grub will reboot afterwarts.
-- Enable Secure Boot in UEFI (BIOS).
 - Boot to omnect-os and verify the secure boot state via:
     - `sudo mokutil --sbstate`<br>
       expected result:
