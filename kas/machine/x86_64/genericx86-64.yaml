@@ -7,13 +7,13 @@ repos:
   ext/meta-yocto-bsp:
     url: "https://git.yoctoproject.org/meta-yocto"
     branch: scarthgap
-    commit: "50e5c0d85d3775ac1294bdcd7f11deaa382c9d08"
+    commit: "82602cda1a89644d1acbe230a81c93e3fb5031c8"
     layers:
       meta-yocto-bsp:
   ext/meta-secure-core:
     url: "https://github.com/Wind-River/meta-secure-core.git"
     branch: "scarthgap"
-    commit: "7a51f091cccfb8f629ce962f13b7b45d23005093"
+    commit: "eba66ba00566110d3bcdfe2fef47f81d4806012b"
     layers:
       meta-efi-secure-boot:
       meta-secure-core-common:
@@ -25,7 +25,7 @@ repos:
   ext/meta-perl:
     url: "https://github.com/openembedded/meta-openembedded.git"
     branch: "scarthgap"
-    commit: "67ad83dd7c2485dae0c90eac345007af6195b84d"
+    commit: "b9fb6556a3c8a3e477dce334205b658cb79ad501"
     layers:
       meta-perl:
 
