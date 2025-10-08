@@ -34,6 +34,6 @@ fi
 
 menuentry 'omnect-os' --unrestricted {
     set root=(hd0,gpt${omnect_os_bootpart})
-    linux /boot/bzImage rootpart=${omnect_os_bootpart} ${kernel_param_rootblk} @@APPEND@@
+    linux /boot/bzImage rootpart=${omnect_os_bootpart} ${kernel_param_rootblk} @@APPEND@@ ${extra_bootargs}
     initrd /boot/initramfs.cpio.gz
 }
