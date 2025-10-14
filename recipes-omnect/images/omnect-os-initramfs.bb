@@ -50,6 +50,7 @@ PACKAGE_INSTALL = "\
     os-release \
     util-linux-fsck \
     util-linux-sfdisk \
+    util-linux-uuidgen \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', '${FLASH_MODE_X_PACKAGES} dropbear', '', d)} \

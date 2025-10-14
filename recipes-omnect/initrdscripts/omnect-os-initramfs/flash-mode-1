@@ -201,8 +201,18 @@ run_flash_mode_1() {
         run_cmd_stdout dd if=/dev/omnect/cert    of="$(readlink -f ${blk_dev_dst}${p}6)" bs=10M || return 1
     fi
 
+    orig_uuid=$(sfdisk --part-uuid ${blk_dev_dst} 1)
+    new_uuid=$(uuidgen)
+    echo "Make partition UUID of copied boot partition unique (${orig_uuid} -> ${new_uuid})"
+    run_cmd_stdout sfdisk --part-uuid ${blk_dev_dst} 1 ${new_uuid} || return 1
+
     echo "COPY current rootfs to rootfsA..."
     run_cmd_stdout e2image -ra -p "/dev/omnect/rootCurrent" "$(readlink -f ${blk_dev_dst}${p}2)" || return 1
+
+    orig_uuid=$(sfdisk --part-uuid ${blk_dev_dst} 2)
+    new_uuid=$(uuidgen)
+    echo "Make partition UUID of copied rootfs partition unique (${orig_uuid} -> ${new_uuid})"
+    run_cmd_stdout sfdisk --part-uuid ${blk_dev_dst} 2 ${new_uuid} || return 1
 
     if [[ " ${machine_features} " =~ " grub " ]]; then
         echo "Configuring grub"
