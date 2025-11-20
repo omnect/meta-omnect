@@ -7,7 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "scarthgap"
-    commit: "9864fc05235f5d6a359559e4c86a37ee9f8dc319"
+    commit: "54425fe52f16c9aafab35278638055c07db402d1"
     patches:
       p001:
         repo: "meta-omnect"
@@ -15,7 +15,7 @@ repos:
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: "scarthgap"
-    commit: "212f4b3b175f6d58c691192545454cd2d2e908d9"
+    commit: "7d83a350d8b28498321a481a2a1c51bb4afb48e9"
     patches:
       p001:
         repo: "meta-omnect"
