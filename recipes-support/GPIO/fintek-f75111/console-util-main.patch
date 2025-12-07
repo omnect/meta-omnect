@@ -1,0 +1,11 @@
+--- a/main.c	2025-08-12 15:21:01.903424114 +0000
++++ b/main.c	2025-08-12 15:21:21.184665414 +0000
+@@ -16,7 +16,7 @@
+      : (optarg != NULL))
+ 
+ //extern platform Platform;
+-F75111_Address m_F75111;
++extern F75111_Address m_F75111;
+ BYTE addr;
+ 
+ char program_name[100] = "Sample";
