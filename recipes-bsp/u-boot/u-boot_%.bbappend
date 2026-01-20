@@ -10,6 +10,7 @@ SRC_URI += "\
     file://lock-env.cfg \
     file://reloc_gd_env.cfg \
     file://silent_console.cfg \
+    file://disable-squashfs.cfg \
     file://omnect_env.h \
     file://omnect_env.env \
 "

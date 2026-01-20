@@ -7,6 +7,7 @@ SRC_URI += " \
     file://boot_retry.cfg \
     file://disable_android_boot_image.cfg \
     file://disable-nfs.cfg \
+    file://disable-squashfs.cfg \
     file://disable-usb.cfg \
     file://do_not_use_default_bootcommand.cfg \
     file://enable-gpt.cfg \
