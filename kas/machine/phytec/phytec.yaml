@@ -7,7 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "scarthgap"
-    commit: "f9d9ee9f5e74d1336757361bb91c9413250f19fc"
+    commit: "951384d6a847a5cfcb9c34e31e2e47c15a91437f"
     patches:
       p001:
         repo: "meta-omnect"
@@ -15,15 +15,15 @@ repos:
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: "scarthgap"
-    commit: "7d83a350d8b28498321a481a2a1c51bb4afb48e9"
+    commit: "902dde8c5bd29bb507ac8d37772565a6c9ab77cd"
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-freescale_layerdir.patch"
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
-    branch: "scarthgap-6.6.52-2.2.1"
-    commit: "e83d4402acde050d2b2761995761c81c797b5b03"
+    branch: "scarthgap-6.6.52-2.2.2"
+    commit: "e1ec1a20d573e3913f4ad90fa36546ed2bc87715"
     layers:
       meta-imx-bsp:
       meta-imx-sdk:

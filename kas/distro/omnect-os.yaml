@@ -10,7 +10,7 @@ repos:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
     branch: "scarthgap"
-    commit: "7ed4330bcf1ecd4aa34bfbe1fd7079381b62b1e7"
+    commit: "2759d8870ea387b76c902070bed8a6649ff47b56"
     layers:
       # meta-multimedia is used by qemu_8.2.2.imx.bb (tauri) ToDo: possible to handle that in the machine specific kas file?
       meta-multimedia:
@@ -28,17 +28,17 @@ repos:
   ext/meta-security:
     url: "https://git.yoctoproject.org/meta-security"
     branch: "scarthgap"
-    commit: "afbbe28cee4af2c6760aaead43a4a3ef29969809"
+    commit: "97e482b71688b62ac1109d16e89368122f039cbf"
     layers:
       meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     branch: "scarthgap"
-    commit: "2b48267fcfedf61c2a33c7830e794115263639f8"
+    commit: "226701adf0f7c8ed08d4d6a7783e88d34ef2d5e9"
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     branch: "scarthgap"
-    commit: "17ac21e7d7f6f40a87618b22278b63bcfa14dbf2"
+    commit: "f92518e20530edfebca45e4170e11460949a5303"
     patches:
       p001:
         repo: "meta-omnect"
