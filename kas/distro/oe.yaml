@@ -6,15 +6,15 @@ repos:
   ext/bitbake:
     url: "https://git.openembedded.org/bitbake"
     branch: "2.8"
-    # tag yocto-5.0.14
+    # tag yocto-5.0.15
     commit: "8dcf084522b9c66a6639b5f117f554fde9b6b45a"
     layers:
       .: 0
   ext/_openembedded-core: #_ prefixed because of layer order with same prio e.g. meta-openembedded
     url: "https://git.openembedded.org/openembedded-core"
     branch: "scarthgap"
-    # tag yocto-5.0.14
-    commit: "471adaa5f77fa3b974eab60a2ded48e360042828"
+    # tag yocto-5.0.15
+    commit: "6988157ad983978ffd6b12bcefedd4deaffdbbd1"
     layers:
       meta:
     patches:
@@ -22,4 +22,4 @@ repos:
         repo: "meta-omnect"
         path: "kas/patches/oe.patch"
 env:
-  OE_VERSION: "5.0.14"
+  OE_VERSION: "5.0.15"
