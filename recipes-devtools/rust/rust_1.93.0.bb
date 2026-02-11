@@ -20,6 +20,9 @@ INHIBIT_DEFAULT_RUST_DEPS:class-native = "1"
 # We don't need to depend on gcc-native because yocto assumes it exists
 PROVIDES:class-native = "virtual/${TARGET_PREFIX}rust"
 
+# GCC 13 doesn't support -fcanon-prefix-map (GCC 14+)
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
+
 S = "${RUSTSRC}"
 
 # Use at your own risk, accepted values are stable, beta and nightly
@@ -134,6 +137,8 @@ python do_configure() {
     config.set("rust", "rpath", e(True))
     config.set("rust", "remap-debuginfo", e(True))
     config.set("rust", "channel", e(d.expand("${RUST_CHANNEL}")))
+    # Don't install LLVM tools (llvm-cov, etc.) - they're not built for target
+    config.set("rust", "llvm-tools", e(False))
 
     # Whether or not to optimize the compiler and standard library
     config.set("rust", "optimize", e(True))
