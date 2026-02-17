@@ -22,6 +22,9 @@
 | **Wifi Commissioning via Bluetooth** | no                      |
 | **LTE Support** [^1]                 | optional (experimental) |
 | [**Secure Boot**](efi_secure_boot.md)| yes                     |
-| **pstore** aka reboot reasons        | planned                 |
+| **pstore** aka reboot reasons        | planned [^2]            |
 
 [^1]: in [LTE documentation](LTE.md) you can find more details concerning configuration
+[^2]: there exist BIOS versions for Arrakis Mk3 series devices containing an issue with heavy use of EFI variables which eventually causes a boot failure due to no more boot entries in the BIOS; while EFI variables form the base of the [**pstore** feature](Feature-pstore) implementation for devices using BIOS as initial boot loader (opposed to U-Boot) this feature cannot be enabled on such devices, yet.
+
+**Note:** depending on the device watchdog support might not be given, because for example Arrakis Mk4 devices use a dedicated super IO chip which lacks integration into Linux kernel's watchdog infrastructure.
