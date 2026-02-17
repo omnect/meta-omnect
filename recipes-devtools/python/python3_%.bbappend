@@ -1,6 +1,9 @@
 python() {
     from pathlib import Path
 
+    if d.getVar("CLASSOVERRIDE") != "class-target":
+        return
+
     # we may have no workdir at parsetime -> create directly in DEPLOY_DIR_IMAGE
     Path(d.getVar("DEPLOY_DIR_IMAGE")).mkdir(parents=True, exist_ok=True)
 
