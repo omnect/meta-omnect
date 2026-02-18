@@ -1,79 +1,5 @@
-diff --git a/meta/classes-recipe/rust-target-config.bbclass b/meta/classes-recipe/rust-target-config.bbclass
-index 31b4bd9afd..0c304f62e1 100644
---- a/meta/classes-recipe/rust-target-config.bbclass
-+++ b/meta/classes-recipe/rust-target-config.bbclass
-@@ -127,7 +127,7 @@ def llvm_features(d):
- llvm_features[vardepvalue] = "${@llvm_features(d)}"
- 
- ## arm-unknown-linux-gnueabihf
--DATA_LAYOUT[arm-eabi] = "e-m:e-p:32:32-i64:64-v128:64:128-a:0:32-n32-S64"
-+DATA_LAYOUT[arm-eabi] = "e-m:e-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64"
- TARGET_ENDIAN[arm-eabi] = "little"
- TARGET_POINTER_WIDTH[arm-eabi] = "32"
- TARGET_C_INT_WIDTH[arm-eabi] = "32"
-@@ -135,7 +135,7 @@ MAX_ATOMIC_WIDTH[arm-eabi] = "64"
- FEATURES[arm-eabi] = "+v6,+vfp2"
- 
- ## armv7-unknown-linux-gnueabihf
--DATA_LAYOUT[armv7-eabi] = "e-m:e-p:32:32-i64:64-v128:64:128-a:0:32-n32-S64"
-+DATA_LAYOUT[armv7-eabi] = "e-m:e-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64"
- TARGET_ENDIAN[armv7-eabi] = "little"
- TARGET_POINTER_WIDTH[armv7-eabi] = "32"
- TARGET_C_INT_WIDTH[armv7-eabi] = "32"
-@@ -143,14 +143,14 @@ MAX_ATOMIC_WIDTH[armv7-eabi] = "64"
- FEATURES[armv7-eabi] = "+v7,+vfp2,+thumb2"
- 
- ## aarch64-unknown-linux-{gnu, musl}
--DATA_LAYOUT[aarch64] = "e-m:e-i8:8:32-i16:16:32-i64:64-i128:128-n32:64-S128"
-+DATA_LAYOUT[aarch64] = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i8:8:32-i16:16:32-i64:64-i128:128-n32:64-S128-Fn32"
- TARGET_ENDIAN[aarch64] = "little"
- TARGET_POINTER_WIDTH[aarch64] = "64"
- TARGET_C_INT_WIDTH[aarch64] = "32"
- MAX_ATOMIC_WIDTH[aarch64] = "128"
- 
- ## x86_64-unknown-linux-{gnu, musl}
--DATA_LAYOUT[x86_64] = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
-+DATA_LAYOUT[x86_64] = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-f80:128-n8:16:32:64-S128"
- TARGET_ENDIAN[x86_64] = "little"
- TARGET_POINTER_WIDTH[x86_64] = "64"
- TARGET_C_INT_WIDTH[x86_64] = "32"
-@@ -397,6 +397,15 @@ def rust_gen_target(d, thing, wd, arch):
-     tspec['position-independent-executables'] = True
-     tspec['panic-strategy'] = d.getVar("RUST_PANIC_STRATEGY")
- 
-+    # fix for: "Error loading target specification: ARM targets must set `llvm-floatabi` to `hard` or `soft`."
-+    if "arm" in tspec['arch']:
-+        tspec['llvm-floatabi'] = d.getVar('TARGET_FPU')
-+
-+    # Convert width fields from strings to integers for Rust 1.93+
-+    for field in ['target-pointer-width', 'target-c-int-width', 'max-atomic-width']:
-+        if field in tspec and isinstance(tspec[field], str):
-+            tspec[field] = int(tspec[field])
-+
-     # write out the target spec json file
-     with open(wd + rustsys + '.json', 'w') as f:
-         json.dump(tspec, f, indent=4)
-@@ -404,7 +413,7 @@ def rust_gen_target(d, thing, wd, arch):
- # These are accounted for in tmpdir path names so don't need to be in the task sig
- rust_gen_target[vardepsexclude] += "ABIEXTENSION llvm_cpu"
- 
--do_rust_gen_targets[vardeps] += "DATA_LAYOUT TARGET_ENDIAN TARGET_POINTER_WIDTH TARGET_C_INT_WIDTH MAX_ATOMIC_WIDTH FEATURES"
-+do_rust_gen_targets[vardeps] += "DATA_LAYOUT TARGET_ENDIAN TARGET_POINTER_WIDTH TARGET_C_INT_WIDTH MAX_ATOMIC_WIDTH FEATURES LLVM_TARGET"
- 
- RUST_TARGETS_DIR = "${WORKDIR}/rust-targets/"
- export RUST_TARGET_PATH = "${RUST_TARGETS_DIR}"
-diff --git a/meta/conf/layer.conf b/meta/conf/layer.conf
-index 4d09619a28..495f51b602 100644
---- a/meta/conf/layer.conf
-+++ b/meta/conf/layer.conf
-@@ -133,3 +133,5 @@ PATH := "${@'${BITBAKEPATH}:' if '${BITBAKEPATH}' != '' else ''}${HOSTTOOLS_DIR}
- BB_GLOBAL_PYMODULES = "os sys time"
- 
- addpylib ${LAYERDIR}/lib oe
-+
-+LAYERDIR_core = "${LAYERDIR}"
 diff --git a/scripts/lib/wic/plugins/source/bootimg-efi.py b/scripts/lib/wic/plugins/source/bootimg-efi.py
-index 37d07093f5..7a63453f2e 100644
+index 7cc5131541..4e899200f1 100644
 --- a/scripts/lib/wic/plugins/source/bootimg-efi.py
 +++ b/scripts/lib/wic/plugins/source/bootimg-efi.py
 @@ -297,113 +297,17 @@ class BootimgEFIPlugin(SourcePlugin):
@@ -201,3 +127,77 @@ index 37d07093f5..7a63453f2e 100644
  
          if get_bitbake_var("IMAGE_EFI_BOOT_FILES"):
              for src_path, dst_path in cls.install_task:
+diff --git a/meta/conf/layer.conf b/meta/conf/layer.conf
+index efbf2610f9..330c964f87 100644
+--- a/meta/conf/layer.conf
++++ b/meta/conf/layer.conf
+@@ -132,3 +132,5 @@ PATH := "${@'${BITBAKEPATH}:' if '${BITBAKEPATH}' != '' else ''}${HOSTTOOLS_DIR}
+ BB_GLOBAL_PYMODULES = "os sys time"
+ 
+ addpylib ${LAYERDIR}/lib oe
++
++LAYERDIR_core = "${LAYERDIR}"
+diff --git a/meta/classes-recipe/rust-target-config.bbclass b/meta/classes-recipe/rust-target-config.bbclass
+index 31b4bd9afd..0c304f62e1 100644
+--- a/meta/classes-recipe/rust-target-config.bbclass
++++ b/meta/classes-recipe/rust-target-config.bbclass
+@@ -127,7 +127,7 @@ def llvm_features(d):
+ llvm_features[vardepvalue] = "${@llvm_features(d)}"
+ 
+ ## arm-unknown-linux-gnueabihf
+-DATA_LAYOUT[arm-eabi] = "e-m:e-p:32:32-i64:64-v128:64:128-a:0:32-n32-S64"
++DATA_LAYOUT[arm-eabi] = "e-m:e-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64"
+ TARGET_ENDIAN[arm-eabi] = "little"
+ TARGET_POINTER_WIDTH[arm-eabi] = "32"
+ TARGET_C_INT_WIDTH[arm-eabi] = "32"
+@@ -135,7 +135,7 @@ MAX_ATOMIC_WIDTH[arm-eabi] = "64"
+ FEATURES[arm-eabi] = "+v6,+vfp2"
+ 
+ ## armv7-unknown-linux-gnueabihf
+-DATA_LAYOUT[armv7-eabi] = "e-m:e-p:32:32-i64:64-v128:64:128-a:0:32-n32-S64"
++DATA_LAYOUT[armv7-eabi] = "e-m:e-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64"
+ TARGET_ENDIAN[armv7-eabi] = "little"
+ TARGET_POINTER_WIDTH[armv7-eabi] = "32"
+ TARGET_C_INT_WIDTH[armv7-eabi] = "32"
+@@ -143,14 +143,14 @@ MAX_ATOMIC_WIDTH[armv7-eabi] = "64"
+ FEATURES[armv7-eabi] = "+v7,+vfp2,+thumb2"
+ 
+ ## aarch64-unknown-linux-{gnu, musl}
+-DATA_LAYOUT[aarch64] = "e-m:e-i8:8:32-i16:16:32-i64:64-i128:128-n32:64-S128"
++DATA_LAYOUT[aarch64] = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i8:8:32-i16:16:32-i64:64-i128:128-n32:64-S128-Fn32"
+ TARGET_ENDIAN[aarch64] = "little"
+ TARGET_POINTER_WIDTH[aarch64] = "64"
+ TARGET_C_INT_WIDTH[aarch64] = "32"
+ MAX_ATOMIC_WIDTH[aarch64] = "128"
+ 
+ ## x86_64-unknown-linux-{gnu, musl}
+-DATA_LAYOUT[x86_64] = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
++DATA_LAYOUT[x86_64] = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-f80:128-n8:16:32:64-S128"
+ TARGET_ENDIAN[x86_64] = "little"
+ TARGET_POINTER_WIDTH[x86_64] = "64"
+ TARGET_C_INT_WIDTH[x86_64] = "32"
+@@ -397,6 +397,15 @@ def rust_gen_target(d, thing, wd, arch):
+     tspec['position-independent-executables'] = True
+     tspec['panic-strategy'] = d.getVar("RUST_PANIC_STRATEGY")
+ 
++    # fix for: "Error loading target specification: ARM targets must set `llvm-floatabi` to `hard` or `soft`."
++    if "arm" in tspec['arch']:
++        tspec['llvm-floatabi'] = d.getVar('TARGET_FPU')
++
++    # Convert width fields from strings to integers for Rust 1.93+
++    for field in ['target-pointer-width', 'target-c-int-width', 'max-atomic-width']:
++        if field in tspec and isinstance(tspec[field], str):
++            tspec[field] = int(tspec[field])
++
+     # write out the target spec json file
+     with open(wd + rustsys + '.json', 'w') as f:
+         json.dump(tspec, f, indent=4)
+@@ -404,7 +413,7 @@ def rust_gen_target(d, thing, wd, arch):
+ # These are accounted for in tmpdir path names so don't need to be in the task sig
+ rust_gen_target[vardepsexclude] += "ABIEXTENSION llvm_cpu"
+ 
+-do_rust_gen_targets[vardeps] += "DATA_LAYOUT TARGET_ENDIAN TARGET_POINTER_WIDTH TARGET_C_INT_WIDTH MAX_ATOMIC_WIDTH FEATURES"
++do_rust_gen_targets[vardeps] += "DATA_LAYOUT TARGET_ENDIAN TARGET_POINTER_WIDTH TARGET_C_INT_WIDTH MAX_ATOMIC_WIDTH FEATURES LLVM_TARGET"
+ 
+ RUST_TARGETS_DIR = "${WORKDIR}/rust-targets/"
+ export RUST_TARGET_PATH = "${RUST_TARGETS_DIR}"
