@@ -9,6 +9,19 @@ index 7fa3832..b6270cb 100644
 +
 +[lints.rust]
 +unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_pointer_width,values("128"))'] }
+diff --git a/aziotctl/aziotctl-common/src/config/apply.rs b/aziotctl/aziotctl-common/src/config/apply.rs
+index 1111111..2222222 100644
+--- a/aziotctl/aziotctl-common/src/config/apply.rs
++++ b/aziotctl/aziotctl-common/src/config/apply.rs
+@@ -139,7 +139,7 @@
+                                             cn: device_id.clone(),
+                                             rest: entries
+                                                 .iter()
+-                                                .filter(|&(k, _v)| (!k.eq_ignore_ascii_case("cn")))
++                                                .filter(|&(k, _v)| !k.eq_ignore_ascii_case("cn"))
+                                                 .map(|(k, v)| (k.to_uppercase(), v.clone()))
+                                                 .collect(),
+                                         })
 diff --git a/identity/aziot-identity-common/src/lib.rs b/identity/aziot-identity-common/src/lib.rs
 index 3a49e4e..24942da 100644
 --- a/identity/aziot-identity-common/src/lib.rs
@@ -92,6 +105,18 @@ index 666c181..316e34b 100644
 +
 +[lints.rust]
 +unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ossl110)'] }
+diff --git a/http-common/src/server.rs b/http-common/src/server.rs
+index 181e6c6..883b44e 100644
+--- a/http-common/src/server.rs
++++ b/http-common/src/server.rs
+@@ -401,6 +401,7 @@
+
+ /// This server is never actually used, but is useful to ensure that the macro
+ /// works as expected.
++#[allow(dead_code)]
+ mod test_server {
+     use crate as http_common;
+
 diff --git a/tpm/aziot-tpmd/src/http/get_tpm_keys.rs b/tpm/aziot-tpmd/src/http/get_tpm_keys.rs
 index 181e6c6..883b44e 100644
 --- a/tpm/aziot-tpmd/src/http/get_tpm_keys.rs
