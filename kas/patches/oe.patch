@@ -138,7 +138,7 @@ index efbf2610f9..330c964f87 100644
 +
 +LAYERDIR_core = "${LAYERDIR}"
 diff --git a/meta/classes-recipe/rust-target-config.bbclass b/meta/classes-recipe/rust-target-config.bbclass
-index 1bd7626bd8..84efa67bc8 100644
+index 31b4bd9afd..0c304f62e1 100644
 --- a/meta/classes-recipe/rust-target-config.bbclass
 +++ b/meta/classes-recipe/rust-target-config.bbclass
 @@ -127,7 +127,7 @@ def llvm_features(d):
@@ -176,7 +176,7 @@ index 1bd7626bd8..84efa67bc8 100644
  TARGET_ENDIAN[x86_64] = "little"
  TARGET_POINTER_WIDTH[x86_64] = "64"
  TARGET_C_INT_WIDTH[x86_64] = "32"
-@@ -396,6 +396,10 @@ def rust_gen_target(d, thing, wd, arch):
+@@ -397,6 +397,15 @@ def rust_gen_target(d, thing, wd, arch):
      tspec['position-independent-executables'] = True
      tspec['panic-strategy'] = d.getVar("RUST_PANIC_STRATEGY")
  
@@ -184,10 +184,15 @@ index 1bd7626bd8..84efa67bc8 100644
 +    if "arm" in tspec['arch']:
 +        tspec['llvm-floatabi'] = d.getVar('TARGET_FPU')
 +
++    # Convert width fields from strings to integers for Rust 1.93+
++    for field in ['target-pointer-width', 'target-c-int-width', 'max-atomic-width']:
++        if field in tspec and isinstance(tspec[field], str):
++            tspec[field] = int(tspec[field])
++
      # write out the target spec json file
      with open(wd + rustsys + '.json', 'w') as f:
          json.dump(tspec, f, indent=4)
-@@ -403,7 +407,7 @@ def rust_gen_target(d, thing, wd, arch):
+@@ -404,7 +413,7 @@ def rust_gen_target(d, thing, wd, arch):
  # These are accounted for in tmpdir path names so don't need to be in the task sig
  rust_gen_target[vardepsexclude] += "ABIEXTENSION llvm_cpu"
  
