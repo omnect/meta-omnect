@@ -738,6 +738,9 @@ InstallUpdate() {
                             rm /tmp/omnect-bootloader-update-not-necessary
                         fi
                     fi
+                    if [ ${ret_val} -eq 0 ]; then
+                        swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,kernelargs &>> "${swupdate_log_file}"
+                    fi
                 fi
             fi
 

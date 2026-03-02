@@ -63,6 +63,11 @@ do_bootloader_package:append() {
     install -m 0644 -D boot-partition-update.tar.gz ${DEPLOY_DIR_IMAGE}
 }
 
+addtask do_extra_bootargs_default before do_swuimage
+do_extra_bootargs_default() {
+    touch ${DEPLOY_DIR_IMAGE}/extra_bootargs_omnect
+}
+
 inherit swupdate
 
 # images to build before building swupdate image
@@ -71,7 +76,7 @@ IMAGE_DEPENDS = "omnect-os-image"
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 # images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "omnect-os boot-partition-update"
+SWUPDATE_IMAGES = "omnect-os boot-partition-update extra_bootargs_omnect"
 SWUPDATE_IMAGES:append:phytec-imx8mm = " bootloader.versioned.bin.gz"
 
 
