@@ -740,6 +740,8 @@ InstallUpdate() {
                     fi
                     if [ ${ret_val} -eq 0 ]; then
                         swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,kernelargs &>> "${swupdate_log_file}"
+                        omnect_extra_bootargs.sh
+
                     fi
                 fi
             fi
