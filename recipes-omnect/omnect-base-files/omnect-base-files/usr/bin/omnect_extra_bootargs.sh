@@ -11,5 +11,5 @@ new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trail
 
 
 if [ "${current_bootargs}" != "${new_bootargs}" ] && [ -n "${new_bootargs}" ]; then
-  bootloader_env.sh set extra_bootargs ${new_bootargs}
+  bootloader_env.sh set extra_bootargs "${new_bootargs}"
 fi
