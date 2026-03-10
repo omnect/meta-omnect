@@ -11,6 +11,7 @@ SRC_URI = "\
     file://etc/profile.d/omnect_profile.sh \
     file://etc/profile.d/omnect_prompt.sh \
     file://etc/sudoers.d/001_omnect \
+    file://usr/bin/omnect_extra_bootargs.sh \
     file://usr/bin/omnect_get_deviceid.sh \
     file://usr/bin/omnect_get_dps_tpm_enrollment.sh \
 "
@@ -33,6 +34,7 @@ FILES:${PN} = "\
     /mnt/etc \
     /mnt/factory \
     /mnt/rootCurrent \
+    /usr/bin/omnect_extra_bootargs.sh \
     /usr/bin/omnect_get_deviceid.sh \
     /usr/bin/omnect_get_dps_tpm_enrollment.sh \
     /var/lib \
@@ -40,6 +42,7 @@ FILES:${PN} = "\
 
 do_install() {
     install -m 0644 -D ${WORKDIR}/etc/bashrc ${D}/etc/bashrc
+    install -m 0755 -D ${WORKDIR}/usr/bin/omnect_extra_bootargs.sh ${D}/usr/bin/omnect_extra_bootargs.sh
     install -m 0755 -D ${WORKDIR}/usr/bin/omnect_get_deviceid.sh ${D}/usr/bin/omnect_get_deviceid.sh
     if ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', 'true', 'false', d)}; then
         install -m 0755 -D ${WORKDIR}/usr/bin/omnect_get_dps_tpm_enrollment.sh ${D}/usr/bin/omnect_get_dps_tpm_enrollment.sh

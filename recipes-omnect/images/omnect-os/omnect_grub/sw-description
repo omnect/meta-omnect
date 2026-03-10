@@ -46,7 +46,18 @@ software =
                     }
                 );
             };
-
+            kernelargs: {
+                files: (
+                    {
+                        filename = "extra_bootargs_omnect";
+                        sha256 = "$swupdate_get_sha256(extra_bootargs_omnect)";
+                        path = "/extra_bootargs_omnect";
+                        type = "rawfile";
+                        device = "/dev/omnect/boot";
+                        filesystem = "vfat";
+                    }
+                );
+            };
 		};
         embedded-script ="
         function check_bootloader_version(image)
