@@ -15,7 +15,7 @@ repos:
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: "scarthgap"
-    commit: "3be503e788c41d6eec8368dd9117e6bbd7f7a588"
+    commit: "902dde8c5bd29bb507ac8d37772565a6c9ab77cd"
     patches:
       p001:
         repo: "meta-omnect"
