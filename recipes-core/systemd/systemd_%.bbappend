@@ -56,11 +56,9 @@ do_install:append() {
     [ -n "${JOURNALD_RuntimeMaxFiles}" ]    && sed -i 's/^#RuntimeMaxFiles=/RuntimeMaxFiles=${JOURNALD_RuntimeMaxFiles} /' ${D}${sysconfdir}/systemd/journald.conf
     [ -n "${JOURNALD_ForwardToSyslog}" ]    && sed -i -E 's/^#ForwardToSyslog=(.*)/ForwardToSyslog=${JOURNALD_ForwardToSyslog} /' ${D}${sysconfdir}/systemd/journald.conf
 
-    # delete systemd-journald-audit.socket if audit is not in DISTRO_FEATURES
-    if ${@bb.utils.contains('DISTRO_FEATURES', 'audit', 'false', 'true', d)}; then
-        rm -f ${D}${systemd_system_unitdir}/sockets.target.wants/systemd-journald-audit.socket
-        rm -f ${D}${systemd_system_unitdir}/systemd-journald-audit.socket
-    fi
+    # delete systemd-journald-audit.socket - we don't use this feature (yet)
+    rm -f ${D}${systemd_system_unitdir}/sockets.target.wants/systemd-journald-audit.socket
+    rm -f ${D}${systemd_system_unitdir}/systemd-journald-audit.socket
 
     # sync time on sysinit
     install -d ${D}${sysconfdir}/systemd/system/sysinit.target.wants
