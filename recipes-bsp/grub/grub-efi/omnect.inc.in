@@ -23,17 +23,13 @@ else
   save_env omnect_validate_update_failed
 fi
 
-if [ "x${omnect_rootblk}" != "x" ]; then
-  set kernel_param_rootblk=rootblk=${omnect_rootblk}
-  export kernel_param_rootblk
-fi
-
 if [ "${default}" != "Certificate Provision" ]; then
   set default="omnect-os"
 fi
 
 menuentry 'omnect-os' --unrestricted {
     set root=(hd0,gpt${omnect_os_bootpart})
-    linux /boot/bzImage rootpart=${omnect_os_bootpart} ${kernel_param_rootblk} @@APPEND@@ ${extra_bootargs}
+    probe --set=bootpart_fsuuid --fs-uuid ${root}
+    linux /boot/bzImage rootpart=${omnect_os_bootpart} bootpart_fsuuid=${bootpart_fsuuid} @@APPEND@@ ${extra_bootargs}
     initrd /boot/initramfs.cpio.gz
 }
