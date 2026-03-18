@@ -1,4 +1,14 @@
-#!/bin/bash
+#!/bin/bash -e
+set -o pipefail
+
+commands=("get_current" "get_new" "set")
+argsc=${#}
+
+function help() {
+    echo "usage:"
+    echo "bootloader_env.sh command key [value]"
+    echo "    command: {get_current,get_new,set}"
+}
 
 #todo check if boot is mounted
 # check if we're root
@@ -9,7 +19,19 @@ current_bootargs=$(bootloader_env.sh get extra_bootargs)
 new_bootargs="$(cat /boot/extra_bootargs_omnect) $(cat /boot/extra_bootargs_custom)"
 new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
 
+function get_current() {
+  [[ ${argsc} -ne 2 ]] && help && exit 1
+  echo ${current_bootargs}
+}
 
-if [ "${current_bootargs}" != "${new_bootargs}" ] && [ -n "${new_bootargs}" ]; then
-  bootloader_env.sh set extra_bootargs "${new_bootargs}"
-fi
+function get_new() {
+  [[ ${argsc} -ne 2 ]] && help && exit 1
+  echo ${new_bootargs}
+}
+
+function set() {
+  [[ ${argsc} -ne 2 ]] && help && exit 1
+  if [ "${current_bootargs}" != "${new_bootargs}" ] && [ -n "${new_bootargs}" ]; then
+    bootloader_env.sh set extra_bootargs "${new_bootargs}"
+  fi
+}

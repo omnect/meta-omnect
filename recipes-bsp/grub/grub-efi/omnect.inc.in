@@ -19,6 +19,8 @@ else
   save_env omnect_validate_update_part
   set omnect_validate_update=
   save_env omnect_validate_update
+  set omnect_validate_extra_bootargs=
+  save_env omnect_validate_extra_bootargs
   set omnect_validate_update_failed=1
   save_env omnect_validate_update_failed
 fi
