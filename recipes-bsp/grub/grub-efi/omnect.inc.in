@@ -11,7 +11,8 @@ if [ "x${omnect_validate_update}" = "x" ]; then
     set omnect_validate_update=1
     save_env omnect_validate_update
     set omnect_os_bootpart=${omnect_validate_update_part}
-    # no save_env omnect_os_bootpart here!
+    set extra_bootargs=${omnect_validate_extra_bootargs}
+    # no save_env omnect_os_bootpart + extra_bootargs here!
   fi
 else
   echo "Update validation failed - booting from partition ${omnect_os_bootpart}"

@@ -20,6 +20,7 @@ factory_reset_enabled() {
         ret=1 # no factory reset triggered; normal boot
     else
         set_bootloader_env_var "factory-reset" ""
+        touch /run/factory-reset
     fi
 
     # we already mounted /dev/omnect/boot when we're using grub. so we unmount so we don't disturb the restore mount/umount handling
@@ -331,5 +332,6 @@ factory_reset_run() {
     factory_reset_mount  # logical filesystem tree
     iterate_restore_list 0 "${preserve_list[@]}"
     factory_reset_umount
+    rm -f /run/factory-reset
     msg "factory-reset done"
 }
