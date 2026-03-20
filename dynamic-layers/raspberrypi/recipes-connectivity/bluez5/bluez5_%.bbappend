@@ -3,7 +3,7 @@ do_install:append () {
     # Error: Error { kind: Internal(DBus("org.freedesktop.DBus.Error.UnknownMethod")), message: "Method \"RegisterAdvertisement\" with signature \"oa{sv}\" on interface \"org.bluez.LEAdvertisingManager1\" doesn't exist\n" }
     # only a restart of bluetooth helps
     if ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', 'true', 'false', d)}; then
-        sed -i -e 's/^ConditionPathIsDirectory=\(.*\)$/ConditionPathIsDirectory=\1\nPartOf=wifi-commissioning-service@wlan0.service/' \
+        sed -i -e 's/^ConditionPathIsDirectory=\(.*\)$/ConditionPathIsDirectory=\1\nPartOf=wifi-commissioning-service.service/' \
         ${D}${systemd_system_unitdir}/bluetooth.service
     fi
 }

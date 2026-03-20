@@ -30,9 +30,17 @@ do_install:append() {
     sed -i '/^Group=wifi_commissioning$/a SupplementaryGroups=wpa_supplicant' \
         ${D}${systemd_system_unitdir}/wifi-commissioning-service.service
 
-    # Disable BLE transport when bluetooth is not available
+    # omnect uses the wpa_supplicant template instance (wpa_supplicant@wlan0)
+    sed -i 's/wpa_supplicant\.service/wpa_supplicant@wlan0.service/g' \
+        ${D}${systemd_system_unitdir}/wifi-commissioning-service.service
+
+    # When bluetooth is absent: remove bluetooth deps and disable BLE transport
     if [ "${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'yes', 'no', d)}" = "no" ]; then
-        sed -i "/^ExecStart/s|'$| --no-enable-ble'|" \
+        sed -i '/^Wants=bluetooth.service$/d' \
+            ${D}${systemd_system_unitdir}/wifi-commissioning-service.service
+        sed -i '/^After=bluetooth.service$/d' \
+            ${D}${systemd_system_unitdir}/wifi-commissioning-service.service
+        sed -i "/^ExecStart/s|'$| --disable-ble'|" \
             ${D}${systemd_system_unitdir}/wifi-commissioning-service.service
     fi
 
@@ -51,4 +59,8 @@ FILES:${PN} += "\
     ${systemd_system_unitdir}/wifi-commissioning-service.socket \
 "
 
-inherit cargo_cyclonedx wifi-commissioning-service
+inherit cargo_cyclonedx useradd
+
+USERADD_PACKAGES = "${PN}"
+GROUPADD_PARAM:${PN} = "-r wifi_commissioning"
+USERADD_PARAM:${PN} = "--no-create-home -r -s /bin/false -g wifi_commissioning wifi_commissioning;"

@@ -33,10 +33,9 @@ Depending on `MACHINE_FEATURES` we also set `3g`, `bluetooth` and `wifi`.
 - `resize-data`
     - expands the data partition to available space on first boot
 - [`wifi-commissioning`](https://github.com/janzachmann/wifi-commissioning-service.git)
-    - adds a service which enables wifi commissioning via BLE GATT and Unix socket
-    - provides Bluetooth Low Energy interface for initial commissioning and HTTP REST API over Unix socket for programmatic access
+    - adds a service which enables wifi commissioning via BLE GATT and/or Unix socket HTTP REST API
     - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
-    - **note**: BLE interface is intended for demo/initial commissioning; Unix socket provides production-ready programmatic access
+    - **note**: BLE interface is intended for demo/initial commissioning; the Unix socket API targets programmatic integration but the service is still in early development (v0.1.0)
 
 ### `MACHINE_FEATURES`
 `meta-omnect` extends the following `MACHINE_FEATURES`:
