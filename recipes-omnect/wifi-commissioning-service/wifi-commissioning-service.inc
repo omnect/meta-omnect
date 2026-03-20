@@ -7,6 +7,13 @@ LIC_FILES_CHKSUM = " \
 
 CARGO_BUILD_FLAGS += "--locked --features systemd"
 
+# wifi-commissioning without wifi makes no sense
+python () {
+    if bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', True, False, d) and \
+       not bb.utils.contains('DISTRO_FEATURES', 'wifi', True, False, d):
+        bb.fatal("DISTRO_FEATURES contains 'wifi-commissioning' but not 'wifi'")
+}
+
 # Build dependencies
 DEPENDS += "pkgconfig-native dbus"
 
