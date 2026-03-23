@@ -75,7 +75,7 @@ do_install() {
 
 do_deploy() {
     echo -n "${APPEND}" > omnect
-    install -m 0644 -D omnect ${DEPLOYDIR}/extra_bootargs_omnect
+    install -m 0644 -D omnect ${DEPLOYDIR}/omnect_extra_bootargs_omnect
 }
 addtask do_deploy after do_compile before do_build
 
