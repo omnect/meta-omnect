@@ -171,6 +171,8 @@ setup_etc_from_factory()
             set_bootloader_env_var "omnect_extra_bootargs" "${new_bootargs}"
             msg "reboot by omnect_extra_bootargs handling on first boot"
             sync
+            umount ${ROOTFS_DIR}/mnt/cert
+            umount ${ROOTFS_DIR}/mnt/etc
             run_cmd reboot -f
         fi
         [[ ${mounted} -eq 1 ]] && umount ${ROOTFS_DIR}/boot
