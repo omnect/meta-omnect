@@ -154,12 +154,14 @@ setup_etc_from_factory()
             return 0
         fi
 
+        local mounted=0
         if ! mountpoint -q ${ROOTFS_DIR}/boot; then
             mkdir -p ${ROOTFS_DIR}/boot
             check_fs "boot"
             # Dangerous: This function gets potentially called when /dev/omnect/* doesn't exist yet (caused by the init script system)
             # Currently it is safe
             mount -t vfat /dev/omnect/boot ${ROOTFS_DIR}/boot && msg "mounted ${ROOTFS_DIR}/boot"  || return 1
+            mounted=1
         fi
         local current_bootargs="$(get_bootloader_env_var "extra_bootargs")"
         local new_bootargs="$(cat ${ROOTFS_DIR}/boot/extra_bootargs_omnect) $(cat ${ROOTFS_DIR}/boot/extra_bootargs_custom)"
@@ -171,6 +173,7 @@ setup_etc_from_factory()
             sync
             run_cmd reboot -f
         fi
+        [[ ${mounted} -eq 1 ]] && umount ${ROOTFS_DIR}/boot
     fi
 }
 

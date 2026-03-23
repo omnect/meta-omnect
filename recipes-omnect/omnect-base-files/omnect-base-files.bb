@@ -73,6 +73,14 @@ do_install() {
     echo "z /mnt/cert/priv 0755 root root -"    >> ${D}${libdir}/tmpfiles.d/omnect-base-files.conf
 }
 
+do_deploy() {
+    echo -n "${APPEND}" > omnect
+    install -m 0644 -D omnect ${DEPLOYDIR}/extra_bootargs_omnect
+}
+addtask do_deploy after do_compile before do_build
+
+inherit deploy
+
 #  add omnect_device_service group
 inherit useradd
 USERADD_PACKAGES = "${PN}"

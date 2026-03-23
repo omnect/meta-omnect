@@ -47,9 +47,9 @@ python create_boot_cmd () {
             # load initrd
             f.write("load ${devtype} ${devnum}:${omnect_os_bootpart} ${ramdisk_addr_r} boot/initramfs.%s\n" % omnect_initramfs_fs_type)
 
-            # assemble bootargs: from device tree + omnect-bootargs + extra-bootargs
+            # assemble bootargs: from device tree + extra_bootargs
             f.write("fdt get value bootargs /chosen bootargs\n")
-            f.write("setenv bootargs \"root=/dev/${devtype}blk${devnum}p${omnect_os_bootpart} ${bootargs} ${omnect-bootargs} ${extra-bootargs}\"\n")
+            f.write("setenv bootargs \"root=/dev/${devtype}blk${devnum}p${omnect_os_bootpart} ${bootargs} ${extra_bootargs}\"\n")
 
             # boot
             f.write("%s ${kernel_addr_r} ${ramdisk_addr_r} ${%s}\n" % (boot_cmd, fdt_addr))

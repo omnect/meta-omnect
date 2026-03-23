@@ -47,7 +47,7 @@ do_bootloader_package:rpi() {
 }
 
 do_bootloader_package:phytec-imx8mm() {
-    tar -czvf boot-partition-update.tar.gz -C ${DEPLOY_DIR_IMAGE} boot.scr fdt-load.scr
+    tar -czvf boot-partition-update.tar.gz -C ${DEPLOY_DIR_IMAGE} boot.scr fdt-load.scr extra_bootargs_omnect
 }
 
 do_bootloader_package:omnect_grub() {
@@ -55,17 +55,13 @@ do_bootloader_package:omnect_grub() {
     for file in ${OMNECT_GRUB_EFI_SB_FILES}; do
         cp ${DEPLOY_DIR_IMAGE}/${file} ${WORKDIR}/EFI/BOOT/${file}
     done
+    cp ${DEPLOY_DIR_IMAGE}/extra_bootargs_omnect ${WORKDIR}/
     cd ${WORKDIR}
-    tar cfz boot-partition-update.tar.gz EFI/BOOT/*
+    tar cfz boot-partition-update.tar.gz EFI/BOOT/* extra_bootargs_omnect
 }
 
 do_bootloader_package:append() {
     install -m 0644 -D boot-partition-update.tar.gz ${DEPLOY_DIR_IMAGE}
-}
-
-addtask do_extra_bootargs_default before do_swuimage
-do_extra_bootargs_default() {
-    touch ${DEPLOY_DIR_IMAGE}/extra_bootargs_omnect
 }
 
 inherit swupdate
