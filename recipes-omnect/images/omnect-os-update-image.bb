@@ -14,7 +14,7 @@ SRC_URI = "file://sw-description"
 COMPATIBLE_MACHINE = "rpi|phytec-imx8mm|omnect_grub"
 
 addtask do_bootloader_package before do_swuimage
-do_bootloader_package[depends] = "omnect-os-image:do_image_wic"
+do_bootloader_package[depends] = "omnect-os-image:do_image_wic omnect-base-files:do_deploy"
 
 # set OMNECT_BOOTLOADER_VERSION for swupdate description
 do_swuimage:prepend() {

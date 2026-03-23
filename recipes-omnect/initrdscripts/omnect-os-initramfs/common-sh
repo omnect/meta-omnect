@@ -163,13 +163,13 @@ setup_etc_from_factory()
             mount -t vfat /dev/omnect/boot ${ROOTFS_DIR}/boot && msg "mounted ${ROOTFS_DIR}/boot"  || return 1
             mounted=1
         fi
-        local current_bootargs="$(get_bootloader_env_var "extra_bootargs")"
+        local current_bootargs="$(get_bootloader_env_var "omnect_extra_bootargs")"
         local new_bootargs="$(cat ${ROOTFS_DIR}/boot/extra_bootargs_omnect) $(cat ${ROOTFS_DIR}/boot/extra_bootargs_custom)"
         new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
         msg "current_bootargs=${current_bootargs} new_bootargs=${new_bootargs}"
         if [[ "${current_bootargs}" != "${new_bootargs}" ]]; then
-            set_bootloader_env_var "extra_bootargs" "${new_bootargs}"
-            msg "reboot by extra_bootargs handling on first boot"
+            set_bootloader_env_var "omnect_extra_bootargs" "${new_bootargs}"
+            msg "reboot by omnect_extra_bootargs handling on first boot"
             sync
             run_cmd reboot -f
         fi
