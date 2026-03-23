@@ -10,7 +10,7 @@ mountpoint -q /boot/ || { echo "/boot is not mounted"; return 1; }
 [ -f /boot/omnect_extra_bootargs_omnect ] || touch /boot/omnect_extra_bootargs_omnect
 [ -f /boot/omnect_extra_bootargs_custom ] || touch /boot/omnect_extra_bootargs_custom
 
-current_bootargs=$(bootloader_env.sh get extra_bootargs || true)
+current_bootargs=$(bootloader_env.sh get omnect_extra_bootargs || true)
 new_bootargs="$(cat /boot/omnect_extra_bootargs_omnect) $(cat /boot/omnect_extra_bootargs_custom)"
 new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
 
@@ -31,9 +31,9 @@ function get_new() {
 function set() {
   if [[ "${current_bootargs}" != "${new_bootargs}" ]]; then
     if [[ -n "${new_bootargs}" ]]; then
-      bootloader_env.sh set extra_bootargs "${new_bootargs}"
+      bootloader_env.sh set omnect_extra_bootargs "${new_bootargs}"
     else
-      bootloader_env.sh unset extra_bootargs
+      bootloader_env.sh unset omnect_extra_bootargs
     fi
   fi
 }
