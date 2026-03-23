@@ -6,6 +6,9 @@ LIC_FILES_CHKSUM = "\
 "
 INSANE_SKIP:${PN} += "already-stripped"
 
+CARGO_FEATURES:append = "${@'grub' if 'efi' in d.getVar('MACHINE_FEATURES') else 'uboot'}"
+CARGO_BUILD_FLAGS += "--features ${CARGO_FEATURES}"
+
 do_compile:prepend() {
     export LIBCLANG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/lib"
 }

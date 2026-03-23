@@ -28,6 +28,7 @@ PACKAGE_INSTALL = "\
     coreutils \
     omnect-os-init \
     os-release \
+    util-linux-blkid \
     util-linux-fsck \
     util-linux-sfdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
