@@ -11,7 +11,7 @@ if [ "x${omnect_validate_update}" = "x" ]; then
     set omnect_validate_update=1
     save_env omnect_validate_update
     set omnect_os_bootpart=${omnect_validate_update_part}
-    set omnect_extra_bootargs=${omnect_validate_extra_bootargs}
+    set omnect_extra_bootargs="${omnect_validate_extra_bootargs}"
     # no save_env omnect_os_bootpart + omnect_extra_bootargs here!
   fi
 else
