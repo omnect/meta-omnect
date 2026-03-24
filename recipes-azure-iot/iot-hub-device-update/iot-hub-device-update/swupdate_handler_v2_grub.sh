@@ -742,8 +742,16 @@ InstallUpdate() {
                         swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,kernelargs &>> "${swupdate_log_file}"
                         current_bootargs="$(omnect_extra_bootargs.sh get_current)"
                         new_bootargs="$(omnect_extra_bootargs.sh get_new)"
-                        if [ "${current_bootargs}" != "${new_bootargs}" ] && [ -n "${new_bootargs}" ]; then
-                            bootloader_env.sh set omnect_validate_extra_bootargs "${new_bootargs}"
+                        if [ "${current_bootargs}" != "${new_bootargs}" ] ; then
+                            if [ -f "/tmp/omnect-bootloader-update" ]; then
+                                if [ -n "${new_bootargs}" ]; then
+                                    bootloader_env.sh set omnect_extra_bootargs "${new_bootargs}"
+                                else
+                                    bootloader_env.sh unset omnect_extra_bootargs
+                                fi
+                            else
+                                [[ -n "${new_bootargs}" ]] && bootloader_env.sh set omnect_validate_extra_bootargs "${new_bootargs}"
+                            fi
                         fi
                     fi
                 fi
