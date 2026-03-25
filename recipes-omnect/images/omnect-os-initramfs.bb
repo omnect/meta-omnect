@@ -22,6 +22,11 @@ UBOOT_SUPPORT_PACKAGES = " \
     libubootenv \
     libubootenv-bin \
 "
+RESIZE_DATA_PACKAGES = "\
+    e2fsprogs-resize2fs \
+    gptfdisk \
+    parted \
+"
 
 PACKAGE_INSTALL = "\
     bash \
@@ -33,6 +38,7 @@ PACKAGE_INSTALL = "\
     util-linux-sfdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
 "
 
 PACKAGE_INSTALL:append:omnect_grub = " ${GRUB_SUPPORT_PACKAGES}"
