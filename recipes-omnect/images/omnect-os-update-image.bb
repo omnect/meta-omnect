@@ -13,6 +13,8 @@ SRC_URI = "file://sw-description"
 
 COMPATIBLE_MACHINE = "rpi|phytec-imx8mm|omnect_grub"
 
+IMAGE_BOOT_FILES:remove = "omnect_extra_bootargs_omnect"
+
 addtask do_bootloader_package before do_swuimage
 do_bootloader_package[depends] = "omnect-os-image:do_image_wic omnect-base-files:do_deploy"
 
@@ -33,7 +35,6 @@ do_bootloader_package() {
 
 do_bootloader_package:rpi() {
     BOOT_FILES="${IMAGE_BOOT_FILES}"
-    BOOT_FILES:remove = "omnect_extra_bootargs_omnect"
     mkdir -p ${DEPLOY_DIR_IMAGE}/boot-partition/overlays
     for entry in ${BOOT_FILES} ; do
         # Split entry at optional ';' to enable file renaming for the destination
