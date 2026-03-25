@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "\
 INSANE_SKIP:${PN} += "already-stripped"
 
 CARGO_FEATURES:append = "${@'grub' if 'efi' in d.getVar('MACHINE_FEATURES') else 'uboot'}"
-CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ' resize-data', '', d)}"
+CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ',resize-data', '', d)}"
 CARGO_BUILD_FLAGS += "--features ${CARGO_FEATURES}"
 
 do_compile:prepend() {
