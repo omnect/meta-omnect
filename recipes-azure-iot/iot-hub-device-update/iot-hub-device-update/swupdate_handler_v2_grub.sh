@@ -750,7 +750,11 @@ InstallUpdate() {
                                     bootloader_env.sh unset omnect_extra_bootargs
                                 fi
                             else
-                                [[ -n "${new_bootargs}" ]] && bootloader_env.sh set omnect_validate_extra_bootargs "${new_bootargs}"
+                                if [ -n "${new_bootargs}" ]; then
+                                    bootloader_env.sh set omnect_validate_extra_bootargs "${new_bootargs}"
+                                else
+                                    bootloader_env.sh set omnect_validate_extra_bootargs "#noargs"
+                                fi
                             fi
                         fi
                     fi
