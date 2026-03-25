@@ -33,6 +33,7 @@ do_bootloader_package() {
 
 do_bootloader_package:rpi() {
     BOOT_FILES="${IMAGE_BOOT_FILES}"
+    BOOT_FILES:remove = "omnect_extra_bootargs_omnect"
     mkdir -p ${DEPLOY_DIR_IMAGE}/boot-partition/overlays
     for entry in ${BOOT_FILES} ; do
         # Split entry at optional ';' to enable file renaming for the destination
@@ -47,7 +48,7 @@ do_bootloader_package:rpi() {
 }
 
 do_bootloader_package:phytec-imx8mm() {
-    tar -czvf boot-partition-update.tar.gz -C ${DEPLOY_DIR_IMAGE} boot.scr fdt-load.scr omnect_extra_bootargs_omnect
+    tar -czvf boot-partition-update.tar.gz -C ${DEPLOY_DIR_IMAGE} boot.scr fdt-load.scr
 }
 
 do_bootloader_package:omnect_grub() {
@@ -55,9 +56,8 @@ do_bootloader_package:omnect_grub() {
     for file in ${OMNECT_GRUB_EFI_SB_FILES}; do
         cp ${DEPLOY_DIR_IMAGE}/${file} ${WORKDIR}/EFI/BOOT/${file}
     done
-    cp ${DEPLOY_DIR_IMAGE}/omnect_extra_bootargs_omnect ${WORKDIR}/
     cd ${WORKDIR}
-    tar cfz boot-partition-update.tar.gz EFI/BOOT/* omnect_extra_bootargs_omnect
+    tar cfz boot-partition-update.tar.gz EFI/BOOT/*
 }
 
 do_bootloader_package:append() {
