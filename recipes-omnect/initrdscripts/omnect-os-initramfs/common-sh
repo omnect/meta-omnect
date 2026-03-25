@@ -380,3 +380,14 @@ flash_mode_setup_network() {
     mkdir -p /etc/dropbear
     run_cmd dropbear -R || return 1
 }
+
+# get ID field from group file
+get_id() {
+    local name="$1"
+    local file="$2"
+    local line=""
+
+    line=$(grep -E -e "^${name}:" ${file})
+    if [ -z "${line}" ]; then echo ""; return; fi
+    echo $line | awk -F: '{print $3}'
+}

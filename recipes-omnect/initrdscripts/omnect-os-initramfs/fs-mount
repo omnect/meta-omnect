@@ -13,12 +13,6 @@ run_fs_mount()
 
     msg "omnect-os initramfs fs mount"
 
-    # we already mounted /dev/omnect/boot when we're using grub. so we unmount.
-    if [ -f /usr/bin/grub-editenv ]; then
-        sync
-        run_cmd umount ${ROOTFS_DIR}/boot
-    fi
-
     # the comma separated option list is ordered; i.e., higher preference at the right hand side
     mnt_opts_default="defaults,noatime,nodiratime,async"
 
@@ -27,10 +21,6 @@ run_fs_mount()
     # bind mount rootfs without overlay under /mnt/rootCurrent
     run_cmd mount --bind ${ROOTFS_DIR} ${ROOTFS_DIR}/mnt/rootCurrent
     run_cmd mount --make-private ${ROOTFS_DIR}/mnt/rootCurrent
-
-    # mount boot
-    check_fs "boot"
-    mount /dev/omnect/boot "${ROOTFS_DIR}/boot" || return 1
 
     # mount cert
     check_fs "cert"
@@ -42,6 +32,16 @@ run_fs_mount()
     mount_partition "ext4" "/dev/omnect/factory" "${ROOTFS_DIR}/mnt/factory" "${mnt_opts_default},ro" || return 1
 
     setup_etc_partition "${ROOTFS_DIR}" "${mnt_opts_default},rw" || return 1
+
+    # mount boot
+    # we possibly already mounted /dev/omnect/boot for env var handling.
+    # we unmount here, so we can set proper mount gid+umask options
+    if mountpoint -q ${ROOTFS_DIR}/boot; then
+        sync
+        run_cmd umount ${ROOTFS_DIR}/boot
+    fi
+    check_fs "boot"
+    mount -t vfat -o gid=$(get_id disk ${ROOTFS_DIR}/etc/group),umask=0002 /dev/omnect/boot "${ROOTFS_DIR}/boot" || return 1
 
     # mount data partition
     #     mount flags can be optionally set via u-boot environment

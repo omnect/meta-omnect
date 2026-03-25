@@ -51,7 +51,7 @@ software =
                     {
                         filename = "omnect_extra_bootargs_omnect";
                         sha256 = "$swupdate_get_sha256(omnect_extra_bootargs_omnect)";
-                        path = "/omnect_extra_bootargs_omnect";
+                        path = "omnect_extra_bootargs_omnect";
                         type = "rawfile";
                         device = "/dev/omnect/boot";
                         filesystem = "vfat";
