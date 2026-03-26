@@ -31,6 +31,7 @@ RESIZE_DATA_PACKAGES = "\
 PACKAGE_INSTALL = "\
     bash \
     coreutils \
+    e2fsprogs-e2fsck \
     omnect-os-init \
     os-release \
     util-linux-blkid \
