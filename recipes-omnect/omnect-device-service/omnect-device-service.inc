@@ -114,7 +114,7 @@ do_install:append:omnect_grub() {
 
 do_install:append:omnect_uboot() {
     install -m 0640 -D ${S}/sudo/omnect-device-service-uboot ${D}${sysconfdir}/sudoers.d/omnect-device-service-bootloader-env
-    install -m 0640 -D ${S}/sudo/fw_setenv_no_script.sh ${D}/${bindir}/fw_setenv_no_script.sh
+    install -m 0755 -D ${S}/sudo/fw_setenv_no_script.sh ${D}/${bindir}/fw_setenv_no_script.sh
 }
 
 pkg_postinst:${PN}() {
