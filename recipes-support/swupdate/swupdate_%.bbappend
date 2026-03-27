@@ -31,6 +31,10 @@ do_install:append() {
 
   # swupdate pub key
   install -m 0444 public.pem -D ${D}${datadir}/swupdate/public.pem
+
+  # restrict swupdate
+  chgrp disk ${D}${bindir}/swupdate
+  chmod 0750 ${D}${bindir}/swupdate
 }
 
 FILES:${PN} += " \

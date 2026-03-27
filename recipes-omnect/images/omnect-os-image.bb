@@ -20,6 +20,8 @@ BOOTLOADER_VERSION = "${@omnect_create_bootloader_version(d)}"
 
 inherit core-image
 
+DEPENDS:append = " libcap-native"
+
 # we need the initramfs bundled kernel before rootfs postprocessing
 do_rootfs[depends] += "virtual/kernel:do_deploy"
 do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
@@ -120,6 +122,12 @@ add_kernel_and_initramfs() {
 ROOTFS_POSTPROCESS_COMMAND:append = " omnect_setup_sysctl_config;"
 omnect_setup_sysctl_config() {
     echo "vm.panic_on_oom = ${OMNECT_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/omnect.conf
+}
+
+# swupdate needs cap_sys_admin to mount /dev/omnect/boot when using ods firmware update
+ROOTFS_POSTPROCESS_COMMAND:append = " swupdate_cap;"
+fakeroot swupdate_cap() {
+    ${STAGING_DIR_NATIVE}/usr/sbin/setcap cap_sys_admin+ep ${IMAGE_ROOTFS}${bindir}/swupdate
 }
 
 # systemd getty terminals get enabled after do_rootfs and/or at runtime if not explicitly masked;

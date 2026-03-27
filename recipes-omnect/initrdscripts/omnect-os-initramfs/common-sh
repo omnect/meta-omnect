@@ -138,12 +138,44 @@ setup_etc_from_factory()
     local rootfs_dir="$1"
 
     if [ ! -d "${rootfs_dir}/mnt/etc/upper" ]; then
+        msg "first boot detected"
         run_cmd mkdir -p "${rootfs_dir}/mnt/etc/upper"
         run_cmd mkdir -p "${rootfs_dir}/mnt/etc/work"
         if [ -d "${rootfs_dir}/mnt/factory/etc" ]; then
             msg "setup etc from factory partition"
             run_cmd cp -av "${rootfs_dir}/mnt/factory/etc/." "${rootfs_dir}/mnt/etc/upper"
         fi
+
+        # below has nothing to do with etc setup, but we only want to do this after flash-mode-1
+        if [[ -e /run/factory-reset ]]; then
+            # unlikely case that the env changes during factory-reset, since we don't reset environment
+            # Note: if we would handle this case, we would have to reboot after factory-reset is done and thus
+            # lose the omnect-os-initramfs.json result
+            return 0
+        fi
+
+        local mounted=0
+        if ! mountpoint -q ${ROOTFS_DIR}/boot; then
+            mkdir -p ${ROOTFS_DIR}/boot
+            check_fs "boot"
+            # Dangerous: This function gets potentially called when /dev/omnect/* doesn't exist yet (caused by the init script system)
+            # Currently it is safe
+            mount -t vfat /dev/omnect/boot ${ROOTFS_DIR}/boot && msg "mounted ${ROOTFS_DIR}/boot"  || return 1
+            mounted=1
+        fi
+        local current_bootargs="$(get_bootloader_env_var "omnect_extra_bootargs")"
+        local new_bootargs="$(cat ${ROOTFS_DIR}/boot/omnect_extra_bootargs_omnect) $(cat ${ROOTFS_DIR}/boot/omnect_extra_bootargs_custom)"
+        new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
+        msg "current_bootargs=${current_bootargs} new_bootargs=${new_bootargs}"
+        if [[ "${current_bootargs}" != "${new_bootargs}" ]]; then
+            set_bootloader_env_var "omnect_extra_bootargs" "${new_bootargs}"
+            msg "reboot by omnect_extra_bootargs handling on first boot"
+            sync
+            umount ${ROOTFS_DIR}/mnt/cert
+            umount ${ROOTFS_DIR}/mnt/etc
+            run_cmd reboot -f
+        fi
+        [[ ${mounted} -eq 1 ]] && umount ${ROOTFS_DIR}/boot
     fi
 }
 
@@ -347,4 +379,15 @@ flash_mode_setup_network() {
     # start SSH server; generate host key on the fly
     mkdir -p /etc/dropbear
     run_cmd dropbear -R || return 1
+}
+
+# get ID field from group file
+get_id() {
+    local name="$1"
+    local file="$2"
+    local line=""
+
+    line=$(grep -E -e "^${name}:" ${file})
+    if [ -z "${line}" ]; then echo ""; return; fi
+    echo $line | awk -F: '{print $3}'
 }
