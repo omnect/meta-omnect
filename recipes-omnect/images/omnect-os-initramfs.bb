@@ -32,6 +32,8 @@ PACKAGE_INSTALL = "\
     bash \
     coreutils \
     e2fsprogs-e2fsck \
+    e2fsprogs-mke2fs \
+    e2fsprogs-tune2fs \      
     omnect-os-init \
     os-release \
     util-linux-blkid \
