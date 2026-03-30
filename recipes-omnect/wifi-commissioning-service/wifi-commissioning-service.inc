@@ -27,19 +27,9 @@ do_install:append() {
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.service ${D}${systemd_system_unitdir}/
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.socket ${D}${systemd_system_unitdir}/
 
-    # Set socket group to omnect_device_service_client (GID 10000) so containers
-    # can access the socket via their primary group — same pattern as omnect-device-service
-    sed -i 's/^SocketGroup=wpa_supplicant$/SocketGroup=omnect_device_service_client/' \
-        ${D}${systemd_system_unitdir}/wifi-commissioning-service@.socket
-
-    # Add wpa_supplicant as supplementary group so the service can access
-    # wpa_supplicant's control socket at /var/run/wpa_supplicant/<iface>
-    sed -i '/^Group=wifi_commissioning$/a SupplementaryGroups=wpa_supplicant' \
-        ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
-
     # When bluetooth is absent: remove bluetooth deps and disable BLE transport
     if [ "${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'yes', 'no', d)}" = "no" ]; then
-        sed -i '/^Wants=bluetooth.service$/d' \
+        sed -i '/^Requires=bluetooth.service$/d' \
             ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
         sed -i '/^After=bluetooth.service$/d' \
             ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
