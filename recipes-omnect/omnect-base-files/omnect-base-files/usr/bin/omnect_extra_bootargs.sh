@@ -16,7 +16,7 @@ new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trail
 
 function help() {
     echo "usage:"
-    echo "bootloader_env.sh command key [value]"
+    echo "bootloader_exta_bootargs.sh command key [value]"
     echo "    command: {get_current,get_new,set}"
 }
 
