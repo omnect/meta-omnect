@@ -739,7 +739,7 @@ InstallUpdate() {
                         fi
                     fi
                     if [ ${ret_val} -eq 0 ]; then
-                        ret_val=swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,kernelargs &>> "${swupdate_log_file}"
+                        ret_val=$(swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,kernelargs &>> "${swupdate_log_file}")
                         if [ ${ret_val} -eq 0 ]; then
                             # normally we would use omnect_extra_bootargs.sh here, but it isn't available prior to 5.0.16
                             current_bootargs=$(bootloader_env.sh get omnect_extra_bootargs)
