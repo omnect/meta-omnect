@@ -739,21 +739,25 @@ InstallUpdate() {
                         fi
                     fi
                     if [ ${ret_val} -eq 0 ]; then
-                        swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,kernelargs &>> "${swupdate_log_file}"
-                        current_bootargs="$(omnect_extra_bootargs.sh get_current)"
-                        new_bootargs="$(omnect_extra_bootargs.sh get_new)"
-                        if [ "${current_bootargs}" != "${new_bootargs}" ] ; then
-                            if [ -f "/tmp/omnect-bootloader-update" ]; then
-                                if [ -n "${new_bootargs}" ]; then
-                                    bootloader_env.sh set omnect_extra_bootargs "${new_bootargs}"
+                        ret_val=swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,kernelargs &>> "${swupdate_log_file}"
+                        if [ ${ret_val} -eq 0 ]; then
+                            # normally we would use omnect_extra_bootargs.sh here, but it isn't available prior to 5.0.16
+                            current_bootargs=$(bootloader_env.sh get omnect_extra_bootargs)
+                            new_bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
+                            new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
+                            if [ "${current_bootargs}" != "${new_bootargs}" ] ; then
+                                if [ -f "/tmp/omnect-bootloader-update" ]; then
+                                    if [ -n "${new_bootargs}" ]; then
+                                        bootloader_env.sh set omnect_extra_bootargs "${new_bootargs}"
+                                    else
+                                        bootloader_env.sh unset omnect_extra_bootargs
+                                    fi
                                 else
-                                    bootloader_env.sh unset omnect_extra_bootargs
-                                fi
-                            else
-                                if [ -n "${new_bootargs}" ]; then
-                                    bootloader_env.sh set omnect_validate_extra_bootargs "${new_bootargs}"
-                                else
-                                    bootloader_env.sh set omnect_validate_extra_bootargs "#noargs"
+                                    if [ -n "${new_bootargs}" ]; then
+                                        bootloader_env.sh set omnect_validate_extra_bootargs "${new_bootargs}"
+                                    else
+                                        bootloader_env.sh set omnect_validate_extra_bootargs "#noargs"
+                                    fi
                                 fi
                             fi
                         fi
