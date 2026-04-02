@@ -719,6 +719,7 @@ InstallUpdate() {
 
             ret_val=255
             if [[ ${public_key_file} != "" ]]; then
+                cp /boot/omnect_extra_bootargs_omnect /tmp/omnect_extra_bootargs_omnect.backup
                 swupdate -v -i "${image_file}" -k "${public_key_file}" -e ${selection} &>> "${swupdate_log_file}" && \
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,kernelargs &>> "${swupdate_log_file}"
                 ret_val=$?
@@ -726,37 +727,9 @@ InstallUpdate() {
                     rm -f /tmp/omnect-bootloader-update-not-necessary
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,bootloader &>> "${swupdate_log_file}"
                     ret_val=$?
-                    if [ ${ret_val} -eq 0 ]; then
-                        if [ -f "/tmp/omnect-bootloader-update" ]; then
-                            bootloader_env.sh set omnect_bootloader_updated 1
-                            ret_val=$?
-                        fi
-                    else
-                        if [ -f "/tmp/omnect-bootloader-update-not-necessary" ]; then
-                            ret_val=0
-                            rm /tmp/omnect-bootloader-update-not-necessary
-                        fi
-                    fi
-                    if [ ${ret_val} -eq 0 ]; then
-                        # normally we would use omnect_extra_bootargs.sh here, but it isn't available prior to 5.0.16
-                        current_bootargs="$(bootloader_env.sh get omnect_extra_bootargs)"
-                        new_bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
-                        new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
-                        if [ "${current_bootargs}" != "${new_bootargs}" ]; then
-                            if [ -f "/tmp/omnect-bootloader-update" ]; then
-                                if [ -n "${new_bootargs}" ]; then
-                                    bootloader_env.sh set omnect_extra_bootargs "${new_bootargs}"
-                                else
-                                    bootloader_env.sh unset omnect_extra_bootargs
-                                fi
-                            else
-                                if [ -n "${new_bootargs}" ]; then
-                                    bootloader_env.sh set omnect_validate_extra_bootargs "${new_bootargs}"
-                                else
-                                    bootloader_env.sh set omnect_validate_extra_bootargs "#noargs"
-                                fi
-                            fi
-                        fi
+                    if [ ${ret_val} -ne 0 ] && [ -f "/tmp/omnect-bootloader-update-not-necessary" ]; then
+                        ret_val=0
+                        rm /tmp/omnect-bootloader-update-not-necessary
                     fi
                 fi
             fi
@@ -812,19 +785,45 @@ ApplyUpdate() {
 
     echo "Applying." >> "${log_file}"
 
+    # bootargs handling
+    # normally we would use omnect_extra_bootargs.sh here, but it isn't available prior to 5.0.16
+    current_bootargs="$(bootloader_env.sh get omnect_extra_bootargs)"
+    new_bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
+    new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
+    if [ "${current_bootargs}" != "${new_bootargs}" ]; then
+        if [ -f "/tmp/omnect-bootloader-update" ]; then
+            if [ -n "${new_bootargs}" ]; then
+                bootloader_env.sh set omnect_extra_bootargs "${new_bootargs}"
+            else
+                bootloader_env.sh unset omnect_extra_bootargs
+            fi
+        else
+            if [ -n "${new_bootargs}" ]; then
+                bootloader_env.sh set omnect_validate_extra_bootargs "${new_bootargs}"
+            else
+                bootloader_env.sh set omnect_validate_extra_bootargs "#noargs"
+            fi
+        fi
+        ret_val=$?
+        if [[ $ret_val -eq 0 ]]; then
+            touch /tmp/omnect_extra_bootargs.done
+        fi
+    fi
+
     # Set the bootloader environment variable
     # to tell the bootloader to boot into the update partition.
     # omnect_os_bootpart variable is specific to our boot.scr script.
     # if the bootloader is also updated, the update will not be validated.
     # -> revert to old rootFS not possible
-    if [ -f "/tmp/omnect-bootloader-update" ]; then
-        bootloader_env.sh set omnect_os_bootpart $update_part
+    if [[ $ret_val -eq 0 ]] && [[ -f "/tmp/omnect-bootloader-update" ]]; then
+        bootloader_env.sh set omnect_bootloader_updated 1 && bootloader_env.sh set omnect_os_bootpart $update_part
+        ret_val=$?
         echo "use omnect_os_bootpart environment" >> "${log_file}"
-    else
+    elif [[ $ret_val -eq 0 ]]; then
         bootloader_env.sh set omnect_validate_update_part $update_part
+        ret_val=$?
         echo "use omnect_validate_update_part environment" >> "${log_file}"
     fi
-    ret_val=$?
 
     if [[ $ret_val -eq 0 ]]; then
 
@@ -881,7 +880,22 @@ CancelUpdate() {
     ret_val=
 
     echo "Revert update." >> "${log_file}"
-    bootloader_env.sh unset omnect_validate_update_part
+    if [[ ! -f "/tmp/omnect-bootloader-update" ]]; then
+        # revert bootargs if we didn't trigger a bootloader update
+        # if we have a bootloader update we can not rollback it, and also successfully installed root+kernelargs
+        if [[ -f "/tmp/omnect_extra_bootargs.done" ]]; then
+            cp /tmp/omnect_extra_bootargs_omnect.backup /boot/omnect_extra_bootargs_omnect
+            new_bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
+            new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
+            bootloader_env.sh unset omnect_validate_extra_bootargs
+            bootloader_env.sh set omnect_extra_bootargs "${new_bootargs}"
+        fi
+
+        bootloader_env.sh unset omnect_validate_update_part
+    else
+        # we can not do much without a bootloader rollback
+        ret_val=0
+    fi
     ret_val=$?
 
     if [[ $ret_val -eq 0 ]]; then
