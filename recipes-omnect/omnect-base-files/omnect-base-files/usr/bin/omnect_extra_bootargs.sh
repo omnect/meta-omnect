@@ -4,8 +4,8 @@ set -o pipefail
 commands=("get_current" "get_new" "set")
 argsc=${#}
 
-mountpoint -q /boot/ || { echo "/boot is not mounted"; return 1; }
-[[ $(id -u) -eq 0 ]] || { echo "${0} must be run as root"; return 1; }
+mountpoint -q /boot/ || { echo "/boot is not mounted"; exit 1; }
+[[ $(id -u) -eq 0 ]] || { echo "${0} must be run as root"; exit 1; }
 
 [ -f /boot/omnect_extra_bootargs_omnect ] || touch /boot/omnect_extra_bootargs_omnect
 [ -f /boot/omnect_extra_bootargs_custom ] || touch /boot/omnect_extra_bootargs_custom
@@ -17,7 +17,7 @@ new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trail
 function help() {
     echo "usage:"
     echo "bootloader_exta_bootargs.sh command key [value]"
-    echo "    command: {get_current,get_new,set}"
+    echo "    command: {$(IFS=,; echo "${commands[*]}")}"
 }
 
 function get_current() {
