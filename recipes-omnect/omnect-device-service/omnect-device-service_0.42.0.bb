@@ -7,11 +7,11 @@ inherit cargo
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/omnect-device-service/0.42.0"
-SRC_URI += "git://github.com/mlilien/omnect-device-service.git;protocol=https;nobranch=1;branch=exta_bootargs"
-SRCREV = "745bc92d63acf862d6446d62899f6117e4e623e0"
+SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
+SRCREV = "0e73145721732e01fff81f65dcc16f8e1ad0d91e"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-#DONT COMMIt PV:append = ".AUTOINC+2e13e8ef7e"
+
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -309,7 +309,7 @@ SRC_URI += " \
     crate://crates.io/synstructure/0.13.2 \
     crate://crates.io/sysinfo/0.35.2 \
     crate://crates.io/systemd-zbus/5.3.2 \
-    crate://crates.io/tar/0.4.44 \
+    crate://crates.io/tar/0.4.45 \
     crate://crates.io/tempfile/3.25.0 \
     crate://crates.io/termtree/0.5.1 \
     crate://crates.io/thiserror-impl/1.0.69 \
@@ -805,7 +805,7 @@ SRC_URI[sync_wrapper-1.0.2.sha256sum] = "0bf256ce5efdfa370213c1dabab5935a12e49f2
 SRC_URI[synstructure-0.13.2.sha256sum] = "728a70f3dbaf5bab7f0c4b1ac8d7ae5ea60a4b5549c8a5914361c99147a709d2"
 SRC_URI[sysinfo-0.35.2.sha256sum] = "3c3ffa3e4ff2b324a57f7aeb3c349656c7b127c3c189520251a648102a92496e"
 SRC_URI[systemd-zbus-5.3.2.sha256sum] = "a767093bf0502888fc45f8e2cbc8b752afdb5d40d4ad483f560cf45289da7a08"
-SRC_URI[tar-0.4.44.sha256sum] = "1d863878d212c87a19c1a610eb53bb01fe12951c0501cf5a0d65f724914a667a"
+SRC_URI[tar-0.4.45.sha256sum] = "22692a6476a21fa75fdfc11d452fda482af402c008cdbaf3476414e122040973"
 SRC_URI[tempfile-3.25.0.sha256sum] = "0136791f7c95b1f6dd99f9cc786b91bb81c3800b639b3478e561ddb7be95e5f1"
 SRC_URI[termtree-0.5.1.sha256sum] = "8f50febec83f5ee1df3015341d8bd429f2d1cc62bcba7ea2076759d315084683"
 SRC_URI[thiserror-1.0.69.sha256sum] = "b6aaf5339b578ea85b50e080feb250a3e8ae8cfcdff9a461c9ec2904bc923f52"
