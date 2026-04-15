@@ -788,7 +788,7 @@ ApplyUpdate() {
     echo "Applying." >> "${log_file}"
 
     # bootargs handling
-    # normally we would use omnect_extra_bootargs.sh here, but it isn't available prior to 5.0.16
+    # normally we would use omnect_extra_bootargs.sh here, but as long as we have to support updates from releases prior to 5.0.16 where it isn't available, the logic has to be implemented here directly.
     current_bootargs="$(bootloader_env.sh get omnect_extra_bootargs)"
     new_bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
     new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
