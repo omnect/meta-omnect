@@ -45,30 +45,60 @@ index 6fc707cf..11d4e4b4 100644
 -}
 +}
 \ No newline at end of file
+diff --git a/src/adu-shell/inc/adushell.hpp b/src/adu-shell/inc/adushell.hpp
+index 7f474373..c824a04f 100644
+--- a/src/adu-shell/inc/adushell.hpp
++++ b/src/adu-shell/inc/adushell.hpp
+@@ -38,7 +38,6 @@ typedef struct tagADUShell_LaunchArguments
+  */
+ #define ADUSHELL_EXIT_UNSUPPORTED 3
+ #define ADUSHELL_EXIT_BAD_FILE_PERMS 4
+-#define ADUSHELL_EXIT_BAD_FILE_OWNERSHIP 5
+ 
+ /**
+  * @brief An exit code for early exit of adu-shell process due to SIGTERM/SIGINT signal handling.
 diff --git a/src/adu-shell/src/common_tasks.cpp b/src/adu-shell/src/common_tasks.cpp
-index b427a930..e7dc9289 100644
+index b427a930..0f68e920 100644
 --- a/src/adu-shell/src/common_tasks.cpp
 +++ b/src/adu-shell/src/common_tasks.cpp
-@@ -5,6 +5,8 @@
+@@ -5,6 +5,10 @@
   * @copyright Copyright (c) Microsoft Corporation.
   * Licensed under the MIT License.
   */
++#include <cerrno>
 +#include <stdlib.h> // for getenv
++#include <sys/reboot.h>
 +
  #include "common_tasks.hpp"
  #include "aduc/process_utils.hpp"
  
-@@ -37,6 +39,30 @@ ADUShellTaskResult Reboot(const ADUShell_LaunchArguments& /*launchArgs*/)
-     return taskResult;
- }
- 
+@@ -25,11 +29,36 @@ namespace Common
+  */
+ ADUShellTaskResult Reboot(const ADUShell_LaunchArguments& /*launchArgs*/)
+ {
+-    Log_Info("Launching child process to reboot the device.");
++    Log_Info("Calling reboot(RB_AUTOBOOT) directly using CAP_SYS_BOOT capability.");
++    ADUShellTaskResult taskResult;
++
++    if (::reboot(RB_AUTOBOOT) != 0)
++    {
++        const int saved_errno = errno;
++        Log_Error("reboot(RB_AUTOBOOT) failed (errno: %d)", saved_errno);
++        taskResult.SetExitStatus(saved_errno);
++    }
++
++    return taskResult;
++}
++
 +#define OMNECT_DEFAULT_LOG_REBOOT_REASON_SCRIPT "/usr/sbin/omnect_reboot_reason.sh"
 +
 +ADUShellTaskResult DoRebootReason(const char* reason)
 +{
-+    ADUShellTaskResult taskResult;
+     ADUShellTaskResult taskResult;
+-    std::vector<std::string> args{ "--reboot", "--no-wall" };
 +    std::vector<std::string> args{ "log", reason };
-+    std::string output;
+     std::string output;
+-    taskResult.SetExitStatus(ADUC_LaunchChildProcess("/sbin/reboot", args, output));
 +    const char* script;
 +
 +    Log_Info("Launching child process to record reboot reason (\"%s\")", reason);
@@ -79,17 +109,10 @@ index b427a930..e7dc9289 100644
 +        script = OMNECT_DEFAULT_LOG_REBOOT_REASON_SCRIPT;
 +    }
 +    taskResult.SetExitStatus(ADUC_LaunchChildProcess(script, args, output));
-+    if (!output.empty())
-+    {
-+        Log_Info(output.c_str());
-+    }
-+    return taskResult;
-+}
-+
- /**
-  * @brief Runs appropriate command based on an action and other arguments in launchArgs.
-  *
-@@ -66,6 +92,16 @@ ADUShellTaskResult DoCommonTask(const ADUShell_LaunchArguments& launchArgs)
+     if (!output.empty())
+     {
+         Log_Info(output.c_str());
+@@ -66,6 +95,16 @@ ADUShellTaskResult DoCommonTask(const ADUShell_LaunchArguments& launchArgs)
          taskResult.SetExitStatus(ADUSHELL_EXIT_UNSUPPORTED);
      }
  
@@ -106,6 +129,124 @@ index b427a930..e7dc9289 100644
      try
      {
          taskResult = taskProc(launchArgs);
+diff --git a/src/adu-shell/src/main.cpp b/src/adu-shell/src/main.cpp
+index cf1f3bd5..0d715d2b 100644
+--- a/src/adu-shell/src/main.cpp
++++ b/src/adu-shell/src/main.cpp
+@@ -12,7 +12,6 @@
+ #include <aducpal/grp.h> // getgrnam
+ #include <aducpal/pwd.h> // getpwnam
+ #include <aducpal/stdlib.h> // setenv
+-#include <aducpal/unistd.h> // getegid, geteuid, getuid, setuid
+ 
+ #include <unordered_map>
+ #include <vector>
+@@ -339,8 +338,6 @@ int main(int argc, char** argv)
+ {
+     ADUShell_LaunchArguments launchArgs;
+     const ADUC_ConfigInfo* config = NULL;
+-    uid_t defaultUserId = ADUCPAL_getuid();
+-    uid_t effectiveUserId = ADUCPAL_geteuid();
+ 
+     int ret = ParseLaunchArguments(argc, argv, &launchArgs);
+     if (ret != 0)
+@@ -385,27 +382,11 @@ int main(int argc, char** argv)
+     }
+     Log_Debug("Log level: %d", launchArgs.logLevel);
+ 
+-    // Run as 'root'.
+-    // Note: this requires the file owner to be 'root'.
+-    ret = ADUCPAL_setuid(effectiveUserId);
+-    if (ret == 0)
+-    {
+-        Log_Info(
+-            "Run as uid(%d), defaultUid(%d), effectiveUid(%d), effectiveGid(%d)",
+-            ADUCPAL_getuid(),
+-            defaultUserId,
+-            effectiveUserId,
+-            ADUCPAL_getegid());
+-
+-        s_task_in_progress = true;
+-        ret = ADUShell_Dowork(launchArgs);
+-
+-        ADUC_Logging_Uninit();
+-
+-        goto done;
+-    }
++    // Run as 'adu' throughout. CAP_SYS_BOOT is granted via setcap in the Yocto recipe.
++    s_task_in_progress = true;
++    ret = ADUShell_Dowork(launchArgs);
++    ADUC_Logging_Uninit();
+ 
+-    Log_Error("Cannot set user identity. (code: %d, errno: %d)", ret, errno);
+ done:
+     ADUC_ConfigInfo_ReleaseInstance(config);
+     return ret;
+diff --git a/src/adu-shell/src/script_tasks.cpp b/src/adu-shell/src/script_tasks.cpp
+index 679d941d..1c570640 100644
+--- a/src/adu-shell/src/script_tasks.cpp
++++ b/src/adu-shell/src/script_tasks.cpp
+@@ -51,21 +51,6 @@ ADUShellTaskResult Execute(const ADUShell_LaunchArguments& launchArgs)
+     int mode = S_IRWXU | S_IRGRP | S_IXGRP;
+     if (statOk)
+     {
+-        // Ensure that the script has the correct ownership.
+-        struct group* grp = ADUCPAL_getgrnam(ADUC_FILE_GROUP);
+-        struct passwd* p = ADUCPAL_getpwnam(ADUC_FILE_USER);
+-
+-        if (p != NULL && grp != NULL)
+-        {
+-            // Fix the ownership.
+-            if (0 != ADUCPAL_chown(path, p->pw_uid, grp->gr_gid))
+-            {
+-                Log_Error("Failed to set '%s' file ownership to %d:%d", path, p->pw_uid, grp->gr_gid);
+-                taskResult.SetExitStatus(ADUSHELL_EXIT_BAD_FILE_OWNERSHIP);
+-                goto done;
+-            }
+-        }
+-
+         int perms = st.st_mode & ~S_IFMT;
+         if (perms != mode)
+         {
+diff --git a/src/adu-shell/tests/adushell_ut.cpp b/src/adu-shell/tests/adushell_ut.cpp
+index bb0ee839..dc118d02 100644
+--- a/src/adu-shell/tests/adushell_ut.cpp
++++ b/src/adu-shell/tests/adushell_ut.cpp
+@@ -13,6 +13,7 @@
+ 
+ #include <catch2/catch_all.hpp>
+ 
++#include <cerrno>
+ #include <filesystem>
+ #include <fstream>
+ #include <string>
+@@ -178,7 +179,7 @@ TEST_CASE("AptGet rollback appends output from cleanup phase")
+     CHECK(taskResult.Output() == "phasephase");
+ }
+ 
+-TEST_CASE("Common reboot task dispatches reboot command")
++TEST_CASE("Common reboot task calls reboot syscall directly, not a child process")
+ {
+     g_launchCapture.Reset();
+ 
+@@ -186,11 +187,12 @@ TEST_CASE("Common reboot task dispatches reboot command")
+ 
+     auto taskResult = Adu::Shell::Tasks::Common::Reboot(launchArgs);
+ 
+-    CHECK(taskResult.ExitStatus() == 0);
+-    CHECK(g_launchCapture.command == "/sbin/reboot");
+-    REQUIRE(g_launchCapture.args.size() == 2);
+-    CHECK(g_launchCapture.args[0] == "--reboot");
+-    CHECK(g_launchCapture.args[1] == "--no-wall");
++    // No child process must be launched — reboot() is called in-process.
++    CHECK(g_launchCapture.command.empty());
++
++    // In the test environment (no CAP_SYS_BOOT), reboot(2) returns EPERM.
++    // A non-zero exit confirms the syscall was attempted and failed gracefully.
++    CHECK(taskResult.ExitStatus() == EPERM);
+ }
+ 
+ TEST_CASE("Common task handles unsupported action path")
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
 index 9a0bc38e..f8074c01 100644
 --- a/src/adu_workflow/src/agent_workflow.c
