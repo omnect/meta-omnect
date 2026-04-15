@@ -338,6 +338,22 @@ index 9a0bc38e..f8074c01 100644
                  }
                  else
                  {
+diff --git a/src/agent/src/health_management.c b/src/agent/src/health_management.c
+index 38ad9ea5..b32dcc33 100644
+--- a/src/agent/src/health_management.c
++++ b/src/agent/src/health_management.c
+@@ -522,10 +522,9 @@ static bool CheckShellBinary()
+         }
+ 
+         // clang-format off
+-        // Needs set-uid, user read, and group read + execute.
++        // No set-uid bit: CAP_SYS_BOOT is granted via setcap in the Yocto recipe.
+         // Note: other has no permission bits set.
+         const mode_t expected_permissions =
+-            S_ISUID |           // set-uid
+             S_IRUSR | S_IXUSR | // R-X user
+             S_IRGRP | S_IXGRP;  // R-X group
+         // clang-format on
 diff --git a/src/agent/src/main.c b/src/agent/src/main.c
 index 7b37d369..8612524d 100644
 --- a/src/agent/src/main.c
