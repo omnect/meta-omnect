@@ -202,14 +202,14 @@ See [omnect-cli iot-hub-device-update configuration](https://github.com/omnect/o
 See [omnect-cli iot-identity-service configuration](https://github.com/omnect/omnect-cli/blob/main/README.md#identity-configuration).
 
 ### Set custom kernel parameter
-To set custom kernel parameter, e.g. `foo=bar` edit `/boot/omnect_extra_bootargs_custom` and apply:
+To set custom kernel parameters, e.g. `foo=bar` you need to write them to file `/boot/omnect_extra_bootargs_custom` in a single line and apply:
 ```sh
 sudo -i
 echo -n "foo=bar" > /boot/omnect_extra_bootargs_custom
 omnect_extra_bootargs.sh set
 reboot
 ```
-Afterwards the kernel cmdline includes the parameter `foo=bar`.
+From next system start on the kernel cmdline includes the parameter `foo=bar`.
 
 ### Modify set of interfaces considered when detecting online state
 
