@@ -3,10 +3,6 @@
        {
              "componentName":"adu",
              "logPath":"/var/log/aduc-logs/"
-       },
-       {
-             "componentName":"do",
-             "logPath":"/var/log/deliveryoptimization-agent/"
        }
     ],
     "maxKilobytesToUploadPerLogPath":50

@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 03bbceb6..3913f3b0 100644
+index eb156b36..7ae2cb2e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -231,7 +231,7 @@ set (
@@ -107,7 +107,7 @@ index b427a930..e7dc9289 100644
      {
          taskResult = taskProc(launchArgs);
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index b1b6ca27..5fda0bda 100644
+index 9a0bc38e..f8074c01 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
 @@ -35,6 +35,10 @@
@@ -121,7 +121,7 @@ index b1b6ca27..5fda0bda 100644
  // fwd decl
  void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_Result result, bool isAsync);
  
-@@ -349,6 +353,45 @@ void ADUC_Workflow_DoWork(ADUC_WorkflowData* workflowData)
+@@ -356,6 +360,45 @@ void ADUC_Workflow_DoWork(ADUC_WorkflowData* workflowData)
  
  void ADUC_Workflow_HandleStartupWorkflowData(ADUC_WorkflowData* currentWorkflowData)
  {
@@ -167,7 +167,7 @@ index b1b6ca27..5fda0bda 100644
      if (currentWorkflowData == NULL)
      {
          Log_Info("No update content. Ignoring.");
-@@ -550,11 +593,17 @@ void ADUC_Workflow_HandlePropertyUpdate(
+@@ -557,11 +600,17 @@ void ADUC_Workflow_HandlePropertyUpdate(
  
                      Log_Debug("deferral not needed. Processing '%s' now", workflow_peek_id(nextWorkflow));
  
@@ -189,7 +189,7 @@ index b1b6ca27..5fda0bda 100644
                  }
  
                  // Fall through to handle new workflow
-@@ -983,7 +1032,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
+@@ -991,7 +1040,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
                      // Reset workflow state to process deployment and transfer
                      // the deferred workflow to current.
                      workflow_update_for_replacement(workflowData->WorkflowHandle);
@@ -197,24 +197,11 @@ index b1b6ca27..5fda0bda 100644
                  }
                  else
                  {
-diff --git a/src/agent/command_helper/src/command_helper.c b/src/agent/command_helper/src/command_helper.c
-index 8ac861db..2b0024cc 100644
---- a/src/agent/command_helper/src/command_helper.c
-+++ b/src/agent/command_helper/src/command_helper.c
-@@ -280,7 +280,7 @@ static void* ADUC_CommandListenerThread(void* unused)
-                     char* safeCommandLine = (char*)malloc(safeReadSize + 1);
-                     if (safeCommandLine != NULL)
-                     {
--                        memcpy(safeCommandLine, commandLine, readSize);
-+                        memcpy(safeCommandLine, commandLine, (size_t)readSize);
-                         safeCommandLine[readSize] = '\0';
- 
-                         if (strncmp(safeCommandLine, g_commands[i]->commandText, safeReadSize) == 0)
 diff --git a/src/agent/src/main.c b/src/agent/src/main.c
-index e72c42d5..0a2ac434 100644
+index 7b37d369..8612524d 100644
 --- a/src/agent/src/main.c
 +++ b/src/agent/src/main.c
-@@ -812,7 +812,7 @@ done:
+@@ -831,7 +831,7 @@ done:
   */
  void ShutdownAgent()
  {
@@ -222,9 +209,9 @@ index e72c42d5..0a2ac434 100644
 +    Log_Info("Agent is shutting down.");
      ADUC_D2C_Messaging_Uninit();
  #ifdef ADUC_COMMAND_HELPER_H
-     UninitializeCommandListenerThread();
+     Log_Debug("Shutdown step: UninitializeCommandListenerThread");
 diff --git a/src/communication_managers/iothub_communication_manager/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
-index 9707b069..5f47727b 100644
+index 048a4b0c..80ae283f 100644
 --- a/src/communication_managers/iothub_communication_manager/CMakeLists.txt
 +++ b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
 @@ -29,7 +29,8 @@ target_link_libraries (
@@ -238,19 +225,19 @@ index 9707b069..5f47727b 100644
  target_link_libraries (${target_name} PRIVATE libaducpal)
  
 diff --git a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
-index 6397fea1..c7c1bae2 100644
+index b0c3dfcc..e86442c1 100644
 --- a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
 +++ b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
-@@ -39,6 +39,8 @@
- #include <stdlib.h> // strtol
- #include <sys/stat.h>
+@@ -43,6 +43,8 @@
+ 
+ #include <pthread.h>
  
 +#include <systemd/sd-daemon.h>
 +
  /**
   * @brief A pointer to ADUC_ClientHandle data. This must be initialize by the component that creates the IoT Hub connection.
   */
-@@ -59,6 +61,11 @@ static IOTHUB_CLIENT_DEVICE_TWIN_CALLBACK g_device_twin_callback = NULL;
+@@ -68,6 +70,11 @@ static IOTHUB_CLIENT_DEVICE_TWIN_CALLBACK g_device_twin_callback = NULL;
   */
  static bool g_iothub_client_initialized = false;
  
@@ -262,7 +249,7 @@ index 6397fea1..c7c1bae2 100644
  /**
   * @brief An additional data context used the caller.
   */
-@@ -215,6 +222,11 @@ void IoTHub_CommunicationManager_ConnectionStatus_Callback(
+@@ -234,6 +241,11 @@ void IoTHub_CommunicationManager_ConnectionStatus_Callback(
      case IOTHUB_CLIENT_CONNECTION_AUTHENTICATED:
          g_last_authenticated_time = now_time;
          g_authentication_retries = 0;
@@ -275,7 +262,7 @@ index 6397fea1..c7c1bae2 100644
      case IOTHUB_CLIENT_CONNECTION_UNAUTHENTICATED:
          if (g_last_authenticated_time >= g_first_unauthenticated_time)
 diff --git a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
-index 85008278..71b9ceca 100644
+index dc064d3b..15c516fc 100644
 --- a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
 +++ b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
 @@ -16,7 +16,7 @@ find_package (Parson REQUIRED)
@@ -288,7 +275,7 @@ index 85008278..71b9ceca 100644
  
  target_link_libraries (
 diff --git a/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c b/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
-index 5c232a13..8751a294 100644
+index 6ce04d11..d238d300 100644
 --- a/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
 +++ b/src/diagnostics_component/diagnostics_workflow/src/diagnostics_workflow.c
 @@ -11,7 +11,7 @@
@@ -336,16 +323,6 @@ index e7bcad3c..65e92251 100644
  endif ()
  add_subdirectory (download_handlers)
  add_subdirectory (extension_manager)
-diff --git a/src/extensions/content_downloaders/CMakeLists.txt b/src/extensions/content_downloaders/CMakeLists.txt
-index d9978f00..69b3c4ab 100644
---- a/src/extensions/content_downloaders/CMakeLists.txt
-+++ b/src/extensions/content_downloaders/CMakeLists.txt
-@@ -1,4 +1,4 @@
- cmake_minimum_required (VERSION 3.5)
- 
--add_subdirectory (curl_downloader)
-+# add_subdirectory (curl_downloader)
- add_subdirectory (deliveryoptimization_downloader)
 diff --git a/src/extensions/download_handlers/CMakeLists.txt b/src/extensions/download_handlers/CMakeLists.txt
 index 850c103f..bc0bb06f 100644
 --- a/src/extensions/download_handlers/CMakeLists.txt
@@ -1150,7 +1127,7 @@ index 3c8b2157..26843f49 100644
  protected:
      //!< Protected constructor, must call CreateContentHandler factory method or from derived simulator class
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-index 5a5b3842..c72de56a 100644
+index 6fa3acd6..883f1769 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
 +++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
 @@ -38,6 +38,9 @@
@@ -1320,7 +1297,7 @@ index 40d57d15..000e5309 100644
  if (ADUC_BUILD_UNIT_TESTS)
      add_subdirectory (tests)
 diff --git a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
-index 5a6ab626..b3837bb0 100644
+index b1c9ee0c..057a483a 100644
 --- a/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
 +++ b/src/platform_layers/linux_platform_layer/src/linux_device_info_exports.cpp
 @@ -449,7 +449,7 @@ static char* DeviceInfo_GetTotalStorage()
@@ -1359,7 +1336,7 @@ index dba6c64e..cb25857d 100644
  //
  // HTTP Functions
 diff --git a/src/utils/extension_utils/src/extension_utils.c b/src/utils/extension_utils/src/extension_utils.c
-index 036e195e..ac41f5fc 100644
+index 4339770d..41fe7205 100644
 --- a/src/utils/extension_utils/src/extension_utils.c
 +++ b/src/utils/extension_utils/src/extension_utils.c
 @@ -265,7 +265,7 @@ static bool RegisterHandlerExtension(
@@ -1380,16 +1357,3 @@ index 036e195e..ac41f5fc 100644
  
      if (!ADUC_HashUtils_GetFileHash(extensionFilePath, SHA256, &hash))
      {
-diff --git a/src/utils/hash_utils/src/hash_utils.c b/src/utils/hash_utils/src/hash_utils.c
-index 034bc87c..da4ffd45 100644
---- a/src/utils/hash_utils/src/hash_utils.c
-+++ b/src/utils/hash_utils/src/hash_utils.c
-@@ -124,7 +124,7 @@ static bool ADUC_HashUtils_GetIndexStrongestValidHash(
- 
-         if (algVersion > curBestAlg)
-         {
--            strongestIndex = i;
-+            strongestIndex = (int)i;
-             curBestAlg = algVersion;
-         }
-     }

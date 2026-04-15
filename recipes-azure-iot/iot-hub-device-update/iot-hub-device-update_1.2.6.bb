@@ -4,7 +4,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
 SRC_URI = " \
-  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.2.0;nobranch=1 \
+  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.2.6;nobranch=1 \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
   file://du-config.json \
@@ -12,7 +12,7 @@ SRC_URI = " \
   file://iot-hub-device-update.tmpfilesd \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
-  file://omnect_1.2.0.patch \
+  file://omnect_1.2.6.patch \
 "
 SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
 SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh"
@@ -24,7 +24,6 @@ S = "${WORKDIR}/git"
 DEPENDS = " \
   azure-iot-sdk-c \
   boost \
-  do-client-sdk \
   jq-native \
   libxml2 \
   systemd \
@@ -33,7 +32,7 @@ DEPENDS = " \
 RDEPENDS:${PN} = " \
   aziot-identityd \
   bash \
-  do-client \
+  curl \
   swupdate \
 "
 
@@ -49,6 +48,13 @@ EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MANUFACTURER='${OMNECT_ADU_MANUFACTURER}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MODEL='${OMNECT_ADU_MODEL}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MANUFACTURER='${OMNECT_ADU_DEVICEPROPERTIES_MANUFACTURER}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${OMNECT_ADU_DEVICEPROPERTIES_MODEL}'"
+EXTRA_OECMAKE += "-DADUC_BUILD_WITH_DELIVERY_OPTIMIZATION:BOOL=false"
+EXTRA_OECMAKE += "-DADUC_ROOTKEY_PKG_DOWNLOAD_WITH_CURL=true"
+EXTRA_OECMAKE += "-DADUC_ENABLE_CONSOLE_LOG:BOOL=true"
+EXTRA_OECMAKE += "-DADUC_VERSION_MAJOR=1"
+EXTRA_OECMAKE += "-DADUC_VERSION_MINOR=2"
+EXTRA_OECMAKE += "-DADUC_VERSION_PATCH=6"
+EXTRA_OECMAKE += "-DADUC_VERSION_BUILD=omnect"
 
 # omnect adaptions (linux_platform_layer.patch)
 EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
@@ -146,6 +152,5 @@ FILES:${PN} += " \
 
 GROUPADD_PARAM:${PN} += " \
   -r adu; \
-  -r do; \
 "
-USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,disk,do -g adu adu;"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,disk -g adu adu;"
