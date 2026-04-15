@@ -1,8 +1,7 @@
 {
   "schemaVersion": "1.1",
   "aduShellTrustedUsers": [
-    "adu",
-    "do"
+    "adu"
   ],
   "iotHubProtocol": "mqtt",
   "compatPropertyNames":"manufacturer,model,compatibilityid",
