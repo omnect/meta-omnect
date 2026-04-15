@@ -385,9 +385,6 @@ flash_mode_setup_network() {
 get_id() {
     local name="$1"
     local file="$2"
-    local line=""
 
-    line=$(grep -E -e "^${name}:" ${file})
-    if [ -z "${line}" ]; then echo ""; return; fi
-    echo $line | awk -F: '{print $3}'
+    grep -E "^${name}:" "${file}" | awk -F: '{print $3}'
 }
