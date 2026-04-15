@@ -26,6 +26,7 @@ DEPENDS = " \
   boost \
   jq-native \
   libxml2 \
+  libcap-native \
   systemd \
 "
 
