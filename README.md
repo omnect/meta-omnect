@@ -32,7 +32,7 @@ Depending on `MACHINE_FEATURES` we also set `3g`, `bluetooth` and `wifi`.
     - please see section [Flash Modes](#flash-modes) below
 - `resize-data`
     - expands the data partition to available space on first boot
-- [`wifi-commissioning`](https://github.com/janzachmann/wifi-commissioning-service.git)
+- [`wifi-commissioning`](https://github.com/omnect/wifi-commissioning-service.git)
     - adds a service which enables wifi commissioning via BLE GATT and/or Unix socket HTTP REST API
     - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
     - **note**: BLE interface is intended for demo/initial commissioning; the Unix socket API targets programmatic integration but the service is still in early development (v0.1.0)
