@@ -21,11 +21,11 @@ function help() {
 }
 
 function get_current() {
-  echo ${current_bootargs}
+  echo "${current_bootargs}"
 }
 
 function get_new() {
-  echo ${new_bootargs}
+  echo "${new_bootargs}"
 }
 
 function set() {
