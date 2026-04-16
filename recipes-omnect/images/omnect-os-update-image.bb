@@ -13,8 +13,10 @@ SRC_URI = "file://sw-description"
 
 COMPATIBLE_MACHINE = "rpi|phytec-imx8mm|omnect_grub"
 
+IMAGE_BOOT_FILES:remove = "omnect_extra_bootargs_omnect"
+
 addtask do_bootloader_package before do_swuimage
-do_bootloader_package[depends] = "omnect-os-image:do_image_wic"
+do_bootloader_package[depends] = "omnect-os-image:do_image_wic omnect-base-files:do_deploy"
 
 # set OMNECT_BOOTLOADER_VERSION for swupdate description
 do_swuimage:prepend() {
@@ -71,7 +73,7 @@ IMAGE_DEPENDS = "omnect-os-image"
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
 # images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "omnect-os boot-partition-update"
+SWUPDATE_IMAGES = "omnect-os boot-partition-update omnect_extra_bootargs_omnect"
 SWUPDATE_IMAGES:append:phytec-imx8mm = " bootloader.versioned.bin.gz"
 
 

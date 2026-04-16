@@ -13,17 +13,6 @@ omnect_device_service_setup_enabled() {
     return 0
 }
 
-# get ID field from group file
-get_id() {
-    local name="$1"
-    local file="$2"
-    local line=""
-
-    line=$(grep -E -e "^${name}:" ${file})
-    if [ -z "${line}" ]; then echo ""; return; fi
-    echo $line | awk -F: '{print $3}'
-}
-
 fsck_handling() {
     local labels=("boot" "cert" "data" "etc")
 

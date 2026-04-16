@@ -14,7 +14,9 @@
     "flash-mode:dw," \
     "flash-mode-devpath:sw," \
     "omnect_bootloader_updated:bw," \
+    "omnect_extra_bootargs:sw," \
     "omnect_os_bootpart:dw," \
+    "omnect_validate_extra_bootargs:sw," \
     "omnect_validate_update:bw," \
     "omnect_validate_update_failed:bw," \
     "omnect_validate_update_part:dw," \

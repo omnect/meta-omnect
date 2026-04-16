@@ -18,7 +18,7 @@ This yocto meta layer provides the device management distribution `omnect-os`. I
     - Updating the bootloader
 
 ### `DISTRO_FEATURES`
-`omnect-os` is built with yocto [`DISTRO_FEATURES`](https://docs.yoctoproject.org/ref-manual/features.html#distro-features) = `ipv4 ipv6 polkit seccomp zeroconf`.
+`omnect-os` is built with yocto [`DISTRO_FEATURES`](https://docs.yoctoproject.org/ref-manual/features.html#distro-features) = `ipv4 ipv6 polkit seccomp xattr zeroconf`.
 Depending on `MACHINE_FEATURES` we also set `3g`, `bluetooth` and `wifi`.
 
 `meta-omnect` adds the following `DISTRO_FEATURES`:
@@ -200,6 +200,16 @@ See [omnect-cli iot-hub-device-update configuration](https://github.com/omnect/o
 
 ### Set `iot-identity-service` configuration
 See [omnect-cli iot-identity-service configuration](https://github.com/omnect/omnect-cli/blob/main/README.md#identity-configuration).
+
+### Set custom kernel parameter
+To set custom kernel parameters, e.g. `foo=bar` you need to write them to file `/boot/omnect_extra_bootargs_custom` in a single line and apply:
+```sh
+sudo -i
+echo -n "foo=bar" > /boot/omnect_extra_bootargs_custom
+omnect_extra_bootargs.sh set
+reboot
+```
+From next system start on the kernel cmdline includes the parameter `foo=bar`.
 
 ### Modify set of interfaces considered when detecting online state
 
