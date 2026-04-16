@@ -26,7 +26,6 @@ DEPENDS = " \
   boost \
   jq-native \
   libxml2 \
-  libcap-native \
   systemd \
 "
 
@@ -83,7 +82,6 @@ do_install:append() {
   chgrp adu ${D}${bindir}/adu-shell
   # enable user adu to reboot with adu-shell (via cap_sys_boot capability)
   chmod 0550 ${D}${bindir}/adu-shell
-  setcap cap_sys_boot+ep ${D}${bindir}/adu-shell
 
   # create tmpfiles.d entry to (re)create dir + permissions
   install -m 0644 -D ${WORKDIR}/iot-hub-device-update.tmpfilesd ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
