@@ -11,7 +11,14 @@ if [ "x${omnect_validate_update}" = "x" ]; then
     set omnect_validate_update=1
     save_env omnect_validate_update
     set omnect_os_bootpart=${omnect_validate_update_part}
-    # no save_env omnect_os_bootpart here!
+    if [ "x${omnect_validate_extra_bootargs}" != "x" ]; then
+      if [ "${omnect_validate_extra_bootargs}" = "#noargs" ]; then
+        unset omnect_extra_bootargs
+      else
+        set omnect_extra_bootargs="${omnect_validate_extra_bootargs}"
+      fi
+    fi
+    # no save_env omnect_os_bootpart + omnect_extra_bootargs here!
   fi
 else
   echo "Update validation failed - booting from partition ${omnect_os_bootpart}"
@@ -19,6 +26,8 @@ else
   save_env omnect_validate_update_part
   set omnect_validate_update=
   save_env omnect_validate_update
+  set omnect_validate_extra_bootargs=
+  save_env omnect_validate_extra_bootargs
   set omnect_validate_update_failed=1
   save_env omnect_validate_update_failed
 fi
@@ -34,6 +43,6 @@ fi
 
 menuentry 'omnect-os' --unrestricted {
     set root=(hd0,gpt${omnect_os_bootpart})
-    linux /boot/bzImage rootpart=${omnect_os_bootpart} ${kernel_param_rootblk} @@APPEND@@ ${extra_bootargs}
+    linux /boot/bzImage rootpart=${omnect_os_bootpart} ${kernel_param_rootblk} ${omnect_extra_bootargs}
     initrd /boot/initramfs.cpio.gz
 }

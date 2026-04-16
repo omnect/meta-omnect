@@ -6,9 +6,11 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.42.2"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.42.3"
+#SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
+#SRCREV = "0e73145721732e01fff81f65dcc16f8e1ad0d91e"
 SRC_URI += "git://github.com/HarryWaschkeit/omnect-device-service.git;protocol=https;nobranch=1;branch=hwt-2026-04-13-fix-reboot-reason-for-uefi"
-SRCREV = "9e03b9506c61aea695df521e71dc3d3041fb340e"
+SRCREV = "d37f2d4f4b1cb03281e8ec9ca4fee161c05a4bcf"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -332,6 +334,7 @@ SRC_URI += " \
     crate://crates.io/sync_wrapper/1.0.2 \
     crate://crates.io/synstructure/0.13.2 \
     crate://crates.io/sysinfo/0.38.4 \
+    crate://crates.io/systemd-journal-logger/2.2.2 \
     crate://crates.io/systemd-zbus/5.3.2 \
     crate://crates.io/tar/0.4.45 \
     crate://crates.io/tempfile/3.27.0 \
@@ -862,6 +865,7 @@ SRC_URI[syn-2.0.117.sha256sum] = "e665b8803e7b1d2a727f4023456bbbbe74da67099c5852
 SRC_URI[sync_wrapper-1.0.2.sha256sum] = "0bf256ce5efdfa370213c1dabab5935a12e49f2c58d15e9eac2870d3b4f27263"
 SRC_URI[synstructure-0.13.2.sha256sum] = "728a70f3dbaf5bab7f0c4b1ac8d7ae5ea60a4b5549c8a5914361c99147a709d2"
 SRC_URI[sysinfo-0.38.4.sha256sum] = "92ab6a2f8bfe508deb3c6406578252e491d299cbbf3bc0529ecc3313aee4a52f"
+SRC_URI[systemd-journal-logger-2.2.2.sha256sum] = "7266304d24ca5a4b230545fc558c80e18bd3e1d2eb1be149b6bcd04398d3e79c"
 SRC_URI[systemd-zbus-5.3.2.sha256sum] = "a767093bf0502888fc45f8e2cbc8b752afdb5d40d4ad483f560cf45289da7a08"
 SRC_URI[tar-0.4.45.sha256sum] = "22692a6476a21fa75fdfc11d452fda482af402c008cdbaf3476414e122040973"
 SRC_URI[tempfile-3.27.0.sha256sum] = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
