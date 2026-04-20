@@ -14,8 +14,8 @@ SRC_URI = " \
   file://iot-identity-service-identityd.template.toml \
   file://omnect_1.2.6.patch \
 "
-SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
-SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh"
+SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh file://adu-bootloader-env"
+SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh file://adu-bootloader-env"
 
 PV .= "+${SRCPV}"
 
@@ -33,6 +33,7 @@ RDEPENDS:${PN} = " \
   aziot-identityd \
   bash \
   curl \
+  sudo \
   swupdate \
 "
 
@@ -116,6 +117,7 @@ do_install:append:omnect_grub() {
     install -d ${D}${libdir}/swupdate
     install -m 0755 ${WORKDIR}/swupdate_handler_v2_grub.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
   fi
+  install -m 0440 -D ${WORKDIR}/adu-bootloader-env ${D}${sysconfdir}/sudoers.d/adu-bootloader-env
 }
 
 do_install:append:omnect_uboot() {
@@ -124,6 +126,7 @@ do_install:append:omnect_uboot() {
     install -d ${D}${libdir}/swupdate
     install -m 0755 ${WORKDIR}/swupdate_handler_v2_u-boot.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
   fi
+  install -m 0440 -D ${WORKDIR}/adu-bootloader-env ${D}${sysconfdir}/sudoers.d/adu-bootloader-env
 }
 
 pkg_postinst:${PN}() {
@@ -148,6 +151,7 @@ FILES:${PN} += " \
   ${sysconfdir}/omnect/consent/history_consent.json \
   ${sysconfdir}/omnect/consent/request_consent.json \
   ${sysconfdir}/omnect/consent/swupdate/user_consent.json \
+  ${sysconfdir}/sudoers.d/adu-bootloader-env \
   "
 
 GROUPADD_PARAM:${PN} += " \
