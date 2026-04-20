@@ -1,0 +1,2 @@
+# allow adu user to run bootloader_env.sh as root without password
+adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh
