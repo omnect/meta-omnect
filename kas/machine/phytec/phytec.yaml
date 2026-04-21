@@ -7,6 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "scarthgap"
+    # for now pinned to our 5.0.15 release, because of https://github.com/phytec/linux-phytec-imx/issues/2
     commit: "951384d6a847a5cfcb9c34e31e2e47c15a91437f"
     patches:
       p001:
