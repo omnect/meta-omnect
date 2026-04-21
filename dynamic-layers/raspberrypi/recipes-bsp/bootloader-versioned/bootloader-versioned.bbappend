@@ -1,3 +1,4 @@
+OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_core}/recipes-bsp/u-boot/u-boot-common.inc"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot_%.bbappend"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot/*"
 # the u-boot_%.bbappend from meta-raspberrypi is part of BBMASK and thus not part of OMNECT_BOOTLOADER_CHECKSUM_FILES
