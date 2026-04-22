@@ -124,12 +124,6 @@ omnect_setup_sysctl_config() {
     echo "vm.panic_on_oom = ${OMNECT_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/omnect.conf
 }
 
-# swupdate needs cap_sys_admin to mount /dev/omnect/boot when using ods firmware update
-ROOTFS_POSTPROCESS_COMMAND:append = " swupdate_cap;"
-fakeroot swupdate_cap() {
-    ${STAGING_DIR_NATIVE}/usr/sbin/setcap cap_sys_admin+ep ${IMAGE_ROOTFS}${bindir}/swupdate
-}
-
 # systemd getty terminals get enabled after do_rootfs and/or at runtime if not explicitly masked;
 # for a release image we explicitly disable them by masking
 IMAGE_PREPROCESS_COMMAND:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'disable_getty;', '', d)}"

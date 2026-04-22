@@ -39,10 +39,8 @@ software =
                         type = "archive";
                         compressed = "zlib";
                         preserve-attributes = false;
-                        path = "/";
+                        path = "/boot";
                         sha256 = "$swupdate_get_sha256(boot-partition-update.tar.gz)";
-                        device = "/dev/omnect/boot";
-                        filesystem = "vfat";
                     }
                 );
             };
@@ -51,10 +49,8 @@ software =
                     {
                         filename = "omnect_extra_bootargs_omnect";
                         sha256 = "$swupdate_get_sha256(omnect_extra_bootargs_omnect)";
-                        path = "omnect_extra_bootargs_omnect";
+                        path = "/boot/omnect_extra_bootargs_omnect";
                         type = "rawfile";
-                        device = "/dev/omnect/boot";
-                        filesystem = "vfat";
                     }
                 );
             };
