@@ -133,7 +133,7 @@ Optionally set `OMNECT_BUILD_NUMBER` to set a meaningful build number in the dis
 
 There is the configuration variable `OMNECT_VM_PANIC_ON_OOM` used to define the out-of-memory (OOM) handling.
 
-If you want to build for target `genericx86-64` have a look into the [x86-64 secure boot build chapter](doc/efi_secure_boot.md#TODO).
+If you want to build for target `genericx86-64` have a look into the [x86-64 secure boot build chapter](doc/efi_secure_boot.md#build).
 
 ### Release vs Developer build
 Set the enviroment variable `OMNECT_RELEASE_IMAGE` to `1` for release builds. The default is `0` which means it is a developer build.
