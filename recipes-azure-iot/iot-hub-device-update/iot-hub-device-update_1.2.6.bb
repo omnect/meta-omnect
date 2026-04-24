@@ -85,7 +85,7 @@ do_install:append() {
 
   # enable user adu to exec adu-shell
   chgrp adu ${D}${bindir}/adu-shell
-  # enable user adu to reboot with adu-shell (via cap_sys_boot capability)
+  # grant owner and group execute permission so adu can run adu-shell
   chmod 0550 ${D}${bindir}/adu-shell
 
   # create tmpfiles.d entry to (re)create dir + permissions
