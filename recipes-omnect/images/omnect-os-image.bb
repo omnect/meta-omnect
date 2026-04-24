@@ -130,6 +130,12 @@ fakeroot adu_shell_cap() {
     ${STAGING_DIR_NATIVE}/usr/sbin/setcap cap_sys_boot+ep ${IMAGE_ROOTFS}${bindir}/adu-shell
 }
 
+# adu-shell needs cap_sys_boot to reboot the device as user adu
+ROOTFS_POSTPROCESS_COMMAND:append = " adu_shell_cap;"
+fakeroot adu_shell_cap() {
+    ${STAGING_DIR_NATIVE}/usr/sbin/setcap cap_sys_boot+ep ${IMAGE_ROOTFS}${bindir}/adu-shell
+}
+
 # systemd getty terminals get enabled after do_rootfs and/or at runtime if not explicitly masked;
 # for a release image we explicitly disable them by masking
 IMAGE_PREPROCESS_COMMAND:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'disable_getty;', '', d)}"
