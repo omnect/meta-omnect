@@ -1,2 +1,12 @@
-# allow adu user to run bootloader_env.sh as root without password
-adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh
+# firmware update + update validation finalization
+adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh get omnect_extra_bootargs
+# warning: using a wildcard here - the value is not static
+adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh set omnect_extra_bootargs *
+adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh unset omnect_extra_bootargs
+# warning: using a wildcard here - the value is not static
+adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh set omnect_validate_extra_bootargs *
+adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh unset omnect_validate_extra_bootargs
+adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh set omnect_bootloader_updated 1
+adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh set omnect_os_bootpart [2-3]
+adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh set omnect_validate_update_part [2-3]
+adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh unset omnect_validate_update_part
