@@ -113,6 +113,8 @@ do_install:append() {
 
   # delete adu-swupdate.sh
   rm ${D}${bindir}/adu-swupdate.sh
+
+  install -m 0440 -D ${WORKDIR}/adu-bootloader-env ${D}${sysconfdir}/sudoers.d/adu-bootloader-env
 }
 
 do_install:append:omnect_grub() {
@@ -121,7 +123,6 @@ do_install:append:omnect_grub() {
     install -d ${D}${libdir}/swupdate
     install -m 0755 ${WORKDIR}/swupdate_handler_v2_grub.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
   fi
-  install -m 0440 -D ${WORKDIR}/adu-bootloader-env ${D}${sysconfdir}/sudoers.d/adu-bootloader-env
 }
 
 do_install:append:omnect_uboot() {
@@ -130,7 +131,6 @@ do_install:append:omnect_uboot() {
     install -d ${D}${libdir}/swupdate
     install -m 0755 ${WORKDIR}/swupdate_handler_v2_u-boot.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
   fi
-  install -m 0440 -D ${WORKDIR}/adu-bootloader-env ${D}${sysconfdir}/sudoers.d/adu-bootloader-env
 }
 
 pkg_postinst:${PN}() {
