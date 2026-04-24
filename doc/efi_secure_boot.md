@@ -23,7 +23,7 @@ Currently we support secure boot only for x86 platforms.
       ```
 
 ## Build
-To build an `omnect-os` Image for `genericx86-64` with secure boot (mandatory), you have to generate keys, e.g. via https://github.com/Wind-River/meta-secure-core/blob/master/meta-signing-key/scripts/create-user-key-store.sh and provide build variables:
+To build an `omnect-os` image for `genericx86-64` with secure boot (mandatory), you have to generate keys, e.g. via https://github.com/Wind-River/meta-secure-core/blob/master/meta-signing-key/scripts/create-user-key-store.sh and provide build variables:
 ```sh
 SIGNING_MODEL="user"
 RPM=0
