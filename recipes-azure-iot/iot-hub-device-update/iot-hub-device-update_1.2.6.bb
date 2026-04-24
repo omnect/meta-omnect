@@ -13,9 +13,10 @@ SRC_URI = " \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
   file://omnect_1.2.6.patch \
+  file://adu-bootloader-env \
 "
-SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh file://adu-bootloader-env"
-SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh file://adu-bootloader-env"
+SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
+SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh"
 
 PV .= "+${SRCPV}"
 
