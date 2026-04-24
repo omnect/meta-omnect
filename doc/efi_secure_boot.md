@@ -21,3 +21,15 @@ Currently we support secure boot only for x86 platforms.
       ```sh
       SecureBoot enabled
       ```
+
+## Build
+To build an `omnect-os` image for `genericx86-64` with secure boot (mandatory), you have to generate keys, e.g. via https://github.com/Wind-River/meta-secure-core/blob/master/meta-signing-key/scripts/create-user-key-store.sh and provide build variables:
+```sh
+SIGNING_MODEL="user"
+RPM=0
+UEFI_SB_KEYS_DIR=<path to uefi_sb_keys>
+MOK_SB_KEYS_DIR=<path to mok_sb_keys>
+MODSIGN_KEYS_DIR=<path to modsign_keys>
+SYSTEM_TRUSTED_KEYS_DIR=<path to system_trusted_keys>
+SECONDARY_TRUSTED_KEYS_DIR=<path to secondary_trusted_keys>
+```
