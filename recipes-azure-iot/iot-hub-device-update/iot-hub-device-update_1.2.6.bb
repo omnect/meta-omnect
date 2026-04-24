@@ -53,6 +53,9 @@ EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${OMNECT_ADU_DEVICEPROPERTIES_M
 EXTRA_OECMAKE += "-DADUC_BUILD_WITH_DELIVERY_OPTIMIZATION:BOOL=false"
 EXTRA_OECMAKE += "-DADUC_ROOTKEY_PKG_DOWNLOAD_WITH_CURL=true"
 EXTRA_OECMAKE += "-DADUC_ENABLE_CONSOLE_LOG:BOOL=true"
+# iot-hub-device-update 1.2.6 upstream source still reports version 1.2.0 internally,
+# so we explicitly set the correct version here. ADUC_VERSION_BUILD is used as a
+# custom label to identify omnect-specific builds.
 EXTRA_OECMAKE += "-DADUC_VERSION_MAJOR=1"
 EXTRA_OECMAKE += "-DADUC_VERSION_MINOR=2"
 EXTRA_OECMAKE += "-DADUC_VERSION_PATCH=6"
