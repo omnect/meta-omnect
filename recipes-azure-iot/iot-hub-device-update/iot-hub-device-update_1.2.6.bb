@@ -53,6 +53,7 @@ EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${OMNECT_ADU_DEVICEPROPERTIES_M
 EXTRA_OECMAKE += "-DADUC_BUILD_WITH_DELIVERY_OPTIMIZATION:BOOL=false"
 EXTRA_OECMAKE += "-DADUC_ROOTKEY_PKG_DOWNLOAD_WITH_CURL=true"
 EXTRA_OECMAKE += "-DADUC_ENABLE_CONSOLE_LOG:BOOL=true"
+# ADUC_VERSION_BUILD is a custom label to identify omnect-specific builds.
 EXTRA_OECMAKE += "-DADUC_VERSION_BUILD=omnect"
 
 # omnect adaptions (linux_platform_layer.patch)
@@ -60,7 +61,6 @@ EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
 
 # iot-hub-device-update 1.2.6 upstream source still reports version 1.2.0 internally,
 # so we set the correct version at configure time when PV is fully resolved.
-# ADUC_VERSION_BUILD is a custom label to identify omnect-specific builds.
 do_configure:prepend() {
     EXTRA_OECMAKE += " -DADUC_VERSION_MAJOR=${@d.getVar('PV').split('+')[0].split('.')[0]}"
     EXTRA_OECMAKE += " -DADUC_VERSION_MINOR=${@d.getVar('PV').split('+')[0].split('.')[1]}"
