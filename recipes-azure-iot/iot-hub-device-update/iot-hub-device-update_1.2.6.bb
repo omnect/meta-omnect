@@ -54,11 +54,11 @@ EXTRA_OECMAKE += "-DADUC_BUILD_WITH_DELIVERY_OPTIMIZATION:BOOL=false"
 EXTRA_OECMAKE += "-DADUC_ROOTKEY_PKG_DOWNLOAD_WITH_CURL=true"
 EXTRA_OECMAKE += "-DADUC_ENABLE_CONSOLE_LOG:BOOL=true"
 # iot-hub-device-update 1.2.6 upstream source still reports version 1.2.0 internally,
-# so we explicitly set the correct version here. ADUC_VERSION_BUILD is used as a
-# custom label to identify omnect-specific builds.
-EXTRA_OECMAKE += "-DADUC_VERSION_MAJOR=1"
-EXTRA_OECMAKE += "-DADUC_VERSION_MINOR=2"
-EXTRA_OECMAKE += "-DADUC_VERSION_PATCH=6"
+# so we explicitly set the correct version derived from PV. ADUC_VERSION_BUILD is used
+# as a custom label to identify omnect-specific builds.
+EXTRA_OECMAKE += "-DADUC_VERSION_MAJOR=${@d.getVar('PV').split('+')[0].split('.')[0]}"
+EXTRA_OECMAKE += "-DADUC_VERSION_MINOR=${@d.getVar('PV').split('+')[0].split('.')[1]}"
+EXTRA_OECMAKE += "-DADUC_VERSION_PATCH=${@d.getVar('PV').split('+')[0].split('.')[2]}"
 EXTRA_OECMAKE += "-DADUC_VERSION_BUILD=omnect"
 
 # omnect adaptions (linux_platform_layer.patch)
@@ -85,7 +85,6 @@ do_install:append() {
 
   # enable user adu to exec adu-shell
   chgrp adu ${D}${bindir}/adu-shell
-  # grant owner and group execute permission so adu can run adu-shell
   chmod 0550 ${D}${bindir}/adu-shell
 
   # create tmpfiles.d entry to (re)create dir + permissions
