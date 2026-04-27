@@ -61,7 +61,7 @@ EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
 
 # iot-hub-device-update 1.2.6 upstream source still reports version 1.2.0 internally,
 # so we set the correct version at configure time when PV is fully resolved.
-python do_configure:prepend() {
+python do_configure:prepend {
     pv = d.getVar('PV').split('+')[0]
     parts = pv.split('.')
     d.appendVar('EXTRA_OECMAKE', ' -DADUC_VERSION_MAJOR=%s' % parts[0])
