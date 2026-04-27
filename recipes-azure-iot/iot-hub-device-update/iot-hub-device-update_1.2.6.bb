@@ -3,6 +3,16 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_omnect}/files:"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
+# NOTE: PV may not be fully resolved at parse time (e.g. "0.0-1"), because
+# BitBake parses recipes in multiple passes - once during initial metadata
+# collection (where PV is a placeholder) and again when all variables including
+# SRCPV are resolved (e.g. "1.2.6+gitABC"). aduc_version() handles both formats
+# by stripping any git suffix (+) and normalising separators (. and -).
+def aduc_version(d, idx):
+    pv = d.getVar('PV').split('+')[0]
+    parts = pv.replace('-', '.').split('.')
+    return parts[idx]
+
 SRC_URI = " \
   git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.2.6;nobranch=1 \
   file://deviceupdate-agent.service \
@@ -56,17 +66,17 @@ EXTRA_OECMAKE += "-DADUC_ENABLE_CONSOLE_LOG:BOOL=true"
 # ADUC_VERSION_BUILD is a custom label to identify omnect-specific builds.
 EXTRA_OECMAKE += "-DADUC_VERSION_BUILD=omnect"
 
+# EXTRA_OECMAKE cannot be modified at build/task time (e.g. in do_configure:prepend).
+# cmake_do_configure() in cmake.bbclass expands ${EXTRA_OECMAKE} directly from the
+# BitBake datastore, which is frozen at parse time. Any shell-level assignment to
+# EXTRA_OECMAKE inside a task body is invisible to that expansion. The parse-time
+# ${@...} inline Python approach is the correct workaround.
+EXTRA_OECMAKE += "-DADUC_VERSION_MAJOR=${@aduc_version(d, 0)}"
+EXTRA_OECMAKE += "-DADUC_VERSION_MINOR=${@aduc_version(d, 1)}"
+EXTRA_OECMAKE += "-DADUC_VERSION_PATCH=${@aduc_version(d, 2)}"
+
 # omnect adaptions (linux_platform_layer.patch)
 EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
-
-# iot-hub-device-update 1.2.6 upstream source still reports version 1.2.0 internally,
-# so we set the correct version at configure time when PV is fully resolved.
-cmake_do_configure:prepend() {
-    _pv=$(echo "${PV}" | cut -d+ -f1)
-    EXTRA_OECMAKE="$EXTRA_OECMAKE -DADUC_VERSION_MAJOR=$(echo $_pv | cut -d. -f1)"
-    EXTRA_OECMAKE="$EXTRA_OECMAKE -DADUC_VERSION_MINOR=$(echo $_pv | cut -d. -f2)"
-    EXTRA_OECMAKE="$EXTRA_OECMAKE -DADUC_VERSION_PATCH=$(echo $_pv | cut -d. -f3)"
-}
 
 do_install:append() {
   # adu configuration
