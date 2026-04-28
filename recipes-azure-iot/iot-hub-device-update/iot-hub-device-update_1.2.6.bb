@@ -66,11 +66,6 @@ EXTRA_OECMAKE += "-DADUC_ENABLE_CONSOLE_LOG:BOOL=true"
 # ADUC_VERSION_BUILD is a custom label to identify omnect-specific builds.
 EXTRA_OECMAKE += "-DADUC_VERSION_BUILD=omnect"
 
-# EXTRA_OECMAKE cannot be modified at build/task time (e.g. in do_configure:prepend).
-# cmake_do_configure() in cmake.bbclass expands ${EXTRA_OECMAKE} directly from the
-# BitBake datastore, which is frozen at parse time. Any shell-level assignment to
-# EXTRA_OECMAKE inside a task body is invisible to that expansion. The parse-time
-# ${@...} inline Python approach is the correct workaround.
 EXTRA_OECMAKE += "-DADUC_VERSION_MAJOR=${@aduc_version(d, 0)}"
 EXTRA_OECMAKE += "-DADUC_VERSION_MINOR=${@aduc_version(d, 1)}"
 EXTRA_OECMAKE += "-DADUC_VERSION_PATCH=${@aduc_version(d, 2)}"
