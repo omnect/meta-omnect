@@ -26,6 +26,13 @@ function set () {
     [[ ${argsc} -ne 3 ]] && help && exit 1
     local key=${1}
     local value=${@:2}
+
+    for word in $key $value; do
+        if [[ "$word" == "-s" || "$word" == "--script" || "$word" == -s=* || "$word" == --script=* ]]; then
+            echo "Script-file mode is not allowed (flag: $word)"; exit 66;
+        fi
+    done
+
     fw_setenv "${key}" "${value}"
 }
 
