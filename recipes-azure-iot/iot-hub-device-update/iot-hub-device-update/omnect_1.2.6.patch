@@ -1493,7 +1493,7 @@ index dba6c64e..cb25857d 100644
  //
  // HTTP Functions
 diff --git a/src/utils/extension_utils/src/extension_utils.c b/src/utils/extension_utils/src/extension_utils.c
-index 4339770d..41fe7205 100644
+index 4339770d..ac41f5fc 100644
 --- a/src/utils/extension_utils/src/extension_utils.c
 +++ b/src/utils/extension_utils/src/extension_utils.c
 @@ -265,7 +265,7 @@ static bool RegisterHandlerExtension(
@@ -1505,6 +1505,15 @@ index 4339770d..41fe7205 100644
      if (!ADUC_HashUtils_GetFileHash(handlerFilePath, SHA256, &hash))
      {
          goto done;
+@@ -274,7 +274,7 @@ static bool RegisterHandlerExtension(
+     content = STRING_construct_sprintf(
+         "{\n"
+         "   \"fileName\":\"%s\",\n"
+-        "   \"sizeInBytes\":%ld,\n"
++        "   \"sizeInBytes\":%lld,\n"
+         "   \"hashes\": {\n"
+         "        \"sha256\":\"%s\"\n"
+         "   },\n"
 @@ -483,7 +483,7 @@ bool RegisterExtension(const char* extensionDir, const char* extensionFilePath)
          goto done;
      }
@@ -1514,3 +1523,12 @@ index 4339770d..41fe7205 100644
  
      if (!ADUC_HashUtils_GetFileHash(extensionFilePath, SHA256, &hash))
      {
+@@ -493,7 +493,7 @@ bool RegisterExtension(const char* extensionDir, const char* extensionFilePath)
+     content = STRING_construct_sprintf(
+         "{\n"
+         "   \"fileName\":\"%s\",\n"
+-        "   \"sizeInBytes\":%ld,\n"
++        "   \"sizeInBytes\":%lld,\n"
+         "   \"hashes\": {\n"
+         "        \"sha256\":\"%s\"\n"
+         "   }\n"
