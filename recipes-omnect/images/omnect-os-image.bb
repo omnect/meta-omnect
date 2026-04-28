@@ -124,6 +124,12 @@ omnect_setup_sysctl_config() {
     echo "vm.panic_on_oom = ${OMNECT_VM_PANIC_ON_OOM}" >${IMAGE_ROOTFS}${sysconfdir}/sysctl.d/omnect.conf
 }
 
+# adu-shell needs cap_sys_boot to reboot the device as user adu
+ROOTFS_POSTPROCESS_COMMAND:append = " adu_shell_cap;"
+fakeroot adu_shell_cap() {
+    ${STAGING_DIR_NATIVE}/usr/sbin/setcap cap_sys_boot+ep ${IMAGE_ROOTFS}${bindir}/adu-shell
+}
+
 # systemd getty terminals get enabled after do_rootfs and/or at runtime if not explicitly masked;
 # for a release image we explicitly disable them by masking
 IMAGE_PREPROCESS_COMMAND:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'disable_getty;', '', d)}"

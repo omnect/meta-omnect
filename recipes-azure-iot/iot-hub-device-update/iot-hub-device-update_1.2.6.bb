@@ -3,8 +3,18 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${LAYERDIR_omnect}/files:"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ed9b57adc193f5cf3deae5b20552c06"
 
+# NOTE: PV may not be fully resolved at parse time (e.g. "0.0-1"), because
+# BitBake parses recipes in multiple passes - once during initial metadata
+# collection (where PV is a placeholder) and again when all variables including
+# SRCPV are resolved (e.g. "1.2.6+gitABC"). aduc_version() handles both formats
+# by stripping any git suffix (+) and normalising separators (. and -).
+def aduc_version(d, idx):
+    pv = d.getVar('PV').split('+')[0]
+    parts = pv.replace('-', '.').split('.')
+    return parts[idx]
+
 SRC_URI = " \
-  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.2.0;nobranch=1 \
+  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.2.6;nobranch=1 \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
   file://du-config.json \
@@ -12,7 +22,8 @@ SRC_URI = " \
   file://iot-hub-device-update.tmpfilesd \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
-  file://omnect_1.2.0.patch \
+  file://omnect_1.2.6.patch \
+  file://adu-bootloader-env \
 "
 SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
 SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh"
@@ -24,7 +35,6 @@ S = "${WORKDIR}/git"
 DEPENDS = " \
   azure-iot-sdk-c \
   boost \
-  do-client-sdk \
   jq-native \
   libxml2 \
   systemd \
@@ -33,7 +43,8 @@ DEPENDS = " \
 RDEPENDS:${PN} = " \
   aziot-identityd \
   bash \
-  do-client \
+  curl \
+  sudo \
   swupdate \
 "
 
@@ -49,6 +60,15 @@ EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MANUFACTURER='${OMNECT_ADU_MANUFACTURER}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEINFO_MODEL='${OMNECT_ADU_MODEL}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MANUFACTURER='${OMNECT_ADU_DEVICEPROPERTIES_MANUFACTURER}'"
 EXTRA_OECMAKE += "-DADUC_DEVICEPROPERTIES_MODEL='${OMNECT_ADU_DEVICEPROPERTIES_MODEL}'"
+EXTRA_OECMAKE += "-DADUC_BUILD_WITH_DELIVERY_OPTIMIZATION:BOOL=false"
+EXTRA_OECMAKE += "-DADUC_ROOTKEY_PKG_DOWNLOAD_WITH_CURL=true"
+EXTRA_OECMAKE += "-DADUC_ENABLE_CONSOLE_LOG:BOOL=true"
+# ADUC_VERSION_BUILD is a custom label to identify omnect-specific builds.
+EXTRA_OECMAKE += "-DADUC_VERSION_BUILD=omnect"
+
+EXTRA_OECMAKE += "-DADUC_VERSION_MAJOR=${@aduc_version(d, 0)}"
+EXTRA_OECMAKE += "-DADUC_VERSION_MINOR=${@aduc_version(d, 1)}"
+EXTRA_OECMAKE += "-DADUC_VERSION_PATCH=${@aduc_version(d, 2)}"
 
 # omnect adaptions (linux_platform_layer.patch)
 EXTRA_OECMAKE += "-DADUC_STORAGE_PATH=/mnt/data/."
@@ -74,8 +94,7 @@ do_install:append() {
 
   # enable user adu to exec adu-shell
   chgrp adu ${D}${bindir}/adu-shell
-  # enable user adu to reboot with adu-shell
-  chmod 04550 ${D}${bindir}/adu-shell
+  chmod 0550 ${D}${bindir}/adu-shell
 
   # create tmpfiles.d entry to (re)create dir + permissions
   install -m 0644 -D ${WORKDIR}/iot-hub-device-update.tmpfilesd ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
@@ -102,6 +121,8 @@ do_install:append() {
 
   # delete adu-swupdate.sh
   rm ${D}${bindir}/adu-swupdate.sh
+
+  install -m 0440 -D ${WORKDIR}/adu-bootloader-env ${D}${sysconfdir}/sudoers.d/adu-bootloader-env
 }
 
 do_install:append:omnect_grub() {
@@ -142,10 +163,10 @@ FILES:${PN} += " \
   ${sysconfdir}/omnect/consent/history_consent.json \
   ${sysconfdir}/omnect/consent/request_consent.json \
   ${sysconfdir}/omnect/consent/swupdate/user_consent.json \
+  ${sysconfdir}/sudoers.d/adu-bootloader-env \
   "
 
 GROUPADD_PARAM:${PN} += " \
   -r adu; \
-  -r do; \
 "
-USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,disk,do -g adu adu;"
+USERADD_PARAM:${PN} += "--no-create-home -r -s /bin/false -G aziotcs,aziotid,aziotks,disk -g adu adu;"
