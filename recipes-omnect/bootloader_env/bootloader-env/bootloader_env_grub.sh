@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eo pipefail
 grubenv="/boot/EFI/BOOT/grubenv"
 commands=("get" "list" "set" "unset")
 argsc=${#}
