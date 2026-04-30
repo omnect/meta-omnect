@@ -53,8 +53,18 @@ run_bmap_tool() {
 
 # deploy WIC image via network to (same) active block device
 run_flash_mode_3() {
+    # we know that flash mode 3 is active or otherwise flash_mode_3_enabled()
+    # would have failed.
+    # in order to avoid to endlessly fall into this situation if some error
+    # happens below, unset flash-mode variable here right now and also clear
+    # other variables right after having been read
+    set_bootloader_env_var flash-mode
+
     local url=$(get_bootloader_env_var flash-mode-url | base64 --decode) || { msg_fatal "couldn't get \"flash-mode-url\""; return 1; }
+    set_bootloader_env_var flash-mode-url
+
     local url_sha256=$(get_bootloader_env_var flash-mode-url-sha256 | base64 --decode) || { msg_fatal "couldn't get \"flash-mode-url-sha256\""; return 1; }
+    set_bootloader_env_var flash-mode-url-sha256
 
     if [ -z "${url}" ] || [ -z "${url_sha256}" ]; then
         msg "invalid parameters:"
@@ -64,10 +74,6 @@ run_flash_mode_3() {
     fi
 
     msg "Entering omnect flashing mode 3 ..."
-    # disable flash mode for subsequent restarts
-    set_bootloader_env_var flash-mode
-    set_bootloader_env_var flash-mode-url
-    set_bootloader_env_var flash-mode-url-sha256
 
     # we already mounted /dev/omnect/boot when we're using grub. so we unmount before copying boot.
     if [ -f /usr/bin/grub-editenv ]; then
