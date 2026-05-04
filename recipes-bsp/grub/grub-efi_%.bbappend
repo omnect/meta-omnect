@@ -18,7 +18,7 @@ do_compile:append:class-target() {
     grub-script-check ${WORKDIR}/boot-menu.inc
 }
 
-do_install:append() {
+do_install:append:class-target() {
     # we need to replace the standard grubenv file with our own one, because
     # we use a bigger file
     install -m 0644 ${WORKDIR}/grubenv ${D}${EFI_BOOT_PATH}/grubenv
