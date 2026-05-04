@@ -6,7 +6,6 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/grub/grub-ef
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-bsp/grub/grub-efi/*"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/recipes-omnect/grub-env/grub-env.bb"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/files/grubenv"
-OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_omnect}/files/grubenv"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_efi-secure-boot}/recipes-bsp/grub/*"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_efi-secure-boot}/recipes-bsp/grub/grub-efi/*"
 OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_efi-secure-boot}/recipes-bsp/seloader/*"
