@@ -1,6 +1,7 @@
 #
 # common helper functions
 #
+set -vx
 
 common_sh_enabled()
 {
