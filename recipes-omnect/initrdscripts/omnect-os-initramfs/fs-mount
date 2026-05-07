@@ -1,5 +1,5 @@
 #!/bin/sh
-
+set -vx
 fs_mount_enabled() {
     return 0
 }
