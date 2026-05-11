@@ -1,5 +1,4 @@
 #!/bin/sh
-
 fs_mount_enabled() {
     return 0
 }
@@ -18,7 +17,9 @@ run_fs_mount()
 
     # mount rootfs
     # before we mount rootfs, make sure boot is unmounted
-    umount ${ROOTFS_DIR}/boot || true
+    if mountpoint -q ${ROOTFS_DIR}/boot; then
+	umount ${ROOTFS_DIR}/boot
+    fi
     mount_partition "ext4" "/dev/omnect/rootCurrent" "${ROOTFS_DIR}" "${mnt_opts_default},ro" || return 1
     # bind mount rootfs without overlay under /mnt/rootCurrent
     run_cmd mount --bind ${ROOTFS_DIR} ${ROOTFS_DIR}/mnt/rootCurrent
@@ -52,7 +53,9 @@ run_fs_mount()
     # mount boot
     # we possibly already mounted /dev/omnect/boot for grub env var handling.
     # we unmount here, so we can set proper mount gid+umask options
-    umount ${ROOTFS_DIR}/boot || true
+    if mountpoint -q ${ROOTFS_DIR}/boot; then
+	umount ${ROOTFS_DIR}/boot
+    fi
     check_fs "boot"
     run_cmd mount -t vfat -o gid=$(get_id disk ${ROOTFS_DIR}/etc/group),umask=0002 /dev/omnect/boot "${ROOTFS_DIR}/boot" || return 1
 
