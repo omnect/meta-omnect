@@ -5,12 +5,13 @@ PROVIDES:omnect_grub = "virtual/bootloader"
 inherit omnect_bootloader
 
 SRC_URI += "\
-    file://omnect.inc \
+    file://omnect.inc.in \
     file://grubenv \
 "
 
 do_compile:append:class-target() {
-    mv ${WORKDIR}/omnect.inc ${WORKDIR}/boot-menu.inc
+    sed -e "s/@@OMNECT_APPEND_1ST_BOOT@@/${OMNECT_APPEND_1ST_BOOT}/g" \
+        ${WORKDIR}/omnect.inc.in > ${WORKDIR}/boot-menu.inc
     [ ${OMNECT_RELEASE_IMAGE} -eq 1 ] && sed -ie "s/^timeout=\(.\)/timeout=0/g" ${WORKDIR}/grub-efi.cfg
 
     grub-script-check ${WORKDIR}/grub-efi.cfg
