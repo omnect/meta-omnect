@@ -34,7 +34,7 @@ repos:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     branch: "scarthgap"
-    commit: "81f4faa406e70dfa514e2f7642f97df33d3b84ae"
+    commit: "a329ea9f9ef4eeb316f2da2dba4a9c1bcb106899"
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     branch: "scarthgap"
