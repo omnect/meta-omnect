@@ -34,7 +34,7 @@ APPEND += "console=ttymxc2,115200"
 APPEND += "clk-imx8mm.mcore_booted"
 
 # next APPEND options are only needed for reboot reason support
-APPEND:append:omnect_pstore = " ramoops.dump_oops=1 ramoops.ecc=1 printk.always_kmsg_dump=Y crash_kexec_post_notifiers=Y"
+APPEND:append:omnect_pstore = " ramoops.dump_oops=1 printk.always_kmsg_dump=Y crash_kexec_post_notifiers=Y"
 
 # u-boot boot.scr config
 KERNEL_BOOTCMD = "booti"
