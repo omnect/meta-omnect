@@ -8,7 +8,7 @@ repos:
     url: "https://github.com/phytec/meta-phytec"
     branch: "scarthgap"
     # for now pinned to our 5.0.15 release, because of https://github.com/phytec/linux-phytec-imx/issues/2
-    commit: "951384d6a847a5cfcb9c34e31e2e47c15a91437f"
+    commit: "2662e73270b6a899e45c1d081e667f68f59dc136"
     patches:
       p001:
         repo: "meta-omnect"
@@ -16,7 +16,7 @@ repos:
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: "scarthgap"
-    commit: "902dde8c5bd29bb507ac8d37772565a6c9ab77cd"
+    commit: "0c27c21cab57876474bb572e5d378b6707e41224"
     patches:
       p001:
         repo: "meta-omnect"
@@ -35,7 +35,7 @@ repos:
   ext/meta-arm:
     url: "https://git.yoctoproject.org/meta-arm"
     branch: "scarthgap"
-    commit: "a81c19915b5b9e71ed394032e9a50fd06919e1cd"
+    commit: "c4fd56386ee30f8b46f8e4eb1220edaf510d2ac0"
     layers:
       meta-arm:
       meta-arm-toolchain:
