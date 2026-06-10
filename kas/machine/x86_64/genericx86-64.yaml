@@ -7,7 +7,7 @@ repos:
   ext/meta-yocto-bsp:
     url: "https://git.yoctoproject.org/meta-yocto"
     branch: scarthgap
-    commit: "c7c38663a1cafb1fa8593c0b246811e51d3bbe20"
+    commit: "ca5a51aadaf651881d640688dc3e1e123aa30bf6"
     layers:
       meta-yocto-bsp:
   ext/meta-secure-core:
@@ -25,7 +25,7 @@ repos:
   ext/meta-perl:
     url: "https://github.com/openembedded/meta-openembedded.git"
     branch: "scarthgap"
-    commit: "5124ac4a658899158f4a7a2ddf1d2ca931ec7d0e"
+    commit: "d8cc4e44001c7257273d290ce8c4496e93d32841"
     layers:
       meta-perl:
 
