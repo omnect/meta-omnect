@@ -57,6 +57,24 @@ EXTRA_PACKAGES_CELLULAR = "\
     usb-modeswitch usb-modeswitch-data \
 "
 
+# Mandatory Access Control userspace. Both AppArmor and SELinux are compiled
+# into the kernel but DAC is the default LSM; these packages provide the
+# tooling to activate and manage either one at runtime (see doc/mac_lsm.md).
+# No SELinux reference policy ships yet - this is framework/userspace only, so
+# the SELinux set deliberately excludes refpolicy.
+OMNECT_MAC_USERSPACE = "\
+    apparmor \
+    checkpolicy \
+    libselinux \
+    libselinux-bin \
+    libsemanage \
+    libsepol \
+    policycoreutils-loadpolicy \
+    policycoreutils-semodule \
+    policycoreutils-sestatus \
+    policycoreutils-setfiles \
+"
+
 IMAGE_INSTALL = "\
     ${@bb.utils.contains('MACHINE_FEATURES', '3g', '${EXTRA_PACKAGES_CELLULAR}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', ' mokutil', '', d)} \
@@ -64,6 +82,7 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd-bash-completion', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
+    ${OMNECT_MAC_USERSPACE} \
     bootloader-env \
     bootloader-versioned \
     coreutils \
