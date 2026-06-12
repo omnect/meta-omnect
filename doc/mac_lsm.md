@@ -87,6 +87,14 @@ environment variable `omnect_extra_bootargs` and appended to the kernel command
 line on the next boot. See
 `recipes-omnect/omnect-base-files/omnect-base-files/usr/bin/omnect_extra_bootargs.sh`.
 
+## Example: confining an IoT Edge module
+
+[`examples/iotedge-apparmor/`](examples/iotedge-apparmor/) deploys the Azure IoT Edge
+SimulatedTemperatureSensor "hello world" module and confines its container with a custom
+AppArmor profile (referenced from the deployment via
+`HostConfig.SecurityOpt: ["apparmor=<name>"]`). See its `README.md` for the full
+load/apply/verify walkthrough.
+
 ## Limitations and future work
 
 - Only **one** LSM (AppArmor *or* SELinux) can enforce per boot.
