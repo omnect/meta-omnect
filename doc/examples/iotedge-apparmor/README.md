@@ -22,7 +22,7 @@ Files:
 2. The device is booted with **AppArmor active**. AppArmor is compiled in but DAC is the
    default, so enable it once (see [`doc/mac_lsm.md`](../../mac_lsm.md)):
    ```bash
-   echo "security=apparmor apparmor=1" | sudo tee -a /boot/omnect_extra_bootargs_custom
+   echo "lsm=landlock,lockdown,yama,loadpin,safesetid,bpf,apparmor" | sudo tee -a /boot/omnect_extra_bootargs_custom
    sudo omnect_extra_bootargs.sh set
    sudo reboot
    ```

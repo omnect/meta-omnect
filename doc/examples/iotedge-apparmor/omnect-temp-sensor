@@ -8,7 +8,8 @@
 # Load on the device with:
 #   sudo cp omnect-temp-sensor /etc/apparmor.d/omnect-temp-sensor
 #   sudo apparmor_parser -r -W /etc/apparmor.d/omnect-temp-sensor
-# (requires the device to be booted with AppArmor active: security=apparmor apparmor=1)
+# (requires the device to be booted with AppArmor active:
+#  lsm=landlock,lockdown,yama,loadpin,safesetid,bpf,apparmor)
 
 #include <tunables/global>
 

@@ -20,6 +20,10 @@ Kernel (always, all machines):
   `recipes-kernel/linux/files/selinux.cfg`
 - `CONFIG_DEFAULT_SECURITY_DAC=y` — DAC stays the default; neither LSM initializes
   unless selected at boot.
+- `CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,bpf"` — see
+  `recipes-kernel/linux/files/audit.cfg`. The active LSM list is pinned to the minor
+  LSMs only (no major MAC LSM). A major LSM is activated by appending it to this list
+  via `lsm=` on the kernel command line (see [Enabling AppArmor](#enabling-apparmor)).
 
 Userspace (via `DISTRO_FEATURES += "apparmor selinux acl"`, installed through
 `OMNECT_MAC_USERSPACE` in `recipes-omnect/images/omnect-os-image.bb`):
@@ -52,22 +56,32 @@ getenforce
 Add to the kernel command line:
 
 ```
-security=apparmor apparmor=1
+lsm=landlock,lockdown,yama,loadpin,safesetid,bpf,apparmor
 ```
 
-`apparmor.service` then loads any installed profiles at boot. Verify with
-`aa-status` and `cat /sys/module/apparmor/parameters/enabled` (`Y`).
+This is the pinned `CONFIG_LSM` list (see [What is included](#what-is-included))
+with `apparmor` appended. AppArmor is enabled once it appears in the list, so no
+separate `apparmor=1` is needed. `apparmor.service` then loads any installed
+profiles at boot. Verify with `aa-status` and
+`cat /sys/module/apparmor/parameters/enabled` (`Y`).
 
 ## Enabling SELinux
 
 Add to the kernel command line:
 
 ```
-security=selinux selinux=1
+lsm=landlock,lockdown,yama,loadpin,safesetid,bpf,selinux selinux=1
 ```
 
 With no policy present, SELinux comes up disabled/permissive — this is expected
 for the current framework-only state.
+
+> **Why `lsm=` and not `security=`?** The legacy `security=apparmor`/`security=selinux`
+> parameter only *filters* among the major LSMs already present in `CONFIG_LSM`; it
+> never *adds* one. Since DAC is the default, neither apparmor nor selinux is in the
+> pinned list, so `security=` alone activates nothing. `lsm=` replaces the whole list,
+> which is how the chosen LSM gets in. List **only one** major LSM (apparmor *or*
+> selinux) — they are mutually exclusive at runtime.
 
 ## Setting the kernel command line
 
@@ -76,7 +90,7 @@ arguments to the customer bootargs file and push them into the bootloader
 environment; they take effect on the next boot:
 
 ```bash
-echo "security=apparmor apparmor=1" | sudo tee -a /boot/omnect_extra_bootargs_custom
+echo "lsm=landlock,lockdown,yama,loadpin,safesetid,bpf,apparmor" | sudo tee -a /boot/omnect_extra_bootargs_custom
 sudo omnect_extra_bootargs.sh set
 sudo reboot
 ```
