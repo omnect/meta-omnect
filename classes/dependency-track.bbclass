@@ -7,14 +7,14 @@
 CVE_PRODUCT ??= "${BPN}"
 CVE_VERSION ??= "${PV}"
 
-# There are differences in how component versions are hendled by their vendors
+# There are differneces in how component versions are handled by their vendors
 # with respect to CPE fields 'version' and 'update'::
 #  - most of them seem to put the whole version number into the version field
 #  - some split the version string into pure version number and a potential
 #    suffix like 'beta-1', 'rc1' or 'p1'
 # In the past we used first variant for all components, but one day a sudo CVE
 # hit the developemer in charge and revealed that projects appeared to be
-# unaffected by it although the actually are.
+# unaffected by it although they actually are.
 # The cause lies in version number comparison between CVE's CPE entries and
 # our generated SBOM for single versions: they need to fully match.
 # Concrete values were ...
@@ -28,7 +28,7 @@ CVE_VERSION ??= "${PV}"
 # The full version in the SBOM's version field didn't match the complete
 # version specification as contained in the CVE - split into version plus
 # update -, so the CVE was ignored.
-# From the CPE standard's point of view there is no right or wron here, so we
+# From the CPE standard's point of view there is no right or wrong here, so we
 # need to be prepared to deal with both situations.
 # The solution is: keep SBOM generation for components as in the past unless
 # an indicator - new variable OMNECT_CVE_VERSION_SPLIT, to be set component
@@ -96,7 +96,6 @@ python do_dependencytrack_collect() {
             # we need to use the full version from the cpe string because it
             # is already cleaned from any '+git' suffix
             full_ver = cpe_split[5]
-            #m = re.search('^([0-9]+(?:[.][0-9]+)*)([-_a-zA-Z][-_a-zA-Z0-9]+)?$', full_ver)
             m = re.search('^([0-9]+(?:[.][0-9]+)*)([-+_a-zA-Z]+.*)?$', full_ver)
             bb.debug(1, "component[split]: {} / {} ({}) - m: {}".format(name, full_ver, version, m))
             bb.debug(1, "component[split]: cpe {}". format(cpe))
