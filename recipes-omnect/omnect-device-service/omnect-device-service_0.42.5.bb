@@ -238,7 +238,6 @@ SRC_URI += " \
     crate://crates.io/parking/2.2.1 \
     crate://crates.io/parking_lot/0.12.5 \
     crate://crates.io/parking_lot_core/0.9.12 \
-SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=refactor/CommandRequests"
     crate://crates.io/percent-encoding/2.3.2 \
     crate://crates.io/pin-project-lite/0.2.17 \
     crate://crates.io/pin-utils/0.1.0 \
