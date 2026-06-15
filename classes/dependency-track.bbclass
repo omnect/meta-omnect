@@ -7,13 +7,13 @@
 CVE_PRODUCT ??= "${BPN}"
 CVE_VERSION ??= "${PV}"
 
-# There are differneces in how component versions are handled by their vendors
-# with respect to CPE fields 'version' and 'update'::
+# There are differences in how component versions are handled by their vendors
+# with respect to CPE fields 'version' and 'update':
 #  - most of them seem to put the whole version number into the version field
 #  - some split the version string into pure version number and a potential
 #    suffix like 'beta-1', 'rc1' or 'p1'
 # In the past we used first variant for all components, but one day a sudo CVE
-# hit the developemer in charge and revealed that projects appeared to be
+# hit the developer in charge and revealed that projects appeared to be
 # unaffected by it although they actually are.
 # The cause lies in version number comparison between CVE's CPE entries and
 # our generated SBOM for single versions: they need to fully match.
@@ -97,14 +97,17 @@ python do_dependencytrack_collect() {
             # is already cleaned from any '+git' suffix
             full_ver = cpe_split[5]
             m = re.search('^([0-9]+(?:[.][0-9]+)*)([-+_a-zA-Z]+.*)?$', full_ver)
+            if m == None:
+                bb.error("component {}: version {} cannot be split".format(name, full_ver))
+
             bb.debug(1, "component[split]: {} / {} ({}) - m: {}".format(name, full_ver, version, m))
             bb.debug(1, "component[split]: cpe {}". format(cpe))
             cpe_split[5] = m[1]
-            if len(m.groups()) > 1:
+            if m.groups()[1] != None:
                 cpe_split[6] = m[2]
             else:
                 cpe_split[6] = '-'
-            bb.debug(1, "component[split]: version slpit {} / {}".format(cpe_split[5], cpe_split[6]))
+            bb.debug(1, "component[split]: version split {} / {}".format(cpe_split[5], cpe_split[6]))
         else:
             # version has already the correct content, just ensure that update
             # field is correct here
