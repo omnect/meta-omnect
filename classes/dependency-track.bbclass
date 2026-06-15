@@ -99,15 +99,12 @@ python do_dependencytrack_collect() {
             m = re.search('^([0-9]+(?:[.][0-9]+)*)([-+_a-zA-Z]+.*)?$', full_ver)
             bb.debug(1, "component[split]: {} / {} ({}) - m: {}".format(name, full_ver, version, m))
             bb.debug(1, "component[split]: cpe {}". format(cpe))
-            if len(m.groups()) > 1:
-                bb.debug(1, "component[split]: version slpit {} / {}". format(m[1], m[2]))
-            else:
-                bb.debug(1, "component[split]: version slpit {} / -". format(m[1]))
             cpe_split[5] = m[1]
-            if len(m.groups()) > 2:
+            if len(m.groups()) > 1:
                 cpe_split[6] = m[2]
             else:
                 cpe_split[6] = '-'
+            bb.debug(1, "component[split]: version slpit {} / {}".format(cpe_split[5], cpe_split[6]))
         else:
             # version has already the correct content, just ensure that update
             # field is correct here
