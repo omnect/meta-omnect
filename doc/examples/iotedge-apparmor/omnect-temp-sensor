@@ -49,9 +49,12 @@ profile omnect-temp-sensor flags=(attach_disconnected,mediate_deleted) {
   deny /sys/kernel/security/** rwklx,
 
   # --- omnect demo rule -------------------------------------------------
-  # Deny writes to anything under /tmp/forbidden. The module runs fine; the
-  # denial is observable (see README verification step).
-  deny /tmp/forbidden** w,
+  # Deny writes to anything under /tmp/forbidden AND log the denial. The module
+  # runs fine; the denial is observable (see README verification step). The
+  # `audit` qualifier is required: a plain `deny` blocks the write but quietly
+  # (no log). With `audit deny` the denial is emitted as an AppArmor audit record
+  # (this image has no auditd, so the record reaches the kernel ring buffer / dmesg).
+  audit deny /tmp/forbidden** w,
   # ----------------------------------------------------------------------
 
   # suppress ptrace denials when using 'docker ps' or 'ps' inside a container
