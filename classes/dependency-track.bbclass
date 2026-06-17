@@ -98,7 +98,7 @@ python do_dependencytrack_collect() {
             full_ver = cpe_split[5]
             m = re.search('^([0-9]+(?:[.][0-9]+)*)([-+_a-zA-Z]+.*)?$', full_ver)
             if m == None:
-                bb.error("component {}: version {} cannot be split".format(name, full_ver))
+                bb.fatal("component {}: version {} cannot be split".format(name, full_ver))
 
             bb.debug(1, "component[split]: {} / {} ({}) - m: {}".format(name, full_ver, version, m))
             bb.debug(1, "component[split]: cpe {}". format(cpe))
