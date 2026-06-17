@@ -35,12 +35,15 @@ Userspace (via `DISTRO_FEATURES += "apparmor"`, installed through
 ## Checking the current state
 
 ```bash
-# which LSMs are active this boot (DAC default => no apparmor listed)
+# Authoritative: which LSMs are active this boot.
+# DAC default => apparmor is NOT listed; once enabled it appears here.
 cat /sys/kernel/security/lsm
 
-# AppArmor
+# AppArmor detail (only meaningful once apparmor is in the list above)
 aa-status
-cat /sys/module/apparmor/parameters/enabled   # 'Y' when active
+# Reflects the compile/boot-param default and can read 'Y' even when apparmor is
+# NOT the active LSM — trust /sys/kernel/security/lsm and aa-status instead.
+cat /sys/module/apparmor/parameters/enabled
 ```
 
 ## Enabling AppArmor
@@ -54,8 +57,8 @@ lsm=landlock,lockdown,yama,loadpin,safesetid,bpf,apparmor
 This is the pinned `CONFIG_LSM` list (see [What is included](#what-is-included))
 with `apparmor` appended. AppArmor is enabled once it appears in the list, so no
 separate `apparmor=1` is needed. `apparmor.service` then loads any installed
-profiles at boot. Verify with `aa-status` and
-`cat /sys/module/apparmor/parameters/enabled` (`Y`).
+profiles at boot. Verify AppArmor is active by confirming `apparmor` now appears in
+`/sys/kernel/security/lsm` and that `aa-status` reports it loaded.
 
 > **Why `lsm=` and not `security=`?** The legacy `security=apparmor` parameter only
 > *filters* among the major LSMs already present in `CONFIG_LSM`; it never *adds*

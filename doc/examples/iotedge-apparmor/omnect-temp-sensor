@@ -21,12 +21,11 @@ profile omnect-temp-sensor flags=(attach_disconnected,mediate_deleted) {
   file,
   umount,
 
-  # Host (privileged) processes may send signals to container processes.
+  # Host (privileged) and dockerd processes may send signals to container
+  # processes (e.g. docker kill).
   signal (receive) peer=unconfined,
   # runc may send a 'kill' signal to the container's init process (docker stop).
   signal (receive) peer=runc,
-  # dockerd may send signals to container processes (docker kill).
-  signal (receive) peer=unconfined,
   # Container processes may send signals amongst themselves.
   signal (send,receive) peer=omnect-temp-sensor,
 

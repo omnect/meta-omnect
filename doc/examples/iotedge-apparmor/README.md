@@ -26,7 +26,8 @@ Files:
    sudo omnect_extra_bootargs.sh set
    sudo reboot
    ```
-   After reboot, confirm: `aa-status` runs and `cat /sys/module/apparmor/parameters/enabled` is `Y`.
+   After reboot, confirm AppArmor is active: `apparmor` appears in
+   `cat /sys/kernel/security/lsm` and `aa-status` reports it loaded.
 
 ## Apply
 
