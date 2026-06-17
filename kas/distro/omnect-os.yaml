@@ -24,16 +24,13 @@ repos:
         repo: "meta-omnect"
         path: "kas/patches/meta-openembedded.patch"
   # we need meta-tpm independend of feature/tpm.yaml to be able
-  # to build iot-identity-service.
-  # meta-security (base layer) provides the AppArmor userspace; the kernel
-  # is already built with CONFIG_SECURITY_APPARMOR (see audit.cfg).
+  # to build iot-identity-service
   ext/meta-security:
     url: "https://git.yoctoproject.org/meta-security"
     branch: "scarthgap"
     commit: "b13f1705d723650de61277670c8a76aadea4cfdd"
     layers:
-      # "." is the repo root, which is the meta-security base layer
-      # (collection "security"); meta-tpm is a sublayer.
+      # base layer (collection "security") - provides the AppArmor userspace
       .:
       meta-tpm:
   ext/meta-swupdate:

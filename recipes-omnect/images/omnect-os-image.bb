@@ -57,9 +57,6 @@ EXTRA_PACKAGES_CELLULAR = "\
     usb-modeswitch usb-modeswitch-data \
 "
 
-# Mandatory Access Control userspace. AppArmor is compiled into the kernel but
-# DAC is the default LSM; this package provides the tooling to activate and
-# manage AppArmor at runtime (see doc/mac_lsm.md).
 OMNECT_MAC_USERSPACE = "\
     apparmor \
 "
