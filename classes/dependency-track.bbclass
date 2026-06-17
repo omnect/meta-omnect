@@ -7,6 +7,35 @@
 CVE_PRODUCT ??= "${BPN}"
 CVE_VERSION ??= "${PV}"
 
+# There are differences in how component versions are handled by their vendors
+# with respect to CPE fields 'version' and 'update':
+#  - most of them seem to put the whole version number into the version field
+#  - some split the version string into pure version number and a potential
+#    suffix like 'beta-1', 'rc1' or 'p1'
+# In the past we used first variant for all components, but one day a sudo CVE
+# hit the developer in charge and revealed that projects appeared to be
+# unaffected by it although they actually are.
+# The cause lies in version number comparison between CVE's CPE entries and
+# our generated SBOM for single versions: they need to fully match.
+# Concrete values were ...
+#  - in the CVE:
+#    cpe:2.3:a:sudo_project:sudo:1.9.17:-:*:*:*:*:*:*
+#    cpe:2.3:a:sudo_project:sudo:*:*:*:*:*:*:*:* (<1.9.17)
+#    cpe:2.3:a:sudo_project:sudo:1.9.17:p1:*:*:*:*:*:*
+#    cpe:2.3:a:sudo_project:sudo:1.9.17:p2:*:*:*:*:*:*
+# in our SBOM:
+#    cpe:2.3:a:*:sudo:1.9.17p1:*:*:*:*:*:*:*
+# The full version in the SBOM's version field didn't match the complete
+# version specification as contained in the CVE - split into version plus
+# update -, so the CVE was ignored.
+# From the CPE standard's point of view there is no right or wrong here, so we
+# need to be prepared to deal with both situations.
+# The solution is: keep SBOM generation for components as in the past unless
+# an indicator - new variable OMNECT_CVE_VERSION_SPLIT, to be set component
+# specific in omnect-os-cve.conf file - states otherwise ie., sets this
+# variable to 1.
+OMNECT_CVE_VERSION_SPLIT ??= "0"
+
 DEPENDENCYTRACK_DIR ??= "${DEPLOY_DIR}/dependency-track"
 DEPENDENCYTRACK_SBOM ??= "${DEPENDENCYTRACK_DIR}/bom.json"
 DEPENDENCYTRACK_TMP ??= "${TMPDIR}/dependency-track"
@@ -38,6 +67,7 @@ do_dependencytrack_init[eventmask] = "bb.event.BuildStarted"
 python do_dependencytrack_collect() {
     import json
     import oe.cve_check
+    import re
     from pathlib import Path
 
     # omnect specific; we only want packages for the target in our sbom
@@ -47,6 +77,7 @@ python do_dependencytrack_collect() {
     # load the bom
     name = d.getVar("CVE_PRODUCT")
     version = d.getVar("CVE_VERSION")
+    split_version = d.getVar("OMNECT_CVE_VERSION_SPLIT")
     sbom = read_sbom(d)
 
     # update it with the new package info
@@ -61,7 +92,29 @@ python do_dependencytrack_collect() {
 
         # recompile cpe: scarthgap sets "*" for type, kirkstone did set "a"
         cpe_split[2] = "a"
+        if split_version != "0":
+            # we need to use the full version from the cpe string because it
+            # is already cleaned from any '+git' suffix
+            full_ver = cpe_split[5]
+            m = re.search('^([0-9]+(?:[.][0-9]+)*)([-+_a-zA-Z]+.*)?$', full_ver)
+            if m == None:
+                bb.fatal("component {}: version {} cannot be split".format(name, full_ver))
+
+            bb.debug(1, "component[split]: {} / {} ({}) - m: {}".format(name, full_ver, version, m))
+            bb.debug(1, "component[split]: cpe {}". format(cpe))
+            cpe_split[5] = m[1]
+            if m.groups()[1] != None:
+                cpe_split[6] = m[2]
+            else:
+                cpe_split[6] = '-'
+            bb.debug(1, "component[split]: version split {} / {}".format(cpe_split[5], cpe_split[6]))
+        else:
+            # version has already the correct content, just ensure that update
+            # field is correct here
+            cpe_split[6] = '*'
+            
         cpe = ":".join(cpe_split)
+        bb.debug(1, "component: resulting cpe {}". format(cpe))
 
         if not next((c for c in sbom["components"] if c["cpe"] == cpe), None):
             sbom["components"].append({
