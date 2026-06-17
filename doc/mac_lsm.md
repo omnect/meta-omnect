@@ -1,54 +1,46 @@
-# Mandatory Access Control (AppArmor / SELinux)
+# Mandatory Access Control (AppArmor)
 
-AppArmor and SELinux are **Linux Security Modules (LSM)** — the Linux kernel's
-framework for Mandatory Access Control (MAC). `omnect-os` images ship with **both**
-LSMs compiled into the kernel and their userspace tooling installed, but **DAC
-(discretionary access control) remains the default**. No MAC is active out of the
-box, so default device behavior is unchanged. AppArmor or SELinux can be activated
-per device via the kernel command line.
+AppArmor is a **Linux Security Module (LSM)** — the Linux kernel's framework for
+Mandatory Access Control (MAC). `omnect-os` images ship with AppArmor compiled
+into the kernel and its userspace tooling installed, but **DAC (discretionary
+access control) remains the default**. No MAC is active out of the box, so default
+device behavior is unchanged. AppArmor can be activated per device via the kernel
+command line.
 
-> **Note:** AppArmor and SELinux are *mutually exclusive* at runtime. The kernel
-> can only have **one** active "major" LSM per boot — you select which one (or
-> none) on the kernel command line.
+> **Note:** Only **one** "major" LSM can be active per boot. AppArmor is the major
+> LSM compiled into `omnect-os`; you select it (or none) on the kernel command line.
 
 ## What is included
 
 Kernel (always, all machines):
 
 - `CONFIG_SECURITY_APPARMOR=y` — see `recipes-kernel/linux/files/audit.cfg`
-- `CONFIG_SECURITY_SELINUX=y` (+ `..._BOOTPARAM`, `..._AVC_STATS`) — see
-  `recipes-kernel/linux/files/selinux.cfg`
-- `CONFIG_DEFAULT_SECURITY_DAC=y` — DAC stays the default; neither LSM initializes
-  unless selected at boot.
+- `CONFIG_DEFAULT_SECURITY_DAC=y` — DAC stays the default; AppArmor does not
+  initialize unless selected at boot.
 - `CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,bpf"` — see
   `recipes-kernel/linux/files/audit.cfg`. The active LSM list is pinned to the minor
-  LSMs only (no major MAC LSM). A major LSM is activated by appending it to this list
+  LSMs only (no major MAC LSM). AppArmor is activated by appending it to this list
   via `lsm=` on the kernel command line (see [Enabling AppArmor](#enabling-apparmor)).
 
-Userspace (via `DISTRO_FEATURES += "apparmor selinux acl"`, installed through
+Userspace (via `DISTRO_FEATURES += "apparmor"`, installed through
 `OMNECT_MAC_USERSPACE` in `recipes-omnect/images/omnect-os-image.bb`):
 
-- AppArmor: `apparmor` (parser, `libapparmor`, `aa-*` tools, `apparmor.service`)
-- SELinux: `libselinux(-bin)`, `libsemanage`, `libsepol`, `checkpolicy`,
-  `policycoreutils-{loadpolicy,semodule,sestatus,setfiles}`
+- `apparmor` — parser, `libapparmor`, `aa-*` tools, `apparmor.service`
 
-> **SELinux is framework/userspace only.** No reference policy ships and the
-> system is not enforcing. SELinux can be *enabled* (it will run permissive with
-> no policy), but a policy must be built/loaded and the filesystem labeled before
-> it does anything useful — see [Limitations](#limitations-and-future-work).
+> **No profiles ship by default.** AppArmor can be *enabled* at boot, but nothing
+> is confined until profiles are loaded. `apparmor.service` loads any profiles
+> present at boot; see the [IoT Edge example](#example-confining-an-iot-edge-module)
+> for adding one.
 
 ## Checking the current state
 
 ```bash
-# which LSMs are active this boot (DAC default => no apparmor/selinux listed)
+# which LSMs are active this boot (DAC default => no apparmor listed)
 cat /sys/kernel/security/lsm
 
 # AppArmor
 aa-status
-
-# SELinux
-sestatus
-getenforce
+cat /sys/module/apparmor/parameters/enabled   # 'Y' when active
 ```
 
 ## Enabling AppArmor
@@ -65,23 +57,11 @@ separate `apparmor=1` is needed. `apparmor.service` then loads any installed
 profiles at boot. Verify with `aa-status` and
 `cat /sys/module/apparmor/parameters/enabled` (`Y`).
 
-## Enabling SELinux
-
-Add to the kernel command line:
-
-```
-lsm=landlock,lockdown,yama,loadpin,safesetid,bpf,selinux selinux=1
-```
-
-With no policy present, SELinux comes up disabled/permissive — this is expected
-for the current framework-only state.
-
-> **Why `lsm=` and not `security=`?** The legacy `security=apparmor`/`security=selinux`
-> parameter only *filters* among the major LSMs already present in `CONFIG_LSM`; it
-> never *adds* one. Since DAC is the default, neither apparmor nor selinux is in the
-> pinned list, so `security=` alone activates nothing. `lsm=` replaces the whole list,
-> which is how the chosen LSM gets in. List **only one** major LSM (apparmor *or*
-> selinux) — they are mutually exclusive at runtime.
+> **Why `lsm=` and not `security=`?** The legacy `security=apparmor` parameter only
+> *filters* among the major LSMs already present in `CONFIG_LSM`; it never *adds*
+> one. Since DAC is the default, apparmor is not in the pinned list, so `security=`
+> alone activates nothing. `lsm=` replaces the whole list, which is how AppArmor
+> gets in.
 
 ## Setting the kernel command line
 
@@ -111,12 +91,7 @@ load/apply/verify walkthrough.
 
 ## Limitations and future work
 
-- Only **one** LSM (AppArmor *or* SELinux) can enforce per boot.
-- **SELinux enforcing is not yet supported.** The rootfs is a read-only A/B
-  ext4 layout (`rootA`/`rootB`) with an overlayfs on `/etc` and `/home`. ext4
-  xattr/ACL are enabled (`recipes-kernel/linux/files/enable-ext4-fs-security.cfg`),
-  so labeling is possible, but a read-only rootfs requires **build-time file
-  labeling** rather than first-boot relabeling, plus a reference policy
-  (`refpolicy`). That is a separate, larger effort.
-- `pam` is not a `DISTRO_FEATURE`, so login-time SELinux context switching
-  (`pam_selinux`) is not wired up yet.
+- Only **one** major LSM can enforce per boot, and AppArmor is not active by
+  default (DAC stays the default).
+- **No AppArmor profiles ship in the base image.** Confinement is opt-in: load a
+  profile (e.g. via the IoT Edge example above) before AppArmor restricts anything.

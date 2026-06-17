@@ -36,13 +36,6 @@ repos:
       # (collection "security"); meta-tpm is a sublayer.
       .:
       meta-tpm:
-  # SELinux userspace (libselinux, policycoreutils, ...). Kernel support is
-  # added via recipes-kernel/linux/files/selinux.cfg. DAC stays the default
-  # LSM; AppArmor/SELinux are boot-selectable (see doc/mac_lsm.md).
-  ext/meta-selinux:
-    url: "https://git.yoctoproject.org/meta-selinux"
-    branch: "scarthgap"
-    commit: "48f745109a1ecea9afe2a74d41dbd90fa7b370af"
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     branch: "scarthgap"
