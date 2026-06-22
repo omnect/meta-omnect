@@ -1,5 +1,6 @@
-# We want to have a nonvolatile log dir, if DISTRO_FEATURE "persistent-var-log"
-# is set, but we cannot access 'DISTRO_FEATURES' directly at conf file load
-# time.
-# We delay by using this special bbclass and the _append operator.
-VOLATILE_LOG_DIR = "no"
+# We want a nonvolatile /var/log when DISTRO_FEATURE "persistent-var-log" is
+# set, but DISTRO_FEATURES can't be read at conf-parse time; so this class is
+# inherited conditionally via USER_CLASSES instead.
+# wrynose (5.1) dropped VOLATILE_LOG_DIR; /var/log is now non-volatile by
+# dropping its perms table from FILESYSTEM_PERMS_TABLES.
+FILESYSTEM_PERMS_TABLES:remove = "files/fs-perms-volatile-log.txt"
