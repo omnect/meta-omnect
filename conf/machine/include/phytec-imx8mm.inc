@@ -58,7 +58,6 @@ BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
 # mask phytecs CVE bbappend handling, which interferes with ours (u-boot-scr matches as well)
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/u-boot-%.bbappend"
 
-<<<<<<< HEAD
 # masks necessary to build with our bblayers.conf:
 BBMASK:append = " \
     meta-imx/meta-imx-sdk/dynamic-layers/virtualization-layer/recipes-fsl/packagegroup/packagegroup-fsl-tools-testapps.bbappend \
@@ -77,8 +76,10 @@ BBMASK:append = " \
     meta-imx/meta-imx-bsp/recipes-connectivity/openssl/openssl_3.2.%.bbappend \
 "
 
-=======
->>>>>>> 9bd9841 (fix(phytec): drop meta-imx-sdk layer for wrynose)
+# mask phytec's Cortex-M demo bbappend: its base recipe lives in the dropped
+# meta-imx-sdk, so it would dangle; we don't want the demos anyway.
+BBMASK:append = " meta-phytec/dynamic-layers/fsl-bsp-release/recipes-fsl/mcore-demos/"
+
 # fix search path
 FILESEXTRAPATHS:prepend:pn-imx-boot-phytec := "${LAYERDIR_freescale-layer}/recipes-bsp/imx-mkimage/files:"
 FILESEXTRAPATHS:prepend:pn-optee-client := "${LAYERDIR_arm}/recipes-security/optee/optee-client:"
