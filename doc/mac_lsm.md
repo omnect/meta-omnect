@@ -89,7 +89,7 @@ line on the next boot. See
 [`examples/iotedge-apparmor/`](examples/iotedge-apparmor/) deploys the Azure IoT Edge
 SimulatedTemperatureSensor "hello world" module and confines its container with a custom
 AppArmor profile (referenced from the deployment via
-`HostConfig.SecurityOpt: ["apparmor=<name>"]`). See its `README.md` for the full
+`HostConfig.SecurityOpt: ["apparmor=<name>"]`). See its [`README.md`](examples/iotedge-apparmor/README.md) for the full
 load/apply/verify walkthrough.
 
 ## Limitations and future work
