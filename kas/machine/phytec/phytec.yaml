@@ -27,8 +27,11 @@ repos:
     branch: "wrynose-6.18.20-2.0.0"
     commit: "a4a9ce49fa31a61328147034cdf9fdfc78dce2ad"
     layers:
+      # meta-imx-sdk (fsl-sdk-release) dropped: on wrynose it pulls in
+      # freescale-distro + perl-layer, and we mask all of its recipes anyway
+      # (headless device, no graphics/multimedia). meta-imx-bsp only depends on
+      # freescale-layer.
       meta-imx-bsp:
-      meta-imx-sdk:
     patches:
       p001:
         repo: "meta-omnect"
