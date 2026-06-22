@@ -14,12 +14,14 @@ This yocto meta layer provides the device management distribution `omnect-os`. I
     - Factory reset via OS bootloader environment variable `factory-reset`
       - **Note**: This feature provides a limited level of data privacy. Please see section [Factory Reset](#factory-reset) below.
     - [Secure Boot for x86 UEFI devices](doc/efi_secure_boot.md).
+    - [Mandatory Access Control (AppArmor)](doc/mac_lsm.md): the AppArmor Linux Security Module (LSM) is compiled in and its userspace is installed; DAC stays the default and AppArmor is boot-selectable.
 - `omnect-os update image`: the [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image with the following implicit features:
     - Updating the bootloader
 
 ### `DISTRO_FEATURES`
-`omnect-os` is built with yocto [`DISTRO_FEATURES`](https://docs.yoctoproject.org/ref-manual/features.html#distro-features) = `ipv4 ipv6 polkit seccomp xattr zeroconf`.
+`omnect-os` is built with yocto [`DISTRO_FEATURES`](https://docs.yoctoproject.org/ref-manual/features.html#distro-features) = `apparmor ipv4 ipv6 polkit seccomp xattr zeroconf`.
 Depending on `MACHINE_FEATURES` we also set `3g`, `bluetooth` and `wifi`.
+`apparmor` enables Mandatory Access Control support; see [doc/mac_lsm.md](doc/mac_lsm.md).
 
 `meta-omnect` adds the following `DISTRO_FEATURES`:
 - `iotedge`

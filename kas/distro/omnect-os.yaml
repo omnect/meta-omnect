@@ -30,6 +30,8 @@ repos:
     branch: "scarthgap"
     commit: "b13f1705d723650de61277670c8a76aadea4cfdd"
     layers:
+      # base layer (collection "security") - provides the AppArmor userspace
+      .:
       meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"

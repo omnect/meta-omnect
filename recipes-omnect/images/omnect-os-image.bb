@@ -57,6 +57,10 @@ EXTRA_PACKAGES_CELLULAR = "\
     usb-modeswitch usb-modeswitch-data \
 "
 
+OMNECT_MAC_USERSPACE = "\
+    apparmor \
+"
+
 IMAGE_INSTALL = "\
     ${@bb.utils.contains('MACHINE_FEATURES', '3g', '${EXTRA_PACKAGES_CELLULAR}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', ' mokutil', '', d)} \
@@ -64,6 +68,7 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd-bash-completion', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
+    ${OMNECT_MAC_USERSPACE} \
     bootloader-env \
     bootloader-versioned \
     coreutils \
