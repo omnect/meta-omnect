@@ -18,11 +18,6 @@ repos:
       meta-networking:
       meta-oe:
       meta-python:
-
-    patches:
-      p001:
-        repo: "meta-omnect"
-        path: "kas/patches/meta-openembedded.patch"
   # we need meta-tpm independend of feature/tpm.yaml to be able
   # to build iot-identity-service
   ext/meta-security:
