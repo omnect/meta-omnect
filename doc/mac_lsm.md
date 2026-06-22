@@ -73,7 +73,9 @@ arguments to the customer bootargs file and push them into the bootloader
 environment; they take effect on the next boot:
 
 ```bash
-echo "lsm=landlock,lockdown,yama,loadpin,safesetid,bpf,apparmor" | sudo tee -a /boot/omnect_extra_bootargs_custom
+opts="lsm=landlock,lockdown,yama,loadpin,safesetid,bpf,apparmor"
+file=/boot/omnect_extra_bootargs_custom
+echo "$(sudo cat "$file") $opts" | awk '{$1=$1};1' | sudo tee "$file"
 sudo omnect_extra_bootargs.sh set
 sudo reboot
 ```
