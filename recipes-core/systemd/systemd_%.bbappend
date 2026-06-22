@@ -22,9 +22,9 @@ do_install:append() {
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'wifi', 'true', 'false', d)}; then
         # enable dhcp for wlan devices
-        install -m 0644 ${WORKDIR}/80-wlan.network ${D}${systemd_unitdir}/network
+        install -m 0644 ${UNPACKDIR}/80-wlan.network ${D}${systemd_unitdir}/network
         # prevent renaming wlan0
-        install -m 0644 ${WORKDIR}/80-wlan0.link ${D}${systemd_unitdir}/network
+        install -m 0644 ${UNPACKDIR}/80-wlan0.link ${D}${systemd_unitdir}/network
     fi
 
     # persistent /var/log
@@ -84,7 +84,7 @@ do_install:append() {
 do_install:append:omnect_pstore() {
     install -d ${D}${sysconfdir}/systemd/system/
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/sys-fs-pstore.mount ${D}${systemd_system_unitdir}/sys-fs-pstore.mount
+    install -m 0644 ${UNPACKDIR}/sys-fs-pstore.mount ${D}${systemd_system_unitdir}/sys-fs-pstore.mount
     ln -rs ${D}${systemd_system_unitdir}/sys-fs-pstore.mount ${D}${sysconfdir}/systemd/system/sysinit.target.wants/sys-fs-pstore.mount
 }
 

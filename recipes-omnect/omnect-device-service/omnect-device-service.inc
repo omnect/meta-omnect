@@ -64,17 +64,17 @@ do_install:append() {
     install -m 0640 -D ${S}/sudo/omnect-device-service ${D}${sysconfdir}/sudoers.d/omnect-device-service
 
     # allow omnect-device-service access to device_id secret created by manual provisioning
-    install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/omnect-device-service.toml
+    install -m 0600 -o aziotks -g aziotks ${UNPACKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/omnect-device-service.toml
 
     # allow omnect-device-service provisioning via module identity
-    install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/omnect-device-service.toml
+    install -m 0600 -o aziotid -g aziotid ${UNPACKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/omnect-device-service.toml
 
     # create tmpfiles.d entry to (re)create dir + permissions
-    install -m 0644 -D ${WORKDIR}/omnect-device-service.tmpfilesd ${D}${libdir}/tmpfiles.d/omnect-device-service.conf
+    install -m 0644 -D ${UNPACKDIR}/omnect-device-service.tmpfilesd ${D}${libdir}/tmpfiles.d/omnect-device-service.conf
 
     # factory-reset
     install -d -D ${D}${sysconfdir}/omnect/
-    install -m 0444 -D ${WORKDIR}/factory-reset.json ${D}${sysconfdir}/omnect/
+    install -m 0444 -D ${UNPACKDIR}/factory-reset.json ${D}${sysconfdir}/omnect/
     install -m 0777 -d ${D}${sysconfdir}/omnect/factory-reset.d
 }
 

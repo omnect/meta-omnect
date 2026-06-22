@@ -12,7 +12,7 @@ SRC_URI = "\
 
 do_install() {
 	install -d ${D}${sysconfdir}/udev/rules.d
-	install -m 0644 ${WORKDIR}/tpm.rules ${D}${sysconfdir}/udev/rules.d/
+	install -m 0644 ${UNPACKDIR}/tpm.rules ${D}${sysconfdir}/udev/rules.d/
 }
 
 inherit useradd

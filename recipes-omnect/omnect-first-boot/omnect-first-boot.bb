@@ -18,8 +18,8 @@ SRC_URI += "\
 RDEPENDS:${PN} += "bash"
 
 do_install() {
-    install -m 0644 -D ${WORKDIR}/omnect-first-boot.service ${D}${systemd_system_unitdir}/omnect-first-boot.service
-    install -m 0755 -D ${WORKDIR}/omnect_first_boot.sh ${D}${bindir}/omnect_first_boot.sh
+    install -m 0644 -D ${UNPACKDIR}/omnect-first-boot.service ${D}${systemd_system_unitdir}/omnect-first-boot.service
+    install -m 0755 -D ${UNPACKDIR}/omnect_first_boot.sh ${D}${bindir}/omnect_first_boot.sh
 }
 
 SYSTEMD_SERVICE:${PN} = " \

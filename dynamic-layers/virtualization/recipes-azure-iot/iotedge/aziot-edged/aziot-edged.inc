@@ -22,7 +22,7 @@ export SOCKET_DIR = "/run/aziot"
 
 inherit aziot features_check omnect_rust_aziot-identityd_deps systemd
 
-RUSTFLAGS+="-D warnings"
+RUSTFLAGS += "-D warnings"
 
 do_install () {
     # binaries

@@ -9,9 +9,7 @@ inherit cargo
 # SRC_URI += "crate://crates.io/bindgen/0.60.1"
 SRC_URI += "git://github.com/rust-lang/rust-bindgen.git;protocol=https;nobranch=1"
 SRCREV = "9ca5f856a35deddde0575002d76d1db4430e6c42"
-S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -69,8 +67,6 @@ SRC_URI += " \
     crate://crates.io/winapi-x86_64-pc-windows-gnu/0.4.0 \
     crate://crates.io/winapi/0.3.9 \
 "
-
-
 
 # FIXME: update generateme with the real MD5 of the license file
 LIC_FILES_CHKSUM = " \
