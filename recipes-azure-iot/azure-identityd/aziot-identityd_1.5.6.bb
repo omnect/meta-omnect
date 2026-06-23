@@ -9,7 +9,6 @@ inherit cargo
 # SRC_URI += "crate://crates.io/aziot-identityd/0.1.0"
 SRC_URI += "gitsm://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1"
 SRCREV = "833381accec8d53436cac20fc3fb85303e4504eb"
-S = "${WORKDIR}/git"
 CARGO_SRC_DIR = "identity/aziot-identityd"
 
 

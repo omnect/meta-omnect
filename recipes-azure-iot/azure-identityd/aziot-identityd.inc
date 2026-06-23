@@ -100,7 +100,7 @@ do_install() {
     install -m 0644 -D  ${B}/target/${CARGO_TARGET_SUBDIR}/libaziot_keys.so ${D}${libdir}
 
     # default configs and config directories
-    install -m 0644 -D  ${WORKDIR}/iot-identity-service.conf ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
+    install -m 0644 -D  ${UNPACKDIR}/iot-identity-service.conf ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0640     ${S}/cert/aziot-certd/config/unix/default.toml ${D}${sysconfdir}/aziot/certd/config.toml.default
     install -m 0640     ${S}/identity/aziot-identityd/config/unix/default.toml ${D}${sysconfdir}/aziot/identityd/config.toml.default
     install -m 0644     ${S}/key/aziot-keyd/config/unix/default.toml ${D}${sysconfdir}/aziot/keyd/config.toml.default
@@ -132,7 +132,7 @@ do_install() {
     fill_placeholders ${D}${systemd_system_unitdir}/aziot-certd.socket
 
     # enable identity service to create cert "device-id" (e.g. for x509 dps provisioning)
-    install -m 0600 -o aziotcs -g aziotcs ${WORKDIR}/iot-identity-service-certd.template.toml ${D}${sysconfdir}/aziot/certd/config.d/aziotid.toml
+    install -m 0600 -o aziotcs -g aziotcs ${UNPACKDIR}/iot-identity-service-certd.template.toml ${D}${sysconfdir}/aziot/certd/config.d/aziotid.toml
 
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.service.in ${D}${systemd_system_unitdir}/aziot-identityd.service
     sed -i \
@@ -183,7 +183,7 @@ do_install() {
 
     # aziot-identityd-precondition.service handling
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/aziot-identityd-precondition.service ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
+    install -m 0644 ${UNPACKDIR}/aziot-identityd-precondition.service ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     if ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'true', 'false', d)}; then
         sed -i "s/@@AZIOTCLI@@/iotedge/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     else

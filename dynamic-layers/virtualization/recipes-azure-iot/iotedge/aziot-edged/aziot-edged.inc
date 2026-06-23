@@ -3,7 +3,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 
 SRC_URI += "\
   file://fix_linter_findings-aziot-edged.patch \
-  file://fix_linter_findings-aziot-cert-client-async.patch;patchdir=${WORKDIR}/aziot-cert-client-async \
+  file://fix_linter_findings-aziot-cert-client-async.patch;patchdir=${UNPACKDIR}/aziot-cert-client-async \
 "
 
 # overwrite CARGO_SRC_DIR from cargo-bitbake generated recipe
