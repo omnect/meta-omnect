@@ -47,6 +47,9 @@ do_compile() {
     # pkg specific exports
     export RELEASE="1"
     export LIBCLANG_PATH="${STAGING_LIBDIR_NATIVE}"
+    # bindgen runs host libclang; point it at the target sysroot so it parses the
+    # real tss2 type definitions instead of emitting opaque structs.
+    export BINDGEN_EXTRA_CLANG_ARGS="${TUNE_CCARGS} --sysroot=${STAGING_DIR_TARGET}"
     export PATH="${CARGO_HOME}/bin:${PATH}"
     export OPENSSL_DIR="${STAGING_EXECPREFIXDIR}"
     export FORCE_NO_UNITTEST="ON"
