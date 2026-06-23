@@ -16,7 +16,7 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES += "${LAYERDIR_efi-secure-boot}/recipes-bsp/shi
 inherit deploy omnect_bootloader_versioning
 
 do_install() {
-    install -m 0755 -D ${WORKDIR}/omnect_get_bootloader_version.grub.sh ${D}/usr/bin/omnect_get_bootloader_version.sh
+    install -m 0755 -D ${UNPACKDIR}/omnect_get_bootloader_version.grub.sh ${D}/usr/bin/omnect_get_bootloader_version.sh
 }
 
 do_deploy() {

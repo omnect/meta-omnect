@@ -10,5 +10,5 @@ SRC_URI += "\
 "
 
 do_configure:prepend() {
-    cp -f ${WORKDIR}/omnect_env_rpi.h ${S}/include/configs/omnect_env_machine.h
+    cp -f ${UNPACKDIR}/omnect_env_rpi.h ${S}/include/configs/omnect_env_machine.h
 }

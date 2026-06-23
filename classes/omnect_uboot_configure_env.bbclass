@@ -3,8 +3,8 @@ DEPENDS += "u-boot-mkenvimage-native"
 
 omnect_uboot_configure_env() {
     # configure omnect u-boot env
-    cp -f ${WORKDIR}/omnect_env.h ${S}/include/configs/
-    cp -f ${WORKDIR}/omnect_env.env ${S}/include/env/
+    cp -f ${UNPACKDIR}/omnect_env.h ${S}/include/configs/
+    cp -f ${UNPACKDIR}/omnect_env.env ${S}/include/env/
 
     # set release image
     if [ "${OMNECT_RELEASE_IMAGE}" = "1" ]; then

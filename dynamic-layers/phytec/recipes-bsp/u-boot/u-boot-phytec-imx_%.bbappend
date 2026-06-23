@@ -33,6 +33,6 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES = "${OMNECT_BOOTLOADER_RECIPE_PATH}"
 inherit omnect_uboot_configure_env omnect_bootloader
 
 do_configure:prepend:mx8mm-nxp-bsp() {
-    cp -f ${WORKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h
-    cp -f ${WORKDIR}/phycore_imx8mm.env ${S}/board/phytec/phycore_imx8mm/phycore_imx8mm.env
+    cp -f ${UNPACKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h
+    cp -f ${UNPACKDIR}/phycore_imx8mm.env ${S}/board/phytec/phycore_imx8mm/phycore_imx8mm.env
 }
