@@ -1,4 +1,7 @@
-inherit useradd
+# pkgconfig exports the target PKG_CONFIG_PATH/SYSROOT_DIR the cargo build needs to
+# resolve system libs (e.g. tss2-tctildr for tcti-sys); wrynose's cargo classes only
+# set PKG_CONFIG_ALLOW_CROSS.
+inherit useradd pkgconfig
 
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM:${PN} = " \
