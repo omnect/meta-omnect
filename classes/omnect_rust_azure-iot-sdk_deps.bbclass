@@ -1,5 +1,9 @@
+# wrynose dropped the custom rust-llvm (which carried clang); bindgen now gets
+# libclang from oe-core's clang-native.
+DEPENDS:append = " clang-native"
+
 do_compile:prepend() {
-    export LLVM_CONFIG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/bin/llvm-config"
+    export LIBCLANG_PATH="${STAGING_LIBDIR_NATIVE}"
     export BINDGEN_EXTRA_CLANG_ARGS="${TUNE_CCARGS}"
 
     export AZURESDK_PATH=${STAGING_DIR_TARGET}/usr/

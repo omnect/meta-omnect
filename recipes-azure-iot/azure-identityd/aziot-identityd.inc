@@ -28,6 +28,7 @@ B = "${S}"
 DEPENDS = " \
     bindgen-native \
     cbindgen-native \
+    clang-native \
     openssl \
     pkgconfig-native \
     libtss2 \
@@ -45,7 +46,7 @@ do_compile() {
 
     # pkg specific exports
     export RELEASE="1"
-    export LLVM_CONFIG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/bin/llvm-config"
+    export LIBCLANG_PATH="${STAGING_LIBDIR_NATIVE}"
     export PATH="${CARGO_HOME}/bin:${PATH}"
     export OPENSSL_DIR="${STAGING_EXECPREFIXDIR}"
     export FORCE_NO_UNITTEST="ON"
