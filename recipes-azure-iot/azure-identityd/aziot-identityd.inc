@@ -38,6 +38,10 @@ RDEPENDS:${PN} = " \
 
 do_compile() {
     oe_cargo_fix_env
+    # Export RUSTFLAGS into the env so the Makefile's `cargo build` subprocess
+    # inherits the cross sysroot/linker flags; without it rustc can't find the
+    # target std and fails with E0463 "can't find crate for `core`".
+    export RUSTFLAGS="${RUSTFLAGS}"
     export CARGO_BUILD_FLAGS="${CARGO_BUILD_FLAGS}"
     export RUST_TARGET_PATH="${RUST_TARGET_PATH}"
 
