@@ -39,9 +39,40 @@ do_configure:prepend() {
     if [ -f ${S}/scripts/dtc/pylibfdt/libfdt.i_shipped ]; then
         sed -i 's/SWIG_Python_AppendOutput/SWIG_AppendOutput/g' ${S}/scripts/dtc/pylibfdt/libfdt.i_shipped
     fi
+
+    # binman aborts at import time on wrynose: pkg_resources is no longer shipped
+    # by the newer setuptools. Switch the two call sites to importlib.resources
+    # (already imported by control.py), matching upstream U-Boot's post-2024.04 fix.
+    if [ -f ${S}/tools/binman/control.py ]; then
+        sed -i \
+            -e '/^import pkg_resources$/d' \
+            -e "s|pkg_resources.resource_string(__name__, 'missing-blob-help')|importlib.resources.files(__package__).joinpath('missing-blob-help').read_bytes()|" \
+            -e "s|pkg_resources.resource_listdir(__name__, 'etype')|[e.name for e in importlib.resources.files(__package__).joinpath('etype').iterdir() if e.is_file()]|" \
+            ${S}/tools/binman/control.py
+    fi
 }
 
 do_configure:prepend:mx8mm-nxp-bsp() {
     cp -f ${UNPACKDIR}/omnect_env_phycore_imx8mm.h ${S}/include/configs/omnect_env_machine.h
     cp -f ${UNPACKDIR}/phycore_imx8mm.env ${S}/board/phytec/phycore_imx8mm/phycore_imx8mm.env
+}
+
+# wrynose's oe-core u-boot.inc dropped the UBOOT_NAME mechanism that used to
+# deploy the raw u-boot.bin as u-boot-${MACHINE}.bin-${type}. With UBOOT_BINARY
+# set to flash.bin, oe-core now deploys only flash.bin, so imx-boot-phytec
+# (imx-mkimage) can't find the raw u-boot it stitches into the boot image.
+# Deploy it ourselves, mirroring the recipe's own u-boot-nodtb.bin deploy.
+do_deploy:append:mx8m-generic-bsp() {
+    for config in ${UBOOT_MACHINE}; do
+        i=$(expr $i + 1)
+        for type in ${UBOOT_CONFIG}; do
+            j=$(expr $j + 1)
+            if [ $j -eq $i ]; then
+                install -m 0644 ${B}/${config}-${type}/u-boot.bin \
+                    ${DEPLOYDIR}/u-boot-${MACHINE}.bin-${type}
+            fi
+        done
+        unset j
+    done
+    unset i
 }
