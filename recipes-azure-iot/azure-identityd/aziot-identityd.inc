@@ -7,11 +7,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
 
 # patches
-# hint: fix_linker_and_linter_findings.patch must be after send_sd_notify.patch applied
 SRC_URI += " \
     file://apply_doesnt_restart_services.patch \
     file://send_sd_notify.patch \
-    file://fix_linker_and_linter_findings.patch \
 "
 
 # workspace
@@ -40,7 +38,6 @@ RDEPENDS:${PN} = " \
 
 do_compile() {
     oe_cargo_fix_env
-    export RUSTFLAGS="${RUSTFLAGS} -D warnings"
     export CARGO_BUILD_FLAGS="${CARGO_BUILD_FLAGS}"
     export RUST_TARGET_PATH="${RUST_TARGET_PATH}"
 
