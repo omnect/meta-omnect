@@ -47,9 +47,12 @@ do_compile() {
     # pkg specific exports
     export RELEASE="1"
     export LIBCLANG_PATH="${STAGING_LIBDIR_NATIVE}"
-    # bindgen runs host libclang; point it at the target sysroot so it parses the
-    # real tss2 type definitions instead of emitting opaque structs.
-    export BINDGEN_EXTRA_CLANG_ARGS="${TUNE_CCARGS} --sysroot=${STAGING_DIR_TARGET}"
+    # bindgen runs host libclang; give it the target triple + sysroot so it parses
+    # the aarch64 glibc/tss2 headers (the Makefile-driven keys bindgen has no cargo
+    # TARGET to derive --target from). TUNE_CCARGS is omitted: its -mcpu/-mbranch-
+    # protection are rejected by clang for the default x86_64 target and don't
+    # affect bindgen output anyway.
+    export BINDGEN_EXTRA_CLANG_ARGS="--target=${TARGET_SYS} --sysroot=${STAGING_DIR_TARGET}"
     export PATH="${CARGO_HOME}/bin:${PATH}"
     export OPENSSL_DIR="${STAGING_EXECPREFIXDIR}"
     export FORCE_NO_UNITTEST="ON"
