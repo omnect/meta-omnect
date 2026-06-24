@@ -65,6 +65,12 @@ do_compile() {
     # we don't build tpm2-tss as part of this build
     rm -rf third-party/tpm2-tss
 
+    # Force the keys bindgen to re-run against the current bindgen-native. The
+    # Makefile only regenerates keys.generated.rs when it is absent or aziot-keys.h
+    # changed, so a stale copy from a previous toolchain survives do_compile reruns
+    # (${S} is not re-unpacked on a dependency change) and a bindgen bump is a no-op.
+    rm -f key/aziot-keyd/src/keys.generated.rs
+
     make default
 }
 
