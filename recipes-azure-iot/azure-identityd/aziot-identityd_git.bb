@@ -1,4 +1,5 @@
-# Pinned to the iot-identity-service main branch for the wrynose migration.
+# Pinned to iot-identity-service for the wrynose migration: SRCREV is the upstream
+# 1.6.0-rc.1 tag commit (the tip of main at pin time).
 #
 # The 1.5.6 crate set pinned bindgen 0.69.4 / clang-sys 1.6.1; clang-sys 1.6.1
 # predates oe-core's clang and cannot walk its libclang AST, so the tss2 type
@@ -8,6 +9,9 @@
 # Crate list below regenerated from main's Cargo.lock; re-pin to a release tag
 # once one ships that carries these crate versions.
 inherit cargo
+
+# ~rc.1 sorts before a future 1.6.0 release; +git marks the git/SRCREV pin.
+PV = "1.6.0~rc.1+git"
 
 SRC_URI += "gitsm://github.com/Azure/iot-identity-service.git;protocol=https;nobranch=1"
 SRCREV = "1a7a6e70c3a20389fd24090bba201b7fdd7de582"
