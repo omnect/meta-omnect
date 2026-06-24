@@ -16,6 +16,10 @@ inherit cmake
 EXTRA_OECMAKE += "-Duse_prov_client:BOOL=OFF"
 EXTRA_OECMAKE += "-Dskip_samples:BOOL=ON"
 
+# cmake-native 4.x removed compat with cmake_minimum_required(VERSION <3.5),
+# which the bundled azure-macro-utils-c submodule still declares.
+EXTRA_OECMAKE += "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+
 # fix compilation of services which depend on azure-iot-sdk-c (e.g. iot-hub-device-update)
 do_configure:prepend() {
    sed -i 's/${OPENSSL_LIBRARIES}/crypto ssl/g' ${S}/c-utility/CMakeLists.txt
