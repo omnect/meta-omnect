@@ -70,6 +70,12 @@ BBMASK:append = " \
     meta-imx/meta-imx-sdk/recipes-graphics/devil/devil_%.bbappend \
 "
 
+# don't let meta-imx-bsp openssl recipe override the one from oecore
+BBMASK:append = " \
+    meta-imx/meta-imx-bsp/recipes-connectivity/openssl/openssl_3.2.6.bb \
+    meta-imx/meta-imx-bsp/recipes-connectivity/openssl/openssl_3.2.%.bbappend \
+"
+
 # fix search path
 FILESEXTRAPATHS:prepend:pn-imx-boot-phytec := "${LAYERDIR_freescale-layer}/recipes-bsp/imx-mkimage/files:"
 FILESEXTRAPATHS:prepend:pn-optee-client := "${LAYERDIR_arm}/recipes-security/optee/optee-client:"
