@@ -55,6 +55,7 @@ do_bootloader_package:phytec-imx8mm() {
 do_bootloader_package:omnect_grub() {
     mkdir -p ${WORKDIR}/EFI/BOOT
     for file in ${OMNECT_GRUB_EFI_SB_FILES}; do
+        [ "${file}" = "grubenv" ] && continue
         cp ${DEPLOY_DIR_IMAGE}/${file} ${WORKDIR}/EFI/BOOT/${file}
     done
     cd ${WORKDIR}
