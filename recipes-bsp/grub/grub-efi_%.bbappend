@@ -25,4 +25,4 @@ do_install:append:class-target() {
     install -m 0644 ${WORKDIR}/grubenv ${D}${EFI_BOOT_PATH}/grubenv
 }
 
-GRUB_BUILDIN:append = " echo sleep"
+GRUB_BUILDIN:append = " echo sleep probe"
