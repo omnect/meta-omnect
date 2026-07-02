@@ -1,11 +1,14 @@
 [Unit]
 Description=WPA supplicant daemon
-Requires=sys-subsystem-net-devices-%i.device
+# Bind to the wlan device so the daemon starts when the adapter appears
+# (via udev, incl. hot-plugged USB dongles) and stops when it is removed.
+BindsTo=sys-subsystem-net-devices-%i.device
 After=sys-subsystem-net-devices-%i.device
 Before=network.target
 Wants=network.target
-# unfortunately this has no real benefit: https://github.com/systemd/systemd/issues/985
-ConditionPathExists=/sys/class/net/%i
+# Single adapter gate for wifi commissioning (option A): pull the
+# commissioning service in when wpa_supplicant starts for this device.
+Wants=wifi-commissioning-service@%i.service
 
 StartLimitBurst=10
 StartLimitIntervalSec=120

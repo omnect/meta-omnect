@@ -1,0 +1,5 @@
+# Start wpa_supplicant for each wlan interface as it appears.
+# This is the single runtime gate for wifi (and, via wpa_supplicant's
+# Wants=, wifi commissioning). Works on fixed hardware (device present at
+# boot) and generic hardware incl. hot-plugged USB wifi dongles.
+SUBSYSTEM=="net", KERNEL=="wlan*", ACTION=="add", TAG+="systemd", ENV{SYSTEMD_WANTS}+="wpa_supplicant@%k.service"
