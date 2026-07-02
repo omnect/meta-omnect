@@ -129,19 +129,21 @@ Two parts, split by concern:
   non-existent `bluetooth.service`. This stays in
   `wifi-commissioning-service.inc`.
 
-- **Runtime (universal `ExecStartPre` + env file):** the build-time
+- **Runtime (universal ExecStart override drop-in):** the build-time
   `--disable-ble` append is removed and replaced by a runtime probe.
-  - Rewrite `ExecStart` to append an extra-args variable, e.g.
-    `... -s $(omnect_get_deviceid.sh) $WIFI_COMMISSIONING_EXTRA_ARGS`.
-  - Add `ExecStartPre` (running as root via the `+` prefix so it can write
-    outside the service user's reach) that checks for a BT adapter
-    (`/sys/class/bluetooth/hci*`) and writes
-    `WIFI_COMMISSIONING_EXTRA_ARGS=--disable-ble` (or empty) into a generated
-    env file.
-  - Add a second `EnvironmentFile=-<generated path>` line for that file. Use a
-    **separate** generated file (e.g. under `/run/wifi-commissioning-service/%i/`)
-    so it never clobbers the operator-provided
-    `/etc/omnect/wifi-commissioning-service.env`.
+  - Ship a systemd drop-in
+    (`wifi-commissioning-service@.service.d/10-omnect-runtime.conf`) that resets
+    and overrides `ExecStart` with an inline BT probe:
+    `ls /sys/class/bluetooth/hci*` → add `--disable-ble` when no adapter.
+  - Operator override is preserved: the inline logic uses
+    `WIFI_COMMISSIONING_EXTRA_ARGS` from the existing
+    `EnvironmentFile=-/etc/omnect/wifi-commissioning-service.env` when set, and
+    only auto-detects when it is empty.
+
+  > Note: an earlier idea (`ExecStartPre` writing a generated env file read via
+  > `EnvironmentFile=`) does **not** work — systemd reads `EnvironmentFile=` once
+  > at service start, before `ExecStartPre` runs, so the written value is never
+  > picked up by `ExecStart`. The inline drop-in avoids this ordering trap.
 
 Result: BLE runs only when BT hardware is actually present, on every platform,
 with no error spam and no upstream binary change. On fixed hardware (rpi4) the
@@ -212,8 +214,9 @@ Delete `meta-omnect/kas/example/wifi-commissioning.yaml`.
 
 ## Open items for the plan
 
-- Exact `ExecStartPre` probe command and generated env-file path/permissions.
-- Whether `wpa_supplicant@.service` should `Wants` the service (chosen, for
-  continuous BLE advertising) vs the socket.
 - Split into two PRs (meta-omnect, omnect-os) with the meta-omnect change landing
-  first, since the CI configs depend on it.
+  first, since the CI configs depend on it. (Resolved in the plan.)
+
+Both other former open items are now resolved: `wpa_supplicant@.service` `Wants`
+the service (continuous BLE advertising), and the runtime BLE decision uses an
+ExecStart-override drop-in rather than `ExecStartPre` (see BT handling above).
