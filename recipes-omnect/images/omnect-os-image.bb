@@ -66,7 +66,7 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', ' mokutil', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' aziot-edged iotedge kernel-modules', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd-bash-completion', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-service', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wifi', ' wifi-commissioning-service', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     ${OMNECT_MAC_USERSPACE} \
     bootloader-env \
