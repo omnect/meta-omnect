@@ -1,3 +1,5 @@
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+
 # Overwrite LICENSE from cargo-bitbake
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
@@ -20,29 +22,28 @@ do_install:append() {
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.service ${D}${systemd_system_unitdir}/
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.socket ${D}${systemd_system_unitdir}/
 
-    # When bluetooth is absent: remove bluetooth deps and disable BLE transport
+    # Runtime ExecStart override: decide --disable-ble from BT-adapter presence.
+    install -d ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service.d
+    install -m 0644 ${WORKDIR}/10-omnect-runtime.conf \
+        ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service.d/10-omnect-runtime.conf
+
+    # When bluetooth is absent from the build there is no bluetooth.service unit,
+    # so strip the dependency (the runtime ExecStart already adds --disable-ble).
     if [ "${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'yes', 'no', d)}" = "no" ]; then
         sed -i '/^Requires=bluetooth.service$/d' \
             ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
         sed -i '/^After=bluetooth.service$/d' \
             ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
-        sed -i "/^ExecStart/s|'$| --disable-ble'|" \
-            ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
     fi
 
-    # Enable wlan0 instance for service and socket
-    install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    ln -rs ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service \
-        ${D}${sysconfdir}/systemd/system/multi-user.target.wants/wifi-commissioning-service@wlan0.service
-
-    install -d ${D}${sysconfdir}/systemd/system/sockets.target.wants
-    ln -rs ${D}${systemd_system_unitdir}/wifi-commissioning-service@.socket \
-        ${D}${sysconfdir}/systemd/system/sockets.target.wants/wifi-commissioning-service@wlan0.socket
+    # No static enablement: the service is pulled by wpa_supplicant's Wants=
+    # and its own Requires=...@%i.socket, gated by the wlan udev rule.
 }
 
 FILES:${PN} += "\
     ${systemd_system_unitdir}/wifi-commissioning-service@.service \
     ${systemd_system_unitdir}/wifi-commissioning-service@.socket \
+    ${systemd_system_unitdir}/wifi-commissioning-service@.service.d/10-omnect-runtime.conf \
 "
 
 inherit cargo_cyclonedx useradd
