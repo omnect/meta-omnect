@@ -126,7 +126,10 @@ Two parts, split by concern:
 - **Build time (keyed on `DISTRO_FEATURES bluetooth` = is bluez installed):**
   keep stripping `Requires=bluetooth.service` / `After=bluetooth.service` from
   the commissioning unit when bluetooth is absent, so the unit never references a
-  non-existent `bluetooth.service`. This stays in
+  non-existent `bluetooth.service`. Also **force `--disable-ble`** in that case
+  by appending `Environment=WIFI_COMMISSIONING_EXTRA_ARGS=--disable-ble` to the
+  drop-in: without bluez, BLE can never work, and a kernel HCI adapter can exist
+  without bluez, so the runtime probe alone is insufficient. This stays in
   `wifi-commissioning-service.inc`.
 
 - **Runtime (universal ExecStart override drop-in):** the build-time

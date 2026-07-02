@@ -27,13 +27,17 @@ do_install:append() {
     install -m 0644 ${WORKDIR}/10-omnect-runtime.conf \
         ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service.d/10-omnect-runtime.conf
 
-    # When bluetooth is absent from the build there is no bluetooth.service unit,
-    # so strip the dependency (the runtime ExecStart already adds --disable-ble).
+    # When bluetooth is absent from the build there is no bluez/bluetooth.service
+    # and BLE can never work. Strip the (now non-existent) bluetooth.service
+    # dependency and force --disable-ble, overriding the runtime adapter probe in
+    # 10-omnect-runtime.conf (a kernel HCI adapter can exist without bluez).
     if [ "${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'yes', 'no', d)}" = "no" ]; then
         sed -i '/^Requires=bluetooth.service$/d' \
             ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
         sed -i '/^After=bluetooth.service$/d' \
             ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
+        printf '%s\n' 'Environment=WIFI_COMMISSIONING_EXTRA_ARGS=--disable-ble' >> \
+            ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service.d/10-omnect-runtime.conf
     fi
 
     # No static enablement: the service is pulled by wpa_supplicant's Wants=
