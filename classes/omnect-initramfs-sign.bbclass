@@ -16,4 +16,9 @@ fakeroot python sign() {
     shutil.copy(initramfs, initramfs + '.unsigned')
     uks_bl_sign(initramfs, d)
 }
-IMAGE_POSTPROCESS_COMMAND:append = "${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', 'check_deploy_keys;sign;', '', d)}"
+# The leading ';' is required. IMAGE_POSTPROCESS_COMMAND is split on ';', and
+# with buildhistory enabled the preceding entry (buildhistory_get_imageinfo) has
+# no trailing separator. Without it, ':append' glues the two into a bogus
+# 'buildhistory_get_imageinfocheck_deploy_keys', so check_deploy_keys never runs
+# and sign fails with "Unable to sign".
+IMAGE_POSTPROCESS_COMMAND:append = "${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', ';check_deploy_keys;sign;', '', d)}"
