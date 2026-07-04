@@ -1,13 +1,14 @@
 [Unit]
 Description=WPA supplicant daemon
-# Bind to the wlan device so the daemon starts when the adapter appears
-# (via udev, incl. hot-plugged USB dongles) and stops when it is removed.
+# Tie the daemon's lifetime to the wlan device: stop it when the adapter
+# is removed. Start-on-appearance (incl. hot-plugged USB dongles) comes
+# from the 80-wlan-wpa.rules udev rule, not from BindsTo.
 BindsTo=sys-subsystem-net-devices-%i.device
 After=sys-subsystem-net-devices-%i.device
 Before=network.target
 Wants=network.target
-# Single adapter gate for wifi commissioning (option A): pull the
-# commissioning service in when wpa_supplicant starts for this device.
+# Single adapter gate for wifi commissioning: pull the commissioning
+# service in when wpa_supplicant starts for this device.
 Wants=wifi-commissioning-service@%i.service
 
 StartLimitBurst=10
