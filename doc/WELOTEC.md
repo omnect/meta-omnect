@@ -19,7 +19,7 @@
 | **Device Provisioning via**          | x509 or TPM             |
 | **OTA Update**                       | yes                     |
 | **Factory Reset**                    | yes                     |
-| **Wifi Commissioning via Bluetooth** | no                      |
+| [**Wifi Commissioning via Bluetooth**](wifi_commissioning.md) | Mk4: yes, Pico: no      |
 | **LTE Support** [^1]                 | optional (experimental) |
 | [**Secure Boot**](efi_secure_boot.md)| yes                     |
 | **pstore** aka reboot reasons        | planned [^2]            |

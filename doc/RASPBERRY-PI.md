@@ -11,7 +11,7 @@
 | **Device Provisioning via**          | x509                 |
 | **OTA Update**                       | yes                  |
 | **Factory Reset**                    | yes                  |
-| **Wifi Commissioning via Bluetooth** | yes                  |
+| [**Wifi Commissioning via Bluetooth**](wifi_commissioning.md) | yes                  |
 | **LTE Support**                      | no                   |
 | **pstore** aka reboot reasons        | yes (see note below) |
 
