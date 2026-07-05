@@ -31,16 +31,20 @@ unit.
 Start is gated on the wlan adapter appearing — the same mechanism on every
 platform:
 
-1. A udev rule (`80-wlan-wpa.rules`) fires when a `wlan*` interface appears and
-   pulls in `wpa_supplicant@<dev>.service`.
-2. `wpa_supplicant@.service` is `BindsTo` the network device, so it starts when
-   the adapter appears (including a hot-plugged USB dongle) and stops when it is
-   removed. There is **no** static `*.target.wants` enablement.
+1. A udev rule (`80-wlan-wpa.rules`) fires when a `wlan*` interface appears
+   (including a hot-plugged USB dongle) and **starts** `wpa_supplicant@<dev>.service`.
+2. `wpa_supplicant@.service` is `BindsTo` the network device, so it is **stopped**
+   again when the adapter is removed. (Appearance is handled by the udev rule in
+   step 1; `BindsTo` handles removal.) There is **no** static `*.target.wants`
+   enablement.
 3. `wpa_supplicant` `Wants` `wifi-commissioning-service@<dev>.service`, which
    `Requires` its `@<dev>.socket`. So commissioning rides along with
    `wpa_supplicant`.
 
-A device with no wlan adapter starts nothing until one appears.
+A device with no wlan adapter starts nothing until one appears. The rule fires
+per `wlan*` interface, so a device with multiple wlan adapters runs one
+`wpa_supplicant` + commissioning instance per adapter (note: the bluez restart
+workaround targets the `wlan0` instance only).
 
 ## Bluetooth / BLE
 
@@ -56,7 +60,8 @@ API. The `--disable-ble` flag is decided as late as possible:
   and keeps serving the Unix-socket API.
 
 Operators can override the flag via `WIFI_COMMISSIONING_EXTRA_ARGS` in
-`/etc/omnect/wifi-commissioning-service.env`.
+`/etc/omnect/wifi-commissioning-service.env` — except on builds without the
+`bluetooth` feature, where `--disable-ble` is forced regardless (no BlueZ).
 
 ## Per device class
 
