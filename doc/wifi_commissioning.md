@@ -1,67 +1,49 @@
 # Wifi Commissioning
 
 `omnect-os` can commission Wi-Fi (join a network) over a BLE GATT interface and
-a local Unix-socket API, provided by `wifi-commissioning-service`. This page
-explains what gets **installed** versus what actually **runs**, and why that
-differs between fixed-hardware (ARM) and generic-hardware (x86) devices.
+a local Unix-socket API, provided by `wifi-commissioning-service`. What gets
+**installed** is fixed at build time; what actually **runs** depends on the
+adapter present on the unit.
 
-## The one rule
+- **Installed** — the package is in the image. Governed by `DISTRO_FEATURES`
+  (derived from `MACHINE_FEATURES`). `wifi` is the single gate; there is no
+  separate `wifi-commissioning` feature.
+- **Runs** — the service is active for a wlan adapter that is present. On
+  fixed-hardware devices (currently all supported ARM devices) install and run
+  coincide, because the machine knows its adapters. A generic image (x86) ships
+  everywhere, so the same build runs or not depending on the unit's hardware.
 
-- **Installed** = the package is in the image. Governed by `DISTRO_FEATURES`
-  (derived from `MACHINE_FEATURES`).
-- **Runs** = the service is active and BLE is on. Governed by the **physical
-  adapter** present on that specific unit at runtime.
+## What gets installed
 
-On **fixed hardware** the two coincide (the machine knows its adapters). On
-**generic hardware** (x86) the same image ships everywhere, so they diverge per
-unit.
-
-## What gets installed (build time)
-
-| `MACHINE_FEATURES` → `DISTRO_FEATURES` | pulls in |
+| `DISTRO_FEATURES` | pulls in |
 | --- | --- |
 | `wifi` | `wifi-commissioning-service` (via `omnect-os-image.bb`), which `RDEPENDS` `wpa-supplicant` |
-| `bluetooth` | `bluez5` — via OE `packagegroup-base-bluetooth` (`COMBINED_FEATURES`) and `wifi-commissioning-service`'s `RDEPENDS` |
+| `bluetooth` | `bluez5` — via `packagegroup-base-bluetooth` and `wifi-commissioning-service`'s `RDEPENDS` |
 
-`wifi` is the single gate for commissioning; there is no separate
-`wifi-commissioning` feature.
+## What runs, and when
 
-## What runs, and when (runtime)
+Start is gated on the wlan adapter appearing:
 
-Start is gated on the wlan adapter appearing — the same mechanism on every
-platform:
+1. A udev rule (`80-wlan-wpa.rules`) starts `wpa_supplicant@<dev>.service` when a
+   `wlan*` interface appears (including a hot-plugged USB dongle).
+2. `wpa_supplicant@.service` is `BindsTo` the net device, so it is stopped when
+   the adapter is removed. There is no static `*.target.wants` enablement.
+3. `wpa_supplicant` `Wants` `wifi-commissioning-service@<dev>.service`, so
+   commissioning starts with `wpa_supplicant` for that adapter.
 
-1. A udev rule (`80-wlan-wpa.rules`) fires when a `wlan*` interface appears
-   (including a hot-plugged USB dongle) and **starts** `wpa_supplicant@<dev>.service`.
-2. `wpa_supplicant@.service` is `BindsTo` the network device, so it is **stopped**
-   again when the adapter is removed. (Appearance is handled by the udev rule in
-   step 1; `BindsTo` handles removal.) There is **no** static `*.target.wants`
-   enablement.
-3. `wpa_supplicant` `Wants` `wifi-commissioning-service@<dev>.service`, which
-   `Requires` its `@<dev>.socket`. So commissioning rides along with
-   `wpa_supplicant`.
-
-A device with no wlan adapter starts nothing until one appears. The rule fires
-per `wlan*` interface, so a device with multiple wlan adapters runs one
-`wpa_supplicant` + commissioning instance per adapter (note: the bluez restart
-workaround targets the `wlan0` instance only).
+A device with no wlan adapter starts nothing until one appears. One
+`wpa_supplicant` + commissioning instance runs per `wlan*` interface.
 
 ## Bluetooth / BLE
 
-`wifi-commissioning-service` serves both a BLE GATT interface and a Unix-socket
-API. The `--disable-ble` flag is decided as late as possible:
+`wifi-commissioning-service` serves a BLE GATT interface and a Unix-socket API.
 
 - **No `bluetooth` feature in the build:** there is no BlueZ, so `--disable-ble`
-  is forced at build time and the `bluetooth.service` dependency is stripped.
-- **Otherwise:** decided at runtime — the service is launched with
-  `--disable-ble` only when no BT controller is present
-  (`/sys/class/bluetooth/hci*`), so a hot-plugged BT dongle is respected.
-- Either way the service is resilient: if BLE fails to start it logs one error
-  and keeps serving the Unix-socket API.
-
-Operators can override the flag via `WIFI_COMMISSIONING_EXTRA_ARGS` in
-`/etc/omnect/wifi-commissioning-service.env` — except on builds without the
-`bluetooth` feature, where `--disable-ble` is forced regardless (no BlueZ).
+  is forced and the `bluetooth.service` dependency is stripped.
+- **With `bluetooth`:** BLE is enabled. BLE is evaluated once at service start;
+  if no controller is present, BLE init fails, the service logs one error and
+  keeps serving the Unix-socket API. A BT adapter plugged in later is not picked
+  up until the service restarts.
 
 ## Per device class
 
@@ -69,31 +51,4 @@ Operators can override the flag via `WIFI_COMMISSIONING_EXTRA_ARGS` in
 | --- | --- | --- | --- | --- |
 | Fixed HW, wifi+BT | Raspberry Pi 4 | yes / yes | yes | always (onboard wifi+BT) |
 | Fixed HW, neither | Phygate Tauri-L | no / no | no | — |
-| Generic HW (x86) | Welotec Arrakis | yes / yes | yes | per unit — Arrakis **Mk4** (wifi+BT) yes, **Pico** (no adapters) no |
-
-## Flow
-
-```mermaid
-flowchart TD
-  MF["MACHINE_FEATURES"] -->|wifi| DFW["DISTRO_FEATURES: wifi"]
-  MF -->|bluetooth| DFB["DISTRO_FEATURES: bluetooth"]
-  DFW -->|install| WCS["wifi-commissioning-service"]
-  WCS -->|RDEPENDS| WPA["wpa-supplicant"]
-  DFB -->|packagegroup-base-bluetooth + RDEPENDS| BZ["bluez5"]
-
-  UDEV["udev: wlan* added"] -->|SYSTEMD_WANTS| WPAU["wpa_supplicant@wlanN<br/>BindsTo net device"]
-  WPAU -->|Wants| SVC["wifi-commissioning-service@wlanN"]
-  SVC -->|Requires| SOCK["@wlanN.socket"]
-  SVC --> BLE{"hciN present?"}
-  BLE -->|yes| ON["BLE enabled"]
-  BLE -->|no| OFF["--disable-ble<br/>(Unix socket only)"]
-```
-
-## Where to change what
-
-| Concern | File |
-| --- | --- |
-| Install gate (`wifi`) | `recipes-omnect/images/omnect-os-image.bb` |
-| Runtime start gate | `recipes-connectivity/wpa-supplicant/wpa-supplicant/wpa_supplicant@.service` + `.../80-wlan-wpa.rules` |
-| BLE decision | `recipes-omnect/wifi-commissioning-service/wifi-commissioning-service.inc` + `.../files/10-omnect-runtime.conf` |
-| bluez restart workaround (rpi) | `dynamic-layers/raspberrypi/recipes-connectivity/bluez5/bluez5_%.bbappend` |
+| Generic HW (x86) | Welotec Arrakis | yes / yes | yes | per unit — Mk4 (wifi+BT) yes, Pico (no adapters) no |
