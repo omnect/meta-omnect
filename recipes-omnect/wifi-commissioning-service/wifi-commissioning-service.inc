@@ -22,22 +22,13 @@ do_install:append() {
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.service ${D}${systemd_system_unitdir}/
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.socket ${D}${systemd_system_unitdir}/
 
-    # Runtime ExecStart override: decide --disable-ble from BT-adapter presence.
-    install -d ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service.d
-    install -m 0644 ${WORKDIR}/10-omnect-runtime.conf \
-        ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service.d/10-omnect-runtime.conf
-
-    # When bluetooth is absent from the build there is no bluez/bluetooth.service
-    # and BLE can never work. Strip the (now non-existent) bluetooth.service
-    # dependency and force --disable-ble, overriding the runtime adapter probe in
-    # 10-omnect-runtime.conf (a kernel HCI adapter can exist without bluez).
+    # Without the 'bluetooth' feature there is no bluez/bluetooth.service and BLE
+    # can never work: drop the bluetooth ordering and force --disable-ble.
     if [ "${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'yes', 'no', d)}" = "no" ]; then
-        sed -i '/^Requires=bluetooth.service$/d' \
+        sed -i '/^Requires=bluetooth.service$/d;/^After=bluetooth.service$/d' \
             ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
-        sed -i '/^After=bluetooth.service$/d' \
+        sed -i "/^ExecStart/s|'$| --disable-ble'|" \
             ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
-        printf '%s\n' 'Environment=WIFI_COMMISSIONING_EXTRA_ARGS=--disable-ble' >> \
-            ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service.d/10-omnect-runtime.conf
     fi
 
     # No static enablement: the service is pulled by wpa_supplicant's Wants=
@@ -47,7 +38,6 @@ do_install:append() {
 FILES:${PN} += "\
     ${systemd_system_unitdir}/wifi-commissioning-service@.service \
     ${systemd_system_unitdir}/wifi-commissioning-service@.socket \
-    ${systemd_system_unitdir}/wifi-commissioning-service@.service.d/10-omnect-runtime.conf \
 "
 
 inherit cargo_cyclonedx useradd

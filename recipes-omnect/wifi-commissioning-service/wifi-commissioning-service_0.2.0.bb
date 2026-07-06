@@ -8,7 +8,6 @@ inherit cargo
 # how to get wifi-commissioning-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/wifi-commissioning-service/0.2.0"
 SRC_URI += "git://github.com/janzachmann/wifi-commissioning-service.git;protocol=https;nobranch=1;branch=feat/service-info-endpoint"
-SRC_URI += "file://10-omnect-runtime.conf"
 SRCREV = "955231e6279a77d8e91f266a01764ecefdf16d9e"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
