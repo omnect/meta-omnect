@@ -93,31 +93,24 @@ values. `3g` (line 12) is left untouched.
 ```
 # wifi/bluetooth capability comes from files/device_caps/${MACHINE}.json
 # ("optional" and "yes" both enable at build time; only runtime distinguishes them)
-DISTRO_FEATURES += "${@'wifi'      if omnect_device_cap(d, 'wifi')      != 'no' else ''}"
-DISTRO_FEATURES += "${@'bluetooth' if omnect_device_cap(d, 'bluetooth') != 'no' else ''}"
+# bluetooth is gated on wifi: it is only meaningful when wcs (and thus BLE) is built.
+DISTRO_FEATURES += "${@'wifi'      if omnect_device_cap(d, 'wifi') != 'no' else ''}"
+DISTRO_FEATURES += "${@'bluetooth' if (omnect_device_cap(d, 'wifi') != 'no' and omnect_device_cap(d, 'bluetooth') != 'no') else ''}"
 ```
 
-The `bluetooth` feature is derived independently (`bluetooth != "no"`). The "wcs
-installed **and** bluetooth" rule is satisfied naturally because the `ble` cargo
-feature lives in the wcs recipe, which is only built when `wifi` is installed.
+**`bluetooth` is gated on `wifi`** (`wifi != "no" AND bluetooth != "no"`) — decided.
+This matches the stated rule "if wcs is installed **and** bluetooth" and minimizes an
+image-wide side effect: unlike `wifi` (a project-custom DISTRO_FEATURE consumed only
+in-layer), `bluetooth` is a stock OpenEmbedded DISTRO_FEATURE with upstream consumers
+(`bluez5` has `REQUIRED_DISTRO_FEATURES = "bluetooth"`; pulseaudio/pipewire/connman/
+ofono gate PACKAGECONFIG on it). Gating on wifi keeps the bluetooth stack out of any
+image that does not build wcs. A machine that wants a general bluetooth stack without
+wifi must still set it the classic way via `MACHINE_FEATURES` in its BSP — that path is
+untouched; this only removes the device_caps-driven derivation for the no-wifi case.
 
-**Image-wide side effect — needs a decision.** Unlike `wifi` (a project-custom
-DISTRO_FEATURE consumed only in-layer), `bluetooth` is a stock OpenEmbedded
-DISTRO_FEATURE with upstream consumers (`bluez5` has `REQUIRED_DISTRO_FEATURES =
-"bluetooth"`; pulseaudio/pipewire/connman/ofono gate PACKAGECONFIG on it). Deriving
-it from device_caps changes it image-wide, not just for wcs. Concretely,
-`genericx86-64.json` has `bluetooth:"optional"`: if that machine has no
-`MACHINE_FEATURES bluetooth` today it currently gets no `DISTRO_FEATURES bluetooth`;
-after this change it would, pulling the bluetooth stack into the image — an attack-
-surface increase for a minimized OS.
-
-Two derivation choices (decide before implementation):
-- **Independent** (`bluetooth != "no"`) — as written above; matches "bluetooth
-  capability present", but a `wifi:"no" / bluetooth:"yes"` machine gains the upstream
-  bluetooth stack with no wcs/ble involved.
-- **Gated on wifi** (`wifi != "no" AND bluetooth != "no"`) — matches the user's literal
-  "if wcs is installed AND bluetooth"; bluetooth feature only appears where wcs/ble can
-  use it, shrinking the upstream side effect.
+Verify the image-wide effect during implementation (see §9): for `genericx86-64`
+(`bluetooth:"optional"`, `wifi:"optional"`) bluetooth is still derived (wifi != "no"),
+so confirm the resulting `DISTRO_FEATURES bluetooth` and manifest match expectations.
 
 ### 4.3 `recipes-core/systemd/systemd_%.bbappend`
 
