@@ -21,7 +21,7 @@ This yocto meta layer provides the device management distribution `omnect-os`. I
 
 ### `DISTRO_FEATURES`
 `omnect-os` is built with yocto [`DISTRO_FEATURES`](https://docs.yoctoproject.org/ref-manual/features.html#distro-features) = `apparmor ipv4 ipv6 polkit seccomp xattr zeroconf`.
-Depending on `MACHINE_FEATURES` we also set `3g`, `bluetooth` and `wifi`.
+Depending on `MACHINE_FEATURES` we also set `3g`. `wifi` and `bluetooth` are derived from `/etc/omnect/device_caps.json` instead; see [doc/wifi_commissioning.md](doc/wifi_commissioning.md).
 `apparmor` enables Mandatory Access Control support; see [doc/mac_lsm.md](doc/mac_lsm.md).
 
 `meta-omnect` adds the following `DISTRO_FEATURES`:
@@ -35,9 +35,9 @@ Depending on `MACHINE_FEATURES` we also set `3g`, `bluetooth` and `wifi`.
     - please see section [Flash Modes](#flash-modes) below
 - `resize-data`
     - expands the data partition to available space on first boot
-- [`wifi-commissioning`](https://github.com/omnect/wifi-commissioning-service.git)
-    - adds a service which enables wifi commissioning via BLE GATT and/or Unix socket HTTP REST API
-    - depends on `DISTRO_FEATURES` `wifi` and `bluetooth` which are not added to `DISTRO_FEATURES` automatically!
+- `wifi` / `bluetooth`
+    - not a dedicated `wifi-commissioning` feature; derived from `/etc/omnect/device_caps.json`, see [doc/wifi_commissioning.md](doc/wifi_commissioning.md)
+    - installs [`wifi-commissioning-service`](https://github.com/omnect/wifi-commissioning-service.git), which enables wifi commissioning via BLE GATT and/or a Unix-socket HTTP REST API
     - **note**: BLE interface is intended for demo/initial commissioning; the Unix socket API targets programmatic integration but the service is still in early development (v0.1.0)
 
 ### `MACHINE_FEATURES`
@@ -178,7 +178,6 @@ docker run --rm \
 ghcr.io/siemens/kas/kas \
 kas build \
 meta-omnect/kas/distro/omnect-os.yaml:\
-meta-omnect/kas/example/wifi-commissioning.yaml:\
 meta-omnect/kas/feature/iotedge.yaml:\
 meta-omnect/kas/feature/persistent-var-log.yaml:\
 meta-omnect/kas/machine/rpi/rpi4.yaml
@@ -187,6 +186,7 @@ meta-omnect/kas/machine/rpi/rpi4.yaml
 The resulting image artifacts are located in `$(pwd)/build/deploy/images/raspberrypi4-64`.<br>
 The `omnect-os-image` artefact is named `omnect-os-raspberrypi4-64.wic.xz`.<br>
 The `omnect-os-update-image` artefact is named `omnect-os-update-image-raspberrypi4-64.swu`.<br>
+Wifi/bluetooth commissioning is not enabled via a kas example; it is controlled per machine by `/etc/omnect/device_caps.json`, see [doc/wifi_commissioning.md](doc/wifi_commissioning.md).
 
 ### Layer prioritization orchestration
 If you want to add additional yocto layers to your build, you can adapt layer priorities in `conf/layer.conf`. This layer is the last in the `BBLAYERS` yocto variable when you build with our `kas` configuration files. If not, you have to possibly adapt layer prioritization values in the last layer included in `BBLAYERS`.
