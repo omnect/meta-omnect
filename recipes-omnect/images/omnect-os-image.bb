@@ -88,6 +88,23 @@ IMAGE_INSTALL = "\
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 
+# Guard the MACHINE_FEATURES <-> device_caps invariant. device_caps.json drives
+# DISTRO_FEATURES wifi/bluetooth, but the kernel driver/firmware for those radios
+# still comes from the BSP via MACHINE_FEATURES. If device_caps enables a radio the
+# machine has no MACHINE_FEATURES for, the userspace stack installs but the hardware
+# is dead. Fail at build so a mismatched machine is caught here, not in the field.
+python __anonymous() {
+    machine = d.getVar('MACHINE')
+    for feat in ('wifi', 'bluetooth'):
+        distro_on = bb.utils.contains('DISTRO_FEATURES', feat, True, False, d)
+        machine_on = bb.utils.contains('MACHINE_FEATURES', feat, True, False, d)
+        if distro_on and not machine_on:
+            bb.fatal("%s: device_caps.json enables '%s' (DISTRO_FEATURES) but "
+                     "MACHINE_FEATURES lacks it, so there is no kernel driver/firmware. "
+                     "Add MACHINE_FEATURES '%s' for this machine or set device_caps "
+                     "'%s' to 'no'." % (machine, feat, feat, feat))
+}
+
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
 # If we add it to IMAGE_BOOT_FILES, wic would move it to the boot
