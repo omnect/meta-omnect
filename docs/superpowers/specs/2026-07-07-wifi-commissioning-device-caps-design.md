@@ -317,10 +317,18 @@ first boot cannot accidentally enable BLE.
 4. The oneshot calls `systemctl start` synchronously from inside the boot transaction —
    a known systemd race. Confirm with `RemainAfterExit=yes` and `--no-block` it does not
    deadlock the boot transaction and that wpa + wcs actually reach `active`.
-5. **MACHINE_FEATURES ↔ device_caps invariant:** `DISTRO_FEATURES` wifi/bluetooth now come
-   from device_caps, but `packagegroup-base-wifi`/`-bluetooth` and the BSP wifi driver/
-   firmware stay keyed on `MACHINE_FEATURES`. A machine's `device_caps.json` must agree
-   with its `MACHINE_FEATURES` (a `optional`/`yes` capability needs the matching driver;
-   `bluez5` needs `REQUIRED_DISTRO_FEATURES = "bluetooth"`). The three in-layer machines
-   agree today. Document the invariant, or gate the packagegroup subgroups on the same
-   source, so a mismatched future machine fails loudly rather than silently.
+5. **MACHINE_FEATURES ↔ device_caps invariant (addressed):** `DISTRO_FEATURES` wifi/bluetooth
+   now come from device_caps, but the BSP wifi/bluetooth **kernel driver + firmware** stay
+   keyed on `MACHINE_FEATURES`. A machine's `device_caps.json` must agree with its
+   `MACHINE_FEATURES`, or the userspace stack installs against a radio with no driver.
+   - oe-core `packagegroup-base-wifi`/`-bluetooth` already gate on `DISTRO_FEATURES` (not
+     MACHINE_FEATURES), so they follow device_caps automatically — no re-gating needed.
+   - `omnect-os-image.bb` now runs a `python __anonymous()` check that `bb.fatal`s when a
+     feature is in `DISTRO_FEATURES` (device_caps) but absent from `MACHINE_FEATURES` — the
+     mismatch fails the build instead of shipping a dead radio.
+   - The invariant is documented in `omnect-os-distro.conf` (comment) and
+     `doc/wifi_commissioning.md`.
+   - **CI caveat:** this check fires for every built machine, including `meta-omnect-lab`
+     machines not present in this checkout. Any lab machine whose `device_caps` enables
+     wifi/bluetooth must also set the matching `MACHINE_FEATURES`, or its build fails —
+     verify lab machines before merge.
