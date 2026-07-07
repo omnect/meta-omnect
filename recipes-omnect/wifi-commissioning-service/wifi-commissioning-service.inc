@@ -31,8 +31,9 @@ do_install:append() {
             ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
     fi
 
-    # No static enablement: the service is pulled by wpa_supplicant's Wants=
-    # and its own Requires=...@%i.socket, gated by the wlan udev rule.
+    # No static enablement: the service is pulled by wpa_supplicant@%i.service's
+    # Wants= and its own Requires=...@%i.socket; startup is gated by the
+    # omnect-wifi-commissioning oneshot, which reads device_caps.json.
 }
 
 FILES:${PN} += "\
