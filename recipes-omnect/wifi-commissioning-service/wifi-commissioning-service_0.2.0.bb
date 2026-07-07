@@ -8,7 +8,7 @@ inherit cargo
 # how to get wifi-commissioning-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/wifi-commissioning-service/0.2.0"
 SRC_URI += "git://github.com/janzachmann/wifi-commissioning-service.git;protocol=https;nobranch=1;branch=feat/service-info-endpoint"
-SRCREV = "7b0aa7287ccab7db93164949f101095787898be5"
+SRCREV = "5ea7ada7e66f6de9188c2ca722d2e7d4eea33cc7"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
