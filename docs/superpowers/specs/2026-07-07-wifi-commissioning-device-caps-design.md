@@ -97,9 +97,27 @@ DISTRO_FEATURES += "${@'wifi'      if omnect_device_cap(d, 'wifi')      != 'no' 
 DISTRO_FEATURES += "${@'bluetooth' if omnect_device_cap(d, 'bluetooth') != 'no' else ''}"
 ```
 
-The `bluetooth` feature is derived independently. The "wcs installed **and**
-bluetooth" rule is satisfied naturally because the `ble` cargo feature lives in the
-wcs recipe, which is only built when `wifi` is installed.
+The `bluetooth` feature is derived independently (`bluetooth != "no"`). The "wcs
+installed **and** bluetooth" rule is satisfied naturally because the `ble` cargo
+feature lives in the wcs recipe, which is only built when `wifi` is installed.
+
+**Image-wide side effect — needs a decision.** Unlike `wifi` (a project-custom
+DISTRO_FEATURE consumed only in-layer), `bluetooth` is a stock OpenEmbedded
+DISTRO_FEATURE with upstream consumers (`bluez5` has `REQUIRED_DISTRO_FEATURES =
+"bluetooth"`; pulseaudio/pipewire/connman/ofono gate PACKAGECONFIG on it). Deriving
+it from device_caps changes it image-wide, not just for wcs. Concretely,
+`genericx86-64.json` has `bluetooth:"optional"`: if that machine has no
+`MACHINE_FEATURES bluetooth` today it currently gets no `DISTRO_FEATURES bluetooth`;
+after this change it would, pulling the bluetooth stack into the image — an attack-
+surface increase for a minimized OS.
+
+Two derivation choices (decide before implementation):
+- **Independent** (`bluetooth != "no"`) — as written above; matches "bluetooth
+  capability present", but a `wifi:"no" / bluetooth:"yes"` machine gains the upstream
+  bluetooth stack with no wcs/ble involved.
+- **Gated on wifi** (`wifi != "no" AND bluetooth != "no"`) — matches the user's literal
+  "if wcs is installed AND bluetooth"; bluetooth feature only appears where wcs/ble can
+  use it, shrinking the upstream side effect.
 
 ### 4.3 `recipes-core/systemd/systemd_%.bbappend`
 
@@ -127,8 +145,13 @@ fi
   `--disable-ble` into `ExecStart`. Runtime BLE is now driven by the oneshot via an
   EnvironmentFile (§5), and BLE defaults off in wcs.
 
-Dependency (out of scope): the wcs source must expose a `ble` cargo feature and
-default BLE **off**, accepting `--enable-ble` to turn it on.
+**Build-blocking prerequisite (not merely "documented").** `--features ble` fails to
+parse if the feature does not exist, and `--enable-ble` fails if the flag is not
+implemented. This change therefore cannot build until the wcs source exposes a `ble`
+cargo feature and the `--enable-ble` flag (BLE default off), **and** the wcs recipe
+SRCREV is bumped to that commit. Required ordering: wcs source lands → SRCREV bump →
+this meta-omnect change builds. Do not merge ahead of the SRCREV bump or the build
+breaks.
 
 ### 4.5 Install gate (unchanged)
 
@@ -261,9 +284,14 @@ first boot cannot accidentally enable BLE.
 - `ci/tests/whitelists/**/*.json` — with the udev rule gone, hot-plug wpa log lines
   disappear. Add whitelist entries only if the new oneshot/start path emits expected
   noise (POSIX ERE).
-- Build verification: clean build for a `wifi:"yes"` machine (rpi4-64), a
-  `wifi:"optional"` machine (genericx86-64), and a `wifi:"no"` machine
-  (phygate-tauri-l-imx8mm-2) to confirm install/compile gating.
+- Feature-derivation verification (primary): for rpi4-64 (`wifi:"yes"`), genericx86-64
+  (`wifi/bluetooth:"optional"`) and phygate-tauri-l-imx8mm-2 (`wifi:"no"`), compare
+  `bitbake -e <image> | grep '^DISTRO_FEATURES='` before vs. after the change. Where
+  wifi/bluetooth differ, diff the package manifest to see what upstream (esp. the
+  bluetooth stack) was pulled in or dropped. This is the step most likely to surface a
+  surprise — see §4.2.
+- Build verification: clean build for the three machines above to confirm
+  install/compile gating.
 
 ## 10. Logistics (not design)
 
@@ -281,3 +309,6 @@ first boot cannot accidentally enable BLE.
    in the recipe if it blocks startup.
 3. `wpa_supplicant@wlan0` start when the `.device` unit exists at boot for onboard
    adapters — confirm ordering/`After` does not deadlock without udev.
+4. The oneshot calls `systemctl start` synchronously from inside the boot transaction —
+   a known systemd race. Confirm with `RemainAfterExit=yes` it does not deadlock the
+   boot transaction and that wpa + wcs actually reach `active`.
