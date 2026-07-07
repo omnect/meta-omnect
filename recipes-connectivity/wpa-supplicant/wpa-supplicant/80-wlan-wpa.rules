@@ -1,3 +1,0 @@
-# Runtime gate for wifi (and, via wpa_supplicant's Wants=, commissioning):
-# start wpa_supplicant when a wlan interface appears, incl. USB dongles.
-SUBSYSTEM=="net", KERNEL=="wlan*", ACTION=="add", TAG+="systemd", ENV{SYSTEMD_WANTS}+="wpa_supplicant@%k.service"

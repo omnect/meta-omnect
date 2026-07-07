@@ -1,8 +1,5 @@
 [Unit]
 Description=WPA supplicant daemon
-# BindsTo (not Requires): stop the daemon when the adapter is removed.
-# Start-on-appearance comes from the 80-wlan-wpa.rules udev rule.
-BindsTo=sys-subsystem-net-devices-%i.device
 After=sys-subsystem-net-devices-%i.device
 Before=network.target
 Wants=network.target
