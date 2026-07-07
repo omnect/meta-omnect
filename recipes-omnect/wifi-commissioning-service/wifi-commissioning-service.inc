@@ -8,6 +8,8 @@ LIC_FILES_CHKSUM = " \
 "
 
 CARGO_BUILD_FLAGS += "--locked --features systemd"
+# BLE is compiled in when the platform can use bluetooth (device_caps-derived).
+CARGO_BUILD_FLAGS += "${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', ' --features ble', '', d)}"
 
 # Build dependencies
 DEPENDS += "pkgconfig-native dbus"
@@ -22,12 +24,19 @@ do_install:append() {
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.service ${D}${systemd_system_unitdir}/
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.socket ${D}${systemd_system_unitdir}/
 
-    # Without the 'bluetooth' feature there is no bluez/bluetooth.service and BLE
-    # can never work: drop the bluetooth ordering and force --disable-ble.
+    # Runtime BLE decision comes from device_caps.json via omnect-wifi-commissioning-start,
+    # which writes WCS_BLE_ARGS (--enable-ble or empty) to /run. Source that file and
+    # expand the shell var inside the existing bash -c invocation. No braces so BitBake
+    # does not expand it; $$ becomes a literal $ for systemd -> bash sees $WCS_BLE_ARGS.
+    sed -i \
+        -e '\#^EnvironmentFile=-/etc/omnect/wifi-commissioning-service.env$#a EnvironmentFile=-/run/omnect-wifi-commissioning.env' \
+        -e "/^ExecStart/s|'$| \$\$WCS_BLE_ARGS'|" \
+        ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
+
+    # Without the 'bluetooth' feature there is no bluez/bluetooth.service: drop the
+    # ordering. (BLE is off by default in the binary, so no runtime flag is needed here.)
     if [ "${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'yes', 'no', d)}" = "no" ]; then
         sed -i '/^Requires=bluetooth.service$/d;/^After=bluetooth.service$/d' \
-            ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
-        sed -i "/^ExecStart/s|'$| --disable-ble'|" \
             ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
     fi
 
