@@ -33,6 +33,14 @@ do_install:append() {
         -e "/^ExecStart/s|'$| \$\$WCS_BLE_ARGS'|" \
         ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
 
+    # Fail the build if the wcs source unit format drifted and the seds above
+    # no-op'd, rather than silently shipping with BLE unreachable.
+    unit="${D}${systemd_system_unitdir}/wifi-commissioning-service@.service"
+    grep -q '^EnvironmentFile=-/run/omnect-wifi-commissioning.env$' "$unit" || \
+        bbfatal "wcs unit: /run EnvironmentFile not injected (source unit format changed?)"
+    grep -q 'WCS_BLE_ARGS' "$unit" || \
+        bbfatal "wcs unit: WCS_BLE_ARGS not injected into ExecStart (source unit format changed?)"
+
     # Without the 'bluetooth' feature there is no bluez/bluetooth.service: drop the
     # ordering. (BLE is off by default in the binary, so no runtime flag is needed here.)
     if [ "${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'yes', 'no', d)}" = "no" ]; then
