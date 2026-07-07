@@ -674,9 +674,21 @@ git commit -m "test(wifi): whitelist device_caps oneshot log output
 Signed-off-by: Jan Zachmann <50990105+JanZachmann@users.noreply.github.com>"
 ```
 
-- [ ] **Step 6: PR logistics**
+- [ ] **Step 6: PR logistics (decided: continue on `chore`, new PR, close #664)**
 
-Close issue/PR #664, then open the new PR from `chore` targeting the omnect org `main` (or the appropriate integration branch). PR body: Summary / Reason / Verification (per CLAUDE.md).
+Work stays on `chore` (already `upstream/main` + the reused groundwork; carries the
+pre-existing mixed secure-boot/ODS-bump commits). Push `chore`, then:
+```bash
+gh pr close 664 --comment "Superseded by the device_caps.json-driven design; see new PR."
+gh pr create --base main --head chore --repo omnect/meta-omnect \
+  --title "feat(wifi): drive commissioning from device_caps.json" \
+  --body "<Summary / Reason / Verification per CLAUDE.md>"
+```
+(`--base main` targets `upstream/main` = omnect org. A branch hosts one open PR per
+base, so #664 must be closed before opening the new one from `chore`.) PR body sections:
+Summary (device_caps single source, oneshot runtime, udev removed), Reason (remove the
+MACHINE_FEATURES/device_caps divergence; runtime-selectable wifi/BLE), Verification
+(before/after DISTRO_FEATURES + manifest diff, three-machine build, hardware smoke).
 
 ---
 
