@@ -40,6 +40,21 @@ compile the same bits. Only runtime behavior differs between them.
 `3g` is not part of this model: it stays driven by `MACHINE_FEATURES`, unrelated
 to `device_caps.json`.
 
+## MACHINE_FEATURES and device_caps must agree
+
+`device_caps.json` controls install and runtime behavior through `DISTRO_FEATURES`
+`wifi` and `bluetooth`. It does not control the kernel side. The kernel wifi/
+bluetooth driver and firmware still come from the BSP, through `MACHINE_FEATURES`.
+
+The two must agree per machine. A machine whose `device_caps` enables `wifi` or
+`bluetooth` must also have the matching `MACHINE_FEATURES`. If not, the build
+fails: `omnect-os-image.bb` checks this and aborts with `bb.fatal` when
+`device_caps` turns on a radio that `MACHINE_FEATURES` does not have.
+
+Setting `device_caps` to a capability the machine has no `MACHINE_FEATURES` for
+does not add a driver. The userspace stack (wpa_supplicant, wcs) would install,
+but the hardware has no driver, so it cannot work.
+
 ## Pre-boot editing
 
 Because `optional` and `yes` produce the same image, a device shipped with
