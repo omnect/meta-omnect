@@ -62,22 +62,29 @@ Out of scope (documented as dependencies, not implemented here):
 ```python
 def omnect_device_cap(d, key):
     import json, os
-    path = os.path.join(d.getVar('LAYERDIR_omnect'), 'files',
-                        'device_caps', '%s.json' % d.getVar('MACHINE'))
-    bb.parse.mark_dependency(d, path)   # re-parse when the JSON changes
-    try:
-        with open(path) as f:
-            return json.load(f).get(key, '')
-    except (IOError, ValueError):
-        return ''
+    machine = d.getVar('MACHINE')
+    for layer in (d.getVar('BBLAYERS') or '').split():
+        path = os.path.join(layer, 'files', 'device_caps', '%s.json' % machine)
+        bb.parse.mark_dependency(d, path)   # creating one later re-triggers parse
+        if os.path.exists(path):
+            try:
+                with open(path) as f:
+                    return json.load(f).get(key, '')
+            except (IOError, ValueError):
+                return ''
+    return ''
 ```
 
-- `LAYERDIR_omnect` (set in `conf/layer.conf`) and `${MACHINE}` are both available at
-  distro-conf parse time — verified.
-- `bb.parse.mark_dependency` registers the JSON as a parse dependency. Exact behavior
-  at config scope must be confirmed during implementation; CI clean builds are
-  unaffected regardless.
-- Missing/invalid file → empty string → feature not set (fail-safe).
+- Searches **every** layer's `files/device_caps/${MACHINE}.json`, first match wins —
+  mirroring how `base-files_%.bbappend` resolves the installed file via
+  `FILESEXTRAPATHS`. This matters because lab machines' capability files are supplied
+  by `meta-omnect-lab`, not meta-omnect; a meta-omnect-only lookup would read empty for
+  them and silently disable wifi/bluetooth at build while the real file shipped at
+  runtime.
+- `BBLAYERS` and `${MACHINE}` are available at distro-conf parse time.
+- `bb.parse.mark_dependency` registers each candidate JSON as a parse dependency.
+- Missing/invalid file → empty string; the caller enables a feature only on
+  `in ('optional', 'yes')`, so missing/malformed data leaves it **off** (fail-safe).
 
 ### 4.2 `conf/distro/include/omnect-os-distro.conf`
 
@@ -285,6 +292,11 @@ first boot cannot accidentally enable BLE.
   surprise — see §4.2.
 - Build verification: clean build for the three machines above to confirm
   install/compile gating.
+- **Lab-machine derivation check:** because the bbclass now searches all layers, build
+  (or at least `bitbake -e`) at least one `meta-omnect-lab` wifi machine (e.g.
+  `rpi4-omnect-lab` or `rpi3`) and confirm `DISTRO_FEATURES` contains `wifi` — i.e. the
+  layer-aware lookup finds the lab-supplied `device_caps.json`. This guards the cross-
+  layer resolution that a meta-omnect-only build cannot exercise.
 
 ## 10. Logistics (not design)
 
@@ -303,5 +315,12 @@ first boot cannot accidentally enable BLE.
 3. `wpa_supplicant@wlan0` start when the `.device` unit exists at boot for onboard
    adapters — confirm ordering/`After` does not deadlock without udev.
 4. The oneshot calls `systemctl start` synchronously from inside the boot transaction —
-   a known systemd race. Confirm with `RemainAfterExit=yes` it does not deadlock the
-   boot transaction and that wpa + wcs actually reach `active`.
+   a known systemd race. Confirm with `RemainAfterExit=yes` and `--no-block` it does not
+   deadlock the boot transaction and that wpa + wcs actually reach `active`.
+5. **MACHINE_FEATURES ↔ device_caps invariant:** `DISTRO_FEATURES` wifi/bluetooth now come
+   from device_caps, but `packagegroup-base-wifi`/`-bluetooth` and the BSP wifi driver/
+   firmware stay keyed on `MACHINE_FEATURES`. A machine's `device_caps.json` must agree
+   with its `MACHINE_FEATURES` (a `optional`/`yes` capability needs the matching driver;
+   `bluez5` needs `REQUIRED_DISTRO_FEATURES = "bluetooth"`). The three in-layer machines
+   agree today. Document the invariant, or gate the packagegroup subgroups on the same
+   source, so a mismatched future machine fails loudly rather than silently.
