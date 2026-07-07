@@ -85,8 +85,8 @@ DISTRO_FEATURES += "${@bb.utils.contains('MACHINE_FEATURES', '3g', '3g', '', d)}
 # wifi/bluetooth capability comes from files/device_caps/${MACHINE}.json.
 # "optional" and "yes" both enable at build time; only runtime distinguishes them.
 # bluetooth is gated on wifi: it is only meaningful when wcs (and thus BLE) is built.
-DISTRO_FEATURES += "${@'wifi' if omnect_device_cap(d, 'wifi') != 'no' else ''}"
-DISTRO_FEATURES += "${@'bluetooth' if (omnect_device_cap(d, 'wifi') != 'no' and omnect_device_cap(d, 'bluetooth') != 'no') else ''}"
+DISTRO_FEATURES += "${@'wifi' if omnect_device_cap(d, 'wifi') in ('optional', 'yes') else ''}"
+DISTRO_FEATURES += "${@'bluetooth' if (omnect_device_cap(d, 'wifi') in ('optional', 'yes') and omnect_device_cap(d, 'bluetooth') in ('optional', 'yes')) else ''}"
 ```
 
 - [ ] **Step 4: Verify derivation for all three machines**
