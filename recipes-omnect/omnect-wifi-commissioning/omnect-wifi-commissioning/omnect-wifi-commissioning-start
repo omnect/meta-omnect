@@ -1,0 +1,23 @@
+#!/bin/sh
+# Start and configure wifi commissioning from /etc/omnect/device_caps.json.
+# Runs once at boot (oneshot). No hot-plug: wlan0 is assumed.
+set -eu
+
+CAPS=/etc/omnect/device_caps.json
+ENV_FILE=/run/omnect-wifi-commissioning.env
+IFACE=wlan0
+
+# shellcheck source=omnect-wifi-commissioning-start.capfn
+. "$(dirname "$0")/omnect-wifi-commissioning-start.capfn"
+
+[ "$(cap wifi)" = "yes" ] || exit 0   # wifi not enabled -> start nothing
+
+if [ "$(cap bluetooth)" = "yes" ]; then
+    printf 'WCS_BLE_ARGS=--enable-ble\n' > "$ENV_FILE"
+else
+    printf 'WCS_BLE_ARGS=\n' > "$ENV_FILE"
+fi
+
+# --no-block: we are inside the boot transaction; do not wait on the started jobs.
+# wpa_supplicant@%i pulls wifi-commissioning-service@%i via its Wants=.
+systemctl start --no-block "wpa_supplicant@${IFACE}.service"

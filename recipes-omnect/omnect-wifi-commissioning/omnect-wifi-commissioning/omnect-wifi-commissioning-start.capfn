@@ -1,0 +1,5 @@
+# cap KEY -> value of "KEY": "value" from the flat device_caps JSON in $CAPS.
+# Sourced by omnect-wifi-commissioning-start and by test_caps_parse.sh.
+cap() {
+    sed -n "s/.*\"$1\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$CAPS"
+}
