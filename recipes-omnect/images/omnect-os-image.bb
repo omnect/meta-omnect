@@ -88,14 +88,17 @@ IMAGE_INSTALL = "\
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 
-# Guard the MACHINE_FEATURES <-> device_caps invariant. device_caps.json drives
-# DISTRO_FEATURES wifi/bluetooth, but the kernel driver/firmware for those radios
-# still comes from the BSP via MACHINE_FEATURES. If device_caps enables a radio the
-# machine has no MACHINE_FEATURES for, the userspace stack installs but the hardware
-# is dead. Fail at build so a mismatched machine is caught here, not in the field.
+# Validate the device_caps values and guard them against MACHINE_FEATURES. An
+# unknown value would silently drop the feature, and a radio enabled in device_caps
+# but absent from MACHINE_FEATURES installs a userspace stack with no kernel
+# driver/firmware. Fail the build so both are caught here, not in the field.
 python __anonymous() {
     machine = d.getVar('MACHINE')
-    for feat in ('wifi', 'bluetooth'):
+    for feat, var in (('wifi', 'OMNECT_DEVICE_CAP_WIFI'), ('bluetooth', 'OMNECT_DEVICE_CAP_BLUETOOTH')):
+        value = d.getVar(var)
+        if value not in ('', 'no', 'optional', 'yes'):
+            bb.fatal("%s: device_caps.json '%s' has invalid value '%s' "
+                     "(expected 'no', 'optional' or 'yes')." % (machine, feat, value))
         distro_on = bb.utils.contains('DISTRO_FEATURES', feat, True, False, d)
         machine_on = bb.utils.contains('MACHINE_FEATURES', feat, True, False, d)
         if distro_on and not machine_on:
