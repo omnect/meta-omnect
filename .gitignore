@@ -1,3 +1,4 @@
 /tmp
 *~
 *.sw?
+__pycache__/
