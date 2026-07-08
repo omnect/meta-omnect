@@ -13,7 +13,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://omnect-wifi-commissioning.service \
     file://omnect-wifi-commissioning-start \
-    file://omnect-wifi-commissioning-start.capfn \
 "
 
 RDEPENDS:${PN} += "wpa-supplicant"
@@ -21,13 +20,11 @@ RDEPENDS:${PN} += "wpa-supplicant"
 do_install() {
     install -m 0644 -D ${WORKDIR}/omnect-wifi-commissioning.service ${D}${systemd_system_unitdir}/omnect-wifi-commissioning.service
     install -m 0755 -D ${WORKDIR}/omnect-wifi-commissioning-start ${D}${bindir}/omnect-wifi-commissioning-start
-    install -m 0644 -D ${WORKDIR}/omnect-wifi-commissioning-start.capfn ${D}${bindir}/omnect-wifi-commissioning-start.capfn
 }
 
 SYSTEMD_SERVICE:${PN} = "omnect-wifi-commissioning.service"
 
 FILES:${PN} = "\
     ${bindir}/omnect-wifi-commissioning-start \
-    ${bindir}/omnect-wifi-commissioning-start.capfn \
     ${systemd_system_unitdir}/omnect-wifi-commissioning.service \
 "
