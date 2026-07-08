@@ -38,7 +38,7 @@ Depending on `MACHINE_FEATURES` we also set `3g`. `wifi` and `bluetooth` are der
 - `wifi` / `bluetooth`
     - not a dedicated `wifi-commissioning` feature; derived from `/etc/omnect/device_caps.json`, see [doc/wifi_commissioning.md](doc/wifi_commissioning.md)
     - installs [`wifi-commissioning-service`](https://github.com/omnect/wifi-commissioning-service.git), which enables wifi commissioning via BLE GATT and/or a Unix-socket HTTP REST API
-    - **note**: BLE interface is intended for demo/initial commissioning; the Unix socket API targets programmatic integration but the service is still in early development (v0.1.0)
+    - **note**: BLE interface is intended for demo/initial commissioning; the Unix socket API targets programmatic integration but the service is still in early development (v0.2.0)
 
 ### `MACHINE_FEATURES`
 `meta-omnect` extends the following `MACHINE_FEATURES`:

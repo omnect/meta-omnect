@@ -16,9 +16,9 @@ handling: the interface is assumed to be `wlan0`.
 ## Build time: install and compile
 
 `DISTRO_FEATURES` `wifi` and `bluetooth` are derived from `device_caps.json`
-for the target `MACHINE` (see `classes/omnect-device-caps.bbclass` and
-`conf/distro/include/omnect-os-distro.conf`). `bluetooth` is gated on `wifi`:
-it is only set when `wifi` is also enabled.
+for the target `MACHINE` (see `conf/distro/include/omnect-os-distro.conf`; the
+values are validated in `recipes-omnect/images/omnect-os-image.bb`). `bluetooth`
+is gated on `wifi`: it is only set when `wifi` is also enabled.
 
 | `device_caps` value | `DISTRO_FEATURES` |
 | --- | --- |
@@ -79,7 +79,9 @@ At boot, the `omnect-wifi-commissioning` oneshot service reads
 
 There is no udev rule and no hot-plug detection: the oneshot always targets
 `wlan0`. A machine whose `device_caps.wifi` is `"yes"` is expected to have a
-working `wlan0` from its BSP.
+working `wlan0` at boot. For a USB adapter (e.g. Welotec Mk4), attach it and set
+`wifi: "yes"`, then reboot — the adapter must be present when the oneshot runs.
+Plugging it in after boot does nothing; only a reboot re-runs the oneshot.
 
 ## Bluetooth / BLE
 
