@@ -24,13 +24,12 @@ do_install:append() {
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.service ${D}${systemd_system_unitdir}/
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.socket ${D}${systemd_system_unitdir}/
 
-    # Runtime BLE decision comes from device_caps.json via omnect-wifi-commissioning-start,
-    # which writes WCS_BLE_ARGS (--enable-ble or empty) to /run. Source that file and
-    # expand the shell var inside the existing bash -c invocation. No braces so BitBake
-    # does not expand it; $$ becomes a literal $ for systemd -> bash sees $WCS_BLE_ARGS.
+    # Source the /run env file that omnect-wifi-commissioning-start writes (WCS_BLE_ARGS)
+    # and expand it inside the existing bash -c invocation. No braces so BitBake does not
+    # expand it; $$ becomes a literal $ for systemd -> bash sees $WCS_BLE_ARGS.
     sed -i \
         -e '\#^EnvironmentFile=-/etc/omnect/wifi-commissioning-service.env$#a EnvironmentFile=-/run/omnect-wifi-commissioning.env' \
-        -e "/^ExecStart/s|'$| \$\$WCS_BLE_ARGS'|" \
+        -e "/^ExecStart=/s|'$| \$\$WCS_BLE_ARGS'|" \
         ${D}${systemd_system_unitdir}/wifi-commissioning-service@.service
 
     # Fail the build if the wcs source unit format drifted and the seds above
