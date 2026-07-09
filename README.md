@@ -35,10 +35,6 @@ Depending on `MACHINE_FEATURES` we also set `3g`. `wifi` and `bluetooth` are der
     - please see section [Flash Modes](#flash-modes) below
 - `resize-data`
     - expands the data partition to available space on first boot
-- `wifi` / `bluetooth`
-    - not a dedicated `wifi-commissioning` feature; derived from `/etc/omnect/device_caps.json`, see [doc/wifi_commissioning.md](doc/wifi_commissioning.md)
-    - installs [`wifi-commissioning-service`](https://github.com/omnect/wifi-commissioning-service.git), which enables wifi commissioning via BLE GATT and/or a Unix-socket HTTP REST API
-    - **note**: BLE interface is intended for demo/initial commissioning; the Unix socket API targets programmatic integration but the service is still in early development (v0.2.0)
 
 ### `MACHINE_FEATURES`
 `meta-omnect` extends the following `MACHINE_FEATURES`:
@@ -186,7 +182,7 @@ meta-omnect/kas/machine/rpi/rpi4.yaml
 The resulting image artifacts are located in `$(pwd)/build/deploy/images/raspberrypi4-64`.<br>
 The `omnect-os-image` artefact is named `omnect-os-raspberrypi4-64.wic.xz`.<br>
 The `omnect-os-update-image` artefact is named `omnect-os-update-image-raspberrypi4-64.swu`.<br>
-Wifi/bluetooth commissioning is not enabled via a kas example; it is controlled per machine by `/etc/omnect/device_caps.json`, see [doc/wifi_commissioning.md](doc/wifi_commissioning.md).
+Wifi/bluetooth commissioning is controlled per machine by `/etc/omnect/device_caps.json`, not via `kas`; see [doc/wifi_commissioning.md](doc/wifi_commissioning.md).
 
 ### Layer prioritization orchestration
 If you want to add additional yocto layers to your build, you can adapt layer priorities in `conf/layer.conf`. This layer is the last in the `BBLAYERS` yocto variable when you build with our `kas` configuration files. If not, you have to possibly adapt layer prioritization values in the last layer included in `BBLAYERS`.

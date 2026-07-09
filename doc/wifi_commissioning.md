@@ -10,8 +10,7 @@ JSON file. Two keys control this feature:
 - `bluetooth` — `no` | `optional` | `yes`
 
 The same file drives both **what is installed/compiled** (build time) and
-**what actually starts** (runtime). There is no udev rule and no hot-plug
-handling: the interface is assumed to be `wlan0`.
+**what actually starts** (runtime). The interface is assumed to be `wlan0`.
 
 ## Build time: install and compile
 
@@ -26,19 +25,17 @@ is gated on `wifi`: it is only set when `wifi` is also enabled.
 | `wifi` is `optional` or `yes` **and** `bluetooth` is `optional` or `yes` | `bluetooth` is also set |
 | `wifi` is `no` | neither `wifi` nor `bluetooth` is set |
 
-Effects of `DISTRO_FEATURES wifi`:
-- `wpa-supplicant`, `wifi-commissioning-service`, and the `omnect-wifi-commissioning`
-  oneshot are installed in the image.
+`wifi` and `bluetooth` are standard OE-core/meta-oe `DISTRO_FEATURES`, so setting
+them also pulls in their usual upstream effects (wpa-supplicant, bluez5, kernel
+config, and so on). On top of those, meta-omnect adds:
 
-Effects of `DISTRO_FEATURES bluetooth` (only reachable when `wifi` is also set):
-- `wifi-commissioning-service` is compiled with the `ble` cargo feature, so the
-  binary contains BLE support.
+- `wifi`: installs `wifi-commissioning-service` and the `omnect-wifi-commissioning`
+  oneshot in the image.
+- `bluetooth` (only reachable when `wifi` is also set): compiles
+  `wifi-commissioning-service` with the `ble` cargo feature.
 
 `optional` and `yes` are treated identically at build time — both install and
 compile the same bits. Only runtime behavior differs between them.
-
-`3g` is not part of this model: it stays driven by `MACHINE_FEATURES`, unrelated
-to `device_caps.json`.
 
 ## MACHINE_FEATURES and device_caps must agree
 
@@ -49,39 +46,35 @@ bluetooth driver and firmware still come from the BSP, through `MACHINE_FEATURES
 The two must agree per machine. A machine whose `device_caps` enables `wifi` or
 `bluetooth` must also have the matching `MACHINE_FEATURES`. If not, the build
 fails: `omnect-os-image.bb` checks this and aborts with `bb.fatal` when
-`device_caps` turns on a radio that `MACHINE_FEATURES` does not have.
+`device_caps` turns on `wifi` or `bluetooth` that `MACHINE_FEATURES` does not have.
 
 Setting `device_caps` to a capability the machine has no `MACHINE_FEATURES` for
 does not add a driver. The userspace stack (wpa_supplicant, wcs) would install,
 but the hardware has no driver, so it cannot work.
 
-## Pre-boot editing
+## Activating an `optional` capability before first boot
 
 Because `optional` and `yes` produce the same image, a device shipped with
-`wifi: "optional"` can be activated by editing `/etc/omnect/device_caps.json`
-and changing the value to `"yes"` before the device's first boot. No rebuild is
-needed — the oneshot described below picks up the edited value at boot.
+`wifi: "optional"` can be activated by injecting an overwritten
+`/etc/omnect/device_caps.json` with the value set to `"yes"` before the device's
+first boot. No rebuild is needed — the oneshot described below picks up the
+edited value at boot.
 
 ## Runtime: what starts
 
 At boot, the `omnect-wifi-commissioning` oneshot service reads
 `/etc/omnect/device_caps.json`:
 
-- `wifi == "yes"`: it starts `wpa_supplicant@wlan0.service`. That unit `Wants=`
-  `wifi-commissioning-service@wlan0.service`, so wcs starts along with it.
-- `wifi` is `"no"` or `"optional"` (not edited to `"yes"`): the oneshot exits
-  without starting anything. wpa_supplicant and wcs stay installed but inactive.
-- `bluetooth == "yes"`: the oneshot writes `WCS_BLE_ARGS=--enable-ble` to a
-  `/run` EnvironmentFile that `wifi-commissioning-service@.service` sources, so
-  wcs is started with `--enable-ble`.
-- `bluetooth` is `"no"` or `"optional"`: the EnvironmentFile carries no BLE
-  argument, and BLE stays off (it also defaults off in the binary).
+- `wifi == "yes"`: it starts `wpa_supplicant@wlan0.service`, which in turn pulls
+  in `wifi-commissioning-service` via its `Wants=`.
+- `wifi` is `"no"` or `"optional"`: the oneshot exits without starting anything.
+  wpa_supplicant and wcs stay installed but inactive.
+- `bluetooth == "yes"` (only with `wifi == "yes"`): wcs is started with BLE enabled.
+- `bluetooth` is `"no"` or `"optional"`: BLE stays off (it also defaults off in
+  the binary).
 
-There is no udev rule and no hot-plug detection: the oneshot always targets
-`wlan0`. A machine whose `device_caps.wifi` is `"yes"` is expected to have a
-working `wlan0` at boot. For a USB adapter (e.g. Welotec Mk4), attach it and set
-`wifi: "yes"`, then reboot — the adapter must be present when the oneshot runs.
-Plugging it in after boot does nothing; only a reboot re-runs the oneshot.
+The oneshot always targets `wlan0` and runs once at boot, so a machine whose
+`device_caps.wifi` is `"yes"` must have a working `wlan0` present at boot.
 
 ## Bluetooth / BLE
 
@@ -107,4 +100,4 @@ boot cannot accidentally leave BLE enabled.
 | --- | --- | --- | --- | --- |
 | Fixed HW, wifi+BT | Raspberry Pi 4 | yes / yes | yes | wpa_supplicant + wcs (BLE on) |
 | Fixed HW, neither | Phygate Tauri-L | no / no | no | — |
-| Generic HW (x86) | Welotec Arrakis | optional / optional | yes | inactive until `device_caps.json` is edited to `yes` on units with a wlan/BT adapter (e.g. Mk4); Pico has no adapters |
+| Generic HW (x86) | Welotec Arrakis | optional / optional | yes | inactive until `device_caps.json` is set to `yes` on units that have a wlan/BT adapter |
