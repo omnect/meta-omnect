@@ -89,9 +89,9 @@ IMAGE_INSTALL = "\
 "
 
 # Validate the device_caps values and guard them against MACHINE_FEATURES. An
-# unknown value would silently drop the feature, and a radio enabled in device_caps
-# but absent from MACHINE_FEATURES installs a userspace stack with no kernel
-# driver/firmware. Fail the build so both are caught here, not in the field.
+# unknown value would silently drop the feature, and wifi or bluetooth enabled in
+# device_caps but absent from MACHINE_FEATURES installs a userspace stack with no
+# kernel driver/firmware. Fail the build so both are caught here, not in the field.
 python __anonymous() {
     machine = d.getVar('MACHINE')
     for feat, var in (('wifi', 'OMNECT_DEVICE_CAP_WIFI'), ('bluetooth', 'OMNECT_DEVICE_CAP_BLUETOOTH')):
@@ -252,4 +252,4 @@ verify_image_tools() {
     return $ret
 }
 
-IMAGE_POSTPROCESS_COMMAND += "verify_image_tools;"
+IMAGE_POSTPROCESS_COMMAND:append = ";verify_image_tools"
