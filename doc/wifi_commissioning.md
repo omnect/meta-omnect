@@ -16,14 +16,13 @@ The same file drives both **what is installed/compiled** (build time) and
 
 `DISTRO_FEATURES` `wifi` and `bluetooth` are derived from `device_caps.json`
 for the target `MACHINE` (see `conf/distro/include/omnect-os-distro.conf`; the
-values are validated in `recipes-omnect/images/omnect-os-image.bb`). `bluetooth`
-is gated on `wifi`: it is only set when `wifi` is also enabled.
+values are validated in `recipes-omnect/images/omnect-os-image.bb`). They are
+independent: each follows its own `device_caps` value.
 
 | `device_caps` value | `DISTRO_FEATURES` |
 | --- | --- |
 | `wifi` is `optional` or `yes` | `wifi` is set |
-| `wifi` is `optional` or `yes` **and** `bluetooth` is `optional` or `yes` | `bluetooth` is also set |
-| `wifi` is `no` | neither `wifi` nor `bluetooth` is set |
+| `bluetooth` is `optional` or `yes` | `bluetooth` is set |
 
 `wifi` and `bluetooth` are standard OE-core/meta-oe `DISTRO_FEATURES`, so setting
 them also pulls in their usual upstream effects (wpa-supplicant, bluez5, kernel
@@ -31,8 +30,9 @@ config, and so on). On top of those, meta-omnect adds:
 
 - `wifi`: installs `wifi-commissioning-service` and the `omnect-wifi-commissioning`
   oneshot in the image.
-- `bluetooth` (only reachable when `wifi` is also set): compiles
-  `wifi-commissioning-service` with the `ble` cargo feature.
+- `bluetooth`: `wifi-commissioning-service` — built only on `wifi` images — is
+  compiled with the `ble` cargo feature. On a `bluetooth`-only machine (`wifi`
+  off) wcs is not installed, so this has no effect.
 
 `optional` and `yes` are treated identically at build time — both install and
 compile the same bits. Only runtime behavior differs between them.
