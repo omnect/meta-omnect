@@ -96,6 +96,8 @@ python __anonymous() {
     machine = d.getVar('MACHINE')
     for feat, var in (('wifi', 'OMNECT_DEVICE_CAP_WIFI'), ('bluetooth', 'OMNECT_DEVICE_CAP_BLUETOOTH')):
         value = d.getVar(var)
+        # '' = no device_caps.json (or key) for this machine -> feature off. Machines
+        # without the file (e.g. qemu) must still build, so '' is allowed here.
         if value not in ('', 'no', 'optional', 'yes'):
             bb.fatal("%s: device_caps.json '%s' has invalid value '%s' "
                      "(expected 'no', 'optional' or 'yes')." % (machine, feat, value))

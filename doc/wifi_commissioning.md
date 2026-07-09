@@ -30,9 +30,10 @@ config, and so on). On top of those, meta-omnect adds:
 
 - `wifi`: installs `wifi-commissioning-service` and the `omnect-wifi-commissioning`
   oneshot in the image.
-- `bluetooth`: `wifi-commissioning-service` — built only on `wifi` images — is
-  compiled with the `ble` cargo feature. On a `bluetooth`-only machine (`wifi`
-  off) wcs is not installed, so this has no effect.
+- `bluetooth`: when `wifi-commissioning-service` is built (i.e. `wifi` is also
+  set), it is compiled with the `ble` cargo feature. On a `bluetooth`-only
+  machine wcs is not built, but the standard bluetooth stack from OE-core is
+  still installed and usable, e.g. by a container app.
 
 `optional` and `yes` are treated identically at build time — both install and
 compile the same bits. Only runtime behavior differs between them.
