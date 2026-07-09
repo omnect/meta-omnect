@@ -73,8 +73,8 @@ At boot, the `omnect-wifi-commissioning` oneshot service reads
 - `bluetooth` is `"no"` or `"optional"`: BLE stays off (it also defaults off in
   the binary).
 
-The oneshot always targets `wlan0` and runs once at boot, so a machine whose
-`device_caps.wifi` is `"yes"` must have a working `wlan0` present at boot.
+The oneshot service always targets `wlan0` and runs once at boot, so a machine
+whose `device_caps.wifi` is `"yes"` must have a working `wlan0` present at boot.
 
 ## Bluetooth / BLE
 

@@ -1,4 +1,4 @@
-DESCRIPTION = "Oneshot that starts/configures wifi commissioning from /etc/omnect/device_caps.json"
+DESCRIPTION = "Oneshot service that starts/configures wifi commissioning from /etc/omnect/device_caps.json"
 
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
