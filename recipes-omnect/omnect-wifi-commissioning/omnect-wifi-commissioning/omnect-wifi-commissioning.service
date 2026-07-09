@@ -6,7 +6,7 @@ After=local-fs.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/bin/omnect-wifi-commissioning-start
+ExecStart=/usr/bin/omnect-wifi-commissioning-start.sh
 
 [Install]
 WantedBy=multi-user.target

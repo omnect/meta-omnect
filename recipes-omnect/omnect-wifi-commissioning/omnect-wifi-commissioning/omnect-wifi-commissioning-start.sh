@@ -7,9 +7,9 @@ CAPS=/etc/omnect/device_caps.json
 ENV_FILE=/run/omnect-wifi-commissioning.env
 IFACE=wlan0
 
-# cap KEY -> value of "KEY": "value" from the flat device_caps JSON in $CAPS.
+# cap KEY -> value of "KEY" from the flat device_caps JSON in $CAPS ('' if absent).
 cap() {
-    sed -n "s/.*\"$1\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$CAPS"
+    jq -r --arg k "$1" '.[$k] // empty' "$CAPS"
 }
 
 wifi=$(cap wifi)

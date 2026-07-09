@@ -24,7 +24,7 @@ do_install:append() {
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.service ${D}${systemd_system_unitdir}/
     install -m 0644 ${S}/systemd/wifi-commissioning-service@.socket ${D}${systemd_system_unitdir}/
 
-    # Source the /run env file that omnect-wifi-commissioning-start writes (WCS_BLE_ARGS)
+    # Source the /run env file that omnect-wifi-commissioning-start.sh writes (WCS_BLE_ARGS)
     # and expand it inside the existing bash -c invocation. No braces so BitBake does not
     # expand it; $$ becomes a literal $ for systemd -> bash sees $WCS_BLE_ARGS.
     sed -i \
