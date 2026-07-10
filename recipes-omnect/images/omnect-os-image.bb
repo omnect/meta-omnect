@@ -66,7 +66,7 @@ IMAGE_INSTALL = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', ' mokutil', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', ' aziot-edged iotedge kernel-modules', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd-bash-completion', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'wifi-commissioning', ' wifi-commissioning-service', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wifi', ' wifi-commissioning-service omnect-wifi-commissioning', '', d)} \
     ${CORE_IMAGE_BASE_INSTALL} \
     ${OMNECT_MAC_USERSPACE} \
     bootloader-env \
@@ -87,6 +87,28 @@ IMAGE_INSTALL = "\
     systemd-analyze \
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
+
+# Validate the device_caps values and guard them against MACHINE_FEATURES. An
+# unknown value would silently drop the feature, and wifi or bluetooth enabled in
+# device_caps but absent from MACHINE_FEATURES installs a userspace stack with no
+# kernel driver/firmware. Fail the build so both are caught here, not in the field.
+python __anonymous() {
+    machine = d.getVar('MACHINE')
+    for feat, var in (('wifi', 'OMNECT_DEVICE_CAP_WIFI'), ('bluetooth', 'OMNECT_DEVICE_CAP_BLUETOOTH')):
+        value = d.getVar(var)
+        # '' = no device_caps.json (or key) for this machine -> feature off. Machines
+        # without the file (e.g. qemu) must still build, so '' is allowed here.
+        if value not in ('', 'no', 'optional', 'yes'):
+            bb.fatal("%s: device_caps.json '%s' has invalid value '%s' "
+                     "(expected 'no', 'optional' or 'yes')." % (machine, feat, value))
+        distro_on = bb.utils.contains('DISTRO_FEATURES', feat, True, False, d)
+        machine_on = bb.utils.contains('MACHINE_FEATURES', feat, True, False, d)
+        if distro_on and not machine_on:
+            bb.fatal("%s: device_caps.json enables '%s' (DISTRO_FEATURES) but "
+                     "MACHINE_FEATURES lacks it, so there is no kernel driver/firmware. "
+                     "Add MACHINE_FEATURES '%s' for this machine or set device_caps "
+                     "'%s' to 'no'." % (machine, feat, feat, feat))
+}
 
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
@@ -232,4 +254,4 @@ verify_image_tools() {
     return $ret
 }
 
-IMAGE_POSTPROCESS_COMMAND += "verify_image_tools;"
+IMAGE_POSTPROCESS_COMMAND:append = ";verify_image_tools"

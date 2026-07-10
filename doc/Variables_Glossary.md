@@ -75,6 +75,12 @@ See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_ve
 # OMNECT_DEVEL_TOOLS
 List of tools which get installed into an omnect-os devel image.
 
+# OMNECT_DEVICE_CAP_BLUETOOTH
+Internal helper holding the `bluetooth` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`). Set in `conf/distro/include/omnect-os-distro.conf` and used to derive the `bluetooth` `DISTRO_FEATURE`. See [doc/wifi_commissioning.md](wifi_commissioning.md).
+
+# OMNECT_DEVICE_CAP_WIFI
+Internal helper holding the `wifi` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`). Set in `conf/distro/include/omnect-os-distro.conf` and used to derive the `wifi` `DISTRO_FEATURE`. See [doc/wifi_commissioning.md](wifi_commissioning.md).
+
 # OMNECT_FDT_LOAD_NAME
 Name of u-boot device-tree bootscript to be generated for devices using u-boot as bootloader. Default is "fdt-load.scr".
 

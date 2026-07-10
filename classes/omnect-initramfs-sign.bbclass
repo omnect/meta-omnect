@@ -16,4 +16,4 @@ fakeroot python sign() {
     shutil.copy(initramfs, initramfs + '.unsigned')
     uks_bl_sign(initramfs, d)
 }
-IMAGE_POSTPROCESS_COMMAND:append = "${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', 'check_deploy_keys;sign;', '', d)}"
+IMAGE_POSTPROCESS_COMMAND:append = "${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', ';check_deploy_keys;sign', '', d)}"

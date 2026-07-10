@@ -1,11 +1,9 @@
 [Unit]
 Description=WPA supplicant daemon
-Requires=sys-subsystem-net-devices-%i.device
 After=sys-subsystem-net-devices-%i.device
 Before=network.target
 Wants=network.target
-# unfortunately this has no real benefit: https://github.com/systemd/systemd/issues/985
-ConditionPathExists=/sys/class/net/%i
+Wants=wifi-commissioning-service@%i.service
 
 StartLimitBurst=10
 StartLimitIntervalSec=120

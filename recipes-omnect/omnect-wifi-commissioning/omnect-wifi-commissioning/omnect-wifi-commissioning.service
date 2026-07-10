@@ -1,0 +1,12 @@
+[Unit]
+Description=Configure and start wifi commissioning from device capabilities
+ConditionPathExists=/etc/omnect/device_caps.json
+After=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/omnect-wifi-commissioning-start.sh
+
+[Install]
+WantedBy=multi-user.target
