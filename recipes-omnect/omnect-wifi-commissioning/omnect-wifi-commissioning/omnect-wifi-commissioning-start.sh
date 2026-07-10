@@ -4,6 +4,7 @@
 set -eu
 
 CAPS=/etc/omnect/device_caps.json
+WCS_ENV=/etc/omnect/wifi-commissioning-service.env
 ENV_FILE=/run/omnect-wifi-commissioning.env
 IFACE=wlan0
 
@@ -18,7 +19,18 @@ if [ "$wifi" != "yes" ]; then
     exit 0
 fi
 
-if [ "$(cap bluetooth)" = "yes" ]; then
+# Operator override: WCS_DISABLE_BLE in the wcs env file forces the BLE transport
+# off at runtime, even when device_caps enables bluetooth. Lets one image ship BLE
+# support but keep it off per device, without a rebuild. Parsed, not sourced, so a
+# malformed env file cannot break boot.
+ble_disabled=no
+if [ -r "$WCS_ENV" ]; then
+    val=$(sed -n 's/^[[:space:]]*WCS_DISABLE_BLE[[:space:]]*=[[:space:]]*//p' "$WCS_ENV" | tail -n1)
+    val=${val%\"}; val=${val#\"}
+    case "$val" in 1|true|yes|on) ble_disabled=yes ;; esac
+fi
+
+if [ "$(cap bluetooth)" = "yes" ] && [ "$ble_disabled" = "no" ]; then
     printf 'WCS_BLE_ARGS=--enable-ble\n' > "$ENV_FILE"
     echo "starting wifi commissioning on ${IFACE} with BLE"
 else

@@ -70,7 +70,8 @@ At boot, the `omnect-wifi-commissioning` oneshot service reads
   in `wifi-commissioning-service` via its `Wants=`.
 - `wifi` is `"no"` or `"optional"`: the oneshot exits without starting anything.
   wpa_supplicant and wcs stay installed but inactive.
-- `bluetooth == "yes"` (only with `wifi == "yes"`): wcs is started with BLE enabled.
+- `bluetooth == "yes"` (only with `wifi == "yes"`): wcs is started with BLE
+  enabled, unless the operator turned it off (see "Disabling BLE at runtime").
 - `bluetooth` is `"no"` or `"optional"`: BLE stays off (it also defaults off in
   the binary).
 
@@ -94,6 +95,23 @@ separate decisions:
 Because BLE defaults off in the binary and only turns on with the explicit
 `--enable-ble` flag, editing `bluetooth` down to `optional`/`no` before first
 boot cannot accidentally leave BLE enabled.
+
+### Disabling BLE at runtime
+
+A device may have wifi and bluetooth hardware and an image built with BLE support
+(`device_caps.bluetooth == "yes"`), but a single unit must not expose the BLE
+transport — for example to keep control over what travels over bluetooth.
+
+Set `WCS_DISABLE_BLE` in `/etc/omnect/wifi-commissioning-service.env`:
+
+```
+WCS_DISABLE_BLE=1
+```
+
+The oneshot reads this at boot. When it is truthy (`1`, `true`, `yes`, `on`), wcs
+starts without `--enable-ble` even though `device_caps.bluetooth` is `"yes"`. wcs
+still serves its Unix-socket API, and wifi commissioning over the socket is
+unaffected. This is a per-device runtime switch and needs no rebuild.
 
 ## Per device class
 
