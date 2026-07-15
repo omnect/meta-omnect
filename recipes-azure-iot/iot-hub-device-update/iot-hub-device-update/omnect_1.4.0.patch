@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index eb156b36..7ae2cb2e 100644
+index 0574fed5..a489288e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -231,7 +231,7 @@ set (
+@@ -236,7 +236,7 @@ set (
      ADUC_STEP_HANDLER_NAME_TO_DIRECOTRY_MAP
      "microsoft/apt,apt_handler" "microsoft/script,script_handler"
      "microsoft/simulator,simulator_handler" "microsoft/swupdate_v2,swupdate_handler_v2"
@@ -11,7 +11,7 @@ index eb156b36..7ae2cb2e 100644
  
  if (WIN32)
      set (
-@@ -416,6 +416,11 @@ set (
+@@ -426,6 +426,11 @@ set (
      "syslog"
      CACHE STRING "The syslog group.")
  
@@ -24,41 +24,52 @@ index eb156b36..7ae2cb2e 100644
      ADUC_IOT_HUB_PROTOCOL
      "IotHub_Protocol_from_Config"
 diff --git a/scripts/error_code_generator_defs/result_codes.json b/scripts/error_code_generator_defs/result_codes.json
-index 6fc707cf..11d4e4b4 100644
+index 686fce7d..32357462 100644
 --- a/scripts/error_code_generator_defs/result_codes.json
 +++ b/scripts/error_code_generator_defs/result_codes.json
-@@ -369,6 +369,10 @@
-                             "name": "ADUC_ERC_SWUPDATE_HANDLER_APPLY_FAILED_TO_GET_CONFIG_INSTANCE",
-                             "value": 769
-                         },
-+                        {
-+                            "name": "ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION",
-+                            "value": 800
-+                        },
-                         {
-                             "name": "ADUC_ERC_SWUPDATE_HANDLER_CANCEL_FAILURE",
-                             "value": 1024
-@@ -1461,4 +1465,4 @@
+@@ -1371,4 +1371,4 @@
              "name": "ADUC_FACILITY_UNUSED_F"
          }
      ]
 -}
 +}
 \ No newline at end of file
-diff --git a/src/adu-shell/inc/adushell.hpp b/src/adu-shell/inc/adushell.hpp
-index 7f474373..c824a04f 100644
---- a/src/adu-shell/inc/adushell.hpp
-+++ b/src/adu-shell/inc/adushell.hpp
-@@ -38,7 +38,6 @@ typedef struct tagADUShell_LaunchArguments
-  */
- #define ADUSHELL_EXIT_UNSUPPORTED 3
- #define ADUSHELL_EXIT_BAD_FILE_PERMS 4
--#define ADUSHELL_EXIT_BAD_FILE_OWNERSHIP 5
+diff --git a/scripts/install-deps.sh b/scripts/install-deps.sh
+index 1871bae9..50bf1987 100755
+--- a/scripts/install-deps.sh
++++ b/scripts/install-deps.sh
+@@ -130,7 +130,7 @@ mark_dep_installed() {
+ }
  
- /**
-  * @brief An exit code for early exit of adu-shell process due to SIGTERM/SIGINT signal handling.
+ # Dependencies packages
+-aduc_packages=('git' 'make' 'build-essential' 'cmake' 'ninja-build' 'libcurl4-openssl-dev' 'libssl-dev' 'uuid-dev' 'lsb-release' 'curl' 'wget' 'pkg-config' 'libxml2-dev' 'file')
++aduc_packages=('git' 'make' 'build-essential' 'cmake' 'ninja-build' 'libcurl4-openssl-dev' 'libssl-dev' 'uuid-dev' 'lsb-release' 'curl' 'wget' 'pkg-config' 'libxml2-dev' 'file' 'libsystemd-dev')
+ static_analysis_packages=('clang' 'clang-tidy' 'cppcheck')
+ compiler_packages=('gcc' 'g++')
+ 
+diff --git a/src/adu-shell/scripts/adu-reboot-wrapper.sh b/src/adu-shell/scripts/adu-reboot-wrapper.sh
+index fbc6546b..d690ea1b 100644
+--- a/src/adu-shell/scripts/adu-reboot-wrapper.sh
++++ b/src/adu-shell/scripts/adu-reboot-wrapper.sh
+@@ -35,10 +35,12 @@ done
+ rm -f "$LOCK_FILE" 2> /dev/null
+ 
+ if [ $elapsed -ge "$TIMEOUT" ]; then
+-    echo "ADU Reboot Wrapper: Timeout reached after ${elapsed}s, forcing reboot"
++    echo "ADU Reboot Wrapper: Timeout reached after ${elapsed}s; adu-shell will reboot"
+ else
+-    echo "ADU Reboot Wrapper: Agent ready after ${elapsed}s, proceeding with reboot"
++    echo "ADU Reboot Wrapper: Agent ready after ${elapsed}s; adu-shell will reboot"
+ fi
+ 
+-# Perform actual reboot
+-exec /sbin/reboot "$@"
++# This wrapper only waits for the agent. adu-shell performs the actual reboot
++# via the reboot(2) syscall (CAP_SYS_BOOT) after this script returns, so no
++# privileged reboot child process is spawned here.
++exit 0
 diff --git a/src/adu-shell/src/common_tasks.cpp b/src/adu-shell/src/common_tasks.cpp
-index b427a930..0f68e920 100644
+index 770f8bd4..11fc68ad 100644
 --- a/src/adu-shell/src/common_tasks.cpp
 +++ b/src/adu-shell/src/common_tasks.cpp
 @@ -5,6 +5,10 @@
@@ -72,21 +83,50 @@ index b427a930..0f68e920 100644
  #include "common_tasks.hpp"
  #include "aduc/process_utils.hpp"
  
-@@ -25,11 +29,36 @@ namespace Common
+@@ -25,26 +29,55 @@ namespace Common
   */
  ADUShellTaskResult Reboot(const ADUShell_LaunchArguments& /*launchArgs*/)
  {
--    Log_Info("Launching child process to reboot the device.");
-+    Log_Info("Calling reboot(RB_AUTOBOOT) directly using CAP_SYS_BOOT capability.");
-+    ADUShellTaskResult taskResult;
+-    Log_Info("Calling reboot wrapper to synchronize with agent cleanup.");
+     ADUShellTaskResult taskResult;
+-    // Use adu-reboot-wrapper.sh which waits for lock file removal
+-    // The agent creates /var/run/adu-agent-reboot.lock before calling this
+-    // and removes it after caching and reporting status to cloud
 +
-+    if (::reboot(RB_AUTOBOOT) != 0)
++    // Wait for the agent to finish caching updates and reporting status to the
++    // cloud before we reboot. The agent holds /var/run/adu-agent-reboot.lock
++    // while it prepares; the wrapper polls until the lock is gone (or a timeout)
++    // and then returns. This preserves the sandbox so downloads can resume after
++    // restart. The wrapper only waits — it does not reboot. The reboot itself is
++    // the in-process reboot(2) syscall below, using adu-shell's CAP_SYS_BOOT
++    // capability, so no privileged child process is spawned for it.
+     std::vector<std::string> args{};
+     std::string output;
+-    int exitCode = ADUC_LaunchChildProcess("/usr/lib/adu/adu-reboot-wrapper.sh", args, output);
+-
+-    if (exitCode == 0)
++    int waitExitCode = ADUC_LaunchChildProcess("/usr/lib/adu/adu-reboot-wrapper.sh", args, output);
++    if (!output.empty())
 +    {
++        Log_Info(output.c_str());
++    }
++    if (waitExitCode != 0)
+     {
+-        Log_Info("Reboot wrapper completed successfully.");
++        Log_Warn("Reboot wrapper returned %d; proceeding with reboot anyway.", waitExitCode);
+     }
+-    else
++
++    Log_Info("Calling reboot(RB_AUTOBOOT) directly using CAP_SYS_BOOT capability.");
++    if (::reboot(RB_AUTOBOOT) != 0)
+     {
+-        Log_Error("Reboot wrapper failed, exit code: %d", exitCode);
 +        const int saved_errno = errno;
 +        Log_Error("reboot(RB_AUTOBOOT) failed (errno: %d)", saved_errno);
 +        taskResult.SetExitStatus(saved_errno);
-+    }
-+
+     }
+ 
+-    taskResult.SetExitStatus(exitCode);
 +    return taskResult;
 +}
 +
@@ -94,13 +134,11 @@ index b427a930..0f68e920 100644
 +
 +ADUShellTaskResult DoRebootReason(const char* reason)
 +{
-     ADUShellTaskResult taskResult;
--    std::vector<std::string> args{ "--reboot", "--no-wall" };
++    ADUShellTaskResult taskResult;
 +    std::vector<std::string> args{ "log", reason };
-     std::string output;
--    taskResult.SetExitStatus(ADUC_LaunchChildProcess("/sbin/reboot", args, output));
++    std::string output;
 +    const char* script;
-+
+ 
 +    Log_Info("Launching child process to record reboot reason (\"%s\")", reason);
 +
 +    script = getenv("OMNECT_LOG_REBOOT_REASON_SCRIPT");
@@ -112,7 +150,7 @@ index b427a930..0f68e920 100644
      if (!output.empty())
      {
          Log_Info(output.c_str());
-@@ -66,6 +95,16 @@ ADUShellTaskResult DoCommonTask(const ADUShell_LaunchArguments& launchArgs)
+@@ -81,6 +114,16 @@ ADUShellTaskResult DoCommonTask(const ADUShell_LaunchArguments& launchArgs)
          taskResult.SetExitStatus(ADUSHELL_EXIT_UNSUPPORTED);
      }
  
@@ -183,18 +221,39 @@ index cf1f3bd5..0d715d2b 100644
      ADUC_ConfigInfo_ReleaseInstance(config);
      return ret;
 diff --git a/src/adu-shell/src/script_tasks.cpp b/src/adu-shell/src/script_tasks.cpp
-index 679d941d..1c570640 100644
+index adbd4446..50570a60 100644
 --- a/src/adu-shell/src/script_tasks.cpp
 +++ b/src/adu-shell/src/script_tasks.cpp
-@@ -51,21 +51,6 @@ ADUShellTaskResult Execute(const ADUShell_LaunchArguments& launchArgs)
+@@ -49,11 +49,8 @@ ADUShellTaskResult Execute(const ADUShell_LaunchArguments& launchArgs)
+     const char* path = launchArgs.targetData;
+     struct stat st = {};
+     bool filePermissionsChanged = false;
+-    bool fileOwnershipChanged = false;
      int mode = S_IRWXU | S_IRGRP | S_IXGRP;
-     if (statOk)
-     {
--        // Ensure that the script has the correct ownership.
--        struct group* grp = ADUCPAL_getgrnam(ADUC_FILE_GROUP);
--        struct passwd* p = ADUCPAL_getpwnam(ADUC_FILE_USER);
+     int originalMode = 0;
+-    uid_t originalUid = 0;
+-    gid_t originalGid = 0;
+ 
+     // Do not attempt to execute a script that does not exist. Otherwise the
+     // child process launch below would fail with a hard-to-diagnose error.
+@@ -64,31 +61,9 @@ ADUShellTaskResult Execute(const ADUShell_LaunchArguments& launchArgs)
+         return taskResult;
+     }
+ 
+-    // Remember the original permissions and ownership so they can be restored after execution.
++    // Remember the original permissions so they can be restored after execution.
++    // omnect intentionally does not change or restore the script ownership (no chown).
+     originalMode = st.st_mode & ~S_IFMT;
+-    originalUid = st.st_uid;
+-    originalGid = st.st_gid;
 -
--        if (p != NULL && grp != NULL)
+-    // Ensure that the script has the correct ownership.
+-    struct group* grp = ADUCPAL_getgrnam(ADUC_FILE_GROUP);
+-    struct passwd* p = ADUCPAL_getpwnam(ADUC_FILE_USER);
+-
+-    if (p != NULL && grp != NULL)
+-    {
+-        if (originalUid != p->pw_uid || originalGid != grp->gr_gid)
 -        {
 -            // Fix the ownership.
 -            if (0 != ADUCPAL_chown(path, p->pw_uid, grp->gr_gid))
@@ -203,66 +262,86 @@ index 679d941d..1c570640 100644
 -                taskResult.SetExitStatus(ADUSHELL_EXIT_BAD_FILE_OWNERSHIP);
 -                goto done;
 -            }
--        }
 -
-         int perms = st.st_mode & ~S_IFMT;
-         if (perms != mode)
-         {
+-            // The ownership was successfully changed and must be restored after execution.
+-            fileOwnershipChanged = true;
+-        }
+-    }
+ 
+     if (originalMode != mode)
+     {
+@@ -109,17 +84,6 @@ ADUShellTaskResult Execute(const ADUShell_LaunchArguments& launchArgs)
+     taskResult.SetExitStatus(ADUC_LaunchChildProcess(launchArgs.targetData, args, taskResult.Output()));
+ 
+ done:
+-    // Restore the original ownership if it was changed. This is done before
+-    // restoring the permissions because chown() may clear the set-user-ID and
+-    // set-group-ID permission bits.
+-    if (fileOwnershipChanged)
+-    {
+-        if (0 != ADUCPAL_chown(path, originalUid, originalGid))
+-        {
+-            Log_Warn("Failed to restore '%s' file ownership", path);
+-        }
+-    }
+-
+     // Restore the original permissions if they were changed.
+     if (filePermissionsChanged)
+     {
 diff --git a/src/adu-shell/tests/adushell_ut.cpp b/src/adu-shell/tests/adushell_ut.cpp
-index bb0ee839..dc118d02 100644
+index 292f84da..f9e1596a 100644
 --- a/src/adu-shell/tests/adushell_ut.cpp
 +++ b/src/adu-shell/tests/adushell_ut.cpp
-@@ -13,6 +13,7 @@
- 
+@@ -14,6 +14,7 @@
  #include <catch2/catch_all.hpp>
  
+ #include <atomic>
 +#include <cerrno>
+ #include <chrono>
  #include <filesystem>
  #include <fstream>
- #include <string>
-@@ -178,7 +179,7 @@ TEST_CASE("AptGet rollback appends output from cleanup phase")
+@@ -229,7 +230,7 @@ TEST_CASE("AptGet rollback appends output from cleanup phase")
      CHECK(taskResult.Output() == "phasephase");
  }
  
 -TEST_CASE("Common reboot task dispatches reboot command")
-+TEST_CASE("Common reboot task calls reboot syscall directly, not a child process")
++TEST_CASE("Common reboot task waits via the reboot wrapper, then calls reboot syscall directly")
  {
      g_launchCapture.Reset();
  
-@@ -186,11 +187,12 @@ TEST_CASE("Common reboot task dispatches reboot command")
+@@ -237,9 +238,15 @@ TEST_CASE("Common reboot task dispatches reboot command")
  
      auto taskResult = Adu::Shell::Tasks::Common::Reboot(launchArgs);
  
 -    CHECK(taskResult.ExitStatus() == 0);
--    CHECK(g_launchCapture.command == "/sbin/reboot");
--    REQUIRE(g_launchCapture.args.size() == 2);
--    CHECK(g_launchCapture.args[0] == "--reboot");
--    CHECK(g_launchCapture.args[1] == "--no-wall");
-+    // No child process must be launched — reboot() is called in-process.
-+    CHECK(g_launchCapture.command.empty());
++    // The only child process launched is the wrapper, which waits for the
++    // agent to finish caching and reporting before the reboot proceeds.
+     CHECK(g_launchCapture.command == "/usr/lib/adu/adu-reboot-wrapper.sh");
+     REQUIRE(g_launchCapture.args.size() == 0);
 +
-+    // In the test environment (no CAP_SYS_BOOT), reboot(2) returns EPERM.
-+    // A non-zero exit confirms the syscall was attempted and failed gracefully.
++    // The reboot itself is the in-process reboot(2) syscall. In the test
++    // environment (no CAP_SYS_BOOT), reboot(2) returns EPERM. A non-zero exit
++    // confirms the syscall was attempted and failed gracefully.
 +    CHECK(taskResult.ExitStatus() == EPERM);
  }
  
  TEST_CASE("Common task handles unsupported action path")
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index 9a0bc38e..f8074c01 100644
+index 524747b7..38c7e70f 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
-@@ -35,6 +35,10 @@
- 
+@@ -38,6 +38,10 @@
  #include <pthread.h>
+ #include <stdbool.h>
  
 +#include <sys/inotify.h>
 +#define INOTIFY_EVENT_SIZE      ( sizeof (struct inotify_event) )
 +#define INOTIFY_EVENT_BUF_LEN   ( 1024 * ( INOTIFY_EVENT_SIZE + 16 ) )
 +
  // fwd decl
- void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_Result result, bool isAsync);
- 
-@@ -356,6 +360,45 @@ void ADUC_Workflow_DoWork(ADUC_WorkflowData* workflowData)
+ static void s_onPauseTimerStart();
+ static void s_onPauseTimerStop();
+@@ -412,6 +416,45 @@ void ADUC_Workflow_DoWork(ADUC_WorkflowData* workflowData)
  
  void ADUC_Workflow_HandleStartupWorkflowData(ADUC_WorkflowData* currentWorkflowData)
  {
@@ -308,7 +387,7 @@ index 9a0bc38e..f8074c01 100644
      if (currentWorkflowData == NULL)
      {
          Log_Info("No update content. Ignoring.");
-@@ -557,11 +600,17 @@ void ADUC_Workflow_HandlePropertyUpdate(
+@@ -614,11 +657,17 @@ void ADUC_Workflow_HandlePropertyUpdate(
  
                      Log_Debug("deferral not needed. Processing '%s' now", workflow_peek_id(nextWorkflow));
  
@@ -330,14 +409,6 @@ index 9a0bc38e..f8074c01 100644
                  }
  
                  // Fall through to handle new workflow
-@@ -991,7 +1040,6 @@ void ADUC_Workflow_WorkCompletionCallback(const void* workCompletionToken, ADUC_
-                     // Reset workflow state to process deployment and transfer
-                     // the deferred workflow to current.
-                     workflow_update_for_replacement(workflowData->WorkflowHandle);
--
-                 }
-                 else
-                 {
 diff --git a/src/agent/src/health_management.c b/src/agent/src/health_management.c
 index 38ad9ea5..b32dcc33 100644
 --- a/src/agent/src/health_management.c
@@ -355,20 +426,20 @@ index 38ad9ea5..b32dcc33 100644
              S_IRGRP | S_IXGRP;  // R-X group
          // clang-format on
 diff --git a/src/agent/src/main.c b/src/agent/src/main.c
-index 7b37d369..8612524d 100644
+index 70f28c4f..6a350e07 100644
 --- a/src/agent/src/main.c
 +++ b/src/agent/src/main.c
-@@ -831,7 +831,7 @@ done:
+@@ -886,7 +886,7 @@ done:
   */
  void ShutdownAgent()
  {
 -    Log_Warn("Agent is shutting down.");
 +    Log_Info("Agent is shutting down.");
-     ADUC_D2C_Messaging_Uninit();
- #ifdef ADUC_COMMAND_HELPER_H
-     Log_Debug("Shutdown step: UninitializeCommandListenerThread");
+ 
+     AducTimer_Stop(&g_idle_pause_timer);
+ 
 diff --git a/src/communication_managers/iothub_communication_manager/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
-index 048a4b0c..80ae283f 100644
+index 0e52b667..8620349c 100644
 --- a/src/communication_managers/iothub_communication_manager/CMakeLists.txt
 +++ b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
 @@ -29,7 +29,8 @@ target_link_libraries (
@@ -382,7 +453,7 @@ index 048a4b0c..80ae283f 100644
  target_link_libraries (${target_name} PRIVATE libaducpal)
  
 diff --git a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
-index b0c3dfcc..e86442c1 100644
+index 89a2523c..563feb37 100644
 --- a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
 +++ b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
 @@ -43,6 +43,8 @@
@@ -406,7 +477,7 @@ index b0c3dfcc..e86442c1 100644
  /**
   * @brief An additional data context used the caller.
   */
-@@ -234,6 +241,11 @@ void IoTHub_CommunicationManager_ConnectionStatus_Callback(
+@@ -337,6 +344,11 @@ void IoTHub_CommunicationManager_ConnectionStatus_Callback(
      case IOTHUB_CLIENT_CONNECTION_AUTHENTICATED:
          g_last_authenticated_time = now_time;
          g_authentication_retries = 0;
@@ -417,7 +488,37 @@ index b0c3dfcc..e86442c1 100644
 +        }
          break;
      case IOTHUB_CLIENT_CONNECTION_UNAUTHENTICATED:
-         if (g_last_authenticated_time >= g_first_unauthenticated_time)
+         if (IoTHub_CommunicationManager_CategorizeUnauthenticated(status_reason)
+diff --git a/src/communication_managers/iothub_communication_manager/tests/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/tests/CMakeLists.txt
+index dbd6d5b5..69868fc4 100644
+--- a/src/communication_managers/iothub_communication_manager/tests/CMakeLists.txt
++++ b/src/communication_managers/iothub_communication_manager/tests/CMakeLists.txt
+@@ -26,8 +26,9 @@ target_link_aziotsharedutil (${PROJECT_NAME} PRIVATE)
+ 
+ target_link_libraries (
+     ${PROJECT_NAME}
+-    PUBLIC IotHubClient::iothub_client iothub_client_mqtt_transport iothub_client_mqtt_ws_transport umqtt
+-    PRIVATE aduc::iothub_communication_manager
++    PRIVATE IotHubClient::iothub_client
++            umqtt
++            aduc::iothub_communication_manager
+             aduc::communication_abstraction
+             aduc::adu_types
+             aduc::c_utils
+@@ -36,6 +37,13 @@ target_link_libraries (
+             Catch2::Catch2WithMain
+             libaducpal)
+ 
++# Link the MQTT transports last, like the agent target does. They are static
++# archives that pull umqtt/aziotsharedutil symbols, so their link order is
++# sensitive; omnect's systemd dependency on iothub_communication_manager shifts
++# the order enough to break resolution when they are listed earlier.
++target_link_libraries (${PROJECT_NAME}
++                       PRIVATE iothub_client_mqtt_transport iothub_client_mqtt_ws_transport)
++
+ target_compile_definitions (${PROJECT_NAME} PRIVATE ADUC_CONF_FILE_PATH="/etc/adu/du-config.json")
+ 
+ include (CTest)
 diff --git a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
 index dc064d3b..15c516fc 100644
 --- a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
@@ -457,6 +558,34 @@ index 6ce04d11..d238d300 100644
  
  #include <diagnostics_config_utils.h>
  #include <diagnostics_devicename.h>
+diff --git a/src/diagnostics_component/diagnostics_workflow/tests/diagnostics_workflow_ut.cpp b/src/diagnostics_component/diagnostics_workflow/tests/diagnostics_workflow_ut.cpp
+index b0e6823e..b3e0e5a4 100644
+--- a/src/diagnostics_component/diagnostics_workflow/tests/diagnostics_workflow_ut.cpp
++++ b/src/diagnostics_component/diagnostics_workflow/tests/diagnostics_workflow_ut.cpp
+@@ -429,6 +429,11 @@ TEST_CASE("DiagnosticsWorkflow_GetFilesForComponent")
+ // ============================================================================
+ TEST_CASE("DiagnosticsWorkflow_UploadFilesForComponent")
+ {
++    // omnect builds without diagnostic_utils::file_upload_utility, so the blob
++    // upload is stubbed out and always fails. This test exercises the real
++    // upload path, so skip it.
++    SKIP("diagnostics blob upload (file_upload_utility) is disabled in omnect");
++
+     DiagnosticsWorkflowTestHelper helper;
+ 
+     SECTION("NULL fileNames returns Failure")
+@@ -666,6 +671,11 @@ TEST_CASE("DiagnosticsWorkflow_UnInitLogComponentFileNames")
+ // ============================================================================
+ TEST_CASE("DiagnosticsWorkflow_DiscoverAndUploadLogs")
+ {
++    // omnect builds without diagnostic_utils::file_upload_utility, so the blob
++    // upload is stubbed out and always fails. This test exercises the real
++    // upload path, so skip it.
++    SKIP("diagnostics blob upload (file_upload_utility) is disabled in omnect");
++
+     DiagnosticsWorkflowTestHelper helper;
+ 
+     SECTION("NULL jsonString reports failure")
 diff --git a/src/diagnostics_component/utils/CMakeLists.txt b/src/diagnostics_component/utils/CMakeLists.txt
 index 2952f344..811a22f1 100644
 --- a/src/diagnostics_component/utils/CMakeLists.txt
@@ -1267,6 +1396,20 @@ index 00000000..891e09b8
 +    ADUC_Result result = { ADUC_Result_Restore_Success };
 +    return result;
 +}
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_result_codes.h b/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_result_codes.h
+index 11e68b88..385e2afc 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_result_codes.h
++++ b/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_result_codes.h
+@@ -135,6 +135,9 @@
+ /** Max retries exceeded during apply reboot | ADUC_ERC_SWUPDATE_HANDLER_APPLY_REBOOT_FAILURE_MAX_RETRIES_EXCEEDED = 806355714 (0x30100302) */
+ #define ADUC_ERC_SWUPDATE_HANDLER_APPLY_REBOOT_FAILURE_MAX_RETRIES_EXCEEDED 0x30100302
+ 
++/** Update validation on the new boot partition failed; rebooted to the old boot partition | ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION = 806355744 (0x30100320) */
++#define ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION 0x30100320
++
+ /** Cancel operation failed | ADUC_ERC_SWUPDATE_HANDLER_CANCEL_FAILURE = 806355968 (0x30100400) */
+ #define ADUC_ERC_SWUPDATE_HANDLER_CANCEL_FAILURE 0x30100400
+ 
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp b/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp
 index 3c8b2157..26843f49 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_v2.hpp
@@ -1284,12 +1427,12 @@ index 3c8b2157..26843f49 100644
  protected:
      //!< Protected constructor, must call CreateContentHandler factory method or from derived simulator class
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-index 6fa3acd6..883f1769 100644
+index 670f54aa..7b24359b 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
 +++ b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
-@@ -38,6 +38,9 @@
- #define HANDLER_PROPERTIES_API_VERSION "apiVersion"
+@@ -39,6 +39,9 @@
  #define HANDLER_ARG_ACTION "--action"
+ #define HANDLER_ARG_WORKFLOW_ID "--workflow-id"
  
 +#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/etc/omnect/consent/consent_conf.json"
 +#define ADUC_SWUPDATE_CONSENT_USER_FILE "/etc/omnect/consent/swupdate/user_consent.json"
@@ -1297,7 +1440,7 @@ index 6fa3acd6..883f1769 100644
  namespace adushconst = Adu::Shell::Const;
  
  struct JSONValueDeleter
-@@ -58,6 +61,59 @@ SWUpdateHandlerImpl::~SWUpdateHandlerImpl() // override
+@@ -59,6 +62,59 @@ SWUpdateHandlerImpl::~SWUpdateHandlerImpl() // override
      ADUC_Logging_Uninit();
  }
  
@@ -1357,7 +1500,7 @@ index 6fa3acd6..883f1769 100644
  /**
   * @brief Downloads a main script file into a sandbox folder.
   *        The 'handlerProperties["scriptFileName"]' contains the main script file name.
-@@ -332,12 +388,53 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -412,12 +468,53 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
      memset(&fileEntity, 0, sizeof(fileEntity));
      size_t fileCount = workflow_get_update_files_count(workflowHandle);
      ADUC_Result result = SWUpdate_Handler_DownloadScriptFile(workflowHandle);
@@ -1411,7 +1554,7 @@ index 6fa3acd6..883f1769 100644
      // Determine whether to continue downloading the rest.
      installedCriteria = workflow_get_installed_criteria(workflowData->WorkflowHandle);
      result = IsInstalled(workflowData);
-@@ -348,6 +445,16 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
+@@ -428,6 +525,16 @@ ADUC_Result SWUpdateHandlerImpl::Download(const tagADUC_WorkflowData* workflowDa
          goto done;
      }
  
@@ -1428,17 +1571,36 @@ index 6fa3acd6..883f1769 100644
      result = { ADUC_Result_Download_Success };
  
      for (size_t i = 0; i < fileCount; i++)
-diff --git a/src/inc/aduc/result.h b/src/inc/aduc/result.h
-index d9e00095..9d7bbe7c 100644
---- a/src/inc/aduc/result.h
-+++ b/src/inc/aduc/result.h
-@@ -2037,4 +2037,4 @@ static inline ADUC_Result_t MAKE_ADUC_DELIVERY_OPTIMIZATION_EXTENDEDRESULTCODE(c
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/swupdate_handler_result_codes.json b/src/extensions/step_handlers/swupdate_handler_v2/swupdate_handler_result_codes.json
+index 7d61c89f..0acbf784 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/swupdate_handler_result_codes.json
++++ b/src/extensions/step_handlers/swupdate_handler_v2/swupdate_handler_result_codes.json
+@@ -175,6 +175,11 @@
+             "value": 770,
+             "description": "Max retries exceeded during apply reboot"
+         },
++        {
++            "name": "ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION",
++            "value": 800,
++            "description": "Update validation on the new boot partition failed; rebooted to the old boot partition"
++        },
+         {
+             "name": "ADUC_ERC_SWUPDATE_HANDLER_CANCEL_FAILURE",
+             "value": 1024,
+diff --git a/src/inc/aduc/swupdate_handler_result_codes.h b/src/inc/aduc/swupdate_handler_result_codes.h
+index 11e68b88..385e2afc 100644
+--- a/src/inc/aduc/swupdate_handler_result_codes.h
++++ b/src/inc/aduc/swupdate_handler_result_codes.h
+@@ -135,6 +135,9 @@
+ /** Max retries exceeded during apply reboot | ADUC_ERC_SWUPDATE_HANDLER_APPLY_REBOOT_FAILURE_MAX_RETRIES_EXCEEDED = 806355714 (0x30100302) */
+ #define ADUC_ERC_SWUPDATE_HANDLER_APPLY_REBOOT_FAILURE_MAX_RETRIES_EXCEEDED 0x30100302
  
- #define ADUC_ERROR_CURL_DOWNLOADER_EXTERNAL_FAILURE(exitCode) MAKE_ADUC_EXTENDEDRESULTCODE_FOR_COMPONENT_ADUC_CONTENT_DOWNLOADER_CURL_DOWNLOADER((0x1000 + exitCode))
++/** Update validation on the new boot partition failed; rebooted to the old boot partition | ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION = 806355744 (0x30100320) */
++#define ADUC_ERC_SWUPDATE_HANDLER_INSTALL_FAILURE_VALIDATION 0x30100320
++
+ /** Cancel operation failed | ADUC_ERC_SWUPDATE_HANDLER_CANCEL_FAILURE = 806355968 (0x30100400) */
+ #define ADUC_ERC_SWUPDATE_HANDLER_CANCEL_FAILURE 0x30100400
  
--#endif // ADUC_RESULT_H
-+#endif // ADUC_RESULT_H
-\ No newline at end of file
 diff --git a/src/platform_layers/linux_platform_layer/CMakeLists.txt b/src/platform_layers/linux_platform_layer/CMakeLists.txt
 index 40d57d15..000e5309 100644
 --- a/src/platform_layers/linux_platform_layer/CMakeLists.txt
@@ -1466,8 +1628,39 @@ index b1c9ee0c..057a483a 100644
      {
          Log_Error("statvfs failed, error: %d", errno);
          return nullptr;
+diff --git a/src/utils/apiproto_utils/src/apiproto.c b/src/utils/apiproto_utils/src/apiproto.c
+index 07ef0759..bdf9dd88 100644
+--- a/src/utils/apiproto_utils/src/apiproto.c
++++ b/src/utils/apiproto_utils/src/apiproto.c
+@@ -73,7 +73,7 @@ ssize_t msg_send_req(int fd, const ApiWireRequestMsg* msg)
+             return -1;
+         }
+         Log_Debug("msg_send_req: wrote %zd bytes of data", nbw);
+-        return sizeof(uint16_t) * 3 + nbw;
++        return (ssize_t)(sizeof(uint16_t) * 3) + nbw;
+     }
+     Log_Debug("msg_send_req: wrote %zd bytes of data", bytes_written);
+     return sizeof(uint16_t) * 3;
+@@ -142,7 +142,7 @@ ssize_t msg_recv_req(int fd, ApiWireRequestMsg* out_msg)
+             return wait_res;
+         }
+ 
+-        br = read(fd, ((char*)header_buf) + bytes_read_total, (MSG_HDR_LEN)-bytes_read_total);
++        br = read(fd, ((char*)header_buf) + bytes_read_total, MSG_HDR_LEN - (size_t)bytes_read_total);
+         if (br < 0)
+         {
+             if (errno == EINTR)
+@@ -285,7 +285,7 @@ ssize_t msg_recv_resp(int fd, ApiWireResponseMsg* out_msg)
+     // Now read without select in loop - data is available
+     while (total_bytes_read < (ssize_t)(RESP_MSG_READ_BUF_SIZE) && retries < MAX_RETRIES)
+     {
+-        bytes_read = read(fd, read_buf + total_bytes_read, RESP_MSG_READ_BUF_SIZE - total_bytes_read);
++        bytes_read = read(fd, read_buf + total_bytes_read, RESP_MSG_READ_BUF_SIZE - (size_t)total_bytes_read);
+         if (bytes_read < 0)
+         {
+             if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK)
 diff --git a/src/utils/c_utils/src/string_c_utils.c b/src/utils/c_utils/src/string_c_utils.c
-index bb5445d7..abeb5b2e 100644
+index a7570a17..3e05ebde 100644
 --- a/src/utils/c_utils/src/string_c_utils.c
 +++ b/src/utils/c_utils/src/string_c_utils.c
 @@ -45,7 +45,7 @@ bool LoadBufferWithFileContents(const char* filePath, char* strBuffer, const siz
@@ -1493,10 +1686,10 @@ index dba6c64e..cb25857d 100644
  //
  // HTTP Functions
 diff --git a/src/utils/extension_utils/src/extension_utils.c b/src/utils/extension_utils/src/extension_utils.c
-index 4339770d..ac41f5fc 100644
+index bc3184ae..d256c051 100644
 --- a/src/utils/extension_utils/src/extension_utils.c
 +++ b/src/utils/extension_utils/src/extension_utils.c
-@@ -265,7 +265,7 @@ static bool RegisterHandlerExtension(
+@@ -267,7 +267,7 @@ static bool RegisterHandlerExtension(
          goto done;
      }
  
@@ -1505,7 +1698,7 @@ index 4339770d..ac41f5fc 100644
      if (!ADUC_HashUtils_GetFileHash(handlerFilePath, SHA256, &hash))
      {
          goto done;
-@@ -274,7 +274,7 @@ static bool RegisterHandlerExtension(
+@@ -276,7 +276,7 @@ static bool RegisterHandlerExtension(
      content = STRING_construct_sprintf(
          "{\n"
          "   \"fileName\":\"%s\",\n"
@@ -1514,7 +1707,7 @@ index 4339770d..ac41f5fc 100644
          "   \"hashes\": {\n"
          "        \"sha256\":\"%s\"\n"
          "   },\n"
-@@ -483,7 +483,7 @@ bool RegisterExtension(const char* extensionDir, const char* extensionFilePath)
+@@ -485,7 +485,7 @@ bool RegisterExtension(const char* extensionDir, const char* extensionFilePath)
          goto done;
      }
  
@@ -1523,7 +1716,7 @@ index 4339770d..ac41f5fc 100644
  
      if (!ADUC_HashUtils_GetFileHash(extensionFilePath, SHA256, &hash))
      {
-@@ -493,7 +493,7 @@ bool RegisterExtension(const char* extensionDir, const char* extensionFilePath)
+@@ -495,7 +495,7 @@ bool RegisterExtension(const char* extensionDir, const char* extensionFilePath)
      content = STRING_construct_sprintf(
          "{\n"
          "   \"fileName\":\"%s\",\n"
