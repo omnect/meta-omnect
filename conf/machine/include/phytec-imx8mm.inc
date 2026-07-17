@@ -18,6 +18,7 @@ IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
     fitImage  \
     oftree \
     bootenv.txt \
+    overlays.txt \
 "
 
 IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
@@ -116,4 +117,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-ph
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-bootloader-versioned - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "b95765f92e94b87236394e00b1e9e324bf6abefd73261452f2a0a2887ee59954"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "0f160d30da56efe6f8d795705491a470976b7dc723ce8a0b8fdc76427cb02c37"

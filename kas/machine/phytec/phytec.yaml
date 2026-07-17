@@ -17,7 +17,7 @@ repos:
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: "wrynose"
-    commit: "67abc1a6832690a43a0fdfe3ca9c71a0466f48f8"
+    commit: "25ce7c63c234af499674392751c67aaae8f43958"
     patches:
       p001:
         repo: "meta-omnect"
@@ -25,7 +25,7 @@ repos:
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
     branch: "wrynose-6.18.20-2.0.0"
-    commit: "a4a9ce49fa31a61328147034cdf9fdfc78dce2ad"
+    commit: "1001299baf5a3b468c93e381c62aeb486a639aa1"
     layers:
       # meta-imx-sdk (fsl-sdk-release) dropped: on wrynose it pulls in
       # freescale-distro + perl-layer, and we mask all of its recipes anyway
@@ -39,7 +39,7 @@ repos:
   ext/meta-arm:
     url: "https://git.yoctoproject.org/meta-arm"
     branch: "wrynose"
-    commit: "01c33e494636781e0787ccafa46cc0102dd68869"
+    commit: "caa36c53f796beb25d9b9f58b1b7a492e9987e15"
     layers:
       meta-arm:
       meta-arm-toolchain:
@@ -49,3 +49,10 @@ repos:
         path: "kas/patches/meta-arm_layerdir.patch"
 env:
   ACCEPT_FSL_EULA: "0"
+  # Drop upstream meta-phytec "lack of whitespace around the assignment" bitbake
+  # parse warnings from the console. BB_LOGCONFIG's dictConfig runs in the bitbake
+  # UI process, whose sys.path is only bitbake/lib, so the filter module is reached
+  # via PYTHONPATH rather than the layer's lib dir. Paths are in-container
+  # (build/ is mounted at /yocto-build).
+  BB_LOGCONFIG: "/yocto-build/meta-omnect/files/logging/bb-logging.json"
+  PYTHONPATH: "/yocto-build/meta-omnect/files/logging"

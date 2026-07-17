@@ -1,19 +1,22 @@
 diff --git a/arch/arm/mach-bcm283x/Makefile b/arch/arm/mach-bcm283x/Makefile
-index 7cd068832f..e92bfe9616 100644
 --- a/arch/arm/mach-bcm283x/Makefile
 +++ b/arch/arm/mach-bcm283x/Makefile
-@@ -4,3 +4,4 @@
-
+@@ -4,6 +4,7 @@
+ 
  obj-$(CONFIG_BCM2835) += lowlevel_init.o
  obj-y	+= init.o reset.o mbox.o msg.o phys2bus.o
-+obj-$(CONFIG_DISPLAY_CPUINFO) += sys_info.o
++obj-$(CONFIG_CMD_RSTINFO) += sys_info.o
+ 
+ ifeq ($(CONFIG_GENERATE_ACPI_TABLE),y)
+ obj-$(CONFIG_BCM2711) += bcm2711_acpi.o
 diff --git a/arch/arm/mach-bcm283x/init.c b/arch/arm/mach-bcm283x/init.c
-index 7265faf6ce..76a5d18d98 100644
 --- a/arch/arm/mach-bcm283x/init.c
 +++ b/arch/arm/mach-bcm283x/init.c
-@@ -150,6 +150,8 @@ int mach_cpu_init(void)
+@@ -206,7 +206,10 @@
+ #if defined(CONFIG_DISPLAY_CPUINFO)
  int print_cpuinfo(void)
  {
++	extern char *get_reset_cause(void);
  	printf("CPU: BCM283x\n");
 +	printf("SoC: %s\n", CONFIG_SYS_SOC);
 +	printf("Reset cause: %s\n", get_reset_cause());
@@ -22,11 +25,10 @@ index 7265faf6ce..76a5d18d98 100644
  #endif
 diff --git a/arch/arm/mach-bcm283x/sys_info.c b/arch/arm/mach-bcm283x/sys_info.c
 new file mode 100644
-index 0000000000..140f5ca438
 --- /dev/null
 +++ b/arch/arm/mach-bcm283x/sys_info.c
 @@ -0,0 +1,25 @@
-+#include <common.h>
++#include <linux/types.h>
 +#include <asm/arch/wdog.h>
 +#include <asm/io.h>
 +
@@ -52,13 +54,12 @@ index 0000000000..140f5ca438
 +#error "SOC currently not supported"
 +#endif
 diff --git a/cmd/Kconfig b/cmd/Kconfig
-index df6d71c103..e806098dc5 100644
 --- a/cmd/Kconfig
 +++ b/cmd/Kconfig
-@@ -203,6 +203,13 @@ config CMD_REGINFO
- 	help
- 	  Register dump
-
+@@ -242,6 +242,13 @@
+ 	  Show voltage and current negotiated via USB PD as well as the
+ 	  current state of the Type C Port Manager (TCPM) state machine.
+ 
 +config CMD_RSTINFO
 +	bool "rstinfo"
 +	depends on ARCH_BCM283X
@@ -70,10 +71,9 @@ index df6d71c103..e806098dc5 100644
  	bool "tlv_eeprom"
  	depends on I2C_EEPROM
 diff --git a/cmd/Makefile b/cmd/Makefile
-index 9a6790cc17..e73a549529 100644
 --- a/cmd/Makefile
 +++ b/cmd/Makefile
-@@ -153,6 +153,7 @@ obj-$(CONFIG_CMD_RNG) += rng.o
+@@ -163,6 +163,7 @@
  obj-$(CONFIG_CMD_KASLRSEED) += kaslrseed.o
  obj-$(CONFIG_CMD_RKMTD) += rkmtd.o
  obj-$(CONFIG_CMD_ROCKUSB) += rockusb.o
@@ -83,18 +83,19 @@ index 9a6790cc17..e73a549529 100644
  obj-$(CONFIG_CMD_SATA) += sata.o
 diff --git a/cmd/rstinfo.c b/cmd/rstinfo.c
 new file mode 100644
-index 0000000000..677fab384f
 --- /dev/null
 +++ b/cmd/rstinfo.c
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,28 @@
 +/*
 + *  Get Reset Cause
 + */
 +
-+#include <common.h>
++#include <stdio.h>
++#include <env.h>
 +#include <command.h>
 +
 +extern int print_cpuinfo(void);
++extern char *get_reset_cause(void);
 +static int do_rstinfo(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 +{
 +	(void)cmdtp;

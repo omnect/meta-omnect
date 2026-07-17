@@ -10,7 +10,7 @@ repos:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
     branch: "wrynose"
-    commit: "a43f0d532c399458cae44ce66f3799a220fbb497"
+    commit: "d97b5602d7f64422c94b7311466cda7f6b1962d5"
     layers:
       # meta-multimedia is used by qemu_8.2.2.imx.bb (tauri) ToDo: possible to handle that in the machine specific kas file?
       meta-multimedia:
@@ -31,7 +31,7 @@ repos:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     branch: "wrynose"
-    commit: "885d8a5739d4fc55298bdafee850f567aaede88d"
+    commit: "c3eba00d3252ef17fed4812473c47c87fb34db40"
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     branch: "wrynose"

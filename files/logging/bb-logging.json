@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "filters": {
+        "OMNECT.layerParseWarningFilter": {
+            "()": "omnect_log_filters.LayerParseWarningFilter",
+            "layers": ["meta-phytec"],
+            "needles": ["lack of whitespace around the assignment"]
+        }
+    },
+    "loggers": {
+        "BitBake.Parsing": {
+            "filters": ["OMNECT.layerParseWarningFilter"]
+        }
+    }
+}

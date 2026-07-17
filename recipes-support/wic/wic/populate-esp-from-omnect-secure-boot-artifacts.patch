@@ -1,0 +1,56 @@
+wic: populate the ESP from omnect signed secure-boot artifacts
+
+omnect's genericx86-64 image boots a signed grub (UEFI secure boot). The ESP
+must be filled from the signed binaries deployed to DEPLOY_DIR_IMAGE
+(OMNECT_GRUB_EFI_SB_FILES: bootx64.efi, grubx64.efi, grub.cfg, .p7b, ...) plus
+the omnect bootloader version and extra-bootargs, instead of the stock
+plain-kernel-into-ESP install. The stock grub-efi loader block that follows then
+finds bootx64.efi and grub.cfg already present (satisfying its boot*.efi check).
+
+Ported from meta-omnect's former kas patch against oe-core's in-tree
+scripts/lib/wic (bootimg-efi.py); wrynose moved wic into the standalone wic
+recipe, renaming the plugin to src/wic/plugins/source/bootimg_efi.py.
+
+Upstream-Status: Inappropriate [omnect-specific secure boot]
+
+diff --git a/src/wic/plugins/source/bootimg_efi.py b/src/wic/plugins/source/bootimg_efi.py
+index 69aa38b..60f0fbb 100644
+--- a/src/wic/plugins/source/bootimg_efi.py
++++ b/src/wic/plugins/source/bootimg_efi.py
+@@ -304,20 +304,22 @@ class BootimgEFIPlugin(SourcePlugin):
+
+         hdddir = "%s/hdd/boot" % cr_workdir
+
+-        kernel = get_bitbake_var("KERNEL_IMAGETYPE")
+-        if get_bitbake_var("INITRAMFS_IMAGE_BUNDLE") == "1":
+-            if get_bitbake_var("INITRAMFS_IMAGE"):
+-                kernel = "%s-%s.bin" % \
+-                    (get_bitbake_var("KERNEL_IMAGETYPE"), get_bitbake_var("INITRAMFS_LINK_NAME"))
+-
+-        if source_params.get('create-unified-kernel-image') == "true":
+-            raise WicError("create-unified-kernel-image is no longer supported. Please use uki.bbclass.")
+-
+-        if source_params.get('install-kernel-into-boot-dir') != 'false':
+-            install_cmd = "install -v -p -m 0644 %s/%s %s/%s" % \
+-                (staging_kernel_dir, kernel, hdddir, kernel)
+-            out = exec_cmd(install_cmd)
+-            logger.debug("Installed kernel files:\n%s" % out)
++        # omnect: the ESP is populated from the signed secure-boot artifacts deployed to
++        # DEPLOY_DIR_IMAGE (grub is verified, no plain kernel in the ESP). The stock
++        # grub-efi loader block below then finds bootx64.efi/grub.cfg already in place.
++        deploy_dir_img = get_bitbake_var("DEPLOY_DIR_IMAGE")
++        bootloader_version_install_cmd = "install -m 0644 -D %s/omnect_bootloader_version %s/EFI/BOOT/omnect_bootloader_version" % (deploy_dir_img, hdddir)
++        exec_cmd(bootloader_version_install_cmd)
++        omnect_extra_bootargs_install_cmd = "install -m 644 -D %s/omnect_extra_bootargs_omnect %s/omnect_extra_bootargs_omnect" % (deploy_dir_img, hdddir)
++        exec_cmd(omnect_extra_bootargs_install_cmd)
++
++        grub_efi_sb_files = get_bitbake_var("OMNECT_GRUB_EFI_SB_FILES")
++        # get rid of multiple spaces
++        grub_efi_sb_files = ' '.join(grub_efi_sb_files.split());
++        grub_efi_sb_files = grub_efi_sb_files.split()
++        for grub_efi_sb_file in grub_efi_sb_files:
++            efi_install_cmd = "install -m 0644 -D %s/%s %s/EFI/BOOT/%s" % (deploy_dir_img, grub_efi_sb_file, hdddir, grub_efi_sb_file)
++            exec_cmd(efi_install_cmd)
+
+         if get_bitbake_var("IMAGE_EFI_BOOT_FILES"):
+             for src_path, dst_path in cls.install_task:

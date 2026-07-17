@@ -24,4 +24,5 @@ do_deploy() {
 }
 do_deploy[depends]  += "virtual/bootloader:do_deploy "
 
-# Note: version is written to boot partition by kas/patches/oe_bootimg_efi_wic.patch
+# Note: version is written to boot partition by the wic bootimg-efi patch in
+# recipes-support/wic/wic_%.bbappend

@@ -1,5 +1,8 @@
 DESCRIPTION = "omnect-first-boot is a service executed on first boot of device (or after factory-reset)"
 
+# file-only recipe: sources land in ${UNPACKDIR}, not the default ${UNPACKDIR}/${BP}.
+S = "${UNPACKDIR}"
+
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
     file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10 \

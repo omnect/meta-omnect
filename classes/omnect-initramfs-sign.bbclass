@@ -16,4 +16,7 @@ fakeroot python sign() {
     shutil.copy(initramfs, initramfs + '.unsigned')
     uks_bl_sign(initramfs, d)
 }
-IMAGE_POSTPROCESS_COMMAND:append = "${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', ';check_deploy_keys;sign', '', d)}"
+# check_deploy_keys handles UEFI_SB/MOK/etc. but not BOOT, so it never sets GPG_PATH or
+# imports the SecureBootCore signing key. Run check_boot_public_key first (same postprocess
+# chain, so its GPG_PATH setVar persists) or boot_sign gets --homedir None and fails.
+IMAGE_POSTPROCESS_COMMAND:append = "${@bb.utils.contains('DISTRO_FEATURES', 'efi-secure-boot', ';check_deploy_keys;check_boot_public_key;sign', '', d)}"

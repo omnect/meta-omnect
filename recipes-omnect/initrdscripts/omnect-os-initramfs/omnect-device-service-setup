@@ -6,7 +6,10 @@
 
 omnect_device_service_group="not set yet"
 omnect_device_service_user="not set yet"
-omnect_run_dir="${ROOTFS_DIR}/run/omnect-device-service"
+# write into the framework's /run, which its finish module relocates onto the
+# rootfs (mount --move /run ${ROOTFS_DIR}/run) before switch_root; a tmpfs of our
+# own on ${ROOTFS_DIR}/run would be shadowed by that move
+omnect_run_dir="/run/omnect-device-service"
 omnect_os_initramfs_json="${omnect_run_dir}/omnect-os-initramfs.json"
 
 omnect_device_service_setup_enabled() {

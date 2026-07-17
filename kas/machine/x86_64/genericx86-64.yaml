@@ -7,7 +7,7 @@ repos:
   ext/meta-yocto-bsp:
     url: "https://git.yoctoproject.org/meta-yocto"
     branch: wrynose
-    commit: "8251bdad5fda780a000fb41e6eda82eadf0fa39e"
+    commit: "824795b885b25e074a2880fbcd54e1a6c875d47d"
     layers:
       meta-yocto-bsp:
   ext/meta-secure-core:
@@ -25,7 +25,7 @@ repos:
   ext/meta-perl:
     url: "https://github.com/openembedded/meta-openembedded.git"
     branch: "wrynose"
-    commit: "a43f0d532c399458cae44ce66f3799a220fbb497"
+    commit: "d97b5602d7f64422c94b7311466cda7f6b1962d5"
     layers:
       meta-perl:
 

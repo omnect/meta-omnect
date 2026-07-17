@@ -1,4 +1,7 @@
 SUMMARY = "omnect Base Files"
+
+# file-only recipe: sources land in ${UNPACKDIR}, not the default ${UNPACKDIR}/${BP}.
+S = "${UNPACKDIR}"
 DESCRIPTION = "Provide omnect Base Files."
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "\

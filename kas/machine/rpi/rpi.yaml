@@ -6,10 +6,8 @@ header:
 repos:
   ext/meta-raspberrypi:
     url: "https://github.com/agherzan/meta-raspberrypi.git"
-    # no wrynose release branch upstream yet; master declares LAYERSERIES_COMPAT wrynose.
-    # re-pin to the wrynose release branch once agherzan cuts one.
-    branch: "master"
-    commit: "0c76b0feadbe2afa4cec4cd497636e94eca30ec3"
+    branch: "wrynose"
+    commit: "f62c67921474370829d24a4fa01ef88543f3906b"
     patches:
       p001:
         repo: "meta-omnect"

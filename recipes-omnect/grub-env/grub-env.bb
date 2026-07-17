@@ -1,5 +1,8 @@
 FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files/:"
 
+# file-only recipe: sources land in ${UNPACKDIR}, not the default ${UNPACKDIR}/${BP}.
+S = "${UNPACKDIR}"
+
 # for usage in intramfs flash-mode only
 
 LICENSE = "MIT | Apache-2.0"

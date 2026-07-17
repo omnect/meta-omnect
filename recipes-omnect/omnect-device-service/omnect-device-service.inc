@@ -1,5 +1,9 @@
 FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:${THISDIR}/${PN}:"
 
+# Override cargo-bitbake's generated S = "${WORKDIR}/git", which oe-core's
+# do_qa_unpack now rejects (git unpacks to ${UNPACKDIR}/${BP}).
+S = "${UNPACKDIR}/${BP}"
+
 SRC_URI += "\
   file://factory-reset.json \
   file://iot-identity-service-keyd.template.toml \
@@ -14,6 +18,13 @@ python() {
     pv = d.getVar('PV')
     pv = pv[:128]
     d.setVar('PV', pv)
+
+    # cargo-bitbake emits the crate path overrides under ${WORKDIR}, but wrynose's git
+    # fetcher unpacks destsuffix= sources under ${UNPACKDIR}. Repoint every override here
+    # (operating on the unexpanded value) so a version bump that regenerates the .bb can't
+    # reintroduce the stale prefix.
+    paths = d.getVar('EXTRA_OECARGO_PATHS', False) or ""
+    d.setVar('EXTRA_OECARGO_PATHS', paths.replace('${WORKDIR}/', '${UNPACKDIR}/'))
 }
 
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
