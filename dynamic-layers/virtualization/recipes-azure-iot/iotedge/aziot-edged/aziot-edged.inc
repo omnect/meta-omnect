@@ -34,6 +34,12 @@ do_install () {
     install -d ${D}${libdir}/tmpfiles.d
     echo "d ${localstatedir}/lib/aziot/edged 0700 iotedge iotedge -"  >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
     echo "d /run/iotedge 0755 iotedge iotedge -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
+    if [ "${OMNECT_RELEASE_IMAGE}" != "1" ]; then
+        # host dir for .NET module crash dumps, bind-mounted into modules via
+        # the deployment manifest; without it docker creates the dir root-owned
+        # and the non-root container users can't write dumps
+        echo "d /mnt/data/dotnet-dumps 1777 root root -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
+    fi
 
     # config files
     install -m 0640 ${S}/edgelet/contrib/config/linux/template.toml ${D}${sysconfdir}/aziot/config.toml.edge.template
