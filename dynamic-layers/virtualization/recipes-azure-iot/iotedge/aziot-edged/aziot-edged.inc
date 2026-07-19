@@ -37,8 +37,9 @@ do_install () {
     if [ "${OMNECT_RELEASE_IMAGE}" != "1" ]; then
         # host dir for .NET module crash dumps, bind-mounted into modules via
         # the deployment manifest; without it docker creates the dir root-owned
-        # and the non-root container users can't write dumps
-        echo "d /mnt/data/dotnet-dumps 1777 root root -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
+        # and the non-root container users can't write dumps; age field prunes
+        # old dumps so a crash loop can't fill the data partition
+        echo "d /mnt/data/dotnet-dumps 1777 root root 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
     fi
 
     # config files
