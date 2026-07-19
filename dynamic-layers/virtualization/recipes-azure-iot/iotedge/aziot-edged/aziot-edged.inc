@@ -58,20 +58,6 @@ do_install () {
         -e "s#@listen_management_uri@#${IOTEDGE_LISTEN_MANAGEMENT_URI}#" \
         ${D}${sysconfdir}/aziot/edged/config.toml.default
 
-    # .NET modules write a managed-analyzable dump on crash; the dump dir
-    # bind mount only becomes writable on dev images (tmpfiles entry), so
-    # release images stay unaffected
-    cat >> ${D}${sysconfdir}/aziot/edged/config.toml.default <<'EOF'
-
-[agent.env]
-"DOTNET_DbgEnableMiniDump" = "1"
-"DOTNET_DbgMiniDumpType" = "4"
-"DOTNET_DbgMiniDumpName" = "/dumps/%e-%p-%t.dmp"
-
-[agent.config.createOptions.HostConfig]
-Binds = ["/mnt/data/dotnet-dumps:/dumps"]
-EOF
-
     # systemd services and sockets
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${S}/edgelet/contrib/systemd/debian/aziot-edged.service  ${D}${systemd_system_unitdir}/aziot-edged.service
