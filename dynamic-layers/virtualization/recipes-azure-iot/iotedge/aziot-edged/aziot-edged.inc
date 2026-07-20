@@ -35,11 +35,13 @@ do_install () {
     echo "d ${localstatedir}/lib/aziot/edged 0700 iotedge iotedge -"  >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
     echo "d /run/iotedge 0755 iotedge iotedge -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
     if [ "${OMNECT_RELEASE_IMAGE}" != "1" ]; then
-        # host dir for .NET module crash dumps, bind-mounted into modules via
-        # the deployment manifest; without it docker creates the dir root-owned
-        # and the non-root container users can't write dumps; age field prunes
-        # old dumps so a crash loop can't fill the data partition
-        echo "d /mnt/data/dotnet-dumps 1777 root root 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
+        # per-module host dirs for .NET crash dumps, bind-mounted into the
+        # modules via the deployment manifest resp. injected config; owners
+        # must match the fixed uids the module containers run with; the age
+        # field prunes old dumps so a crash loop can't fill the data partition
+        echo "d /mnt/data/dotnet-dumps 0755 root root -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
+        echo "d /mnt/data/dotnet-dumps/edgeAgent 0700 edgeagentuser iotedge 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
+        echo "d /mnt/data/dotnet-dumps/edgeHub 0700 edgehubuser iotedge 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
     fi
 
     # config files
@@ -71,7 +73,8 @@ do_install () {
 
 USERADD_PARAM:${PN} += " \
     -r -u 15580 -g iotedge -G aziot,aziotcs,aziotid,aziotks,docker,systemd-journal -s /bin/false -d ${localstatedir}/lib/iotedge iotedge; \
-    -r -g iotedge -s /sbin/false -M edgeagentuser; \
+    -r -u 13622 -g iotedge -s /sbin/false -M edgeagentuser; \
+    -r -u 13623 -g iotedge -s /sbin/false -M edgehubuser; \
 "
 
 GROUPADD_PARAM:${PN} += " \
