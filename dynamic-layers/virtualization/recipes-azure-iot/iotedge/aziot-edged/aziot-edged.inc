@@ -35,13 +35,13 @@ do_install () {
     echo "d ${localstatedir}/lib/aziot/edged 0700 iotedge iotedge -"  >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
     echo "d /run/iotedge 0755 iotedge iotedge -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
     if [ "${OMNECT_RELEASE_IMAGE}" != "1" ]; then
-        # per-module host dirs for .NET crash dumps, bind-mounted into the
+        # per-module host dirs for edge module crash dumps, bind-mounted into the
         # modules via the deployment manifest resp. injected config; owners
         # must match the fixed uids the module containers run with; the age
         # field prunes old dumps so a crash loop can't fill the data partition
-        echo "d /mnt/data/dotnet-dumps 0755 root root -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
-        echo "d /mnt/data/dotnet-dumps/edgeAgent 0700 edgeagentuser iotedge 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
-        echo "d /mnt/data/dotnet-dumps/edgeHub 0700 edgehubuser iotedge 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
+        echo "d /mnt/data/crash-dumps 0755 root root -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
+        echo "d /mnt/data/crash-dumps/edgeAgent 0700 edgeagentuser iotedge 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
+        echo "d /mnt/data/crash-dumps/edgeHub 0700 edgehubuser iotedge 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
     fi
 
     # config files
