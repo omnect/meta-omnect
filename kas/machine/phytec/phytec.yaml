@@ -52,7 +52,5 @@ env:
   # Drop upstream meta-phytec "lack of whitespace around the assignment" bitbake
   # parse warnings from the console. BB_LOGCONFIG's dictConfig runs in the bitbake
   # UI process, whose sys.path is only bitbake/lib, so the filter module is reached
-  # via PYTHONPATH rather than the layer's lib dir. Paths are in-container
-  # (build/ is mounted at /yocto-build).
-  BB_LOGCONFIG: "/yocto-build/meta-omnect/files/logging/bb-logging.json"
+  BB_LOGCONFIG: "${LAYERDIR_omnect}/files/logging/bb-logging.json"
   PYTHONPATH: "/yocto-build/meta-omnect/files/logging"
