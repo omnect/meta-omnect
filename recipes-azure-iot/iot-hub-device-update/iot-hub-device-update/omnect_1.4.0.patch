@@ -888,7 +888,7 @@ index 00000000..8ea0cf2a
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 00000000..874fb3a5
+index 00000000..c85a13c9
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 @@ -0,0 +1,598 @@
@@ -1368,7 +1368,7 @@ index 00000000..874fb3a5
 +                Log_Info("cancel requested while waiting for user consent");
 +                CleanConsentRequestJsonFile();
 +                workflow_free_string(installedCriteria_workflow);
-+                return Cancel(workflowData);
++                return ADUC_Result{ ADUC_Result_Failure_Cancelled };
 +            }
 +
 +            if (true == UserConsentAgreed(version))
