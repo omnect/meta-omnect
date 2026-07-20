@@ -1819,3 +1819,98 @@ index bc3184ae..d256c051 100644
          "   \"hashes\": {\n"
          "        \"sha256\":\"%s\"\n"
          "   }\n"
+diff --git a/src/utils/workflow_utils/src/workflow_utils.c b/src/utils/workflow_utils/src/workflow_utils.c
+index 5d44850f..fcea1f32 100644
+--- a/src/utils/workflow_utils/src/workflow_utils.c
++++ b/src/utils/workflow_utils/src/workflow_utils.c
+@@ -2910,6 +2910,18 @@ bool workflow_transfer_data(ADUC_WorkflowHandle targetHandle, ADUC_WorkflowHandl
+         return false;
+     }
+ 
++    // The target's step children were parsed from its previous manifest. Free
++    // them while that manifest is still in place so they get rebuilt from the
++    // source manifest. Without this a replacement keeps the previous
++    // deployment's steps (stale installedCriteria and a leftover cancel
++    // request), because the step count is unchanged and the rebuild guard in
++    // PrepareStepsWorkflowDataObject is skipped.
++    while (workflow_get_children_count(targetHandle) > 0)
++    {
++        ADUC_WorkflowHandle child = workflow_remove_child(targetHandle, 0);
++        workflow_free(child);
++    }
++
+     // Transfer over the parsed JSON objects
+     wfTarget->UpdateActionObject = wfSource->UpdateActionObject;
+     wfSource->UpdateActionObject = NULL;
+diff --git a/src/utils/workflow_utils/tests/workflow_utils_ut.cpp b/src/utils/workflow_utils/tests/workflow_utils_ut.cpp
+index 74feb30b..0fa9e6c8 100644
+--- a/src/utils/workflow_utils/tests/workflow_utils_ut.cpp
++++ b/src/utils/workflow_utils/tests/workflow_utils_ut.cpp
+@@ -17,6 +17,9 @@
+ using Catch::Matchers::Equals;
+ 
+ #include <parson.h>
++#include <cstdlib>
++#include <filesystem>
++#include <fstream>
+ #include <sstream>
+ #include <string>
+ 
+@@ -875,3 +878,57 @@ TEST_CASE("workflow manifest and inode helper APIs")
+ 
+     workflow_free(handle);
+ }
++
++TEST_CASE("workflow_transfer_data drops stale children")
++{
++    // A replacement transfers the incoming workflow's parsed data into the
++    // current handle. The current handle still holds step children parsed from
++    // its previous manifest; those must be dropped so they get rebuilt from the
++    // new manifest (otherwise the replacement runs with the old steps).
++    // workflow_transfer_data needs a config instance to resolve the downloads
++    // folder, so provide a minimal du-config.json.
++    std::filesystem::path cfgDir = std::filesystem::temp_directory_path() / "wfut_transfer_cfg";
++    std::filesystem::create_directories(cfgDir);
++    std::ofstream(cfgDir / "du-config.json") << R"({
++        "schemaVersion": "1.0",
++        "aduShellTrustedUsers": [ "adu" ],
++        "manufacturer": "contoso",
++        "model": "espresso-v1",
++        "agents": [ {
++            "name": "main", "runas": "adu",
++            "connectionSource": { "connectionType": "string", "connectionData": "HostName=x;DeviceId=y;SharedAccessKey=z" },
++            "manufacturer": "contoso", "model": "espresso-v1"
++        } ]
++    })";
++    setenv("ADUC_CONF_FOLDER", cfgDir.c_str(), 1);
++
++    ADUC_WorkflowHandle target = nullptr;
++    ADUC_Result result = workflow_init(action_parent_update, false /* validateManifest */, &target);
++    REQUIRE(IsAducResultCodeSuccess(result.ResultCode));
++
++    // Simulate steps parsed from the previous manifest.
++    for (int i = 0; i < 2; i++)
++    {
++        ADUC_WorkflowHandle child = nullptr;
++        REQUIRE(IsAducResultCodeSuccess(workflow_init(action_child_update_0, false, &child).ResultCode));
++        REQUIRE(workflow_insert_child(target, -1, child));
++    }
++    REQUIRE(workflow_get_children_count(target) == 2);
++
++    ADUC_WorkflowHandle source = nullptr;
++    REQUIRE(IsAducResultCodeSuccess(workflow_init(action_parent_update, false, &source).ResultCode));
++
++    REQUIRE(workflow_transfer_data(target, source));
++
++    // Stale children gone; they will be rebuilt from the transferred manifest.
++    CHECK(workflow_get_children_count(target) == 0);
++
++    // Manifest was transferred from the source.
++    char* updateId = workflow_get_expected_update_id_string(target);
++    REQUIRE(updateId != nullptr);
++    CHECK(strstr(updateId, "Virtual-Vacuum") != nullptr);
++    workflow_free_string(updateId);
++
++    workflow_free(source);
++    workflow_free(target);
++}
