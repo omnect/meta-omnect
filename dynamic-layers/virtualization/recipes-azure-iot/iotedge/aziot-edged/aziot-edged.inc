@@ -39,6 +39,10 @@ do_install () {
         # modules via the deployment manifest resp. injected config; owners
         # must match the fixed uids the module containers run with; the age
         # field prunes old dumps so a crash loop can't fill the data partition
+        #
+        # a shared dump group instead of per-module uids won't work: edgeAgent
+        # and edgeHub start as root and drop privileges via "su", which resets
+        # the supplementary groups that docker's GroupAdd would grant
         echo "d /mnt/data/crash-dumps 0755 root root -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
         echo "d /mnt/data/crash-dumps/edgeAgent 0700 edgeagentuser iotedge 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
         echo "d /mnt/data/crash-dumps/edgeHub 0700 edgehubuser iotedge 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
