@@ -1819,6 +1819,19 @@ index bc3184ae..d256c051 100644
          "   \"hashes\": {\n"
          "        \"sha256\":\"%s\"\n"
          "   }\n"
+diff --git a/src/utils/timer_utils/src/timer.c b/src/utils/timer_utils/src/timer.c
+index 899f5ff5..ca35cabe 100644
+--- a/src/utils/timer_utils/src/timer.c
++++ b/src/utils/timer_utils/src/timer.c
+@@ -170,7 +170,7 @@ int AducTimer_Start(AducTimer* t, unsigned w)
+ 
+     pthread_mutex_lock(&t->mut);
+     _reset(t);
+-    t->waitTimeMs = w;
++    t->waitTimeMs = (time_t)w;
+     clock_gettime(CLOCK_MONOTONIC, &t->startTime);
+     if (w != 0 && t->updateIntervalMs != 0) // use zero if want to manually update pump the timer
+     {
 diff --git a/src/utils/workflow_utils/src/workflow_utils.c b/src/utils/workflow_utils/src/workflow_utils.c
 index 5d44850f..fcea1f32 100644
 --- a/src/utils/workflow_utils/src/workflow_utils.c
