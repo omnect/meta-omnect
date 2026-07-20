@@ -81,6 +81,11 @@ BBMASK:append = " \
 # meta-imx-sdk, so it would dangle; we don't want the demos anyway.
 BBMASK:append = " meta-phytec/dynamic-layers/fsl-bsp-release/recipes-fsl/mcore-demos/"
 
+# u-boot-master.bb tracks u-boot master via AUTOREV, doing a git ls-remote at
+# parse time; we don't use it and the remote fetch breaks parsing when
+# source.denx.de is unreachable.
+BBMASK:append = " meta-phytec/recipes-bsp/u-boot/u-boot-master.bb"
+
 # fix search path
 FILESEXTRAPATHS:prepend:pn-imx-boot-phytec := "${LAYERDIR_freescale-layer}/recipes-bsp/imx-mkimage/files:"
 FILESEXTRAPATHS:prepend:pn-optee-client := "${LAYERDIR_arm}/recipes-security/optee/optee-client:"
