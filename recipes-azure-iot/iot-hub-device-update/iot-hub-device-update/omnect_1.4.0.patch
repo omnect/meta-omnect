@@ -48,42 +48,54 @@ index 1871bae9..50bf1987 100755
  compiler_packages=('gcc' 'g++')
  
 diff --git a/src/adu-shell/scripts/adu-reboot-wrapper.sh b/src/adu-shell/scripts/adu-reboot-wrapper.sh
-index fbc6546b..d690ea1b 100644
+index fbc6546b..b16fc426 100644
 --- a/src/adu-shell/scripts/adu-reboot-wrapper.sh
 +++ b/src/adu-shell/scripts/adu-reboot-wrapper.sh
-@@ -35,10 +35,12 @@ done
+@@ -34,11 +34,14 @@ done
+ # Cleanup any remaining lock
  rm -f "$LOCK_FILE" 2> /dev/null
  
++# This wrapper only waits for the agent; adu-shell performs the actual reboot
++# after this script returns. Report the outcome via the exit code so the caller
++# can tell a timeout (agent may not have finished) from a clean handshake:
++#   0 = agent signalled ready, 2 = wait timed out.
  if [ $elapsed -ge "$TIMEOUT" ]; then
 -    echo "ADU Reboot Wrapper: Timeout reached after ${elapsed}s, forcing reboot"
-+    echo "ADU Reboot Wrapper: Timeout reached after ${elapsed}s; adu-shell will reboot"
- else
+-else
 -    echo "ADU Reboot Wrapper: Agent ready after ${elapsed}s, proceeding with reboot"
-+    echo "ADU Reboot Wrapper: Agent ready after ${elapsed}s; adu-shell will reboot"
++    echo "ADU Reboot Wrapper: Timeout reached after ${elapsed}s; adu-shell will reboot"
++    exit 2
  fi
  
 -# Perform actual reboot
 -exec /sbin/reboot "$@"
-+# This wrapper only waits for the agent. adu-shell performs the actual reboot
-+# via the reboot(2) syscall (CAP_SYS_BOOT) after this script returns, so no
-+# privileged reboot child process is spawned here.
++echo "ADU Reboot Wrapper: Agent ready after ${elapsed}s; adu-shell will reboot"
 +exit 0
 diff --git a/src/adu-shell/src/common_tasks.cpp b/src/adu-shell/src/common_tasks.cpp
-index 770f8bd4..11fc68ad 100644
+index 770f8bd4..a78da85a 100644
 --- a/src/adu-shell/src/common_tasks.cpp
 +++ b/src/adu-shell/src/common_tasks.cpp
-@@ -5,6 +5,10 @@
+@@ -5,10 +5,19 @@
   * @copyright Copyright (c) Microsoft Corporation.
   * Licensed under the MIT License.
   */
 +#include <cerrno>
 +#include <stdlib.h> // for getenv
 +#include <sys/reboot.h>
++#include <unistd.h> // sync
 +
  #include "common_tasks.hpp"
  #include "aduc/process_utils.hpp"
  
-@@ -25,26 +29,55 @@ namespace Common
+ #include <unordered_map>
++
++// adu-reboot-wrapper.sh returns this when the wait for the agent timed out,
++// as opposed to 0 when the agent signalled it is ready.
++#define ADU_REBOOT_WRAPPER_EXIT_TIMEOUT 2
+ namespace Adu
+ {
+ namespace Shell
+@@ -25,29 +34,70 @@ namespace Common
   */
  ADUShellTaskResult Reboot(const ADUShell_LaunchArguments& /*launchArgs*/)
  {
@@ -93,13 +105,10 @@ index 770f8bd4..11fc68ad 100644
 -    // The agent creates /var/run/adu-agent-reboot.lock before calling this
 -    // and removes it after caching and reporting status to cloud
 +
-+    // Wait for the agent to finish caching updates and reporting status to the
-+    // cloud before we reboot. The agent holds /var/run/adu-agent-reboot.lock
-+    // while it prepares; the wrapper polls until the lock is gone (or a timeout)
-+    // and then returns. This preserves the sandbox so downloads can resume after
-+    // restart. The wrapper only waits — it does not reboot. The reboot itself is
-+    // the in-process reboot(2) syscall below, using adu-shell's CAP_SYS_BOOT
-+    // capability, so no privileged child process is spawned for it.
++    // Wait for the agent to finish caching updates and reporting to the cloud
++    // before rebooting, so the sandbox survives the restart and downloads can
++    // resume. adu-reboot-wrapper.sh polls the agent's lock file and returns; it
++    // does not reboot. The reboot is the in-process reboot(2) syscall below.
      std::vector<std::string> args{};
      std::string output;
 -    int exitCode = ADUC_LaunchChildProcess("/usr/lib/adu/adu-reboot-wrapper.sh", args, output);
@@ -108,25 +117,35 @@ index 770f8bd4..11fc68ad 100644
 +    int waitExitCode = ADUC_LaunchChildProcess("/usr/lib/adu/adu-reboot-wrapper.sh", args, output);
 +    if (!output.empty())
 +    {
-+        Log_Info(output.c_str());
++        Log_Info("%s", output.c_str());
 +    }
-+    if (waitExitCode != 0)
++    if (waitExitCode == ADU_REBOOT_WRAPPER_EXIT_TIMEOUT)
      {
 -        Log_Info("Reboot wrapper completed successfully.");
-+        Log_Warn("Reboot wrapper returned %d; proceeding with reboot anyway.", waitExitCode);
++        // Reboot anyway (blocking would strand a half-applied update), but the
++        // agent may not have finished, so download-resume can be lost.
++        Log_Warn("Reboot wrapper timed out waiting for the agent; rebooting anyway.");
      }
 -    else
-+
-+    Log_Info("Calling reboot(RB_AUTOBOOT) directly using CAP_SYS_BOOT capability.");
-+    if (::reboot(RB_AUTOBOOT) != 0)
++    else if (waitExitCode != 0)
      {
 -        Log_Error("Reboot wrapper failed, exit code: %d", exitCode);
-+        const int saved_errno = errno;
-+        Log_Error("reboot(RB_AUTOBOOT) failed (errno: %d)", saved_errno);
-+        taskResult.SetExitStatus(saved_errno);
++        // The wrapper did not run (missing or exec failure): the wait barrier
++        // was skipped entirely.
++        Log_Error("Reboot wrapper failed to run (exit %d); reboot barrier skipped.", waitExitCode);
      }
  
 -    taskResult.SetExitStatus(exitCode);
++    // reboot(2) does not flush the page cache; sync first, as /sbin/reboot does.
++    sync();
++    Log_Info("Calling reboot(RB_AUTOBOOT).");
++    if (::reboot(RB_AUTOBOOT) != 0)
++    {
++        const int saved_errno = errno;
++        Log_Error("reboot(RB_AUTOBOOT) failed (errno: %d)", saved_errno);
++        taskResult.SetExitStatus(saved_errno);
++    }
++
 +    return taskResult;
 +}
 +
@@ -138,23 +157,32 @@ index 770f8bd4..11fc68ad 100644
 +    std::vector<std::string> args{ "log", reason };
 +    std::string output;
 +    const char* script;
- 
-+    Log_Info("Launching child process to record reboot reason (\"%s\")", reason);
 +
++    Log_Info("Launching child process to record reboot reason (\"%s\")", reason);
+ 
 +    script = getenv("OMNECT_LOG_REBOOT_REASON_SCRIPT");
 +    if (nullptr == script)
 +    {
 +        script = OMNECT_DEFAULT_LOG_REBOOT_REASON_SCRIPT;
 +    }
-+    taskResult.SetExitStatus(ADUC_LaunchChildProcess(script, args, output));
++    int exitCode = ADUC_LaunchChildProcess(script, args, output);
++    taskResult.SetExitStatus(exitCode);
      if (!output.empty())
      {
-         Log_Info(output.c_str());
-@@ -81,6 +114,16 @@ ADUShellTaskResult DoCommonTask(const ADUShell_LaunchArguments& launchArgs)
+-        Log_Info(output.c_str());
++        Log_Info("%s", output.c_str());
++    }
++    if (exitCode != 0)
++    {
++        Log_Warn("Recording reboot reason failed (exit %d)", exitCode);
+     }
+     return taskResult;
+ }
+@@ -81,6 +131,16 @@ ADUShellTaskResult DoCommonTask(const ADUShell_LaunchArguments& launchArgs)
          taskResult.SetExitStatus(ADUSHELL_EXIT_UNSUPPORTED);
      }
  
-+    // we're ready now to perform the reboot, so log reboot reason right now
++    // Record the reboot reason before the reboot: reboot(2) does not return.
 +    try
 +    {
 +        DoRebootReason("swupdate");
@@ -221,7 +249,7 @@ index cf1f3bd5..0d715d2b 100644
      ADUC_ConfigInfo_ReleaseInstance(config);
      return ret;
 diff --git a/src/adu-shell/src/script_tasks.cpp b/src/adu-shell/src/script_tasks.cpp
-index adbd4446..50570a60 100644
+index adbd4446..95b2d062 100644
 --- a/src/adu-shell/src/script_tasks.cpp
 +++ b/src/adu-shell/src/script_tasks.cpp
 @@ -49,11 +49,8 @@ ADUShellTaskResult Execute(const ADUShell_LaunchArguments& launchArgs)
@@ -242,7 +270,7 @@ index adbd4446..50570a60 100644
  
 -    // Remember the original permissions and ownership so they can be restored after execution.
 +    // Remember the original permissions so they can be restored after execution.
-+    // omnect intentionally does not change or restore the script ownership (no chown).
++    // omnect intentionally does not touch the script ownership.
      originalMode = st.st_mode & ~S_IFMT;
 -    originalUid = st.st_uid;
 -    originalGid = st.st_gid;
@@ -289,27 +317,38 @@ index adbd4446..50570a60 100644
      if (filePermissionsChanged)
      {
 diff --git a/src/adu-shell/tests/adushell_ut.cpp b/src/adu-shell/tests/adushell_ut.cpp
-index 292f84da..f9e1596a 100644
+index 292f84da..17a51a53 100644
 --- a/src/adu-shell/tests/adushell_ut.cpp
 +++ b/src/adu-shell/tests/adushell_ut.cpp
-@@ -14,6 +14,7 @@
+@@ -14,8 +14,10 @@
  #include <catch2/catch_all.hpp>
  
  #include <atomic>
 +#include <cerrno>
  #include <chrono>
  #include <filesystem>
++#include <unistd.h> // geteuid
  #include <fstream>
-@@ -229,7 +230,7 @@ TEST_CASE("AptGet rollback appends output from cleanup phase")
+ #include <string>
+ #include <sys/stat.h>
+@@ -229,17 +231,31 @@ TEST_CASE("AptGet rollback appends output from cleanup phase")
      CHECK(taskResult.Output() == "phasephase");
  }
  
 -TEST_CASE("Common reboot task dispatches reboot command")
 +TEST_CASE("Common reboot task waits via the reboot wrapper, then calls reboot syscall directly")
  {
++    // Reboot() calls the real reboot(RB_AUTOBOOT) syscall (only the child-process
++    // launch is mocked). Run as root in the initial PID namespace it would reboot
++    // the host, so skip when privileged. The success path cannot be tested safely.
++    if (geteuid() == 0)
++    {
++        SKIP("Reboot() calls the real reboot(2) syscall; skipping as root to avoid rebooting the host");
++    }
++
      g_launchCapture.Reset();
  
-@@ -237,9 +238,15 @@ TEST_CASE("Common reboot task dispatches reboot command")
+     ADUShell_LaunchArguments launchArgs{};
  
      auto taskResult = Adu::Shell::Tasks::Common::Reboot(launchArgs);
  
@@ -319,10 +358,10 @@ index 292f84da..f9e1596a 100644
      CHECK(g_launchCapture.command == "/usr/lib/adu/adu-reboot-wrapper.sh");
      REQUIRE(g_launchCapture.args.size() == 0);
 +
-+    // The reboot itself is the in-process reboot(2) syscall. In the test
-+    // environment (no CAP_SYS_BOOT), reboot(2) returns EPERM. A non-zero exit
-+    // confirms the syscall was attempted and failed gracefully.
-+    CHECK(taskResult.ExitStatus() == EPERM);
++    // reboot(2) fails without privilege here; the code maps the failure to a
++    // non-zero exit status (errno). Assert only that, not a specific errno,
++    // which depends on the sandbox.
++    CHECK(taskResult.ExitStatus() != 0);
  }
  
  TEST_CASE("Common task handles unsupported action path")
@@ -490,7 +529,7 @@ index 89a2523c..563feb37 100644
      case IOTHUB_CLIENT_CONNECTION_UNAUTHENTICATED:
          if (IoTHub_CommunicationManager_CategorizeUnauthenticated(status_reason)
 diff --git a/src/communication_managers/iothub_communication_manager/tests/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/tests/CMakeLists.txt
-index dbd6d5b5..69868fc4 100644
+index dbd6d5b5..f0d96f74 100644
 --- a/src/communication_managers/iothub_communication_manager/tests/CMakeLists.txt
 +++ b/src/communication_managers/iothub_communication_manager/tests/CMakeLists.txt
 @@ -26,8 +26,9 @@ target_link_aziotsharedutil (${PROJECT_NAME} PRIVATE)
@@ -510,9 +549,9 @@ index dbd6d5b5..69868fc4 100644
              libaducpal)
  
 +# Link the MQTT transports last, like the agent target does. They are static
-+# archives that pull umqtt/aziotsharedutil symbols, so their link order is
-+# sensitive; omnect's systemd dependency on iothub_communication_manager shifts
-+# the order enough to break resolution when they are listed earlier.
++# archives that reference umqtt/aziotsharedutil, so on GNU ld they must come
++# after those libs; omnect's systemd dependency on iothub_communication_manager
++# shifts the link order enough to break this when they are listed earlier.
 +target_link_libraries (${PROJECT_NAME}
 +                       PRIVATE iothub_client_mqtt_transport iothub_client_mqtt_ws_transport)
 +
@@ -559,33 +598,89 @@ index 6ce04d11..d238d300 100644
  #include <diagnostics_config_utils.h>
  #include <diagnostics_devicename.h>
 diff --git a/src/diagnostics_component/diagnostics_workflow/tests/diagnostics_workflow_ut.cpp b/src/diagnostics_component/diagnostics_workflow/tests/diagnostics_workflow_ut.cpp
-index b0e6823e..b3e0e5a4 100644
+index b0e6823e..bfb8fab6 100644
 --- a/src/diagnostics_component/diagnostics_workflow/tests/diagnostics_workflow_ut.cpp
 +++ b/src/diagnostics_component/diagnostics_workflow/tests/diagnostics_workflow_ut.cpp
-@@ -429,6 +429,11 @@ TEST_CASE("DiagnosticsWorkflow_GetFilesForComponent")
- // ============================================================================
- TEST_CASE("DiagnosticsWorkflow_UploadFilesForComponent")
- {
-+    // omnect builds without diagnostic_utils::file_upload_utility, so the blob
-+    // upload is stubbed out and always fails. This test exercises the real
-+    // upload path, so skip it.
-+    SKIP("diagnostics blob upload (file_upload_utility) is disabled in omnect");
-+
-     DiagnosticsWorkflowTestHelper helper;
+@@ -520,29 +520,6 @@ TEST_CASE("DiagnosticsWorkflow_UploadFilesForComponent")
+         STRING_delete(comp.componentName);
+     }
  
-     SECTION("NULL fileNames returns Failure")
-@@ -666,6 +671,11 @@ TEST_CASE("DiagnosticsWorkflow_UnInitLogComponentFileNames")
- // ============================================================================
- TEST_CASE("DiagnosticsWorkflow_DiscoverAndUploadLogs")
- {
-+    // omnect builds without diagnostic_utils::file_upload_utility, so the blob
-+    // upload is stubbed out and always fails. This test exercises the real
-+    // upload path, so skip it.
-+    SKIP("diagnostics blob upload (file_upload_utility) is disabled in omnect");
-+
-     DiagnosticsWorkflowTestHelper helper;
+-    SECTION("Successful upload returns Success")
+-    {
+-        g_mock_upload_return = true;
+-
+-        VECTOR_HANDLE fileNames = VECTOR_create(sizeof(STRING_HANDLE));
+-        STRING_HANDLE fileName = STRING_construct("test.log");
+-        VECTOR_push_back(fileNames, &fileName, 1);
+-
+-        DiagnosticsLogComponent comp = {};
+-        comp.componentName = STRING_construct("adu-agent");
+-        comp.logPath = STRING_construct("/var/log/adu");
+-
+-        Diagnostics_Result result =
+-            DiagnosticsWorkflow_UploadFilesForComponent(fileNames, &comp, "device1", "op-123", "https://sas.url/token");
+-        CHECK(result == Diagnostics_Result_Success);
+-        CHECK(g_mock_upload_call_count == 1);
+-
+-        STRING_delete(fileName);
+-        VECTOR_destroy(fileNames);
+-        STRING_delete(comp.componentName);
+-        STRING_delete(comp.logPath);
+-    }
+-
+     SECTION("Upload failure returns UploadFailed")
+     {
+         g_mock_upload_return = false;
+@@ -773,6 +750,49 @@ TEST_CASE("DiagnosticsWorkflow_DiscoverAndUploadLogs")
+         CleanupTestWorkflowData(&data);
+     }
  
-     SECTION("NULL jsonString reports failure")
++}
++
++// ============================================================================
++// The following success paths need a working diagnostics blob upload, which
++// omnect disables (file_upload_utility is stubbed out and always fails). They
++// live in their own skipped test cases so the validation and error-path
++// coverage in the cases above keeps running (a skip in a shared case would
++// mask sibling failures under ctest).
++// ============================================================================
++TEST_CASE("DiagnosticsWorkflow_UploadFilesForComponent upload success (disabled in omnect)")
++{
++    SKIP("diagnostics blob upload (file_upload_utility) is disabled in omnect");
++    DiagnosticsWorkflowTestHelper helper;
++
++    SECTION("Successful upload returns Success")
++    {
++        g_mock_upload_return = true;
++
++        VECTOR_HANDLE fileNames = VECTOR_create(sizeof(STRING_HANDLE));
++        STRING_HANDLE fileName = STRING_construct("test.log");
++        VECTOR_push_back(fileNames, &fileName, 1);
++
++        DiagnosticsLogComponent comp = {};
++        comp.componentName = STRING_construct("adu-agent");
++        comp.logPath = STRING_construct("/var/log/adu");
++
++        Diagnostics_Result result =
++            DiagnosticsWorkflow_UploadFilesForComponent(fileNames, &comp, "device1", "op-123", "https://sas.url/token");
++        CHECK(result == Diagnostics_Result_Success);
++        CHECK(g_mock_upload_call_count == 1);
++
++        STRING_delete(fileName);
++        VECTOR_destroy(fileNames);
++        STRING_delete(comp.componentName);
++        STRING_delete(comp.logPath);
++    }
++}
++
++TEST_CASE("DiagnosticsWorkflow_DiscoverAndUploadLogs upload success (disabled in omnect)")
++{
++    SKIP("diagnostics blob upload (file_upload_utility) is disabled in omnect");
++    DiagnosticsWorkflowTestHelper helper;
++
+     SECTION("Full successful workflow reports Success and stores operation ID")
+     {
+         DiagnosticsWorkflowData data = CreateTestWorkflowData("adu", "/tmp/logs", 1024);
 diff --git a/src/diagnostics_component/utils/CMakeLists.txt b/src/diagnostics_component/utils/CMakeLists.txt
 index 2952f344..811a22f1 100644
 --- a/src/diagnostics_component/utils/CMakeLists.txt
@@ -793,10 +888,10 @@ index 00000000..8ea0cf2a
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 00000000..891e09b8
+index 00000000..874fb3a5
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
-@@ -0,0 +1,599 @@
+@@ -0,0 +1,598 @@
 +/**
 + * @file swupdate_consent_handler.cpp
 + * @brief Implementation of ContentHandler API for update content swupdate_consent.
@@ -813,7 +908,6 @@ index 00000000..891e09b8
 +#include "aduc/workflow_utils.h"
 +#include <azure_c_shared_utility/threadapi.h> // ThreadAPI_Sleep
 +#include <parson.h>
-+#include <signal.h> // raise()
 +
 +#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/etc/omnect/consent/consent_conf.json"
 +#define ADUC_SWUPDATE_CONSENT_USER_FILE "/etc/omnect/consent/swupdate/user_consent.json"
@@ -1271,10 +1365,10 @@ index 00000000..891e09b8
 +        {
 +            if (workflow_is_cancel_requested(workflowHandle))
 +            {
-+                // see issue: https://github.com/Azure/iot-hub-device-update/issues/511
-+                // Workaround until we get a final fix from MS
-+                Log_Info("Restarting ADU Agent due to cancel request!");
-+                raise(SIGUSR1);
++                Log_Info("cancel requested while waiting for user consent");
++                CleanConsentRequestJsonFile();
++                workflow_free_string(installedCriteria_workflow);
++                return Cancel(workflowData);
 +            }
 +
 +            if (true == UserConsentAgreed(version))
