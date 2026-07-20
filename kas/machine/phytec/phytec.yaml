@@ -49,8 +49,3 @@ repos:
         path: "kas/patches/meta-arm_layerdir.patch"
 env:
   ACCEPT_FSL_EULA: "0"
-  # Drop upstream meta-phytec "lack of whitespace around the assignment" bitbake
-  # parse warnings from the console. BB_LOGCONFIG's dictConfig runs in the bitbake
-  # UI process, whose sys.path is only bitbake/lib, so the filter module is reached
-  BB_LOGCONFIG: "${LAYERDIR_omnect}/files/logging/bb-logging.json"
-  PYTHONPATH: "/yocto-build/meta-omnect/files/logging"
