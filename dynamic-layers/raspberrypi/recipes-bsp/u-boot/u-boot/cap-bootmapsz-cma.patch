@@ -1,0 +1,40 @@
+Cap U-Boot initrd/DTB relocation ceiling so the RPi4 vc4-kms CMA region fits.
+
+On BCM2711 the linux,cma region (512 MiB, sized by the vc4-kms-v3d overlay) must
+be reserved within the first 1 GiB (its alloc-ranges is ZONE_DMA, because some
+peripherals can only DMA to the low 1 GiB). U-Boot's boot_ramdisk_high()
+relocates the ramdisk+DTB to the top of [bootm_low, bootm_low + bootm_mapsize).
+RPi does not define CFG_SYS_BOOTMAPSZ, so bootm_mapsize falls back to bootm_size
+(0x20000000 = 512 MiB from rpi.env), landing the ramdisk+DTB at 479-512 MiB and
+splitting low memory so no contiguous 512 MiB remains. The reservation then
+fails ("OF: reserved mem: failed to allocate memory for node 'linux,cma': size
+512 MiB") and CMA collapses to a tiny fallback.
+
+Cap the relocation ceiling at 192 MiB so the ramdisk+DTB stay low and a
+contiguous 512 MiB is left free for CMA. Done in the compiled config, not the
+environment, because omnect_update_flow runs saveenv on every boot, which
+overwrites any bootm_size/initrd_high set via fw_setenv.
+
+Upstream-Status: Inappropriate [omnect BCM2711 memory-layout specific]
+
+diff --git a/include/configs/rpi.h b/include/configs/rpi.h
+index 8e56bdc..0b3ca45 100644
+--- a/include/configs/rpi.h
++++ b/include/configs/rpi.h
+@@ -13,6 +13,16 @@
+ #include <asm/arch/base.h>
+ #endif
+ 
++/*
++ * Cap the initrd/DTB relocation ceiling below the BCM2711 CMA window. Without
++ * CFG_SYS_BOOTMAPSZ, bootm_mapsize falls back to bootm_size (512 MiB from
++ * rpi.env), so boot_ramdisk_high() relocates the ramdisk+DTB to 479-512 MiB;
++ * the vc4-kms 512 MiB linux,cma region (which must fit the first 1 GiB /
++ * ZONE_DMA) then cannot be placed contiguously and the reservation fails.
++ * Compiled in (not env) because omnect_update_flow runs saveenv every boot.
++ */
++#define CFG_SYS_BOOTMAPSZ		0x0c000000
++
+ /* Use SoC timer for AArch32, but architected timer for AArch64 */
+ #ifndef CONFIG_ARM64
+ #define CFG_SYS_TIMER_RATE		1000000
