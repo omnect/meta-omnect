@@ -1,0 +1,41 @@
+Bump the pinned Docker Engine API version from v1.34 to v1.44.
+
+Docker Engine 29 raised its minimum supported API version to 1.44, so
+"iotedge config apply" (and the docker-rs client generally) fails with
+"client version 1.34 is too old" against a v29 daemon.
+
+Upstream issue: https://github.com/Azure/iotedge/issues/7494
+Proposed fix:  https://github.com/Azure/iotedge/issues/7494#issuecomment-3702307679
+
+Upstream-Status: Pending
+
+diff --git a/edgelet/docker-rs/docker-swagger.yaml b/edgelet/docker-rs/docker-swagger.yaml
+index 9eb659d22..0c7be77d9 100644
+--- a/edgelet/docker-rs/docker-swagger.yaml
++++ b/edgelet/docker-rs/docker-swagger.yaml
+@@ -24,10 +24,10 @@ produces:
+ consumes:
+   - "application/json"
+   - "text/plain"
+-basePath: "/v1.34"
++basePath: "/v1.44"
+ info:
+   title: "Docker Engine API"
+-  version: "1.34"
++  version: "1.44"
+   x-logo:
+     url: "https://docs.docker.com/images/logo-docker-main.png"
+   description: |
+diff --git a/edgelet/docker-rs/src/apis/configuration.rs b/edgelet/docker-rs/src/apis/configuration.rs
+index 739363a58..826e839a8 100644
+--- a/edgelet/docker-rs/src/apis/configuration.rs
++++ b/edgelet/docker-rs/src/apis/configuration.rs
+@@ -7,7 +7,7 @@ pub struct Configuration {
+ impl Default for Configuration {
+     fn default() -> Self {
+         Configuration {
+-            base_path: "http://localhost/v1.34".to_owned(),
++            base_path: "http://localhost/v1.44".to_owned(),
+             user_agent: Some("edgelet/0.1.0".to_owned()),
+             uri_composer: Box::new(|base_path, path| Ok(format!("{}{}", base_path, path).parse()?)),
+         }
