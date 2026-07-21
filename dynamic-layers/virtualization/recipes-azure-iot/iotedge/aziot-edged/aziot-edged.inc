@@ -34,19 +34,6 @@ do_install () {
     install -d ${D}${libdir}/tmpfiles.d
     echo "d ${localstatedir}/lib/aziot/edged 0700 iotedge iotedge -"  >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
     echo "d /run/iotedge 0755 iotedge iotedge -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
-    if [ "${OMNECT_RELEASE_IMAGE}" != "1" ]; then
-        # per-module host dirs for edge module crash dumps, bind-mounted into the
-        # modules via the deployment manifest resp. injected config; owners
-        # must match the fixed uids the module containers run with; the age
-        # field prunes old dumps so a crash loop can't fill the data partition
-        #
-        # a shared dump group instead of per-module uids won't work: edgeAgent
-        # and edgeHub start as root and drop privileges via "su", which resets
-        # the supplementary groups that docker's GroupAdd would grant
-        echo "d /mnt/data/crash-dumps 0755 root root -" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
-        echo "d /mnt/data/crash-dumps/edgeAgent 0700 edgeagentuser iotedge 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
-        echo "d /mnt/data/crash-dumps/edgeHub 0700 edgehubuser iotedge 14d" >> ${D}${libdir}/tmpfiles.d/aziot-edged.conf
-    fi
 
     # config files
     install -m 0640 ${S}/edgelet/contrib/config/linux/template.toml ${D}${sysconfdir}/aziot/config.toml.edge.template
@@ -77,8 +64,7 @@ do_install () {
 
 USERADD_PARAM:${PN} += " \
     -r -u 15580 -g iotedge -G aziot,aziotcs,aziotid,aziotks,docker,systemd-journal -s /bin/false -d ${localstatedir}/lib/iotedge iotedge; \
-    -r -u 13622 -g iotedge -s /sbin/false -M edgeagentuser; \
-    -r -u 13623 -g iotedge -s /sbin/false -M edgehubuser; \
+    -r -g iotedge -s /sbin/false -M edgeagentuser; \
 "
 
 GROUPADD_PARAM:${PN} += " \

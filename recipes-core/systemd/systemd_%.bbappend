@@ -58,6 +58,11 @@ do_install:append() {
 
     # delete systemd-journald-audit.socket - we don't use this feature (yet)
     rm -f ${D}${systemd_system_unitdir}/sockets.target.wants/systemd-journald-audit.socket
+
+    # coredump storage: keep no cores by default on any image, so process memory
+    # (which may hold secrets) is never written to disk. The CI test environment
+    # and per-device debugging enable capture via /etc drop-ins.
+    sed -i 's/^#\?Storage=.*/Storage=none/' ${D}${sysconfdir}/systemd/coredump.conf
     rm -f ${D}${systemd_system_unitdir}/systemd-journald-audit.socket
 
     # sync time on sysinit
