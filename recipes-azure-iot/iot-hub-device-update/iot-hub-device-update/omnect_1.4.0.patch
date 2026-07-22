@@ -72,7 +72,7 @@ index fbc6546b..b16fc426 100644
 +echo "ADU Reboot Wrapper: Agent ready after ${elapsed}s; adu-shell will reboot"
 +exit 0
 diff --git a/src/adu-shell/src/common_tasks.cpp b/src/adu-shell/src/common_tasks.cpp
-index 770f8bd4..a78da85a 100644
+index 770f8bd4..c09f286f 100644
 --- a/src/adu-shell/src/common_tasks.cpp
 +++ b/src/adu-shell/src/common_tasks.cpp
 @@ -5,10 +5,19 @@
@@ -139,7 +139,7 @@ index 770f8bd4..a78da85a 100644
 +    // reboot(2) does not flush the page cache; sync first, as /sbin/reboot does.
 +    sync();
 +    Log_Info("Calling reboot(RB_AUTOBOOT).");
-+    if (::reboot(RB_AUTOBOOT) != 0)
++    if (ADUC_SystemReboot(RB_AUTOBOOT) != 0)
 +    {
 +        const int saved_errno = errno;
 +        Log_Error("reboot(RB_AUTOBOOT) failed (errno: %d)", saved_errno);
@@ -317,7 +317,7 @@ index adbd4446..95b2d062 100644
      if (filePermissionsChanged)
      {
 diff --git a/src/adu-shell/tests/adushell_ut.cpp b/src/adu-shell/tests/adushell_ut.cpp
-index 292f84da..17a51a53 100644
+index 292f84da..30a825f0 100644
 --- a/src/adu-shell/tests/adushell_ut.cpp
 +++ b/src/adu-shell/tests/adushell_ut.cpp
 @@ -14,8 +14,10 @@
@@ -327,41 +327,100 @@ index 292f84da..17a51a53 100644
 +#include <cerrno>
  #include <chrono>
  #include <filesystem>
-+#include <unistd.h> // geteuid
++#include <sys/reboot.h> // RB_AUTOBOOT
  #include <fstream>
  #include <string>
  #include <sys/stat.h>
-@@ -229,17 +231,31 @@ TEST_CASE("AptGet rollback appends output from cleanup phase")
+@@ -41,6 +43,26 @@ struct LaunchCapture
+ 
+ LaunchCapture g_launchCapture;
+ 
++// Captures ADUC_SystemReboot calls so the reboot path can be tested without
++// actually rebooting (and so it runs in CI regardless of privilege).
++struct RebootCapture
++{
++    int callCount{ 0 };
++    int howto{ 0 };
++    int returnValue{ 0 }; // value ADUC_SystemReboot returns to the caller
++    int errnoValue{ 0 }; // errno set when returnValue is non-zero
++
++    void Reset()
++    {
++        callCount = 0;
++        howto = 0;
++        returnValue = 0;
++        errnoValue = 0;
++    }
++};
++
++RebootCapture g_rebootCapture;
++
+ // Tests in this file create, chmod/chown, and delete script files at runtime.
+ // They must write to a writable scratch directory under the build's configurable
+ // work folder (ADU_SHELL_TEST_TMP_DIR is derived from ADUC_TMP_DIR_PATH / the
+@@ -107,6 +129,17 @@ int ADUC_LaunchChildProcess(const std::string& command, std::vector<std::string>
+     return g_launchCapture.exitCode;
+ }
+ 
++int ADUC_SystemReboot(int howto)
++{
++    g_rebootCapture.callCount++;
++    g_rebootCapture.howto = howto;
++    if (g_rebootCapture.returnValue != 0)
++    {
++        errno = g_rebootCapture.errnoValue;
++    }
++    return g_rebootCapture.returnValue;
++}
++
+ TEST_CASE("ADUShellTaskResult defaults to success and empty output")
+ {
+     ADUShellTaskResult result;
+@@ -229,17 +262,42 @@ TEST_CASE("AptGet rollback appends output from cleanup phase")
      CHECK(taskResult.Output() == "phasephase");
  }
  
 -TEST_CASE("Common reboot task dispatches reboot command")
-+TEST_CASE("Common reboot task waits via the reboot wrapper, then calls reboot syscall directly")
++TEST_CASE("Common reboot task waits via the reboot wrapper, then calls reboot syscall")
  {
-+    // Reboot() calls the real reboot(RB_AUTOBOOT) syscall (only the child-process
-+    // launch is mocked). Run as root in the initial PID namespace it would reboot
-+    // the host, so skip when privileged. The success path cannot be tested safely.
-+    if (geteuid() == 0)
-+    {
-+        SKIP("Reboot() calls the real reboot(2) syscall; skipping as root to avoid rebooting the host");
-+    }
-+
++    // reboot(2) is mocked via ADUC_SystemReboot, so the reboot path runs in CI
++    // without rebooting the machine and regardless of privilege.
      g_launchCapture.Reset();
++    g_rebootCapture.Reset();
  
      ADUShell_LaunchArguments launchArgs{};
  
-     auto taskResult = Adu::Shell::Tasks::Common::Reboot(launchArgs);
+-    auto taskResult = Adu::Shell::Tasks::Common::Reboot(launchArgs);
++    SECTION("Successful reboot launches the wrapper then calls reboot(RB_AUTOBOOT)")
++    {
++        g_rebootCapture.returnValue = 0;
  
 -    CHECK(taskResult.ExitStatus() == 0);
-+    // The only child process launched is the wrapper, which waits for the
-+    // agent to finish caching and reporting before the reboot proceeds.
-     CHECK(g_launchCapture.command == "/usr/lib/adu/adu-reboot-wrapper.sh");
-     REQUIRE(g_launchCapture.args.size() == 0);
+-    CHECK(g_launchCapture.command == "/usr/lib/adu/adu-reboot-wrapper.sh");
+-    REQUIRE(g_launchCapture.args.size() == 0);
++        auto taskResult = Adu::Shell::Tasks::Common::Reboot(launchArgs);
 +
-+    // reboot(2) fails without privilege here; the code maps the failure to a
-+    // non-zero exit status (errno). Assert only that, not a specific errno,
-+    // which depends on the sandbox.
-+    CHECK(taskResult.ExitStatus() != 0);
++        // The only child process launched is the wrapper, which waits for the
++        // agent to finish caching and reporting before the reboot proceeds.
++        CHECK(g_launchCapture.command == "/usr/lib/adu/adu-reboot-wrapper.sh");
++        REQUIRE(g_launchCapture.args.size() == 0);
++
++        // The reboot itself is the in-process reboot(2) syscall.
++        CHECK(g_rebootCapture.callCount == 1);
++        CHECK(g_rebootCapture.howto == RB_AUTOBOOT);
++        CHECK(taskResult.ExitStatus() == 0);
++    }
++
++    SECTION("Failed reboot maps errno to the exit status")
++    {
++        g_rebootCapture.returnValue = -1;
++        g_rebootCapture.errnoValue = EPERM;
++
++        auto taskResult = Adu::Shell::Tasks::Common::Reboot(launchArgs);
++
++        CHECK(g_rebootCapture.callCount == 1);
++        CHECK(taskResult.ExitStatus() == EPERM);
++    }
  }
  
  TEST_CASE("Common task handles unsupported action path")
@@ -1809,6 +1868,49 @@ index bc3184ae..d256c051 100644
          "   \"hashes\": {\n"
          "        \"sha256\":\"%s\"\n"
          "   }\n"
+diff --git a/src/utils/process_utils/inc/aduc/process_utils.hpp b/src/utils/process_utils/inc/aduc/process_utils.hpp
+index ba9f6fa8..52df3e3c 100644
+--- a/src/utils/process_utils/inc/aduc/process_utils.hpp
++++ b/src/utils/process_utils/inc/aduc/process_utils.hpp
+@@ -45,6 +45,17 @@ int ADUC_LaunchChildProcess(const std::string& command, std::vector<std::string>
+ int ADUC_LaunchChildProcess(
+     const std::string& command, std::vector<std::string> args, std::vector<std::string>& output);
+ 
++/**
++ * @brief Wrapper around the reboot(2) syscall.
++ *
++ * Exists as a seam so unit tests can intercept the reboot request instead of
++ * actually rebooting the machine.
++ *
++ * @param howto The reboot command, e.g. RB_AUTOBOOT (see sys/reboot.h).
++ * @return 0 on success; -1 with errno set on failure.
++ */
++int ADUC_SystemReboot(int howto);
++
+ /**
+  * @brief Ensure that the effective group of the process is the given group (or is root).
+  * @remark This function is not thread-safe if called with the defaults for the optional args.
+diff --git a/src/utils/process_utils/src/process_utils.cpp b/src/utils/process_utils/src/process_utils.cpp
+index 76484acf..83f727ac 100644
+--- a/src/utils/process_utils/src/process_utils.cpp
++++ b/src/utils/process_utils/src/process_utils.cpp
+@@ -13,6 +13,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <sys/reboot.h> // reboot
+ #include <sys/types.h>
+ 
+ #include <aduc/c_utils.h>
+@@ -322,3 +323,8 @@ bool VerifyProcessEffectiveUser(
+     }
+     return isTrusted;
+ }
++
++int ADUC_SystemReboot(int howto)
++{
++    return reboot(howto);
++}
 diff --git a/src/utils/timer_utils/src/timer.c b/src/utils/timer_utils/src/timer.c
 index 899f5ff5..ca35cabe 100644
 --- a/src/utils/timer_utils/src/timer.c
