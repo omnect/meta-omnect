@@ -100,5 +100,8 @@ env:
 
 local_conf_header:
   meta-omnect_distro_omnect-os: |
+    # take advantage of openembedded-core's hardening settings
+    require ${LAYERDIR_core}/conf/distro/include/security_flags.inc
+
     # For more options have a look into "poky/meta-poky/conf/local.conf.sample" resp.
     # "openebedded-core/meta/conf/local.conf.sample".
