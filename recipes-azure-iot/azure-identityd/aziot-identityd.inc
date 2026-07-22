@@ -49,11 +49,18 @@ do_compile() {
     export RELEASE="1"
     export LIBCLANG_PATH="${STAGING_LIBDIR_NATIVE}"
     # bindgen runs host libclang; give it the target triple + sysroot so it parses
-    # the aarch64 glibc/tss2 headers (the Makefile-driven keys bindgen has no cargo
-    # TARGET to derive --target from). TUNE_CCARGS is omitted: its -mcpu/-mbranch-
-    # protection are rejected by clang for the default x86_64 target and don't
-    # affect bindgen output anyway.
+    # the target glibc/tss2 headers (the Makefile-driven keys bindgen has no cargo
+    # TARGET to derive --target from).
     export BINDGEN_EXTRA_CLANG_ARGS="--target=${TARGET_SYS} --sysroot=${STAGING_DIR_TARGET}"
+    # 32-bit ARM hard-float: the gnueabi triple defaults clang to soft-float, so
+    # it picks the wrong glibc ABI stubs header (gnu/stubs-soft.h, absent in a
+    # hard-float sysroot). Append the tune flags (-mfloat-abi=hard/-mfpu) so clang
+    # matches the target ABI. On aarch64/x86 these flags would be superfluous (and
+    # -mcpu/-mbranch-protection are only rejected by clang when --target is unset,
+    # which it no longer is).
+    if [ "${TARGET_ARCH}" = "arm" ]; then
+        export BINDGEN_EXTRA_CLANG_ARGS="${BINDGEN_EXTRA_CLANG_ARGS} ${TUNE_CCARGS}"
+    fi
     export PATH="${CARGO_HOME}/bin:${PATH}"
     export OPENSSL_DIR="${STAGING_EXECPREFIXDIR}"
     export FORCE_NO_UNITTEST="ON"
