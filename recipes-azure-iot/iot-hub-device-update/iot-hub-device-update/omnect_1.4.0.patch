@@ -366,7 +366,7 @@ index 292f84da..17a51a53 100644
  
  TEST_CASE("Common task handles unsupported action path")
 diff --git a/src/adu_workflow/src/agent_workflow.c b/src/adu_workflow/src/agent_workflow.c
-index 524747b7..38c7e70f 100644
+index 524747b7..d8156d0c 100644
 --- a/src/adu_workflow/src/agent_workflow.c
 +++ b/src/adu_workflow/src/agent_workflow.c
 @@ -38,6 +38,10 @@
@@ -426,28 +426,18 @@ index 524747b7..38c7e70f 100644
      if (currentWorkflowData == NULL)
      {
          Log_Info("No update content. Ignoring.");
-@@ -614,11 +657,17 @@ void ADUC_Workflow_HandlePropertyUpdate(
+@@ -614,6 +657,11 @@ void ADUC_Workflow_HandlePropertyUpdate(
  
                      Log_Debug("deferral not needed. Processing '%s' now", workflow_peek_id(nextWorkflow));
  
--                    workflow_transfer_data(
--                        currentWorkflowData->WorkflowHandle /* wfTarget */, nextWorkflow /* wfSource */);
-+                    // We don't use reuse currentWorkflowData.
-+                    // currentWorkflow is current resp. **old** workflow before cloud updated with nextWorkflow (**current** incoming).
-+                    // workflow_transfer_data only works if version to update is equal in currentWorkflow and nextWorkflow.
-+                    // Thus we disable copying transfer data between workflows and don't use currentWorkflow (**old**).
-+                    // Thus we use nextWorkflow (**current** incoming).
++                    // Transfer the incoming manifest into the current handle and process it.
++                    // transfer_data rebuilds the step children from the new manifest (issue
++                    // #511), so a replacement with a differing version no longer reuses the
++                    // previous deployment's steps. This keeps a single replacement path shared
++                    // with the deferred case (workflow_update_for_replacement).
+                     workflow_transfer_data(
+                         currentWorkflowData->WorkflowHandle /* wfTarget */, nextWorkflow /* wfSource */);
  
--                    ADUC_Workflow_HandleUpdateAction(currentWorkflowData);
--                    goto done;
-+                    // workflow_transfer_data(
-+                    //     currentWorkflowData->WorkflowHandle /* wfTarget */, nextWorkflow /* wfSource */);
-+
-+                    // ADUC_Workflow_HandleUpdateAction(currentWorkflowData);
-+                    // goto done;
-                 }
- 
-                 // Fall through to handle new workflow
 diff --git a/src/agent/src/health_management.c b/src/agent/src/health_management.c
 index 38ad9ea5..b32dcc33 100644
 --- a/src/agent/src/health_management.c
@@ -1833,10 +1823,10 @@ index 899f5ff5..ca35cabe 100644
      if (w != 0 && t->updateIntervalMs != 0) // use zero if want to manually update pump the timer
      {
 diff --git a/src/utils/workflow_utils/src/workflow_utils.c b/src/utils/workflow_utils/src/workflow_utils.c
-index 5d44850f..fcea1f32 100644
+index 5d44850f..34be0bc9 100644
 --- a/src/utils/workflow_utils/src/workflow_utils.c
 +++ b/src/utils/workflow_utils/src/workflow_utils.c
-@@ -2910,6 +2910,18 @@ bool workflow_transfer_data(ADUC_WorkflowHandle targetHandle, ADUC_WorkflowHandl
+@@ -2910,6 +2910,25 @@ bool workflow_transfer_data(ADUC_WorkflowHandle targetHandle, ADUC_WorkflowHandl
          return false;
      }
  
@@ -1852,11 +1842,18 @@ index 5d44850f..fcea1f32 100644
 +        workflow_free(child);
 +    }
 +
++    // Free the target's own parsed objects before overwriting the pointers
++    // below, so replacing a handle that already holds a manifest does not leak
++    // the replaced deployment's objects.
++    _workflow_free_updateaction(targetHandle);
++    _workflow_free_updatemanifest(targetHandle);
++    _workflow_free_properties(targetHandle);
++
      // Transfer over the parsed JSON objects
      wfTarget->UpdateActionObject = wfSource->UpdateActionObject;
      wfSource->UpdateActionObject = NULL;
 diff --git a/src/utils/workflow_utils/tests/workflow_utils_ut.cpp b/src/utils/workflow_utils/tests/workflow_utils_ut.cpp
-index 74feb30b..0fa9e6c8 100644
+index 74feb30b..6094b50d 100644
 --- a/src/utils/workflow_utils/tests/workflow_utils_ut.cpp
 +++ b/src/utils/workflow_utils/tests/workflow_utils_ut.cpp
 @@ -17,6 +17,9 @@
@@ -1869,7 +1866,7 @@ index 74feb30b..0fa9e6c8 100644
  #include <sstream>
  #include <string>
  
-@@ -875,3 +878,57 @@ TEST_CASE("workflow manifest and inode helper APIs")
+@@ -875,3 +878,108 @@ TEST_CASE("workflow manifest and inode helper APIs")
  
      workflow_free(handle);
  }
@@ -1923,6 +1920,57 @@ index 74feb30b..0fa9e6c8 100644
 +    REQUIRE(updateId != nullptr);
 +    CHECK(strstr(updateId, "Virtual-Vacuum") != nullptr);
 +    workflow_free_string(updateId);
++
++    workflow_free(source);
++    workflow_free(target);
++}
++
++TEST_CASE("workflow_transfer_data adopts the replacement manifest")
++{
++    // A replacement with a different update than the one on the handle must end
++    // up running the incoming manifest, not the replaced one. This is what the
++    // non-deferred replacement path in ADUC_Workflow_HandlePropertyUpdate relies
++    // on: it transfers the incoming workflow into the current handle and expects
++    // the new manifest (and its installedCriteria) to take effect.
++    std::filesystem::path cfgDir = std::filesystem::temp_directory_path() / "wfut_transfer_replace_cfg";
++    std::filesystem::create_directories(cfgDir);
++    std::ofstream(cfgDir / "du-config.json") << R"({
++        "schemaVersion": "1.0",
++        "aduShellTrustedUsers": [ "adu" ],
++        "manufacturer": "contoso",
++        "model": "espresso-v1",
++        "agents": [ {
++            "name": "main", "runas": "adu",
++            "connectionSource": { "connectionType": "string", "connectionData": "HostName=x;DeviceId=y;SharedAccessKey=z" },
++            "manufacturer": "contoso", "model": "espresso-v1"
++        } ]
++    })";
++    setenv("ADUC_CONF_FOLDER", cfgDir.c_str(), 1);
++
++    // Target = the update already on the handle (contoso-virtual-motors 1.1),
++    // with a stale step child parsed from its manifest.
++    ADUC_WorkflowHandle target = nullptr;
++    REQUIRE(IsAducResultCodeSuccess(workflow_init(action_child_update_0, false, &target).ResultCode));
++    ADUC_WorkflowHandle staleChild = nullptr;
++    REQUIRE(IsAducResultCodeSuccess(workflow_init(action_child_update_0, false, &staleChild).ResultCode));
++    REQUIRE(workflow_insert_child(target, -1, staleChild));
++    REQUIRE(workflow_get_children_count(target) == 1);
++
++    // Source = the incoming replacement (Virtual-Vacuum 20.0).
++    ADUC_WorkflowHandle source = nullptr;
++    REQUIRE(IsAducResultCodeSuccess(workflow_init(action_parent_update, false, &source).ResultCode));
++
++    REQUIRE(workflow_transfer_data(target, source));
++
++    // The target now carries the incoming manifest, not the replaced one.
++    char* updateId = workflow_get_expected_update_id_string(target);
++    REQUIRE(updateId != nullptr);
++    CHECK(strstr(updateId, "Virtual-Vacuum") != nullptr);
++    CHECK(strstr(updateId, "contoso-virtual-motors") == nullptr);
++    workflow_free_string(updateId);
++
++    // Stale children were dropped so they rebuild from the new manifest.
++    CHECK(workflow_get_children_count(target) == 0);
 +
 +    workflow_free(source);
 +    workflow_free(target);
