@@ -14,7 +14,7 @@ def aduc_version(d, idx):
     return parts[idx]
 
 SRC_URI = " \
-  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.2.6;nobranch=1 \
+  git://github.com/azure/iot-hub-device-update.git;protocol=https;tag=1.4.0;nobranch=1 \
   file://deviceupdate-agent.service \
   file://deviceupdate-agent.timer \
   file://du-config.json \
@@ -22,7 +22,7 @@ SRC_URI = " \
   file://iot-hub-device-update.tmpfilesd \
   file://iot-identity-service-keyd.template.toml \
   file://iot-identity-service-identityd.template.toml \
-  file://omnect_1.2.6.patch \
+  file://omnect_1.4.0.patch \
   file://adu-bootloader-env \
 "
 SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
@@ -118,9 +118,6 @@ do_install:append() {
   install -m 0660 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/request_consent.json ${D}${sysconfdir}/omnect/consent/
   install -d ${D}${sysconfdir}/omnect/consent/swupdate
   install -m 0660 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
-
-  # delete adu-swupdate.sh
-  rm ${D}${bindir}/adu-swupdate.sh
 
   install -m 0440 -D ${WORKDIR}/adu-bootloader-env ${D}${sysconfdir}/sudoers.d/adu-bootloader-env
 }
