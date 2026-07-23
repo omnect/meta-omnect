@@ -494,6 +494,24 @@ sudo reboot
 **Note1:** The bootloader environment variable `data-mount-options` should be removed at the end of the debugging session.<br>
 **Note2:** It is not advised to use sync mount in operational mode.<br>
 
+### Coredumps
+
+Process crashes are handled by `systemd-coredump`, but **no core is stored by default** on any image (`Storage=none`) - process memory, which may hold secrets, is never written to disk.
+
+To debug a crash on a device, enable both levers per device via the writable `/etc` overlay, then reboot and reproduce:
+```sh
+# 1) complete cores: containerd dumps all memory (inherited by module containers)
+sudo install -d /etc/systemd/system/containerd.service.d
+printf '[Service]\nCoredumpFilter=all\n' | sudo tee /etc/systemd/system/containerd.service.d/10-coredump-filter.conf
+# 2) keep cores on disk
+sudo install -d /etc/systemd/coredump.conf.d
+printf '[Coredump]\nStorage=external\n' | sudo tee /etc/systemd/coredump.conf.d/10-storage.conf
+sudo reboot
+```
+After reproducing, retrieve the core with `coredumpctl` and analyse it with the tooling appropriate for the crashed process (for a .NET module, `dotnet-dump`).
+
+**Note:** a stored core is raw process memory (secrets); enable this only for a debugging session and remove both drop-ins afterwards.
+
 # License
 
 The layer is licensed under either of
