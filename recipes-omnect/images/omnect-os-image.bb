@@ -200,6 +200,7 @@ python () {
 }
 
 inherit omnect_user
+inherit omnect-verify-kernel-modules
 
 # positive test for packages, i.e. check if installed
 check_installed_packages() {
