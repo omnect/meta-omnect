@@ -762,6 +762,94 @@ index 850c103f..bc0bb06f 100644
  add_subdirectory (download_handler_plugin)
 -add_subdirectory (plugin_examples)
 +# add_subdirectory (plugin_examples)
+diff --git a/src/extensions/extension_manager/src/extension_manager.cpp b/src/extensions/extension_manager/src/extension_manager.cpp
+index bc8a1ffb..96a52c7d 100644
+--- a/src/extensions/extension_manager/src/extension_manager.cpp
++++ b/src/extensions/extension_manager/src/extension_manager.cpp
+@@ -428,6 +428,13 @@ void ExtensionManager::UnloadAllExtensions()
+     }
+ 
+     _libs.clear();
++
++    // The content downloader handle was one of the libraries just dlclose'd, so
++    // reset it. Otherwise a second UnloadAllExtensions would dlsym a freed handle
++    // and crash in the loader. Uninit runs twice on shutdown: once via
++    // AzureDeviceUpdateCoreInterface_Destroy and once via ExtensionManager_Uninit.
++    _contentDownloader = nullptr;
++    _contentDownloaderContractVersion = {};
+ }
+ 
+ void ExtensionManager::Uninit()
+diff --git a/src/extensions/extension_manager/tests/src/extension_manager_ut.cpp b/src/extensions/extension_manager/tests/src/extension_manager_ut.cpp
+index 0e26e415..e7bcb257 100644
+--- a/src/extensions/extension_manager/tests/src/extension_manager_ut.cpp
++++ b/src/extensions/extension_manager/tests/src/extension_manager_ut.cpp
+@@ -344,6 +344,37 @@ TEST_CASE("SetContentDownloaderContractVersion overwrites previous value")
+     CHECK(getInfo.minorVer == 1);
+ }
+ 
++TEST_CASE("Uninit clears the content downloader so a repeat Uninit cannot reuse a freed handle")
++{
++    // Regression for the shutdown SIGSEGV: Uninit runs twice at shutdown, and the
++    // second UnloadAllExtensions used to dlsym "Cleanup" on the content downloader
++    // handle that the first call had already unloaded, faulting in the loader.
++    // Uninit must reset the content downloader state so the second call is a no-op.
++    ExtMgrCleanup cleanup;
++
++    // A valid handle with no "Cleanup" symbol, so the first Uninit's dlsym is a
++    // harmless no-op (libc is always loaded).
++    void* handle = dlopen("libc.so.6", RTLD_LAZY | RTLD_NOLOAD);
++    REQUIRE(handle != nullptr);
++    ExtensionManager::SetContentDownloaderLibrary(handle);
++    ExtensionManager::SetContentDownloaderContractVersion(
++        ADUC_ExtensionContractInfo{ ADUC_V2_CONTRACT_MAJOR_VER, ADUC_V2_CONTRACT_MINOR_VER });
++
++    ExtensionManager::Uninit();
++
++    // State must be cleared after unload (fails before the fix).
++    ADUC_ExtensionContractInfo info{ 9, 9 };
++    ExtensionManager::GetContentDownloaderContractVersion(&info);
++    CHECK(info.majorVer == 0);
++    CHECK(info.minorVer == 0);
++
++    // Second Uninit must not dlsym the stale handle again.
++    ExtensionManager::Uninit();
++    SUCCEED("second Uninit did not reuse the content downloader handle");
++
++    dlclose(handle);
++}
++
+ // =====================================================================
+ // GetComponentEnumeratorContractVersion tests
+ // =====================================================================
+@@ -863,6 +894,10 @@ TEST_CASE("Uninit clears both handlers and downloader library state")
+ 
+     int fakeLib = 99;
+     ExtensionManager::SetContentDownloaderLibrary(&fakeLib);
++    // V1 so Uninit does not dlsym the fake handle; the point here is that Uninit
++    // resets the downloader state.
++    ExtensionManager::SetContentDownloaderContractVersion(
++        ADUC_ExtensionContractInfo{ ADUC_V1_CONTRACT_MAJOR_VER, ADUC_V1_CONTRACT_MINOR_VER });
+ 
+     ExtensionManager::Uninit();
+ 
+@@ -872,10 +907,10 @@ TEST_CASE("Uninit clears both handlers and downloader library state")
+     CHECK(result.ResultCode == 0);
+     CHECK(retrieved == nullptr);
+ 
+-    // Downloader lib is NOT cleared by Uninit (it only clears _libs map and _contentHandlers).
+-    // Verify it's still accessible.
+-    void* lib = nullptr;
+-    result = ExtensionManager::LoadContentDownloaderLibrary(&lib);
+-    CHECK(result.ResultCode == 1);
+-    CHECK(lib == &fakeLib);
++    // Uninit also clears the content downloader state, so a repeat Uninit cannot
++    // dlsym a freed handle (the shutdown crash).
++    ADUC_ExtensionContractInfo info{ 9, 9 };
++    ExtensionManager::GetContentDownloaderContractVersion(&info);
++    CHECK(info.majorVer == 0);
++    CHECK(info.minorVer == 0);
+ }
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
 new file mode 100644
 index 00000000..3f9afeff
