@@ -24,6 +24,7 @@ SRC_URI = " \
   file://iot-identity-service-identityd.template.toml \
   file://omnect_1.4.0.patch \
   file://fix-diagnostics-devicename-header-guard.patch \
+  file://fix-apiproto-xopen-source-redefine.patch \
   file://adu-bootloader-env \
 "
 SRC_URI:append:omnect_uboot = " file://swupdate_handler_v2_u-boot.sh"
