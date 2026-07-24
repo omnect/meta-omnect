@@ -6,8 +6,6 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    # was held at our 5.0.15 release due to https://github.com/phytec/linux-phytec-imx/issues/2;
-    # re-verify that issue against the wrynose i.MX 6.18 kernel.
     branch: "wrynose"
     commit: "d4afe1789657da17b9a87bb7e942ee9a0ed1274c"
     patches:
@@ -27,10 +25,6 @@ repos:
     branch: "wrynose-6.18.20-2.0.0"
     commit: "1001299baf5a3b468c93e381c62aeb486a639aa1"
     layers:
-      # meta-imx-sdk (fsl-sdk-release) dropped: on wrynose it pulls in
-      # freescale-distro + perl-layer, and we mask all of its recipes anyway
-      # (headless device, no graphics/multimedia). meta-imx-bsp only depends on
-      # freescale-layer.
       meta-imx-bsp:
     patches:
       p001:

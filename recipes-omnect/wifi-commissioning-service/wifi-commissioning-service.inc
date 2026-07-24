@@ -15,9 +15,6 @@ CARGO_BUILD_FLAGS += "--locked --features systemd"
 # BLE is compiled in when the platform can use bluetooth (device_caps-derived).
 CARGO_BUILD_FLAGS += "${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', ' --features ble', '', d)}"
 
-# Build dependencies. inherit pkgconfig exports PKG_CONFIG_LIBDIR/SYSROOT so the
-# libdbus-sys crate's pkg-config probe finds the target dbus-1.pc (cargo_common
-# already sets PKG_CONFIG_ALLOW_CROSS=1).
 DEPENDS += "dbus"
 
 # Runtime dependencies
