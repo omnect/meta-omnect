@@ -607,6 +607,25 @@ index dbd6d5b5..f0d96f74 100644
  target_compile_definitions (${PROJECT_NAME} PRIVATE ADUC_CONF_FILE_PATH="/etc/adu/du-config.json")
  
  include (CTest)
+diff --git a/src/diagnostics_component/diagnostics_devicename/inc/diagnostics_devicename.h b/src/diagnostics_component/diagnostics_devicename/inc/diagnostics_devicename.h
+index e5affb15..a5614cdb 100644
+--- a/src/diagnostics_component/diagnostics_devicename/inc/diagnostics_devicename.h
++++ b/src/diagnostics_component/diagnostics_devicename/inc/diagnostics_devicename.h
+@@ -6,7 +6,7 @@
+  * Licensed under the MIT License.
+  */
+ #ifndef DIAGNOSTICS_DEVICENAMES_H
+-#    define DIAGNOSTICS_DEVICENAMES_UTILS_H
++#    define DIAGNOSTICS_DEVICENAMES_H
+ 
+ #    include <aduc/c_utils.h>
+ #    include <stdbool.h>
+@@ -36,4 +36,4 @@ void DiagnosticsComponent_DestroyDeviceName(void);
+ 
+ EXTERN_C_END
+ 
+-#endif // DIAGNOSTICS_DEVICENAMES_UTILS_H
++#endif // DIAGNOSTICS_DEVICENAMES_H
 diff --git a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt b/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
 index dc064d3b..15c516fc 100644
 --- a/src/diagnostics_component/diagnostics_workflow/CMakeLists.txt
@@ -1859,6 +1878,18 @@ index b1c9ee0c..057a483a 100644
      {
          Log_Error("statvfs failed, error: %d", errno);
          return nullptr;
+diff --git a/src/utils/apiproto_utils/inc/aduc/apiproto.h b/src/utils/apiproto_utils/inc/aduc/apiproto.h
+index 5e1b6eec..3fc2a9e9 100644
+--- a/src/utils/apiproto_utils/inc/aduc/apiproto.h
++++ b/src/utils/apiproto_utils/inc/aduc/apiproto.h
+@@ -11,7 +11,6 @@
+ 
+ #include "aduc/c_utils.h"
+ #include <stdint.h>
+-#define _XOPEN_SOURCE 700
+ #include <sys/types.h>
+ #include <unistd.h>
+ 
 diff --git a/src/utils/apiproto_utils/src/apiproto.c b/src/utils/apiproto_utils/src/apiproto.c
 index 07ef0759..bdf9dd88 100644
 --- a/src/utils/apiproto_utils/src/apiproto.c
