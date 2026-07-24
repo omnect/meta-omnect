@@ -1,6 +1,19 @@
 # overwrite LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 
+# Override cargo-bitbake's generated S = "${WORKDIR}/git", which oe-core's
+# do_qa_unpack now rejects (git unpacks to ${UNPACKDIR}/${BP}).
+S = "${UNPACKDIR}/${BP}"
+
+# cargo-bitbake emits the crate path overrides under ${WORKDIR}, but wrynose's git
+# fetcher unpacks destsuffix= sources under ${UNPACKDIR}. Repoint every override here
+# (operating on the unexpanded value) so a version bump that regenerates the .bb can't
+# reintroduce the stale prefix.
+python() {
+    paths = d.getVar('EXTRA_OECARGO_PATHS', False) or ""
+    d.setVar('EXTRA_OECARGO_PATHS', paths.replace('${WORKDIR}/', '${UNPACKDIR}/'))
+}
+
 SRC_URI += "\
   file://fix_linter_findings-aziot-edged.patch \
   file://fix_linter_findings-aziot-cert-client-async.patch;patchdir=${UNPACKDIR}/aziot-cert-client-async \
