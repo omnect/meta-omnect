@@ -1,5 +1,4 @@
 diff --git a/board/raspberrypi/rpi/rpi.env b/board/raspberrypi/rpi/rpi.env
-index 30228285ed..b9765c4219 100644
 --- a/board/raspberrypi/rpi/rpi.env
 +++ b/board/raspberrypi/rpi/rpi.env
 @@ -2,8 +2,6 @@
@@ -11,9 +10,9 @@ index 30228285ed..b9765c4219 100644
  /* Environment */
  stdin=serial,usbkbd
  stdout=serial,vidconsole
-@@ -74,4 +72,4 @@ pxefile_addr_r=0x02500000
- fdt_addr_r=0x02600000
- ramdisk_addr_r=0x02700000
+@@ -77,4 +75,4 @@
+ fdt_addr_r=0x05600000
+ ramdisk_addr_r=0x05700000
  
 -boot_targets=mmc usb pxe dhcp
 +#include <env/omnect_env.env>

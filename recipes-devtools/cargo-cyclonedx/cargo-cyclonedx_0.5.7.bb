@@ -9,9 +9,7 @@ inherit cargo
 # SRC_URI += "crate://crates.io/cargo-cyclonedx/0.5.7"
 SRC_URI += "git://github.com/CycloneDX/cyclonedx-rust-cargo.git;protocol=https;nobranch=1;branch=main"
 SRCREV = "c4c3ba9717e70eeb95c674cc31d9260bad4b3ee8"
-S = "${WORKDIR}/git"
 CARGO_SRC_DIR = "cargo-cyclonedx"
-
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -215,8 +213,6 @@ SRC_URI += " \
     crate://crates.io/zerocopy-derive/0.7.35 \
     crate://crates.io/zerocopy/0.7.35 \
 "
-
-
 
 # FIXME: update generateme with the real MD5 of the license file
 LIC_FILES_CHKSUM = " \

@@ -9,9 +9,7 @@ inherit cargo
 # SRC_URI += "crate://crates.io/toml-cli/0.2.3"
 SRC_URI += "git://github.com/gnprice/toml-cli.git;protocol=https;nobranch=1"
 SRCREV = "ea69e9d2ca4f0f858110dc7a5ae28bcb918c07fb"
-S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -76,8 +74,6 @@ SRC_URI += " \
     crate://crates.io/winapi-x86_64-pc-windows-gnu/0.4.0 \
     crate://crates.io/winapi/0.3.9 \
 "
-
-
 
 # FIXME: update generateme with the real MD5 of the license file
 LIC_FILES_CHKSUM = " \

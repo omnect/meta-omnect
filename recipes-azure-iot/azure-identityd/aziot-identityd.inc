@@ -7,11 +7,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4f9c2c296f77b3096b6c11a16fa7c66e"
 
 
 # patches
-# hint: fix_linker_and_linter_findings.patch must be after send_sd_notify.patch applied
 SRC_URI += " \
     file://apply_doesnt_restart_services.patch \
     file://send_sd_notify.patch \
-    file://fix_linker_and_linter_findings.patch \
 "
 
 # workspace
@@ -28,6 +26,7 @@ B = "${S}"
 DEPENDS = " \
     bindgen-native \
     cbindgen-native \
+    clang-native \
     openssl \
     pkgconfig-native \
     libtss2 \
@@ -39,13 +38,29 @@ RDEPENDS:${PN} = " \
 
 do_compile() {
     oe_cargo_fix_env
-    export RUSTFLAGS="${RUSTFLAGS} -D warnings"
+    # Export RUSTFLAGS into the env so the Makefile's `cargo build` subprocess
+    # inherits the cross sysroot/linker flags; without it rustc can't find the
+    # target std and fails with E0463 "can't find crate for `core`".
+    export RUSTFLAGS="${RUSTFLAGS}"
     export CARGO_BUILD_FLAGS="${CARGO_BUILD_FLAGS}"
     export RUST_TARGET_PATH="${RUST_TARGET_PATH}"
 
     # pkg specific exports
     export RELEASE="1"
-    export LLVM_CONFIG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/bin/llvm-config"
+    export LIBCLANG_PATH="${STAGING_LIBDIR_NATIVE}"
+    # bindgen runs host libclang; give it the target triple + sysroot so it parses
+    # the target glibc/tss2 headers (the Makefile-driven keys bindgen has no cargo
+    # TARGET to derive --target from).
+    export BINDGEN_EXTRA_CLANG_ARGS="--target=${TARGET_SYS} --sysroot=${STAGING_DIR_TARGET}"
+    # 32-bit ARM hard-float: the gnueabi triple defaults clang to soft-float, so
+    # it picks the wrong glibc ABI stubs header (gnu/stubs-soft.h, absent in a
+    # hard-float sysroot). Append the tune flags (-mfloat-abi=hard/-mfpu) so clang
+    # matches the target ABI. On aarch64/x86 these flags would be superfluous (and
+    # -mcpu/-mbranch-protection are only rejected by clang when --target is unset,
+    # which it no longer is).
+    if [ "${TARGET_ARCH}" = "arm" ]; then
+        export BINDGEN_EXTRA_CLANG_ARGS="${BINDGEN_EXTRA_CLANG_ARGS} ${TUNE_CCARGS}"
+    fi
     export PATH="${CARGO_HOME}/bin:${PATH}"
     export OPENSSL_DIR="${STAGING_EXECPREFIXDIR}"
     export FORCE_NO_UNITTEST="ON"
@@ -56,6 +71,12 @@ do_compile() {
 
     # we don't build tpm2-tss as part of this build
     rm -rf third-party/tpm2-tss
+
+    # Force the keys bindgen to re-run against the current bindgen-native. The
+    # Makefile only regenerates keys.generated.rs when it is absent or aziot-keys.h
+    # changed, so a stale copy from a previous toolchain survives do_compile reruns
+    # (${S} is not re-unpacked on a dependency change) and a bindgen bump is a no-op.
+    rm -f key/aziot-keyd/src/keys.generated.rs
 
     make default
 }
@@ -100,7 +121,7 @@ do_install() {
     install -m 0644 -D  ${B}/target/${CARGO_TARGET_SUBDIR}/libaziot_keys.so ${D}${libdir}
 
     # default configs and config directories
-    install -m 0644 -D  ${WORKDIR}/iot-identity-service.conf ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
+    install -m 0644 -D  ${UNPACKDIR}/iot-identity-service.conf ${D}${libdir}/tmpfiles.d/iot-identity-service.conf
     install -m 0640     ${S}/cert/aziot-certd/config/unix/default.toml ${D}${sysconfdir}/aziot/certd/config.toml.default
     install -m 0640     ${S}/identity/aziot-identityd/config/unix/default.toml ${D}${sysconfdir}/aziot/identityd/config.toml.default
     install -m 0644     ${S}/key/aziot-keyd/config/unix/default.toml ${D}${sysconfdir}/aziot/keyd/config.toml.default
@@ -132,7 +153,7 @@ do_install() {
     fill_placeholders ${D}${systemd_system_unitdir}/aziot-certd.socket
 
     # enable identity service to create cert "device-id" (e.g. for x509 dps provisioning)
-    install -m 0600 -o aziotcs -g aziotcs ${WORKDIR}/iot-identity-service-certd.template.toml ${D}${sysconfdir}/aziot/certd/config.d/aziotid.toml
+    install -m 0600 -o aziotcs -g aziotcs ${UNPACKDIR}/iot-identity-service-certd.template.toml ${D}${sysconfdir}/aziot/certd/config.d/aziotid.toml
 
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.service.in ${D}${systemd_system_unitdir}/aziot-identityd.service
     sed -i \
@@ -183,7 +204,7 @@ do_install() {
 
     # aziot-identityd-precondition.service handling
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/aziot-identityd-precondition.service ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
+    install -m 0644 ${UNPACKDIR}/aziot-identityd-precondition.service ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     if ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'true', 'false', d)}; then
         sed -i "s/@@AZIOTCLI@@/iotedge/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     else

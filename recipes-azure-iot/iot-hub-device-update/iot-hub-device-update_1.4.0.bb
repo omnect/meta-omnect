@@ -30,8 +30,6 @@ SRC_URI:append:omnect_grub = " file://swupdate_handler_v2_grub.sh"
 
 PV .= "+${SRCPV}"
 
-S = "${WORKDIR}/git"
-
 DEPENDS = " \
   azure-iot-sdk-c \
   boost \
@@ -86,30 +84,30 @@ do_install:append() {
       .agents[].manufacturer = $adu_deviceproperties_manufacturer |
       .agents[].model = $adu_deviceproperties_model |
       .agents[].additionalDeviceProperties.compatibilityid = $adu_deviceproperties_compatibility_id'\
-      ${WORKDIR}/du-config.json > ${D}${sysconfdir}/adu/du-config.json
+      ${UNPACKDIR}/du-config.json > ${D}${sysconfdir}/adu/du-config.json
   chown adu:adu ${D}${sysconfdir}/adu/du-config.json
   chmod 0444 ${D}${sysconfdir}/adu/du-config.json
 
-  install -m 0444 -o adu -g adu ${WORKDIR}/du-diagnostics-config.json ${D}${sysconfdir}/adu/
+  install -m 0444 -o adu -g adu ${UNPACKDIR}/du-diagnostics-config.json ${D}${sysconfdir}/adu/
 
   # enable user adu to exec adu-shell
   chgrp adu ${D}${bindir}/adu-shell
   chmod 0550 ${D}${bindir}/adu-shell
 
   # create tmpfiles.d entry to (re)create dir + permissions
-  install -m 0644 -D ${WORKDIR}/iot-hub-device-update.tmpfilesd ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
+  install -m 0644 -D ${UNPACKDIR}/iot-hub-device-update.tmpfilesd ${D}${libdir}/tmpfiles.d/iot-hub-device-update.conf
 
   # configure iot-hub-device-update as iot-identity-service client
   # allow adu client access to device_id secret created by manual provisioning
-  install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml
+  install -m 0600 -o aziotks -g aziotks ${UNPACKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/iot-hub-device-update.toml
 
   # allow adu client provisioning via module identity
-  install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
+  install -m 0600 -o aziotid -g aziotid ${UNPACKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/iot-hub-device-update.toml
 
   # systemd
   install -d ${D}${systemd_system_unitdir}
-  install -m 0644 ${WORKDIR}/deviceupdate-agent.service  ${D}${systemd_system_unitdir}/
-  install -m 0644 ${WORKDIR}/deviceupdate-agent.timer    ${D}${systemd_system_unitdir}/
+  install -m 0644 ${UNPACKDIR}/deviceupdate-agent.service  ${D}${systemd_system_unitdir}/
+  install -m 0644 ${UNPACKDIR}/deviceupdate-agent.timer    ${D}${systemd_system_unitdir}/
 
   # user_consent
   install -d ${D}${sysconfdir}/omnect/consent
@@ -119,14 +117,14 @@ do_install:append() {
   install -d ${D}${sysconfdir}/omnect/consent/swupdate
   install -m 0660 -o adu -g adu ${S}/src/extensions/step_handlers/swupdate_consent_handler/files/user_consent.json ${D}${sysconfdir}/omnect/consent/swupdate/
 
-  install -m 0440 -D ${WORKDIR}/adu-bootloader-env ${D}${sysconfdir}/sudoers.d/adu-bootloader-env
+  install -m 0440 -D ${UNPACKDIR}/adu-bootloader-env ${D}${sysconfdir}/sudoers.d/adu-bootloader-env
 }
 
 do_install:append:omnect_grub() {
   # install the swupdate_v2 script only for devel images
   if ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '0', 'true', 'false', d)}; then
     install -d ${D}${libdir}/swupdate
-    install -m 0755 ${WORKDIR}/swupdate_handler_v2_grub.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
+    install -m 0755 ${UNPACKDIR}/swupdate_handler_v2_grub.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
   fi
 }
 
@@ -134,7 +132,7 @@ do_install:append:omnect_uboot() {
   # install the swupdate_v2 script only for devel images
   if ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '0', 'true', 'false', d)}; then
     install -d ${D}${libdir}/swupdate
-    install -m 0755 ${WORKDIR}/swupdate_handler_v2_u-boot.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
+    install -m 0755 ${UNPACKDIR}/swupdate_handler_v2_u-boot.sh ${D}${libdir}/swupdate/omnect-swupdate.sh
   fi
 }
 

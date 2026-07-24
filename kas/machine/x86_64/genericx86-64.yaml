@@ -6,14 +6,14 @@ header:
 repos:
   ext/meta-yocto-bsp:
     url: "https://git.yoctoproject.org/meta-yocto"
-    branch: scarthgap
-    commit: "ca5a51aadaf651881d640688dc3e1e123aa30bf6"
+    branch: wrynose
+    commit: "824795b885b25e074a2880fbcd54e1a6c875d47d"
     layers:
       meta-yocto-bsp:
   ext/meta-secure-core:
     url: "https://github.com/Wind-River/meta-secure-core.git"
-    branch: "scarthgap"
-    commit: "bd17305b2c2186f4b70f732a0aed9b60795d9720"
+    branch: "wrynose"
+    commit: "07a99ae241acd488a2feda1ededf87dc70dfde80"
     layers:
       meta-efi-secure-boot:
       meta-secure-core-common:
@@ -24,8 +24,8 @@ repos:
         path: "kas/patches/meta-efi-secure-boot_layerdir.patch"
   ext/meta-perl:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    branch: "scarthgap"
-    commit: "d8cc4e44001c7257273d290ce8c4496e93d32841"
+    branch: "wrynose"
+    commit: "d97b5602d7f64422c94b7311466cda7f6b1962d5"
     layers:
       meta-perl:
 

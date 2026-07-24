@@ -9,8 +9,8 @@ repos:
   meta-omnect:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
-    branch: "scarthgap"
-    commit: "d8cc4e44001c7257273d290ce8c4496e93d32841"
+    branch: "wrynose"
+    commit: "d97b5602d7f64422c94b7311466cda7f6b1962d5"
     layers:
       # meta-multimedia is used by qemu_8.2.2.imx.bb (tauri) ToDo: possible to handle that in the machine specific kas file?
       meta-multimedia:
@@ -18,29 +18,24 @@ repos:
       meta-networking:
       meta-oe:
       meta-python:
-
-    patches:
-      p001:
-        repo: "meta-omnect"
-        path: "kas/patches/meta-openembedded.patch"
   # we need meta-tpm independend of feature/tpm.yaml to be able
   # to build iot-identity-service
   ext/meta-security:
     url: "https://git.yoctoproject.org/meta-security"
-    branch: "scarthgap"
-    commit: "b13f1705d723650de61277670c8a76aadea4cfdd"
+    branch: "wrynose"
+    commit: "c0d1d6200e7a84c39fb940cb1f22aad4b0b3d808"
     layers:
       # base layer (collection "security") - provides the AppArmor userspace
       .:
       meta-tpm:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
-    branch: "scarthgap"
-    commit: "cb709b865a56be48cb17cbad149b69f793f3888b"
+    branch: "wrynose"
+    commit: "c3eba00d3252ef17fed4812473c47c87fb34db40"
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
-    branch: "scarthgap"
-    commit: "89da4f56b4c510059f8dc1527d289d9fd4fef133"
+    branch: "wrynose"
+    commit: "781735b97ae5013cacabbecd38e6da6b510cf3fb"
     patches:
       p001:
         repo: "meta-omnect"

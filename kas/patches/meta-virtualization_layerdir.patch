@@ -1,10 +1,10 @@
 diff --git a/conf/layer.conf b/conf/layer.conf
-index 7c8e3701..04bbe9fd 100644
+index 2a4a4c9..9c8ff22 100644
 --- a/conf/layer.conf
 +++ b/conf/layer.conf
-@@ -62,3 +62,5 @@ USER_CLASSES:append = " meta-virt-xen-cfg"
- USER_CLASSES:append = " meta-virt-hosts"
+@@ -77,3 +77,5 @@ DISTRO_FEATURES_FILTER_NATIVE:append = " vcontainer virtualization"
+ NON_MULTILIB_RECIPES:append:x86-64 = " kubernetes"
  
- HOSTTOOLS_NONFATAL += "getent"
+ DUMMY_PACKAGE_ARCHS_TARGET += "container-dummy-provides"
 +
 +LAYERDIR_virtualization-layer = "${LAYERDIR}"

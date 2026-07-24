@@ -9,8 +9,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:"
 
 SRC_URI += "\
   file://apply_doesnt_restart_services.patch \
+  file://fix_docker_engine_api_version.patch \
   file://fix_linter_findings-iotedge.patch \
-  file://fix_linter_findings-aziot-cert-client-async.patch;patchdir=${WORKDIR}/aziot-cert-client-async \
+  file://fix_linter_findings-aziot-cert-client-async.patch;patchdir=${UNPACKDIR}/aziot-cert-client-async \
 "
 
 DEPENDS += "openssl"
@@ -25,7 +26,7 @@ export IOTEDGE_LISTEN_MANAGEMENT_URI = "fd://aziot-edged.mgmt.socket"
 export IOTEDGE_LISTEN_WORKLOAD_URI = "fd://aziot-edged.workload.socket"
 export SOCKET_DIR = "/run/aziot"
 
-RUSTFLAGS+="-D warnings"
+RUSTFLAGS += "-D warnings"
 
 do_install () {
     # Binaries

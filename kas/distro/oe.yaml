@@ -5,21 +5,21 @@ distro: nodistro
 repos:
   ext/bitbake:
     url: "https://git.openembedded.org/bitbake"
-    branch: "2.8"
-    # tag yocto-5.0.18
-    commit: "82abbfcdbda949851a03bb2cb2049ea689564ad6"
+    branch: "2.18"
+    # tag yocto-6.0.2
+    commit: "acfe02fa38b5da9e6a36c6cedcf91d4fcbefbfbd"
     layers:
       .: 0
   ext/_openembedded-core: #_ prefixed because of layer order with same prio e.g. meta-openembedded
     url: "https://git.openembedded.org/openembedded-core"
-    branch: "scarthgap"
-    # tag yocto-5.0.18
-    commit: "ece80784b493c8b7493478fa2ba0dc1d6d80aa79"
+    branch: "wrynose"
+    # tag yocto-6.0.2
+    commit: "5d1aa5c806c061a2994f4decb59016610f093213"
     layers:
       meta:
     patches:
       p001:
         repo: "meta-omnect"
-        path: "kas/patches/oe.patch"
+        path: "kas/patches/oe_layerdir.patch"
 env:
-  OE_VERSION: "5.0.18"
+  OE_VERSION: "6.0.2"

@@ -6,36 +6,40 @@ header:
 repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
-    branch: "scarthgap"
-    # for now pinned to our 5.0.15 release, because of https://github.com/phytec/linux-phytec-imx/issues/2
-    commit: "951384d6a847a5cfcb9c34e31e2e47c15a91437f"
+    # was held at our 5.0.15 release due to https://github.com/phytec/linux-phytec-imx/issues/2;
+    # re-verify that issue against the wrynose i.MX 6.18 kernel.
+    branch: "wrynose"
+    commit: "d4afe1789657da17b9a87bb7e942ee9a0ed1274c"
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-phytec_layerdir.patch"
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
-    branch: "scarthgap"
-    commit: "902dde8c5bd29bb507ac8d37772565a6c9ab77cd"
+    branch: "wrynose"
+    commit: "25ce7c63c234af499674392751c67aaae8f43958"
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-freescale_layerdir.patch"
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
-    branch: "scarthgap-6.6.52-2.2.2"
-    commit: "e1ec1a20d573e3913f4ad90fa36546ed2bc87715"
+    branch: "wrynose-6.18.20-2.0.0"
+    commit: "1001299baf5a3b468c93e381c62aeb486a639aa1"
     layers:
+      # meta-imx-sdk (fsl-sdk-release) dropped: on wrynose it pulls in
+      # freescale-distro + perl-layer, and we mask all of its recipes anyway
+      # (headless device, no graphics/multimedia). meta-imx-bsp only depends on
+      # freescale-layer.
       meta-imx-bsp:
-      meta-imx-sdk:
     patches:
       p001:
         repo: "meta-omnect"
         path: "kas/patches/meta-imx_layerdir.patch"
   ext/meta-arm:
     url: "https://git.yoctoproject.org/meta-arm"
-    branch: "scarthgap"
-    commit: "a81c19915b5b9e71ed394032e9a50fd06919e1cd"
+    branch: "wrynose"
+    commit: "caa36c53f796beb25d9b9f58b1b7a492e9987e15"
     layers:
       meta-arm:
       meta-arm-toolchain:

@@ -1,5 +1,8 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
+# file-only recipe: sources land in ${UNPACKDIR}, not the default ${UNPACKDIR}/${BP}.
+S = "${UNPACKDIR}"
+
 # for usage in intramfs only
 
 LICENSE = "MIT | Apache-2.0"
@@ -16,9 +19,9 @@ RDEPENDS:${PN}:append:omnect_grub = " grub-editenv"
 RDEPENDS:${PN}:append:omnect_uboot = " libubootenv-bin"
 
 do_install:omnect_grub() {
-	install -m 0700 -D ${WORKDIR}/bootloader_env_grub.sh ${D}${sbindir}/bootloader_env.sh
+	install -m 0700 -D ${UNPACKDIR}/bootloader_env_grub.sh ${D}${sbindir}/bootloader_env.sh
 }
 
 do_install:omnect_uboot() {
-	install -m 0700 -D ${WORKDIR}/bootloader_env_u-boot.sh ${D}${sbindir}/bootloader_env.sh
+	install -m 0700 -D ${UNPACKDIR}/bootloader_env_u-boot.sh ${D}${sbindir}/bootloader_env.sh
 }

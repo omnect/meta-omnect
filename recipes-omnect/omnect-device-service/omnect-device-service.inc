@@ -1,5 +1,9 @@
 FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files:${THISDIR}/${PN}:"
 
+# Override cargo-bitbake's generated S = "${WORKDIR}/git", which oe-core's
+# do_qa_unpack now rejects (git unpacks to ${UNPACKDIR}/${BP}).
+S = "${UNPACKDIR}/${BP}"
+
 SRC_URI += "\
   file://factory-reset.json \
   file://iot-identity-service-keyd.template.toml \
@@ -14,6 +18,13 @@ python() {
     pv = d.getVar('PV')
     pv = pv[:128]
     d.setVar('PV', pv)
+
+    # cargo-bitbake emits the crate path overrides under ${WORKDIR}, but wrynose's git
+    # fetcher unpacks destsuffix= sources under ${UNPACKDIR}. Repoint every override here
+    # (operating on the unexpanded value) so a version bump that regenerates the .bb can't
+    # reintroduce the stale prefix.
+    paths = d.getVar('EXTRA_OECARGO_PATHS', False) or ""
+    d.setVar('EXTRA_OECARGO_PATHS', paths.replace('${WORKDIR}/', '${UNPACKDIR}/'))
 }
 
 # overwrite LICENSE and LIC_FILES_CHKSUM from cargo-bitbake generated recipe
@@ -64,17 +75,17 @@ do_install:append() {
     install -m 0640 -D ${S}/sudo/omnect-device-service ${D}${sysconfdir}/sudoers.d/omnect-device-service
 
     # allow omnect-device-service access to device_id secret created by manual provisioning
-    install -m 0600 -o aziotks -g aziotks ${WORKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/omnect-device-service.toml
+    install -m 0600 -o aziotks -g aziotks ${UNPACKDIR}/iot-identity-service-keyd.template.toml ${D}${sysconfdir}/aziot/keyd/config.d/omnect-device-service.toml
 
     # allow omnect-device-service provisioning via module identity
-    install -m 0600 -o aziotid -g aziotid ${WORKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/omnect-device-service.toml
+    install -m 0600 -o aziotid -g aziotid ${UNPACKDIR}/iot-identity-service-identityd.template.toml ${D}${sysconfdir}/aziot/identityd/config.d/omnect-device-service.toml
 
     # create tmpfiles.d entry to (re)create dir + permissions
-    install -m 0644 -D ${WORKDIR}/omnect-device-service.tmpfilesd ${D}${libdir}/tmpfiles.d/omnect-device-service.conf
+    install -m 0644 -D ${UNPACKDIR}/omnect-device-service.tmpfilesd ${D}${libdir}/tmpfiles.d/omnect-device-service.conf
 
     # factory-reset
     install -d -D ${D}${sysconfdir}/omnect/
-    install -m 0444 -D ${WORKDIR}/factory-reset.json ${D}${sysconfdir}/omnect/
+    install -m 0444 -D ${UNPACKDIR}/factory-reset.json ${D}${sysconfdir}/omnect/
     install -m 0777 -d ${D}${sysconfdir}/omnect/factory-reset.d
 }
 

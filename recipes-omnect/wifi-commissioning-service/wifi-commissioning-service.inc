@@ -1,5 +1,9 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
+# Override cargo-bitbake's generated S = "${WORKDIR}/git", which oe-core's
+# do_qa_unpack now rejects (git unpacks to ${UNPACKDIR}/${BP}).
+S = "${UNPACKDIR}/${BP}"
+
 # Overwrite LICENSE from cargo-bitbake
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
@@ -11,8 +15,10 @@ CARGO_BUILD_FLAGS += "--locked --features systemd"
 # BLE is compiled in when the platform can use bluetooth (device_caps-derived).
 CARGO_BUILD_FLAGS += "${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', ' --features ble', '', d)}"
 
-# Build dependencies
-DEPENDS += "pkgconfig-native dbus"
+# Build dependencies. inherit pkgconfig exports PKG_CONFIG_LIBDIR/SYSROOT so the
+# libdbus-sys crate's pkg-config probe finds the target dbus-1.pc (cargo_common
+# already sets PKG_CONFIG_ALLOW_CROSS=1).
+DEPENDS += "dbus"
 
 # Runtime dependencies
 RDEPENDS:${PN} += "bash wpa-supplicant"
@@ -57,7 +63,7 @@ FILES:${PN} += "\
     ${systemd_system_unitdir}/wifi-commissioning-service@.socket \
 "
 
-inherit cargo_cyclonedx useradd
+inherit cargo_cyclonedx pkgconfig useradd
 
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM:${PN} = "-r wifi_commissioning"

@@ -18,6 +18,7 @@ IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
     fitImage  \
     oftree \
     bootenv.txt \
+    overlays.txt \
 "
 
 IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
@@ -26,7 +27,7 @@ IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
 OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 
 # Set Serial console
-SERIAL_CONSOLES ="${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '115200;ttymxc2', d)}"
+SERIAL_CONSOLES = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '115200;ttymxc2', d)}"
 #bootargs console is not part of the devictree, so we have to append it to kernel commandline
 APPEND += "console=ttymxc2,115200"
 
@@ -76,6 +77,15 @@ BBMASK:append = " \
     meta-imx/meta-imx-bsp/recipes-connectivity/openssl/openssl_3.2.%.bbappend \
 "
 
+# mask phytec's Cortex-M demo bbappend: its base recipe lives in the dropped
+# meta-imx-sdk, so it would dangle; we don't want the demos anyway.
+BBMASK:append = " meta-phytec/dynamic-layers/fsl-bsp-release/recipes-fsl/mcore-demos/"
+
+# u-boot-master.bb tracks u-boot master via AUTOREV, doing a git ls-remote at
+# parse time; we don't use it and the remote fetch breaks parsing when
+# source.denx.de is unreachable.
+BBMASK:append = " meta-phytec/recipes-bsp/u-boot/u-boot-master.bb"
+
 # fix search path
 FILESEXTRAPATHS:prepend:pn-imx-boot-phytec := "${LAYERDIR_freescale-layer}/recipes-bsp/imx-mkimage/files:"
 FILESEXTRAPATHS:prepend:pn-optee-client := "${LAYERDIR_arm}/recipes-security/optee/optee-client:"
@@ -102,7 +112,7 @@ MACHINE_FEATURES:append = " \
     pstore \
 "
 
-OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-phytec-imx_2024.04-2.2.0-phy23.bb"
+OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-phytec-imx_2024.04-2.2.0-phy25.bb"
 
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned = "<newchecksum> <oldchecksum>"
@@ -112,4 +122,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-ph
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-bootloader-versioned - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "5165f005922e91b9513e4316db9316097f421109e2e678f6aed21f3a5cfbff51"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "7e4f6a1c5b112b749193cba9941590b5bbac1f9505206b81a661e8d191db4b6f"

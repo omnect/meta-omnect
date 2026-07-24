@@ -13,6 +13,12 @@ inherit omnect_initramfs
 
 IMAGE_NAME = "${OMNECT_INITRAMFS_IMAGE_NAME}"
 
+# This image is a cpio unpacked into RAM, not a read-write filesystem, so the default
+# 1.3 free-space overhead is meaningless here - it only inflated the INITRAMFS_MAXSIZE
+# check (the wrynose component growth then tipped it over 128M). Size the check to the
+# real content; INITRAMFS_MAXSIZE stays as the RAM guard.
+IMAGE_OVERHEAD_FACTOR = "1"
+
 FLASH_MODE_X_PACKAGES = " \
     bmaptool \
     dhcpcd \

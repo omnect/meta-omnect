@@ -1,8 +1,8 @@
 diff --git a/conf/layer.conf b/conf/layer.conf
-index 89c305d5..c62c632e 100644
+index e55da6b..cfa90b1 100644
 --- a/conf/layer.conf
 +++ b/conf/layer.conf
-@@ -56,3 +56,5 @@ BBMASK:append:k3 = "\
+@@ -55,3 +55,5 @@ BBMASK:append:k3 = "\
      meta-ti/meta-ti-bsp/recipes-security/optee/ \
      meta-ti/meta-ti-bsp/recipes-bsp/trusted-firmware-a/ \
  "

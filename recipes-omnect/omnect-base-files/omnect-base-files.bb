@@ -1,4 +1,7 @@
 SUMMARY = "omnect Base Files"
+
+# file-only recipe: sources land in ${UNPACKDIR}, not the default ${UNPACKDIR}/${BP}.
+S = "${UNPACKDIR}"
 DESCRIPTION = "Provide omnect Base Files."
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "\
@@ -41,18 +44,18 @@ FILES:${PN} = "\
 "
 
 do_install() {
-    install -m 0644 -D ${WORKDIR}/etc/bashrc ${D}/etc/bashrc
-    install -m 0755 -D ${WORKDIR}/usr/bin/omnect_extra_bootargs.sh ${D}/usr/bin/omnect_extra_bootargs.sh
-    install -m 0755 -D ${WORKDIR}/usr/bin/omnect_get_deviceid.sh ${D}/usr/bin/omnect_get_deviceid.sh
+    install -m 0644 -D ${UNPACKDIR}/etc/bashrc ${D}/etc/bashrc
+    install -m 0755 -D ${UNPACKDIR}/usr/bin/omnect_extra_bootargs.sh ${D}/usr/bin/omnect_extra_bootargs.sh
+    install -m 0755 -D ${UNPACKDIR}/usr/bin/omnect_get_deviceid.sh ${D}/usr/bin/omnect_get_deviceid.sh
     if ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', 'true', 'false', d)}; then
-        install -m 0755 -D ${WORKDIR}/usr/bin/omnect_get_dps_tpm_enrollment.sh ${D}/usr/bin/omnect_get_dps_tpm_enrollment.sh
+        install -m 0755 -D ${UNPACKDIR}/usr/bin/omnect_get_dps_tpm_enrollment.sh ${D}/usr/bin/omnect_get_dps_tpm_enrollment.sh
     fi
-    install -m 0644 -D ${WORKDIR}/etc/sudoers.d/001_omnect ${D}/etc/sudoers.d/001_omnect
-    install -m 0644 -D ${WORKDIR}/etc/profile.d/omnect_profile.sh ${D}/etc/profile.d/omnect_profile.sh
-    install -m 0644 -D ${WORKDIR}/etc/profile.d/omnect_prompt.sh ${D}/etc/profile.d/omnect_prompt.sh
+    install -m 0644 -D ${UNPACKDIR}/etc/sudoers.d/001_omnect ${D}/etc/sudoers.d/001_omnect
+    install -m 0644 -D ${UNPACKDIR}/etc/profile.d/omnect_profile.sh ${D}/etc/profile.d/omnect_profile.sh
+    install -m 0644 -D ${UNPACKDIR}/etc/profile.d/omnect_prompt.sh ${D}/etc/profile.d/omnect_prompt.sh
 
     if ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', 'true', 'false', d)}; then
-        install -m 0644 -D ${WORKDIR}/etc/profile.d/tpm2tools.sh ${D}/etc/profile.d/tpm2tools.sh
+        install -m 0644 -D ${UNPACKDIR}/etc/profile.d/tpm2tools.sh ${D}/etc/profile.d/tpm2tools.sh
     fi
 
     # install mountpoints
