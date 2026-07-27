@@ -1,0 +1,8 @@
+[Unit]
+Description=Retry Azure IoT Identity Service Precondition
+
+[Timer]
+OnUnitInactiveSec=10min
+
+[Install]
+WantedBy=timers.target

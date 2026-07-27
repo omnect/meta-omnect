@@ -17,6 +17,7 @@ SRC_URI += " \
 # workspace
 SRC_URI += " \
     file://aziot-identityd-precondition.service \
+    file://aziot-identityd-precondition.timer \
     file://iot-identity-service.conf \
     file://iot-identity-service-certd.template.toml \
 "
@@ -189,6 +190,7 @@ do_install() {
     else
         sed -i "s/@@AZIOTCLI@@/aziotctl/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     fi
+    install -m 0644 ${WORKDIR}/aziot-identityd-precondition.timer ${D}${systemd_system_unitdir}/aziot-identityd-precondition.timer
 }
 
 pkg_postinst:${PN}() {
@@ -209,6 +211,7 @@ SYSTEMD_SERVICE:${PN} = " \
     aziot-identityd.service \
     aziot-identityd.socket \
     aziot-identityd-precondition.service \
+    aziot-identityd-precondition.timer \
     aziot-keyd.service \
     aziot-keyd.socket \
 "
