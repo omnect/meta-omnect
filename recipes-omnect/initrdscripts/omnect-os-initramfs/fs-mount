@@ -52,7 +52,7 @@ run_fs_mount()
     # Mounting our own tmpfs on ${ROOTFS_DIR}/run here would be shadowed by that
     # move (losing anything written to it), so we only re-apply our hardened
     # options to the framework's /run instead.
-    run_cmd mount -o remount,mode=0755,nodev,nosuid,strictatime /run
+    run_cmd mount -o remount,mode=0755,nodev,nosuid,strictatime /run || return 1
     run_cmd mount -t tmpfs -o defaults tmpfs  ${ROOTFS_DIR}/var/volatile || return 1
 
     # mount boot
