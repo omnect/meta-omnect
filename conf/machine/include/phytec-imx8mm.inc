@@ -59,18 +59,6 @@ BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
 # mask phytecs CVE bbappend handling, which interferes with ours (u-boot-scr matches as well)
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/u-boot-%.bbappend"
 
-# masks necessary to build with our bblayers.conf:
-BBMASK:append = " \
-    meta-imx/meta-imx-sdk/dynamic-layers/virtualization-layer/recipes-fsl/packagegroup/packagegroup-fsl-tools-testapps.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/fsl-rc-local/fsl-rc-local.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/images/fsl-image-machine-test.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/images/fsl-image-multimedia.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/packagegroup/packagegroup-fsl-gstreamer1.0.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/packagegroup/packagegroup-fsl-tools-benchmark.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/packagegroup/packagegroup-fsl-tools-testapps.bbappend \
-    meta-imx/meta-imx-sdk/recipes-graphics/devil/devil_%.bbappend \
-"
-
 # don't let meta-imx-bsp openssl recipe override the one from oecore
 BBMASK:append = " \
     meta-imx/meta-imx-bsp/recipes-connectivity/openssl/openssl_3.2.6.bb \

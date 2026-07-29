@@ -99,13 +99,13 @@ Device         Boot   Start      End  Sectors  Size Id Type
 - `OMNECT_PART_SIZE_UBOOT_ENV`: size of one u-boot environment bank (in KiB, decimal)
 
 ## Compatibility
-`meta-omnect` is compatible with the current yocto LTS release branch `scarthgap`.
+`meta-omnect` is compatible with the current yocto LTS release branch `wrynose`.
 
 ## Supported Devices
 See board specific documents [doc](/doc/) folder.
 
 ## Versioning
-We reflect the used yocto version in our version schema. `omnect-os` is versioned `5.0.x.y` where `x` is yocto scarthgap's patch version and `y` is the build number.
+We reflect the used yocto version in our version schema. `omnect-os` is versioned `6.0.x.y` where `x` is yocto wrynose's patch version and `y` is the build number.
 
 ## Dependencies
 Aside from hardware specific meta layers `meta-omnect` depends on:
@@ -498,7 +498,7 @@ sudo reboot
 
 Process crashes are handled by `systemd-coredump`, but **no core is stored by default** on any image (`Storage=none`) - process memory, which may hold secrets, is never written to disk.
 
-To debug a crash on a device, enable both levers per device via the writable `/etc` overlay, then reboot and reproduce:
+To debug a crash on a device, enable both settings per device via the writable `/etc` overlay, then reboot and reproduce:
 ```sh
 # 1) complete cores: containerd dumps all memory (inherited by module containers)
 sudo install -d /etc/systemd/system/containerd.service.d

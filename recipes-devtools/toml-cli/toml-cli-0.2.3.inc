@@ -1,4 +1,5 @@
-# generated recipes with cargo-bitbake 0.3.16 are not compatible with scarthgap per se.
+# generated recipes with cargo-bitbake 0.3.16 are not compatible with newer
+# yocto releases per se.
 # we have to include the sha256sum for all package
 # (output of yocto build error when missing:)
 
