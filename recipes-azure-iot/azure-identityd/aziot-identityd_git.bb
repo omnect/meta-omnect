@@ -6,8 +6,10 @@
 # bindings (tpm/tss-minimal/types-sys) came out opaque (every TPM2 struct as a
 # field-less `_address` blob) and aziot-identityd failed to compile. main pins
 # bindgen 0.72.1 / clang-sys 1.8.1, which parse the same headers correctly.
-# Crate list below regenerated from main's Cargo.lock; re-pin to a release tag
-# once one ships that carries these crate versions.
+# Crate list below regenerated from main's Cargo.lock
+#
+# TODO: re-pin to a release tag once one ships that carries these crate
+# versions.
 inherit cargo
 
 # ~rc.1 sorts before a future 1.6.0 release; +git marks the git/SRCREV pin.
