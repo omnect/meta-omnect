@@ -497,6 +497,103 @@ index 524747b7..d8156d0c 100644
                      workflow_transfer_data(
                          currentWorkflowData->WorkflowHandle /* wfTarget */, nextWorkflow /* wfSource */);
  
+diff --git a/src/agent/api/src/apisvc.c b/src/agent/api/src/apisvc.c
+index fc73768a..2a46ae38 100644
+--- a/src/agent/api/src/apisvc.c
++++ b/src/agent/api/src/apisvc.c
+@@ -90,7 +90,15 @@ bool uninit_api_svc()
+     void* threadRet = NULL;
+     FifoThreadRetVal* retVal = NULL;
+ 
+-    atomic_store(&g_api_svc_thread_running, false);
++    // The flag is set only after the thread was created, so a false value means
++    // g_api_svc_thread still holds the zero-initialized handle. Joining that
++    // dereferences a NULL thread descriptor.
++    if (!atomic_exchange(&g_api_svc_thread_running, false))
++    {
++        Log_Info("api service thread was not started, nothing to uninit");
++        return false;
++    }
++
+     int res = pthread_join(g_api_svc_thread, (void**)&threadRet);
+     if (res != 0)
+     {
+diff --git a/src/agent/api/tests/apisvc_unit_tests.cpp b/src/agent/api/tests/apisvc_unit_tests.cpp
+index f89578fc..868756ac 100644
+--- a/src/agent/api/tests/apisvc_unit_tests.cpp
++++ b/src/agent/api/tests/apisvc_unit_tests.cpp
+@@ -16,12 +16,15 @@
+ #include "aduc/viewstatemgr.h"
+ 
+ #include <arpa/inet.h>
++#include <atomic>
+ #include <catch2/catch_all.hpp>
+ #include <chrono>
++#include <dlfcn.h>
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <filesystem>
+ #include <poll.h>
++#include <pthread.h>
+ #include <string.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+@@ -84,6 +87,24 @@ using Catch::Matchers::Equals;
+ 
+ ViewStateManager g_vsm = { 0 };
+ 
++// Counts joins attempted on the zero-initialized thread handle. Joins of real
++// threads are forwarded to libc, so the other sections behave as before.
++static std::atomic<int> g_joinsOnZeroHandle{ 0 };
++
++extern "C" int pthread_join(pthread_t thread, void** retval)
++{
++    using JoinFn = int (*)(pthread_t, void**);
++    static auto realJoin = reinterpret_cast<JoinFn>(dlsym(RTLD_NEXT, "pthread_join"));
++
++    if (thread == static_cast<pthread_t>(0))
++    {
++        ++g_joinsOnZeroHandle;
++        return ESRCH;
++    }
++
++    return realJoin(thread, retval);
++}
++
+ TEST_CASE("apisvc crossproc tests")
+ {
+     // Ensure test data directory exists
+@@ -155,6 +176,30 @@ TEST_CASE("apisvc crossproc tests")
+         CHECK(uninit_api_svc());
+     }
+ 
++    SECTION("uninit without init")
++    {
++        // Joining the zero-initialized handle dereferences a NULL thread
++        // descriptor, which crashes on aarch64 glibc (agent shutdown after a
++        // failed startup).
++        g_joinsOnZeroHandle = 0;
++
++        CHECK_FALSE(uninit_api_svc());
++        CHECK(g_joinsOnZeroHandle == 0);
++    }
++
++    SECTION("uninit twice")
++    {
++        const std::string reqFifoPath = TEST_DATA_DIR + "/test_req_fifo";
++
++        REQUIRE(init_api_svc(reqFifoPath.c_str()));
++        std::this_thread::sleep_for(std::chrono::milliseconds(100));
++        g_joinsOnZeroHandle = 0;
++
++        CHECK(uninit_api_svc());
++        CHECK_FALSE(uninit_api_svc());
++        CHECK(g_joinsOnZeroHandle == 0);
++    }
++
+     SECTION("GetAduServiceStatus via SDK API")
+     {
+         REQUIRE(viewstatemgr_svcstatus_set(&g_vsm, ADUC_ServiceStatus_Idle));
 diff --git a/src/agent/src/health_management.c b/src/agent/src/health_management.c
 index 38ad9ea5..b32dcc33 100644
 --- a/src/agent/src/health_management.c
