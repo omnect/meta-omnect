@@ -1,6 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/omnect-os-initramfs:"
 
-# file-only recipe: sources land in ${UNPACKDIR}, not the default ${UNPACKDIR}/${BP}.
+# file-only recipe: sources land in ${UNPACKDIR} now
+# (opposed to ${UNPACKDIR}/${BP} in the past)
 S = "${UNPACKDIR}"
 
 LICENSE = "MIT | Apache-2.0"

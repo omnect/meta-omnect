@@ -1,6 +1,7 @@
 FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files/:"
 
-# file-only recipe: sources land in ${UNPACKDIR}, not the default ${UNPACKDIR}/${BP}.
+# file-only recipe: sources land in ${UNPACKDIR} now which is by default
+# ${WORKDIR}/sources (opposed to directly ${WORKDIR} in the past)
 S = "${UNPACKDIR}"
 
 # for usage in intramfs flash-mode only
