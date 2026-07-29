@@ -20,6 +20,14 @@ BOOTLOADER_VERSION = "${@omnect_create_bootloader_version(d)}"
 
 inherit core-image
 
+# This image ships GPLv3 packages (coreutils and its dependencies
+# bash/readline/...) that are allowed globally via
+# INCOMPATIBLE_LICENSE_EXCEPTIONS. The 'license-exception' QA check is part of
+# ERROR_QA by default and would otherwise fail do_rootfs for exactly those
+# allowed packages, so demote it to a warning for this image.
+ERROR_QA:remove = "license-exception"
+WARN_QA:append = " license-exception"
+
 DEPENDS:append = " libcap-native"
 
 # we need the initramfs bundled kernel before rootfs postprocessing
