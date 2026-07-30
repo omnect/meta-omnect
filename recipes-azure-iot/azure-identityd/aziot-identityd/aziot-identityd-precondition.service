@@ -15,6 +15,10 @@ ConditionPathExists=|/run/omnect-device-service/omnect_validate_update_failed
 ConditionPathExists=|/run/omnect-device-service/omnect_bootloader_updated
 
 ConditionFileNotEmpty=|!/etc/aziot/identityd/config.d/00-super.toml
+
+# with RestartSec=5 the default limit (5 starts per 10s) is never reached, so
+# the unit would loop in auto-restart forever instead of failing; keep the
+# window short, the aziot stack is ordered after this unit
 StartLimitBurst=5
 StartLimitIntervalSec=60
 
