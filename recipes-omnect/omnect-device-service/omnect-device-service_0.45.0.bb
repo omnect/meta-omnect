@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.44.0"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.45.0"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "4d6be836f1b47d55e7479eae28d251b6a64348f2"
+SRCREV = "a34303a576874c8b6716d90c403595a2f4892305"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -47,6 +47,7 @@ SRC_URI += " \
     crate://crates.io/base64/0.21.7 \
     crate://crates.io/base64/0.22.1 \
     crate://crates.io/bindgen/0.71.1 \
+    crate://crates.io/bindgen/0.72.1 \
     crate://crates.io/bitflags/1.3.2 \
     crate://crates.io/bitflags/2.13.0 \
     crate://crates.io/block-buffer/0.10.4 \
@@ -512,15 +513,16 @@ SRCREV_FORMAT .= "_aziot-keyd-config"
 SRCREV_aziot-keyd-config = "1.5.5"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/aziot-keyd-config"
 SRCREV_FORMAT .= "_azure-iot-sdk"
-SRCREV_azure-iot-sdk = "0.14.1"
+SRCREV_azure-iot-sdk = "0.14.2"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk"
 SRCREV_FORMAT .= "_azure-iot-sdk-sys"
-SRCREV_azure-iot-sdk-sys = "0.6.3"
+SRCREV_azure-iot-sdk-sys = "0.6.4"
 EXTRA_OECARGO_PATHS += "${WORKDIR}/azure-iot-sdk-sys"
 SRC_URI[base64-0.13.1.sha256sum] = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
 SRC_URI[base64-0.21.7.sha256sum] = "9d297deb1925b89f2ccc13d7635fa0714f12c87adce1c75356b39ca9b7178567"
 SRC_URI[base64-0.22.1.sha256sum] = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 SRC_URI[bindgen-0.71.1.sha256sum] = "5f58bf3d7db68cfbac37cfc485a8d711e87e064c3d0fe0435b92f7a407f9d6b3"
+SRC_URI[bindgen-0.72.1.sha256sum] = "993776b509cfb49c750f11b8f07a46fa23e0a1386ffc01fb1e7d343efc387895"
 SRC_URI[bitflags-1.3.2.sha256sum] = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 SRC_URI[bitflags-2.13.0.sha256sum] = "b4388bee8683e3d04af747c73422af53102d2bd24d9eadb6cbc100baef4b43f8"
 SRC_URI[block-buffer-0.10.4.sha256sum] = "3078c7629b62d3f0439517fa394996acacc5cbc91c5a20d8c658e77abd503a71"
