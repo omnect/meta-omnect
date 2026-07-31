@@ -1,6 +1,4 @@
 #!/bin/bash
-commands=("get" "list" "set" "unset")
-argsc=${#}
 
 function help() {
     echo "usage:"
@@ -8,24 +6,24 @@ function help() {
     echo "    command: {get,list,set,unset}"
 }
 
-function get() {
-    [[ ${argsc} -ne 2 ]] && help && exit 1
-    local key=${1}
-    local value=$(fw_printenv -- ${key})
-    value=${value#${key}=}
+function cmd_get() {
+    [[ ${#} -ne 1 ]] && help && exit 1
+    local key="${1}"
+    local value=$(fw_printenv -- "${key}")
+    value="${value#"${key}"=}"
     [[ -z "${value}" ]] && echo && exit 2
-    echo ${value}
+    echo "${value}"
 }
 
-function list(){
-    [[ ${argsc} -ne 1 ]] && help && exit 1
+function cmd_list() {
+    [[ ${#} -ne 0 ]] && help && exit 1
     fw_printenv
 }
 
-function set () {
-    [[ ${argsc} -ne 3 ]] && help && exit 1
-    local key=${1}
-    local value=${@:2}
+function cmd_set() {
+    [[ ${#} -ne 2 ]] && help && exit 1
+    local key="${1}"
+    local value="${2}"
 
     # '--' ends option parsing, so key and value are always treated as data.
     # this blocks script mode and every other option, e.g. an attacker-chosen
@@ -34,14 +32,13 @@ function set () {
     fw_setenv -- "${key}" "${value}"
 }
 
-function unset() {
-    [[ ${argsc} -ne 2 ]] && help && exit 1
-    local key=${1}
+function cmd_unset() {
+    [[ ${#} -ne 1 ]] && help && exit 1
+    local key="${1}"
     fw_setenv -- "${key}"
 }
 
 [[ ${#} -lt 1 ]] && help && exit 1
-[[ ! " ${commands[@]} " =~ " ${1} " ]] && help && exit 1
+declare -F "cmd_${1}" > /dev/null || { help; exit 1; }
 
-#exec
-${1} ${@:2}
+"cmd_${1}" "${@:2}"
