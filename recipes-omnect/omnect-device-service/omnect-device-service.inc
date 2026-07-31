@@ -99,6 +99,7 @@ do_install:append() {
     install -m 0755 -D ${S}/healthcheck/omnect_health__coredumps.sh         ${D}/${sbindir}/omnect_health__coredumps.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health__services.sh          ${D}/${sbindir}/omnect_health__services.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health__system_running.sh    ${D}/${sbindir}/omnect_health__system_running.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__crash_loop.sh        ${D}/${sbindir}/omnect_health__crash_loop.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health__timesync.sh          ${D}/${sbindir}/omnect_health__timesync.sh
     install -m 0755 -D ${S}/healthcheck/omnect_service_log.sh               ${D}/${sbindir}/omnect_service_log.sh
     # NOTE:
@@ -167,6 +168,7 @@ FILES:${PN} += "\
 	${sbindir}/omnect_health__coredumps.sh \
 	${sbindir}/omnect_health__services.sh \
 	${sbindir}/omnect_health__system_running.sh \
+	${sbindir}/omnect_health__crash_loop.sh \
 	${sbindir}/omnect_health__timesync.sh \
 	${sbindir}/omnect_service_log.sh \
 	${sbindir}/omnect_reboot_reason.sh \
