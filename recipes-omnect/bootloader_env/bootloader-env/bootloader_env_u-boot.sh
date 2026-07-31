@@ -11,7 +11,7 @@ function help() {
 function get() {
     [[ ${argsc} -ne 2 ]] && help && exit 1
     local key=${1}
-    local value=$(fw_printenv ${key})
+    local value=$(fw_printenv -- ${key})
     value=${value#${key}=}
     [[ -z "${value}" ]] && echo && exit 2
     echo ${value}
@@ -27,19 +27,17 @@ function set () {
     local key=${1}
     local value=${@:2}
 
-    for word in $key $value; do
-        if [[ "$word" == "-s" || "$word" == "--script" || "$word" == -s=* || "$word" == --script=* ]]; then
-            echo "Script-file mode is not allowed (flag: $word)"; exit 66;
-        fi
-    done
-
-    fw_setenv "${key}" "${value}"
+    # '--' ends option parsing, so key and value are always treated as data.
+    # this blocks script mode and every other option, e.g. an attacker-chosen
+    # config file, which a flag blocklist would miss (getopt accepts attached
+    # values like -sFILE and abbreviations like --scr=FILE)
+    fw_setenv -- "${key}" "${value}"
 }
 
 function unset() {
     [[ ${argsc} -ne 2 ]] && help && exit 1
     local key=${1}
-    fw_setenv "${key}"
+    fw_setenv -- "${key}"
 }
 
 [[ ${#} -lt 1 ]] && help && exit 1
