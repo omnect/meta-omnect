@@ -5,14 +5,17 @@ Wants=network-online.target aziot-identityd.service
 
 ConditionPathExists=!/run/omnect-device-service/omnect_validate_update
 
-StartLimitBurst=10
-StartLimitIntervalSec=120
+# never park in 'failed': each restart also pulls identity up again via
+# Wants=, and a persistent loop is caught by the crash-loop check
+StartLimitIntervalSec=0
 
 [Service]
 Type=notify
 
 Restart=always
 RestartSec=5
+RestartSteps=5
+RestartMaxDelaySec=60
 
 User=adu
 Group=adu
