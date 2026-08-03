@@ -191,8 +191,10 @@ do_install() {
     install -m 0644 ${WORKDIR}/aziot-identityd-precondition.service ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     if ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'true', 'false', d)}; then
         sed -i "s/@@AZIOTCLI@@/iotedge/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
+        sed -i "s/@@STACK_UNITS@@/aziot-identityd.service aziot-edged.service/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     else
         sed -i "s/@@AZIOTCLI@@/aziotctl/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
+        sed -i "s/@@STACK_UNITS@@/aziot-identityd.service/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     fi
     install -m 0644 ${WORKDIR}/aziot-identityd-precondition.timer ${D}${systemd_system_unitdir}/aziot-identityd-precondition.timer
 }
