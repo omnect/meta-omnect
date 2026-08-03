@@ -1,0 +1,9 @@
+[Unit]
+Description=Retry Azure IoT Identity Service Precondition
+
+[Timer]
+# must exceed the unit's start-limit window, else the retry is rejected as well
+OnUnitInactiveSec=10min
+
+[Install]
+WantedBy=timers.target
