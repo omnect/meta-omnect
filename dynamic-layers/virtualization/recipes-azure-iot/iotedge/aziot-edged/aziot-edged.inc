@@ -60,6 +60,8 @@ do_install () {
 
     install -m 0644 ${S}/edgelet/contrib/systemd/debian/aziot-edged.workload.socket  ${D}${systemd_system_unitdir}/aziot-edged.workload.socket
     install -m 0644 ${S}/edgelet/contrib/systemd/debian/aziot-edged.mgmt.socket  ${D}${systemd_system_unitdir}/aziot-edged.mgmt.socket
+    aziot_disable_socket_trigger_limit ${D}${systemd_system_unitdir}/aziot-edged.workload.socket
+    aziot_disable_socket_trigger_limit ${D}${systemd_system_unitdir}/aziot-edged.mgmt.socket
 }
 
 USERADD_PARAM:${PN} += " \
