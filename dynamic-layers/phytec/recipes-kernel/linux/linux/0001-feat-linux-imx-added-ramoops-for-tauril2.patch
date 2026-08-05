@@ -7,9 +7,9 @@ index 773e0a4db..9402efe75 100644
  	};
  
 +	reserved-memory {
-+		ramoops: ramoops@b0000000 {
++		ramoops: ramoops@60000000 {
 +			compatible = "ramoops";
-+			reg = <0x0 0x0b0000000 0x0 0x40000>; /*	   256kB */
++			reg = <0x0 0x060000000 0x0 0x40000>; /*	   256kB */
 +			record-size = <0x1000>;              /*	     4kB */
 +			console-size = <0x10000>;            /*	     64k */
 +			ecc-size = <1>;                      /*  enabled */
