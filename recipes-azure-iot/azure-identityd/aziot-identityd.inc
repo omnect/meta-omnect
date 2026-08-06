@@ -217,7 +217,7 @@ do_install() {
         sed -i "s/@@AZIOTCLI@@/aziotctl/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
         sed -i "s/@@STACK_UNITS@@/aziot-identityd.service/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     fi
-    install -m 0644 ${WORKDIR}/aziot-identityd-precondition.timer ${D}${systemd_system_unitdir}/aziot-identityd-precondition.timer
+    install -m 0644 ${UNPACKDIR}/aziot-identityd-precondition.timer ${D}${systemd_system_unitdir}/aziot-identityd-precondition.timer
 }
 
 pkg_postinst:${PN}() {
