@@ -15,6 +15,7 @@ SRC_URI += " \
 # workspace
 SRC_URI += " \
     file://aziot-identityd-precondition.service \
+    file://aziot-identityd-precondition.timer \
     file://iot-identity-service.conf \
     file://iot-identity-service-certd.template.toml \
 "
@@ -151,6 +152,7 @@ do_install() {
     install -m 0644     ${S}/cert/aziot-certd/aziot-certd.socket.in ${D}${systemd_system_unitdir}/aziot-certd.socket
     fill_placeholders ${D}${systemd_system_unitdir}/aziot-certd.service
     fill_placeholders ${D}${systemd_system_unitdir}/aziot-certd.socket
+    aziot_disable_socket_trigger_limit ${D}${systemd_system_unitdir}/aziot-certd.socket
 
     # enable identity service to create cert "device-id" (e.g. for x509 dps provisioning)
     install -m 0600 -o aziotcs -g aziotcs ${UNPACKDIR}/iot-identity-service-certd.template.toml ${D}${sysconfdir}/aziot/certd/config.d/aziotid.toml
@@ -167,6 +169,7 @@ do_install() {
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.socket.in ${D}${systemd_system_unitdir}/aziot-identityd.socket
     fill_placeholders ${D}${systemd_system_unitdir}/aziot-identityd.service
     fill_placeholders ${D}${systemd_system_unitdir}/aziot-identityd.socket
+    aziot_disable_socket_trigger_limit ${D}${systemd_system_unitdir}/aziot-identityd.socket
 
     install -m 0644     ${S}/key/aziot-keyd/aziot-keyd.service.in ${D}${systemd_system_unitdir}/aziot-keyd.service
     sed -i \
@@ -179,6 +182,7 @@ do_install() {
     install -m 0644     ${S}/key/aziot-keyd/aziot-keyd.socket.in ${D}${systemd_system_unitdir}/aziot-keyd.socket
     fill_placeholders ${D}${systemd_system_unitdir}/aziot-keyd.service
     fill_placeholders ${D}${systemd_system_unitdir}/aziot-keyd.socket
+    aziot_disable_socket_trigger_limit ${D}${systemd_system_unitdir}/aziot-keyd.socket
 
     if ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', 'true', 'false', d)}; then
         install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.service.in ${D}${systemd_system_unitdir}/aziot-tpmd.service
@@ -192,6 +196,7 @@ do_install() {
         install -m 0644     ${S}/tpm/aziot-tpmd/aziot-tpmd.socket.in ${D}${systemd_system_unitdir}/aziot-tpmd.socket
         fill_placeholders ${D}${systemd_system_unitdir}/aziot-tpmd.service
         fill_placeholders ${D}${systemd_system_unitdir}/aziot-tpmd.socket
+        aziot_disable_socket_trigger_limit ${D}${systemd_system_unitdir}/aziot-tpmd.socket
     fi
 
     # libaziot-key-openssl-engine-shared
@@ -207,9 +212,12 @@ do_install() {
     install -m 0644 ${UNPACKDIR}/aziot-identityd-precondition.service ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     if ${@bb.utils.contains('DISTRO_FEATURES', 'iotedge', 'true', 'false', d)}; then
         sed -i "s/@@AZIOTCLI@@/iotedge/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
+        sed -i "s/@@STACK_UNITS@@/aziot-identityd.service aziot-edged.service/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     else
         sed -i "s/@@AZIOTCLI@@/aziotctl/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
+        sed -i "s/@@STACK_UNITS@@/aziot-identityd.service/" ${D}${systemd_system_unitdir}/aziot-identityd-precondition.service
     fi
+    install -m 0644 ${WORKDIR}/aziot-identityd-precondition.timer ${D}${systemd_system_unitdir}/aziot-identityd-precondition.timer
 }
 
 pkg_postinst:${PN}() {
@@ -230,6 +238,7 @@ SYSTEMD_SERVICE:${PN} = " \
     aziot-identityd.service \
     aziot-identityd.socket \
     aziot-identityd-precondition.service \
+    aziot-identityd-precondition.timer \
     aziot-keyd.service \
     aziot-keyd.socket \
 "

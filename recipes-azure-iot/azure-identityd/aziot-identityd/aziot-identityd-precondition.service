@@ -16,9 +16,21 @@ ConditionPathExists=|/run/omnect-device-service/omnect_bootloader_updated
 
 ConditionFileNotEmpty=|!/etc/aziot/identityd/config.d/00-super.toml
 
+# with RestartSec=5 the default limit (5 starts per 10s) is never reached, so
+# the unit would loop in auto-restart forever instead of failing; the window
+# has to hold the whole burst, i.e. StartLimitBurst * (RestartSec + runtime of
+# one 'config apply')
+StartLimitBurst=5
+StartLimitIntervalSec=120
+
 [Service]
 Type=oneshot
 ExecStart=@@AZIOTCLI@@ config apply
+# a run after boot only writes the config; bring the services up like the
+# boot transaction would. --no-block is required: this unit is ordered
+# Before= the started units, a blocking start would deadlock. On a normal
+# boot the request merges with the already queued jobs.
+ExecStartPost=-/bin/systemctl start --no-block @@STACK_UNITS@@
 Restart=on-failure
 RestartSec=5
 RemainAfterExit=true

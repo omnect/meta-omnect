@@ -638,10 +638,18 @@ index 0e52b667..8620349c 100644
  target_link_libraries (${target_name} PRIVATE libaducpal)
  
 diff --git a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
-index 89a2523c..563feb37 100644
+index 89a2523c..4bf4ef28 100644
 --- a/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
 +++ b/src/communication_managers/iothub_communication_manager/src/iothub_communication_manager.c
-@@ -43,6 +43,8 @@
+@@ -23,6 +23,7 @@
+ #include <iothub_client_options.h>
+ 
+ #include <assert.h>
++#include <errno.h>
+ 
+ #ifdef ADUC_ALLOW_MQTT
+ #    include <iothubtransportmqtt.h>
+@@ -43,6 +44,8 @@
  
  #include <pthread.h>
  
@@ -650,7 +658,7 @@ index 89a2523c..563feb37 100644
  /**
   * @brief A pointer to ADUC_ClientHandle data. This must be initialize by the component that creates the IoT Hub connection.
   */
-@@ -68,6 +70,11 @@ static IOTHUB_CLIENT_DEVICE_TWIN_CALLBACK g_device_twin_callback = NULL;
+@@ -68,6 +71,11 @@ static IOTHUB_CLIENT_DEVICE_TWIN_CALLBACK g_device_twin_callback = NULL;
   */
  static bool g_iothub_client_initialized = false;
  
@@ -662,7 +670,7 @@ index 89a2523c..563feb37 100644
  /**
   * @brief An additional data context used the caller.
   */
-@@ -337,6 +344,11 @@ void IoTHub_CommunicationManager_ConnectionStatus_Callback(
+@@ -337,6 +345,11 @@ void IoTHub_CommunicationManager_ConnectionStatus_Callback(
      case IOTHUB_CLIENT_CONNECTION_AUTHENTICATED:
          g_last_authenticated_time = now_time;
          g_authentication_retries = 0;
@@ -674,6 +682,90 @@ index 89a2523c..563feb37 100644
          break;
      case IOTHUB_CLIENT_CONNECTION_UNAUTHENTICATED:
          if (IoTHub_CommunicationManager_CategorizeUnauthenticated(status_reason)
+@@ -944,6 +957,57 @@ done:
+     ADUC_ConnectionInfo_DeAlloc(&info);
+ }
+ 
++// Margin over the just-scheduled retry delay: sized to outlast the retry
++// itself plus the SDK's TCP connect (~127s at kernel defaults) plus one
++// DoWork tick, so systemd never SIGTERMs between two consecutive extends.
++#define EXTEND_MARGIN_SECS 60
++
++// Bounded grace for the very first connect attempt, before any retry has
++// been scheduled. Aligned with the SDK's NO_NETWORK back-off so it outlasts
++// a full kernel SYN-retry cycle (~127s).
++#define FIRST_CONNECT_GRACE_SECS TIME_SPAN_FIVE_MINUTES_IN_SECONDS
++
++/**
++ * @brief Build the `EXTEND_TIMEOUT_USEC=<usec>` payload for `sd_notify`.
++ *
++ * @param seconds Grace to request, in seconds.
++ * @param buf     Destination buffer for the payload string.
++ * @param buflen  Size of @p buf.
++ * @return true if @p buf was filled and should be sent, false when the
++ *         input is non-positive or the buffer is unusable.
++ */
++bool format_extend_timeout_message(time_t seconds, char* buf, size_t buflen)
++{
++    if (seconds <= 0 || buf == NULL || buflen == 0)
++    {
++        return false;
++    }
++    (void)snprintf(
++        buf, buflen, "EXTEND_TIMEOUT_USEC=%llu", (unsigned long long)seconds * 1000000ULL);
++    return true;
++}
++
++/**
++ * @brief Push systemd's current-state timeout deadline out by @p seconds.
++ *
++ * Called while the unit is in `activating (start)` so the SDK's own retry
++ * cadence drives when systemd kills the process. After READY=1 has ended
++ * the start it becomes a no-op. Non-fatal on failure; a missing
++ * NOTIFY_SOCKET is a silent no-op too.
++ */
++static void notify_extend_start_timeout(time_t seconds)
++{
++    char msg[64];
++    if (!format_extend_timeout_message(seconds, msg, sizeof(msg)))
++    {
++        return;
++    }
++    if (sd_notify(0, msg) < 0)
++    {
++        Log_Debug("sd_notify(%s) failed: errno=%d", msg, errno);
++    }
++}
++
+ /**
+  * @brief Performs an authentication to the IoTHub as needed, with exponential back-off retry logics.
+  *
+@@ -1038,6 +1102,10 @@ static void Connection_Maintenance()
+             ADUC_RETRY_DEFAULT_MAX_JITTER_PERCENT);
+ 
+         g_next_authentication_attempt_time = (nextRetryTime);
++        // Move systemd's deadline in step with the retry we just scheduled
++        // so the SDK's own back-off (e.g. the 5-minute NO_NETWORK delay)
++        // can run its full length.
++        notify_extend_start_timeout(nextRetryTime - now_time + EXTEND_MARGIN_SECS);
+         Log_Info(
+             "The connection is currently broken. Will try to authenticate in %d seconds.", nextRetryTime - now_time);
+         return;
+@@ -1058,6 +1126,14 @@ static void Connection_Maintenance()
+ void IoTHub_CommunicationManager_DoWork(void* user_context)
+ {
+     UNREFERENCED_PARAMETER(user_context);
++    if (g_last_authentication_attempt_time == 0)
++    {
++        // First DoWork tick since agent start: no retry has been scheduled
++        // yet, so grant a bounded grace to outlast the initial hub
++        // round-trip. Every later retry extends the deadline again from
++        // Connection_Maintenance().
++        notify_extend_start_timeout(FIRST_CONNECT_GRACE_SECS);
++    }
+     Connection_Maintenance();
+     ClientHandle_DoWork(*g_aduc_client_handle_address);
+ }
 diff --git a/src/communication_managers/iothub_communication_manager/tests/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/tests/CMakeLists.txt
 index dbd6d5b5..f0d96f74 100644
 --- a/src/communication_managers/iothub_communication_manager/tests/CMakeLists.txt
@@ -704,6 +796,35 @@ index dbd6d5b5..f0d96f74 100644
  target_compile_definitions (${PROJECT_NAME} PRIVATE ADUC_CONF_FILE_PATH="/etc/adu/du-config.json")
  
  include (CTest)
+diff --git a/src/communication_managers/iothub_communication_manager/tests/iothub_communication_manager_ut.cpp b/src/communication_managers/iothub_communication_manager/tests/iothub_communication_manager_ut.cpp
+index d51d2906..6a36d334 100644
+--- a/src/communication_managers/iothub_communication_manager/tests/iothub_communication_manager_ut.cpp
++++ b/src/communication_managers/iothub_communication_manager/tests/iothub_communication_manager_ut.cpp
+@@ -1274,3 +1274,24 @@ TEST_CASE("ADO 38069154: unrecognized reason classifies as Unknown (conservative
+     CHECK(cls != ADUC_ConnReason_Credential);
+     CHECK(cls != ADUC_ConnReason_DeviceDisabled);
+ }
++
++//
++// Tests for format_extend_timeout_message: the pure formatter that backs the
++// sd_notify(EXTEND_TIMEOUT_USEC=...) path in Connection_Maintenance().
++//
++
++extern "C" bool format_extend_timeout_message(time_t seconds, char* buf, size_t buflen);
++
++TEST_CASE("format_extend_timeout_message formats seconds as microseconds")
++{
++    char buf[64] = { 0 };
++    CHECK(format_extend_timeout_message(300, buf, sizeof(buf)) == true);
++    CHECK(strcmp(buf, "EXTEND_TIMEOUT_USEC=300000000") == 0);
++}
++
++TEST_CASE("format_extend_timeout_message returns false for non-positive input")
++{
++    char buf[64] = { 0 };
++    CHECK(format_extend_timeout_message(0, buf, sizeof(buf)) == false);
++    CHECK(format_extend_timeout_message(-1, buf, sizeof(buf)) == false);
++}
 diff --git a/src/diagnostics_component/diagnostics_devicename/inc/diagnostics_devicename.h b/src/diagnostics_component/diagnostics_devicename/inc/diagnostics_devicename.h
 index e5affb15..a5614cdb 100644
 --- a/src/diagnostics_component/diagnostics_devicename/inc/diagnostics_devicename.h
