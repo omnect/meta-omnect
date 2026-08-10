@@ -20,6 +20,7 @@ SRC_URI += " \
     file://aziot-identityd-precondition.timer \
     file://iot-identity-service.conf \
     file://iot-identity-service-certd.template.toml \
+    file://omnect_wait_dns_ready.sh \
 "
 
 CARGO_BUILD_FLAGS += "--offline"
@@ -35,7 +36,9 @@ DEPENDS = " \
 "
 
 RDEPENDS:${PN} = " \
+    bash \
     libtss2-tcti-device \
+    toml-cli \
 "
 
 do_compile() {
@@ -84,6 +87,7 @@ do_install() {
     # binaries
     install -d -m 0755  ${D}${bindir}
     install -m 0755     ${B}/target/${CARGO_TARGET_SUBDIR}/aziotctl ${D}${bindir}
+    install -m 0755     ${WORKDIR}/omnect_wait_dns_ready.sh ${D}${bindir}
 
     install -d -m 0750 -g aziot ${D}${libexecdir}/aziot-identity-service
     install -m 0750 -g aziot ${B}/target/${CARGO_TARGET_SUBDIR}/aziotd ${D}${libexecdir}/aziot-identity-service
@@ -142,7 +146,7 @@ do_install() {
         -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
         -e 's#@libexecdir@#/usr/libexec#g' \
         -e '/Environment=\(.*\)$/d' \
-	-e 's#^ExecStart=\(.*\)$#ExecStartPre=+-bash -c "/usr/sbin/omnect_service_log.sh start aziot-identityd"\nExecStart=\1\nExecStopPost=+-/bin/sh -c "/usr/sbin/omnect_service_log.sh stop aziot-identityd \\"$$SERVICE_RESULT\\" \\"$$EXIT_CODE\\" \\"$$EXIT_STATUS\\""#' \
+	-e 's#^ExecStart=\(.*\)$#ExecStartPre=+-bash -c "/usr/sbin/omnect_service_log.sh start aziot-identityd"\nExecStartPre=+-/usr/bin/omnect_wait_dns_ready.sh\nExecStart=\1\nExecStopPost=+-/bin/sh -c "/usr/sbin/omnect_service_log.sh stop aziot-identityd \\"$$SERVICE_RESULT\\" \\"$$EXIT_CODE\\" \\"$$EXIT_STATUS\\""#' \
         -e 's/^Requires=\(.*\)$/Requires=\1 network-online.target/' \
         ${D}${systemd_system_unitdir}/aziot-identityd.service
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.socket.in ${D}${systemd_system_unitdir}/aziot-identityd.socket
