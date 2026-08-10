@@ -19,7 +19,7 @@ function endpoint_host()
                provisioning.global_endpoint \
                provisioning.iothub_hostname; do
         value=$(toml get "${AZIOT_CONFIG}" "${key}" 2>/dev/null | tr -d '"')
-        [ -n "${value}" ] && [ "${value}" != "null" ] || continue
+        [ -n "${value}" ] || continue
         value="${value#*://}"
         value="${value%%/*}"
         echo "${value%%:*}"
