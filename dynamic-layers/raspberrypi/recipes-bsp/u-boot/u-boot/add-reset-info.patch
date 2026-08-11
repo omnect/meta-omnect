@@ -9,20 +9,6 @@ diff --git a/arch/arm/mach-bcm283x/Makefile b/arch/arm/mach-bcm283x/Makefile
  
  ifeq ($(CONFIG_GENERATE_ACPI_TABLE),y)
  obj-$(CONFIG_BCM2711) += bcm2711_acpi.o
-diff --git a/arch/arm/mach-bcm283x/init.c b/arch/arm/mach-bcm283x/init.c
---- a/arch/arm/mach-bcm283x/init.c
-+++ b/arch/arm/mach-bcm283x/init.c
-@@ -206,7 +206,10 @@
- #if defined(CONFIG_DISPLAY_CPUINFO)
- int print_cpuinfo(void)
- {
-+	extern char *get_reset_cause(void);
- 	printf("CPU: BCM283x\n");
-+	printf("SoC: %s\n", CONFIG_SYS_SOC);
-+	printf("Reset cause: %s\n", get_reset_cause());
- 	return 0;
- }
- #endif
 diff --git a/arch/arm/mach-bcm283x/sys_info.c b/arch/arm/mach-bcm283x/sys_info.c
 new file mode 100644
 --- /dev/null
@@ -85,7 +71,7 @@ diff --git a/cmd/rstinfo.c b/cmd/rstinfo.c
 new file mode 100644
 --- /dev/null
 +++ b/cmd/rstinfo.c
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,27 @@
 +/*
 + *  Get Reset Cause
 + */
@@ -94,7 +80,6 @@ new file mode 100644
 +#include <env.h>
 +#include <command.h>
 +
-+extern int print_cpuinfo(void);
 +extern char *get_reset_cause(void);
 +static int do_rstinfo(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 +{
