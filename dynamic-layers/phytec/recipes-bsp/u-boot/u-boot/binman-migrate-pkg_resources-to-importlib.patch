@@ -23,7 +23,6 @@ Upstream-Status: Backport [https://github.com/u-boot/u-boot/commit/538719cb6a779
 
 Reviewed-by: Bryan Brattlof <bb@ti.com>
 Signed-off-by: Yannic Moog <y.moog@phytec.de>
-Signed-off-by: Harry Waschkeit <44188360+HarryWaschkeit@users.noreply.github.com>
 ---
 diff --git a/tools/binman/control.py b/tools/binman/control.py
 index 2f00279..5bce681 100644

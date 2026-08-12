@@ -14,7 +14,6 @@ shipped on the wrynose host baseline.
 Upstream-Status: Backport [https://github.com/u-boot/u-boot/commit/a63456b9191fae2fe49f4b121e025792022e3950]
 
 Signed-off-by: Markus Volk <f_l_k@t-online.de>
-Signed-off-by: Harry Waschkeit <44188360+HarryWaschkeit@users.noreply.github.com>
 ---
 diff --git a/scripts/dtc/pylibfdt/libfdt.i_shipped b/scripts/dtc/pylibfdt/libfdt.i_shipped
 index 56cc5d4..e465948 100644
