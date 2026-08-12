@@ -169,8 +169,9 @@ fakeroot adu_shell_cap() {
 # for a release image we explicitly disable them by masking
 IMAGE_PREPROCESS_COMMAND:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'disable_getty;', '', d)}"
 disable_getty() {
-    for i in ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/getty.target.wants/getty@*.service; do
-        rm ${i}
+    for i in ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/getty.target.wants/getty@*.service \
+             ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/serial-getty@.service; do
+        rm -f ${i}
         ln -sf /dev/null ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/$(basename ${i})
     done
 }
