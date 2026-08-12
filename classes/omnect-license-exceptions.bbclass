@@ -2,8 +2,8 @@
 # (see oe.license.apply_pkg_license_exception: it tests "<pkg>:<license>"). So an
 # entry like "bash:GPL-3.0-or-later" only whitelists the main "bash" package while
 # every sub-package it produces (bash-dev, bash-doc, bash-src, bash-dbg,
-# bash-staticdev, bash-locale-*, ...) is still dropped by the incompatible-license
-# QA check, which is fatal (it is part of ERROR_QA) and breaks do_package.
+# bash-staticdev, ...) still carries the incompatible license and is excluded at
+# parse time by base.bbclass' oe.license.skip_incompatible_package_licenses().
 #
 # This class expands each existing exception entry to cover *all* packages produced
 # by the recipe that owns the named package, so a single line in
@@ -30,6 +30,7 @@ def omnect_license_exception_subpkgs(d):
 
     return ' '.join(sorted(set(extra)))
 
-# Evaluated lazily at do_package time, when PACKAGES already includes the
-# dynamically split locale packages.
+# Expanded whenever INCOMPATIBLE_LICENSE_EXCEPTIONS is read; the relevant reader is
+# base.bbclass' parse-time check, so PACKAGES holds the statically declared
+# sub-packages of the recipe being parsed.
 INCOMPATIBLE_LICENSE_EXCEPTIONS:append = " ${@omnect_license_exception_subpkgs(d)}"
