@@ -34,3 +34,14 @@ def omnect_license_exception_subpkgs(d):
 # base.bbclass' parse-time check, so PACKAGES holds the statically declared
 # sub-packages of the recipe being parsed.
 INCOMPATIBLE_LICENSE_EXCEPTIONS:append = " ${@omnect_license_exception_subpkgs(d)}"
+
+# Our images intentionally ship GPLv3 packages (coreutils, parted and their
+# dependencies bash/readline/...) that are allowed globally via
+# INCOMPATIBLE_LICENSE_EXCEPTIONS. The 'license-exception' QA check is part of
+# ERROR_QA by default and would otherwise fail do_rootfs for exactly those
+# allowed packages, so demote it to a warning. This is co-located with the
+# exception expansion above so every image is covered from a single place. The
+# check is only emitted for images (license_image.bbclass at do_rootfs), so
+# applying this globally is a no-op for non-image recipes.
+ERROR_QA:remove = "license-exception"
+WARN_QA:append = " license-exception"

@@ -13,14 +13,6 @@ inherit omnect_initramfs
 
 IMAGE_NAME = "${OMNECT_INITRAMFS_IMAGE_NAME}"
 
-# This image intentionally ships GPLv3 packages (coreutils, parted and their
-# dependencies bash/readline/...) that are allowed globally via
-# INCOMPATIBLE_LICENSE_EXCEPTIONS. The 'license-exception' QA check is part of
-# ERROR_QA by default and would otherwise fail do_rootfs for exactly those
-# allowed packages, so demote it to a warning for this image.
-ERROR_QA:remove = "license-exception"
-WARN_QA:append = " license-exception"
-
 # This image is a cpio unpacked into RAM, not a read-write filesystem, so the default
 # 1.3 free-space overhead is meaningless here - it only inflated the INITRAMFS_MAXSIZE
 # check. Size the check to the real content; INITRAMFS_MAXSIZE stays as the RAM guard.
