@@ -88,7 +88,7 @@ do_install() {
     # binaries
     install -d -m 0755  ${D}${bindir}
     install -m 0755     ${B}/target/${CARGO_TARGET_SUBDIR}/aziotctl ${D}${bindir}
-    install -m 0755     ${WORKDIR}/omnect_wait_dns_ready.sh ${D}${bindir}
+    install -m 0755     ${UNPACKDIR}/omnect_wait_dns_ready.sh ${D}${bindir}
 
     install -d -m 0750 -g aziot ${D}${libexecdir}/aziot-identity-service
     install -m 0750 -g aziot ${B}/target/${CARGO_TARGET_SUBDIR}/aziotd ${D}${libexecdir}/aziot-identity-service
