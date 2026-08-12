@@ -1,7 +1,7 @@
 DESCRIPTION = "Oneshot service that starts/configures wifi commissioning from /etc/omnect/device_caps.json"
 
 # file-only recipe: sources land in ${UNPACKDIR} now which is by default
-# ${WORKDIR}/sources (opposed to directly ${WORKDIR} in the past)
+# ${WORKDIR}/sources
 S = "${UNPACKDIR}"
 
 LICENSE = "MIT | Apache-2.0"

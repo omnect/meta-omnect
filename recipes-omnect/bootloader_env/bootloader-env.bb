@@ -1,7 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 # file-only recipe: sources land in ${UNPACKDIR} now which is by default
-# ${WORKDIR}/sources (opposed to directly ${WORKDIR} in the past)
+# ${WORKDIR}/sources
 S = "${UNPACKDIR}"
 
 # for usage in intramfs only

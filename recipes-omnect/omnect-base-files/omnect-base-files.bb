@@ -1,7 +1,7 @@
 SUMMARY = "omnect Base Files"
 
 # file-only recipe: sources land in ${UNPACKDIR} now which is by default
-# ${WORKDIR}/sources (opposed to directly ${WORKDIR} in the past)
+# ${WORKDIR}/sources
 S = "${UNPACKDIR}"
 DESCRIPTION = "Provide omnect Base Files."
 LICENSE = "MIT"
