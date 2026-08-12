@@ -31,7 +31,8 @@ if [ -r "$WCS_ENV" ]; then
         1|true|yes|on) ble_disabled=yes ;;
         0|false|no|off) ;;
         *)
-            echo "WARNING: unrecognized wifi commissioning enabled option \"$val\""
+            echo "WARNING: unrecognized wifi commissioning enabled option \"$val\"" >&2
+            ;;
     esac
 fi
 
