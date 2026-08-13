@@ -165,7 +165,7 @@ disable_getty() {
         rm ${i}
         ln -sf /dev/null ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/$(basename ${i})
     done
-    rm -f ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/serial-getty@.service
+    ln -sf /dev/null ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/serial-getty@.service
 }
 
 # Poky checks at creation time of rootfs and even later when creating the
