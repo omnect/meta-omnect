@@ -1,4 +1,4 @@
-inherit useradd
+inherit useradd pkgconfig
 
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM:${PN} = " \

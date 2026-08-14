@@ -1,12 +1,10 @@
 diff --git a/meta-imx-bsp/conf/layer.conf b/meta-imx-bsp/conf/layer.conf
-index 94bea8fe36..5b3d59930f 100644
+index 5658fb4..71fbe4c 100644
 --- a/meta-imx-bsp/conf/layer.conf
 +++ b/meta-imx-bsp/conf/layer.conf
-@@ -9,6 +9,7 @@ BBFILE_COLLECTIONS += "fsl-bsp-release"
- BBFILE_PATTERN_fsl-bsp-release := "^${LAYERDIR}/"
- BBFILE_PRIORITY_fsl-bsp-release = "8"
- LAYERSERIES_COMPAT_fsl-bsp-release = "mickledore nanbield scarthgap"
-+LAYERDIR_fsl-bsp-release = "${LAYERDIR}"
+@@ -291,3 +291,5 @@ KERNEL_DEVICETREE:append:imx93-11x11-lpddr4x-evk = " \
+ # Overrides for imx943-19x19-lpddr4-evk.conf
  
- # Create a mirror for unreliable packages
- MIRRORS += "http://sourceforge.net/.* http://www.nxp.com/lgfiles/updates/other"
+ # Overrides for imx943-15x15-lpddr4-evk.conf
++
++LAYERDIR_fsl-bsp-release = "${LAYERDIR}"

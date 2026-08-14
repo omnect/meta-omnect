@@ -3,8 +3,8 @@ DEPENDS += "u-boot-mkenvimage-native"
 
 omnect_uboot_configure_env() {
     # configure omnect u-boot env
-    cp -f ${WORKDIR}/omnect_env.h ${S}/include/configs/
-    cp -f ${WORKDIR}/omnect_env.env ${S}/include/env/
+    cp -f ${UNPACKDIR}/omnect_env.h ${S}/include/configs/
+    cp -f ${UNPACKDIR}/omnect_env.env ${S}/include/env/
 
     # set release image
     if [ "${OMNECT_RELEASE_IMAGE}" = "1" ]; then
@@ -28,11 +28,14 @@ do_compile:append() {
         mkenvimage="mkenvimage -r"
     fi
     if [ -n "${UBOOT_CONFIG}" ]; then
-        # this is based on the handling in openembedded-core/meta/recipes-bsp/u-boot/u-boot.inc
+        # openembedded-core's u-boot.inc now builds into O=${B}/${config}-${type},
+        # so the initial env lives in that -${type}-suffixed dir, not ${config}/.
+        # UBOOT_MACHINE/UBOOT_CONFIG only ever hold a single config here.
         for config in ${UBOOT_MACHINE}; do
-            initial_env="${B}/${config}/u-boot-initial-env"
-            # so far i don't see that `UBOOT_MACHINE` is ever set to multiple configs
-            break;
+            for type in ${UBOOT_CONFIG}; do
+                initial_env="${B}/${config}-${type}/u-boot-initial-env"
+                break 2
+            done
         done
     else
         initial_env="${B}/u-boot-initial-env"

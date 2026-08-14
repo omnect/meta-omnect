@@ -44,7 +44,7 @@ IMAGE_LINGUAS = "en-us"
 
 IMAGE_BASENAME = "omnect-os"
 
-IMAGE_LINK_NAME= "${IMAGE_BASENAME}${IMAGE_MACHINE_SUFFIX}"
+IMAGE_LINK_NAME = "${IMAGE_BASENAME}${IMAGE_MACHINE_SUFFIX}"
 
 IMAGE_NAME = "${DISTRO_NAME}_${DISTRO_VERSION}_${MACHINE}"
 
@@ -165,6 +165,7 @@ disable_getty() {
         rm ${i}
         ln -sf /dev/null ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/$(basename ${i})
     done
+    ln -sf /dev/null ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/serial-getty@.service
 }
 
 # Poky checks at creation time of rootfs and even later when creating the

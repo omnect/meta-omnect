@@ -1,0 +1,3 @@
+include ${LAYERDIR_omnect}/files/wic/omnect-os.rpi.wks.inc
+
+bootloader --ptable gpt

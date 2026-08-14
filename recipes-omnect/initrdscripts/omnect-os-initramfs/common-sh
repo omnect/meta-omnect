@@ -355,7 +355,7 @@ flash_mode_setup_network() {
 
     # get network interface up
     while true; do
-        ifconfig ${if_name} up >/dev/null 2>&1
+        ip link set ${if_name} up >/dev/null 2>&1
         if [ $? -eq 0 ]; then break; fi
         msg "Waiting for ${if_name} ..."
         sleep 1

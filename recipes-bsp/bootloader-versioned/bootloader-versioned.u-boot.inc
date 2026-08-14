@@ -25,7 +25,7 @@ OMNECT_BOOTLOADER_CHECKSUM_FILES_GLOB_IGNORE += "${LAYERDIR_omnect}/recipes-bsp/
 inherit omnect_bootloader_versioning omnect_uboot_embedded_version
 
 do_compile() {
-    cp "${WORKDIR}/omnect_get_bootloader_version.sh.template" "${WORKDIR}/omnect_get_bootloader_version.sh"
+    cp "${UNPACKDIR}/omnect_get_bootloader_version.sh.template" "${WORKDIR}/omnect_get_bootloader_version.sh"
     sed -i -e 's,@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC@@,${OMNECT_BOOTLOADER_EMBEDDED_VERSION_MAGIC},g' \
            -e 's,@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_PARAMSIZE@@,${OMNECT_BOOTLOADER_EMBEDDED_VERSION_PARAMSIZE},g' \
            -e 's,@@OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGEOFFSET@@,${OMNECT_BOOTLOADER_EMBEDDED_VERSION_IMAGEOFFSET},g' \

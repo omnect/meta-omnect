@@ -2,7 +2,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'file://release_log_level.patch', '', d)}"
 
-ATF_DEBUG = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '0', '1', d)}"
+PACKAGECONFIG:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', ' debug', d)}"
 OUTPUT_FOLDER ?= "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', 'release', 'debug', d)}"
 
 EXTRA_OEMAKE += " \

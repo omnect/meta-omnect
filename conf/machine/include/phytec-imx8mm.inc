@@ -18,6 +18,7 @@ IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
     fitImage  \
     oftree \
     bootenv.txt \
+    overlays.txt \
 "
 
 IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
@@ -26,7 +27,7 @@ IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
 OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 
 # Set Serial console
-SERIAL_CONSOLES ="${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '115200;ttymxc2', d)}"
+SERIAL_CONSOLES = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', '115200;ttymxc2', d)}"
 #bootargs console is not part of the devictree, so we have to append it to kernel commandline
 APPEND += "console=ttymxc2,115200"
 
@@ -58,23 +59,20 @@ BBMASK:append = " meta-phytec/recipes-bsp/u-boot/libubootenv_%.bbappend"
 # mask phytecs CVE bbappend handling, which interferes with ours (u-boot-scr matches as well)
 BBMASK:append = " meta-phytec/recipes-bsp/u-boot/u-boot-%.bbappend"
 
-# masks necessary to build with our bblayers.conf:
-BBMASK:append = " \
-    meta-imx/meta-imx-sdk/dynamic-layers/virtualization-layer/recipes-fsl/packagegroup/packagegroup-fsl-tools-testapps.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/fsl-rc-local/fsl-rc-local.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/images/fsl-image-machine-test.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/images/fsl-image-multimedia.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/packagegroup/packagegroup-fsl-gstreamer1.0.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/packagegroup/packagegroup-fsl-tools-benchmark.bbappend \
-    meta-imx/meta-imx-sdk/recipes-fsl/packagegroup/packagegroup-fsl-tools-testapps.bbappend \
-    meta-imx/meta-imx-sdk/recipes-graphics/devil/devil_%.bbappend \
-"
-
 # don't let meta-imx-bsp openssl recipe override the one from oecore
 BBMASK:append = " \
     meta-imx/meta-imx-bsp/recipes-connectivity/openssl/openssl_3.2.6.bb \
     meta-imx/meta-imx-bsp/recipes-connectivity/openssl/openssl_3.2.%.bbappend \
 "
+
+# mask phytec's Cortex-M demo bbappend: its base recipe lives in the dropped
+# meta-imx-sdk, so it would dangle; we don't want the demos anyway.
+BBMASK:append = " meta-phytec/dynamic-layers/fsl-bsp-release/recipes-fsl/mcore-demos/"
+
+# u-boot-master.bb tracks u-boot master via AUTOREV, doing a git ls-remote at
+# parse time; we don't use it and the remote fetch breaks parsing when
+# source.denx.de is unreachable.
+BBMASK:append = " meta-phytec/recipes-bsp/u-boot/u-boot-master.bb"
 
 # fix search path
 FILESEXTRAPATHS:prepend:pn-imx-boot-phytec := "${LAYERDIR_freescale-layer}/recipes-bsp/imx-mkimage/files:"
@@ -102,7 +100,7 @@ MACHINE_FEATURES:append = " \
     pstore \
 "
 
-OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-phytec-imx_2024.04-2.2.0-phy23.bb"
+OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-phytec-imx_2024.04-2.2.0-phy25.bb"
 
 # force bootloader version checksum to be old, when sure it's 100% binary compatible
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned = "<newchecksum> <oldchecksum>"
@@ -112,4 +110,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-ph
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-bootloader-versioned - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "5165f005922e91b9513e4316db9316097f421109e2e678f6aed21f3a5cfbff51"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "c216ffb0a152441906dc9a158b39161cf5fe368e5ebb9715fe59e6cf08b1b34c"

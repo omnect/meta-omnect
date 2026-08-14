@@ -1,8 +1,8 @@
 diff --git a/meta/conf/layer.conf b/meta/conf/layer.conf
-index efbf2610f9..330c964f87 100644
+index b097c34..ced9ec6 100644
 --- a/meta/conf/layer.conf
 +++ b/meta/conf/layer.conf
-@@ -132,3 +132,5 @@ PATH := "${@'${BITBAKEPATH}:' if '${BITBAKEPATH}' != '' else ''}${HOSTTOOLS_DIR}
+@@ -145,3 +145,5 @@ PATH := "${@'${BITBAKEPATH}:' if '${BITBAKEPATH}' != '' else ''}${HOSTTOOLS_DIR}
  BB_GLOBAL_PYMODULES = "os sys time"
  
  addpylib ${LAYERDIR}/lib oe

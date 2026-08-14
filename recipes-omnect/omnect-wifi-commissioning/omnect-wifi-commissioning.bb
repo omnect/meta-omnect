@@ -1,5 +1,9 @@
 DESCRIPTION = "Oneshot service that starts/configures wifi commissioning from /etc/omnect/device_caps.json"
 
+# file-only recipe: sources land in ${UNPACKDIR} now which is by default
+# ${WORKDIR}/sources
+S = "${UNPACKDIR}"
+
 LICENSE = "MIT | Apache-2.0"
 LIC_FILES_CHKSUM = " \
     file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10 \
@@ -19,8 +23,8 @@ SRC_URI += "\
 RDEPENDS:${PN} += "jq wpa-supplicant"
 
 do_install() {
-    install -m 0644 -D ${WORKDIR}/omnect-wifi-commissioning.service ${D}${systemd_system_unitdir}/omnect-wifi-commissioning.service
-    install -m 0755 -D ${WORKDIR}/omnect-wifi-commissioning-start.sh ${D}${bindir}/omnect-wifi-commissioning-start.sh
+    install -m 0644 -D ${UNPACKDIR}/omnect-wifi-commissioning.service ${D}${systemd_system_unitdir}/omnect-wifi-commissioning.service
+    install -m 0755 -D ${UNPACKDIR}/omnect-wifi-commissioning-start.sh ${D}${bindir}/omnect-wifi-commissioning-start.sh
 }
 
 SYSTEMD_SERVICE:${PN} = "omnect-wifi-commissioning.service"

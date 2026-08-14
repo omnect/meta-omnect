@@ -1,5 +1,5 @@
 part --offset ${OMNECT_PART_OFFSET_BOOT}K --fixed-size ${OMNECT_PART_SIZE_BOOT}K --source bootimg-efi --sourceparams="loader=grub-efi" --fstype=vfat --label boot --active
 
-include omnect-os.common.wks.inc
+include ${LAYERDIR_omnect}/files/wic/omnect-os.common.wks.inc
 
 bootloader --ptable gpt

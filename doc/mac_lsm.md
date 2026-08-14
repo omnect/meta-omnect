@@ -22,7 +22,7 @@ Kernel (always, all machines):
   LSMs only (no major MAC LSM). AppArmor is activated by appending it to this list
   via `lsm=` on the kernel command line (see [Enabling AppArmor](#enabling-apparmor)).
 
-Userspace (via `DISTRO_FEATURES += "apparmor"`, installed through
+Userspace (apparmor always defined in DISTRO_FEATURES, installed through
 `OMNECT_MAC_USERSPACE` in `recipes-omnect/images/omnect-os-image.bb`):
 
 - `apparmor` — parser, `libapparmor`, `aa-*` tools, `apparmor.service`

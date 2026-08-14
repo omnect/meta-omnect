@@ -10,8 +10,6 @@ SRC_URI = "gitsm://github.com/microsoft/GSL.git;protocol=https;branch=main;rev=1
 
 PV .= "+${SRCPV}"
 
-S = "${WORKDIR}/git"
-
 inherit cmake
 
 EXTRA_OECMAKE += "-DGSL_TEST=OFF"

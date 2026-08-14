@@ -1,5 +1,9 @@
 FILESEXTRAPATHS:prepend := "${LAYERDIR_omnect}/files/:"
 
+# file-only recipe: sources land in ${UNPACKDIR} now which is by default
+# ${WORKDIR}/sources
+S = "${UNPACKDIR}"
+
 # for usage in intramfs flash-mode only
 
 LICENSE = "MIT | Apache-2.0"
@@ -15,5 +19,5 @@ SRC_URI = "\
 do_install[depends] += "grub-efi:do_deploy"
 
 do_install() {
-	install -m 0644 -D ${WORKDIR}/grubenv ${D}${sysconfdir}/omnect/grubenv.in
+	install -m 0644 -D ${UNPACKDIR}/grubenv ${D}${sysconfdir}/omnect/grubenv.in
 }

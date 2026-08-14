@@ -1,6 +1,19 @@
 # overwrite LIC_FILES_CHKSUM from cargo-bitbake generated recipe
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 
+# Override cargo-bitbake's generated S = "${WORKDIR}/git", which oe-core's
+# do_qa_unpack now rejects (git unpacks to ${UNPACKDIR}/${BP}).
+S = "${UNPACKDIR}/${BP}"
+
+# cargo-bitbake emits the crate path overrides under ${WORKDIR}, but wrynose's git
+# fetcher unpacks destsuffix= sources under ${UNPACKDIR}. Repoint every override here
+# (operating on the unexpanded value) so a version bump that regenerates the .bb can't
+# reintroduce the stale prefix.
+python() {
+    paths = d.getVar('EXTRA_OECARGO_PATHS', False) or ""
+    d.setVar('EXTRA_OECARGO_PATHS', paths.replace('${WORKDIR}/', '${UNPACKDIR}/'))
+}
+
 # overwrite CARGO_SRC_DIR from cargo-bitbake generated recipe
 CARGO_SRC_DIR = "edgelet/iotedge"
 CARGO_LOCK_PATH = "${S}/edgelet/Cargo.lock"
@@ -9,8 +22,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:"
 
 SRC_URI += "\
   file://apply_doesnt_restart_services.patch \
+  file://fix_docker_engine_api_version.patch \
   file://fix_linter_findings-iotedge.patch \
-  file://fix_linter_findings-aziot-cert-client-async.patch;patchdir=${WORKDIR}/aziot-cert-client-async \
+  file://fix_linter_findings-aziot-cert-client-async.patch;patchdir=${UNPACKDIR}/aziot-cert-client-async \
 "
 
 DEPENDS += "openssl"
@@ -25,7 +39,7 @@ export IOTEDGE_LISTEN_MANAGEMENT_URI = "fd://aziot-edged.mgmt.socket"
 export IOTEDGE_LISTEN_WORKLOAD_URI = "fd://aziot-edged.workload.socket"
 export SOCKET_DIR = "/run/aziot"
 
-RUSTFLAGS+="-D warnings"
+RUSTFLAGS += "-D warnings"
 
 do_install () {
     # Binaries

@@ -4,24 +4,24 @@ LIC_FILES_CHKSUM = "file://../../../LICENSE.md;md5=95a70c9e1af3b97d8bde6f7435d53
 
 SRC_URI = " \
   git://github.com/azure/iot-hub-device-update.git;protocol=https;nobranch=1;rev=93f072e1a5641d52b89c2b5c92740e9ec05835f2 \
-  file://mindep.patch;patchdir=${WORKDIR}/git \
-  file://eis-utils-cert-chain-buffer.patch;patchdir=${WORKDIR}/git \
-  file://eis-utils-set-GatewayHostName.patch;patchdir=${WORKDIR}/git \
+  file://mindep.patch;patchdir=${UNPACKDIR}/${BP} \
+  file://eis-utils-cert-chain-buffer.patch;patchdir=${UNPACKDIR}/${BP} \
+  file://eis-utils-set-GatewayHostName.patch;patchdir=${UNPACKDIR}/${BP} \
   ${@bb.utils.contains('EXTRA_IMAGE_FEATURES', 'omnect-debug', 'file://eis-utils-verbose-connection-string.patch', '', d)} \
 "
 
-S = "${WORKDIR}/git/src/utils/eis_utils"
+S = "${UNPACKDIR}/${BP}/src/utils/eis_utils"
 
 DEPENDS = "azure-iot-sdk-c"
 
 inherit cmake
 
-EXTRA_OECMAKE += "-DCMAKE_MODULE_PATH=${WORKDIR}/git/cmake"
+EXTRA_OECMAKE += "-DCMAKE_MODULE_PATH=${UNPACKDIR}/${BP}/cmake"
 
 do_configure:prepend() {
     mkdir -p ${S}/inc/aduc
-    cp -f ${WORKDIR}/git/src/adu_types/inc/aduc/adu_types.h ${S}/inc/aduc
-    cp -f ${WORKDIR}/git/src/utils/c_utils/inc/aduc/* ${S}/inc/aduc
+    cp -f ${UNPACKDIR}/${BP}/src/adu_types/inc/aduc/adu_types.h ${S}/inc/aduc
+    cp -f ${UNPACKDIR}/${BP}/src/utils/c_utils/inc/aduc/* ${S}/inc/aduc
 }
 
 do_install() {
