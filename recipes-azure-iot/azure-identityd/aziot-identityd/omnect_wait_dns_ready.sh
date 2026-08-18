@@ -21,7 +21,6 @@ function url_host()
 
 # which endpoint is needed first depends on the provisioning method, and they
 # are not the same domain, so every configured one is probed
-declare -A seen=()
 pending=()
 
 for key in cert_issuance.est.urls.default \
@@ -32,8 +31,7 @@ for key in cert_issuance.est.urls.default \
     [[ -n "${value}" ]] || continue
 
     host=$(url_host "${value}")
-    [[ -n "${host}" && -z "${seen[${host}]}" ]] || continue
-    seen["${host}"]=1
+    [[ -n "${host}" ]] || continue
     pending+=("${host}")
 done
 
@@ -54,6 +52,7 @@ while [[ ${#pending[@]} -gt 0 && "${SECONDS}" -lt "${deadline}" ]]; do
 
     pending=("${remaining[@]}")
     [[ ${#pending[@]} -gt 0 ]] || break
+    # a lookup that fails fast would spin this loop, so pace it
     sleep "${POLL_INTERVAL_SECONDS}"
 done
 
