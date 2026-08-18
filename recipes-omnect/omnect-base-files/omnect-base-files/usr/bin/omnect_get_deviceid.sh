@@ -5,8 +5,6 @@ device_id=$(toml get -r /etc/aziot/config.toml provisioning.attestation.registra
 [[ -n "${device_id}" ]] \
     || device_id=$(toml get -r /etc/aziot/config.toml provisioning.device_id)
 
-# sshd runs this as AuthorizedPrincipalsCommand and reports only the failed
-# authentication, not the empty principals list, so put the reason in syslog
 [[ -n "${device_id}" ]] \
     || logger -t omnect_get_deviceid "no device id in /etc/aziot/config.toml"
 
