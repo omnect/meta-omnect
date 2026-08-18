@@ -8,7 +8,7 @@ TIMEOUT_SECONDS=30
 LOOKUP_TIMEOUT_SECONDS=5
 POLL_INTERVAL_SECONDS=1
 
-# est and dps are urls, the iothub a bare host; getent takes ipv6 unbracketed
+# est and dps are urls, the iothub a bare host
 function url_host()
 {
     local value="${1#*://}"
@@ -16,13 +16,7 @@ function url_host()
     value="${value%%/*}"
     value="${value##*@}"
 
-    case "${value}" in
-        \[*) value="${value#\[}"
-             echo "${value%%\]*}"
-             ;;
-        *)   echo "${value%%:*}"
-             ;;
-    esac
+    echo "${value%%:*}"
 }
 
 # which endpoint is needed first depends on the provisioning method, and they
