@@ -1,0 +1,27 @@
+diff --git a/lib/bb/fetch2/gitsm.py b/lib/bb/fetch2/gitsm.py
+index 5869e1b99..e7fa21847 100644
+--- a/lib/bb/fetch2/gitsm.py
++++ b/lib/bb/fetch2/gitsm.py
+@@ -195,7 +195,21 @@ class GitSM(Git):
+             #url += ";nocheckout=1"
+ 
+             try:
+-                newfetch = Fetch([url], d, cache=False)
++                submodule_d = d
++                # When BB_FETCH_PREMIRRORONLY is enabled, try_mirror_url() hands
++                # gitsm a datastore copy with BB_NO_NETWORK="1" (bitbake commit
++                # 1b1321f2b) so the top-level git fetcher can no longer reach
++                # upstream after downloading the mirror tarball. That flag also
++                # disables the *premirror* phase of the nested submodule fetch
++                # below, so the submodule can no longer be pulled from the
++                # premirror either. Clear it for the submodule fetch: the nested
++                # Fetch re-applies BB_NO_NETWORK itself after its own premirror
++                # stage when premirroronly is set, so upstream access stays
++                # blocked while premirror access is restored.
++                if bb.utils.to_boolean(d.getVar("BB_FETCH_PREMIRRORONLY")):
++                    submodule_d = d.createCopy()
++                    submodule_d.delVar("BB_NO_NETWORK")
++                newfetch = Fetch([url], submodule_d, cache=False)
+                 newfetch.download()
+             except Exception as e:
+                 logger.error('gitsm: submodule download failed: %s %s' % (type(e).__name__, str(e)))
