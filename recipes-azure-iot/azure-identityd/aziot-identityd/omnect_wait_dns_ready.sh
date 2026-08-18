@@ -8,8 +8,7 @@ TIMEOUT_SECONDS=30
 LOOKUP_TIMEOUT_SECONDS=5
 POLL_INTERVAL_SECONDS=1
 
-# est and dps are configured as urls, the iothub as a bare host. an ipv6 literal
-# is unwrapped because getent takes the bare address
+# est and dps are urls, the iothub a bare host; getent takes ipv6 unbracketed
 function url_host()
 {
     local value="${1#*://}"
@@ -26,8 +25,8 @@ function url_host()
     esac
 }
 
-# which endpoint identityd needs first depends on the provisioning method, and
-# they are not always the same domain, so every configured one is probed
+# which endpoint is needed first depends on the provisioning method, and they
+# are not the same domain, so every configured one is probed
 declare -A seen=()
 pending=()
 
@@ -47,9 +46,8 @@ done
 [[ ${#pending[@]} -gt 0 ]] || exit 0
 
 # a failing lookup blocks for the resolver timeout, so cap the single lookup and
-# the whole wait on wall clock and not on attempts. every host still pending
-# gets a try per pass, so one that never resolves cannot eat the deadline of the
-# others
+# the whole wait on wall clock. every host still pending gets a try per pass, so
+# one that never resolves cannot eat the deadline of the others
 deadline=$(( SECONDS + TIMEOUT_SECONDS ))
 
 while [[ ${#pending[@]} -gt 0 && "${SECONDS}" -lt "${deadline}" ]]; do
