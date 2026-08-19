@@ -10,6 +10,10 @@ repos:
     commit: "acfe02fa38b5da9e6a36c6cedcf91d4fcbefbfbd"
     layers:
       .: 0
+    patches:
+      p001:
+        repo: "meta-omnect"
+        path: "kas/patches/bitbake_gitsm_premirroronly_submodule_fix.patch"
   ext/_openembedded-core: #_ prefixed because of layer order with same prio e.g. meta-openembedded
     url: "https://git.openembedded.org/openembedded-core"
     branch: "wrynose"
