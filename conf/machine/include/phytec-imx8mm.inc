@@ -11,12 +11,6 @@ IMAGE_CLASSES:remove = " wic-helper wic-imx8-helper"
 # don't install imx-m4-demos
 MACHINE_EXTRA_RRECOMMENDS:remove = "imx-m4-demos"
 
-# don't install the cryptodev kernel module: nothing in the image opens
-# /dev/crypto (there is no openssl cryptodev engine), the driver registers the
-# device node world read/write, and upstream cryptodev-linux has no fix for the
-# page reference bug in get_userbuf() (CVE-2026-28529).
-BAD_RECOMMENDATIONS += "kernel-module-cryptodev"
-
 # install kernel-devicetree to 'root' partition instead of 'boot' and only install boot scripts to boot
 IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
     ${KERNEL_DEVICETREE_FN} \
@@ -28,6 +22,9 @@ IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
 "
 
 IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
+
+# the imx BSP installs the cryptodev module; restrict its device node to root
+IMAGE_INSTALL:append:pn-omnect-os-image = " cryptodev-udev"
 
 # initramfs type
 OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
