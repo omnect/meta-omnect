@@ -147,7 +147,7 @@ do_install() {
         -e 's#^After=\(.*\)$#After=\1\nConditionPathExists=/etc/aziot/config.toml\nConditionPathExists=/etc/aziot/identityd/config.d/00-super.toml#' \
         -e 's#@libexecdir@#/usr/libexec#g' \
         -e '/Environment=\(.*\)$/d' \
-	-e 's#^ExecStart=\(.*\)$#ExecStartPre=+-bash -c "/usr/sbin/omnect_service_log.sh start aziot-identityd"\nExecStartPre=/usr/bin/omnect_wait_dns_ready.sh\nExecStart=\1\nExecStopPost=+-/bin/sh -c "/usr/sbin/omnect_service_log.sh stop aziot-identityd \\"$$SERVICE_RESULT\\" \\"$$EXIT_CODE\\" \\"$$EXIT_STATUS\\""#' \
+	-e 's#^ExecStart=\(.*\)$#ExecStartPre=+-bash -c "/usr/sbin/omnect_service_log.sh start aziot-identityd"\nExecStartPre=+/usr/bin/omnect_wait_dns_ready.sh\nExecStart=\1\nExecStopPost=+-/bin/sh -c "/usr/sbin/omnect_service_log.sh stop aziot-identityd \\"$$SERVICE_RESULT\\" \\"$$EXIT_CODE\\" \\"$$EXIT_STATUS\\""#' \
         -e 's/^Requires=\(.*\)$/Requires=\1 network-online.target/' \
         ${D}${systemd_system_unitdir}/aziot-identityd.service
     install -m 0644     ${S}/identity/aziot-identityd/aziot-identityd.socket.in ${D}${systemd_system_unitdir}/aziot-identityd.socket
