@@ -1,8 +1,12 @@
-# nss packages the whole bindir; drop the test tools and the perl script smime.
-do_install:append:class-target() {
-    rm -f ${D}${bindir}/bltest \
-          ${D}${bindir}/dbtool \
-          ${D}${bindir}/ecperf \
-          ${D}${bindir}/fipstest \
-          ${D}${bindir}/smime
-}
+# nss packages the whole bindir, but the image uses none of the tools. Keep
+# shlibsign, which the postinst needs if it runs on first boot, and move the rest
+# into a package that is not installed.
+PACKAGES:append:class-target = " ${PN}-tools"
+
+FILES:${PN}:class-target = " \
+    ${sysconfdir} \
+    ${bindir}/shlibsign \
+    ${libdir}/lib*.chk \
+    ${libdir}/lib*.so \
+"
+FILES:${PN}-tools = "${bindir}"
