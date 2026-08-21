@@ -5,6 +5,7 @@ on:
       - main
       - kirkstone
       - scarthgap
+      - wrynose
     types:
       - opened
       - edited

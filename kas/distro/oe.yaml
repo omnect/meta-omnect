@@ -24,6 +24,7 @@ repos:
     patches:
       p001:
         repo: "meta-omnect"
-        path: "kas/patches/oe_layerdir.patch"
+        # generated: cat kas/patches/oe_*.patch, see kas/patches/README.md
+        path: "kas/patches/oe.patch"
 env:
   OE_VERSION: "6.0.2"
