@@ -17,8 +17,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: oe.patch matches its oe_* sources
         shell: bash
-        # LC_ALL belongs in the shell environment, not on cat: the glob is expanded and
-        # collated before cat runs, and glob order is the order the hunks get applied.
         env:
           LC_ALL: C
         run: |
