@@ -1,0 +1,3 @@
+# the driver creates /dev/crypto world read/write; nothing in the image uses it.
+# low number so a customer rule can override the mode.
+KERNEL=="crypto", SUBSYSTEM=="misc", MODE="0600"

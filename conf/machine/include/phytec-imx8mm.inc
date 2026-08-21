@@ -23,6 +23,9 @@ IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
 
 IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
 
+# the imx BSP installs the cryptodev module; restrict its device node to root
+IMAGE_INSTALL:append:pn-omnect-os-image = " cryptodev-udev"
+
 # initramfs type
 OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 
