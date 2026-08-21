@@ -8,6 +8,11 @@ SRC_URI += "\
 
 RDEPENDS:${PN} += "bash"
 
+# systemd's TPM2 features are unused (no encrypted volumes, no sealed
+# credentials) and they pull in systemd-tpm2-setup, which fails once the TPM's
+# dictionary attack counter is exhausted and then leaves the system degraded.
+PACKAGECONFIG:remove = "tpm2"
+
 # enable bash-completion
 bashcompletiondir = "${datadir}/bash-completion/completions"
 
