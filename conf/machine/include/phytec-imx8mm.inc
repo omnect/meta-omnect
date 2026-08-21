@@ -68,6 +68,16 @@ BBMASK:append = " \
     meta-imx/meta-imx-bsp/recipes-connectivity/openssl/openssl_3.2.%.bbappend \
 "
 
+# don't let meta-imx-bsp's qemu fork override the one from oecore: it is meant
+# for mx95 only and its ui/sdl2.c assigns qemu_egl_display outside of any
+# CONFIG_OPENGL guard, so nativesdk-qemu fails to compile for meta-toolchain.
+BBMASK:append = " meta-imx/meta-imx-bsp/recipes-devtools/qemu/"
+
+# meta-phytec pins QEMUVERSION to "8.2%", which no longer resolves and thereby
+# defeats meta-imx's pin to oecore's qemu; with the fork masked above there is
+# only one qemu left to choose, so drop the dangling preferred-version pins.
+QEMUVERSION = ""
+
 # mask phytec's Cortex-M demo bbappend: its base recipe lives in the dropped
 # meta-imx-sdk, so it would dangle; we don't want the demos anyway.
 BBMASK:append = " meta-phytec/dynamic-layers/fsl-bsp-release/recipes-fsl/mcore-demos/"
