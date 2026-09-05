@@ -110,7 +110,7 @@ index 0000000000..39e27ac12f
 +   L->getExitingBlocks(ExitingBlocks);
 +   for (auto *ExitingBlock : ExitingBlocks) {
 diff --git a/meta/recipes-devtools/clang/common.inc b/meta/recipes-devtools/clang/common.inc
-index 9d45898c68..07fa7ed3ca 100644
+index 441ea099a9..869c2cf35c 100644
 --- a/meta/recipes-devtools/clang/common.inc
 +++ b/meta/recipes-devtools/clang/common.inc
 @@ -60,6 +60,7 @@ SRC_URI = "\
@@ -970,10 +970,10 @@ index cd4cce316f..540ae74786 100644
  SRC_URI += " \
      ${RUST_DIST_SERVER}/dist/${RUST_STD_SNAPSHOT}.tar.xz;name=rust-std-snapshot-${RUST_BUILD_ARCH};subdir=rust-snapshot-components \
 diff --git a/meta/recipes-devtools/rust/rust-source.inc b/meta/recipes-devtools/rust/rust-source.inc
-index f11bbea9b3..730842f9c2 100644
+index d897b2c262..730842f9c2 100644
 --- a/meta/recipes-devtools/rust/rust-source.inc
 +++ b/meta/recipes-devtools/rust/rust-source.inc
-@@ -5,14 +5,9 @@ SRC_URI += "https://static.rust-lang.org/dist/rustc-${RUST_VERSION}-src.tar.xz;n
+@@ -5,16 +5,9 @@ SRC_URI += "https://static.rust-lang.org/dist/rustc-${RUST_VERSION}-src.tar.xz;n
              file://rust-oe-selftest.patch;patchdir=${RUSTSRC} \
              file://repro-issue-fix-with-cc-crate-hashmap.patch;patchdir=${RUSTSRC} \
              file://0001-src-core-build_steps-tool.rs-switch-off-lto-for-rust.patch;patchdir=${RUSTSRC} \
@@ -983,6 +983,8 @@ index f11bbea9b3..730842f9c2 100644
 -            file://0001-Update-amdgpu-data-layout.patch;patchdir=${RUSTSRC} \
 -            file://0001-Adjust-loongarch-assembly-test.patch;patchdir=${RUSTSRC} \
 -            file://0001-Fix-multiple-option-or-permutations-test-for-big-end.patch;patchdir=${RUSTSRC} \
+-            file://CVE-2026-5222.patch;patchdir=${RUSTSRC} \
+-            file://CVE-2026-5223.patch;patchdir=${RUSTSRC} \
 +            file://0002-Fix-rust-build-failure-with-unstable-options.patch;patchdir=${RUSTSRC} \
  "
 -SRC_URI[rust.sha256sum] = "174fce10ce012317ca995810296d8af199318838180b03d68a853e0f02d4b571"
