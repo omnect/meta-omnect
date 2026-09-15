@@ -1,0 +1,136 @@
+From 2b1aaca4a0f729f8a54f162ff9dc299c82162bed Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksandermj@google.com>
+Date: Thu, 2 Jul 2026 16:49:37 +0000
+Subject: [PATCH] ifaces: fix UAFs in signal handlers when hot-unplugging
+
+Use g_signal_connect_object() to connect to child list/object signals
+in the 3GPP, Messaging, Voice, and Cell Broadcast interfaces.
+
+Passing the raw D-Bus skeleton pointer as user_data to these signals
+can lead to a Use-After-Free if the skeleton is disposed of (e.g. on
+hot-unplug) while the parent object or child list survives. By using
+g_signal_connect_object(), the signal handlers are automatically
+disconnected when the D-Bus skeleton is destroyed.
+
+https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/work_items/1068
+
+Signed-off-by: Aleksander Morgado <aleksandermj@google.com>
+
+Upstream-Status: Backport [https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/commit/2b1aaca4a0f729f8a54f162ff9dc299c82162bed]
+---
+ src/mm-iface-modem-3gpp.c           |  9 +++++----
+ src/mm-iface-modem-cell-broadcast.c | 18 ++++++++++--------
+ src/mm-iface-modem-messaging.c      | 18 ++++++++++--------
+ src/mm-iface-modem-voice.c          | 18 ++++++++++--------
+ 4 files changed, 35 insertions(+), 28 deletions(-)
+
+diff --git a/src/mm-iface-modem-3gpp.c b/src/mm-iface-modem-3gpp.c
+index b72ae0e49..9273f83f8 100644
+--- a/src/mm-iface-modem-3gpp.c
++++ b/src/mm-iface-modem-3gpp.c
+@@ -3713,10 +3713,11 @@ load_enabled_facility_locks_ready (MMIfaceModem3gpp *self,
+         g_object_get (self, MM_IFACE_MODEM_SIM, &sim, NULL);
+ 
+         if (sim)
+-            g_signal_connect (sim,
+-                              MM_BASE_SIM_PIN_LOCK_ENABLED,
+-                              G_CALLBACK (sim_pin_lock_enabled_cb),
+-                              ctx->skeleton);
++            g_signal_connect_object (sim,
++                                     MM_BASE_SIM_PIN_LOCK_ENABLED,
++                                     G_CALLBACK (sim_pin_lock_enabled_cb),
++                                     ctx->skeleton,
++                                     0);
+     }
+ 
+     /* Go on to next step */
+diff --git a/src/mm-iface-modem-cell-broadcast.c b/src/mm-iface-modem-cell-broadcast.c
+index 32a775359..0776c1c4c 100644
+--- a/src/mm-iface-modem-cell-broadcast.c
++++ b/src/mm-iface-modem-cell-broadcast.c
+@@ -636,14 +636,16 @@ interface_enabling_step (GTask *task)
+                       NULL);
+ 
+         /* Connect to list's signals */
+-        g_signal_connect (list,
+-                          MM_CBM_ADDED,
+-                          G_CALLBACK (cbm_added),
+-                          ctx->skeleton);
+-        g_signal_connect (list,
+-                          MM_CBM_DELETED,
+-                          G_CALLBACK (cbm_deleted),
+-                          ctx->skeleton);
++        g_signal_connect_object (list,
++                                 MM_CBM_ADDED,
++                                 G_CALLBACK (cbm_added),
++                                 ctx->skeleton,
++                                 0);
++        g_signal_connect_object (list,
++                                 MM_CBM_DELETED,
++                                 G_CALLBACK (cbm_deleted),
++                                 ctx->skeleton,
++                                 0);
+         ctx->step++;
+     } /* fall through */
+ 
+diff --git a/src/mm-iface-modem-messaging.c b/src/mm-iface-modem-messaging.c
+index 93cd0ae12..be085bfc4 100644
+--- a/src/mm-iface-modem-messaging.c
++++ b/src/mm-iface-modem-messaging.c
+@@ -1026,14 +1026,16 @@ interface_enabling_step (GTask *task)
+                       NULL);
+ 
+         /* Connect to list's signals */
+-        g_signal_connect (list,
+-                          MM_SMS_ADDED,
+-                          G_CALLBACK (sms_added),
+-                          ctx->skeleton);
+-        g_signal_connect (list,
+-                          MM_SMS_DELETED,
+-                          G_CALLBACK (sms_deleted),
+-                          ctx->skeleton);
++        g_signal_connect_object (list,
++                                 MM_SMS_ADDED,
++                                 G_CALLBACK (sms_added),
++                                 ctx->skeleton,
++                                 0);
++        g_signal_connect_object (list,
++                                 MM_SMS_DELETED,
++                                 G_CALLBACK (sms_deleted),
++                                 ctx->skeleton,
++                                 0);
+ 
+         g_object_unref (list);
+ 
+diff --git a/src/mm-iface-modem-voice.c b/src/mm-iface-modem-voice.c
+index b3907e53f..d6ea4aae8 100644
+--- a/src/mm-iface-modem-voice.c
++++ b/src/mm-iface-modem-voice.c
+@@ -3019,14 +3019,16 @@ interface_initialization_step (GTask *task)
+                           NULL);
+ 
+             /* Connect to list's signals */
+-            g_signal_connect (list,
+-                              MM_CALL_ADDED,
+-                              G_CALLBACK (call_added),
+-                              ctx->skeleton);
+-            g_signal_connect (list,
+-                              MM_CALL_DELETED,
+-                              G_CALLBACK (call_deleted),
+-                              ctx->skeleton);
++            g_signal_connect_object (list,
++                                     MM_CALL_ADDED,
++                                     G_CALLBACK (call_added),
++                                     ctx->skeleton,
++                                     0);
++            g_signal_connect_object (list,
++                                     MM_CALL_DELETED,
++                                     G_CALLBACK (call_deleted),
++                                     ctx->skeleton,
++                                     0);
+ 
+             /* Setup monitoring for in-call event handling */
+             g_signal_connect (list,
+-- 
+GitLab
+
