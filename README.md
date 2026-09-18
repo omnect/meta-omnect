@@ -374,18 +374,15 @@ This kind of factory reset does not ensure any data privacy.
 In order to provide higher level of privacy, the desired wipe mode can be selected.
 For this purpose, the OS bootloader environment variable `factory-reset` can be set to the following values:
 
-|     | Factory Reset Mode                                      | Remark                                     |
-| --- | ------------------------------------------------------- | ------------------------------------------ |
-| 1   | no wipe; only filesystems re-created                    | no privacy, but fast                       |
-| 2   | use dd to write random data to etc and data partitions  | better privacy, but slow                   |
-| 3   | recursive remove files with rm; notify disk with fstrim | usability depends on use case and hardware |
-| 4   | custom wipe                                             |                                            |
+|     | Factory Reset Mode                            | Remark                                    |
+| --- | --------------------------------------------- | ----------------------------------------- |
+| 1   | no wipe; only filesystems re-created          | no privacy, but fast                      |
+| 2   | overwrite etc and data with random data       | better privacy, but slow                  |
+| 3   | discard all blocks of etc and data            | fast, but the disk has to support discard |
 
 **Note:** The provided wipe options don't guarantee total privacy. This is only possible using hardware features of the disk (e.g.; ATA secure erase).
 
-There is also the custom wipe mode. This mode provides the possibility to address customer requirements and hardware capabilities.
-In the case of custom wipe, the factory reset (initramfs context) calls `/opt/factory_reset/custom-wipe` before re-creating the filesystems inside the partitions `etc` and `data`.
-In order to establish the custom wipe mode, a Yocto recipe `omnect-os-initramfs-scripts.bbappend` has to be supplied, which has to install the required utilities.
+A failing wipe does not abort the factory reset: the filesystems are re-created anyway, so the device stays usable, and the status reports `2` with the reason in `error`.
 
 The factory reset provides the option "preserve" to exclude particular files or directories.
 The topics in the array "preserve" are defined by the keys of [`/etc/omnect/factory-reset.json`](recipes-omnect/omnect-device-service/omnect-device-service/factory-reset.json).<br>
@@ -412,50 +409,51 @@ and the partitions `etc` and `data` remain untouched.
 In the case of an error during the restore of a file or directory, the restore processing will be continued for the other files or directories.
 In both cases, the error will be indicated by the factory reset status (see below).
 
-The status of the factory reset is returned by the json object `factory-reset` in `/run/omnect-device-service/omnect-os-initramfs.json`.
+The status of the factory reset is returned by the json object `factory_reset` in `/run/omnect-device-service/omnect-os-initramfs.json`.
 
 Example for a success:
 ```sh
-# jq '."factory-reset"' /run/omnect-device-service/omnect-os-initramfs.json
+# jq '.factory_reset' /run/omnect-device-service/omnect-os-initramfs.json
 ```
 ```json
 {
   "status": 0,
-  "error": "0",
   "paths": [
     "/etc/omnect/factory-reset.d/",
     "/etc/restore_file",
     "/home/omnect/.bash_history",
     "/home/root/.bash_history"
-  ]
+  ],
+  "data_wiped": true
 }
 ```
 
-Example for an error, where ´/etc/omnect/factory-reset.d/restore_file_error.json´ doesn't have a `paths` object.:
+Example for an error, where "preserve" names a key which `/etc/omnect/factory-reset.json` doesn't define:
 ```json
 {
   "status": 3,
-  "error": "5",
-  "context": "/etc/omnect/factory-reset.d/restore_file_error.json:paths",
-  "paths": [
-    "/etc/omnect/factory-reset.d/"
-  ]
+  "error": "/rootfs/etc/omnect/factory-reset.json: no 'network' key",
+  "data_wiped": false
 }
 ```
 
 The overall `factory reset status` consists of:
 - `status` (general processing state):
-  - 0: wipe mode supported
-  - 1: wipe mode unsupported
-  - 2: backup/restore failure
-  - 3: configuration error; see "context" for details
-- `error`:  execution exit status; in case of of status == 0, if not applicaple: `-`
+  - 0: success
+  - 1: invalid configuration, e.g. a preserved path which leaves the rootfs
+  - 2: the reset ran, but a step failed; see `error`
+  - 3: configuration error, e.g. a preserve key without definition; see `error`
+  - 4: the reset succeeded, but a partition had to be formatted twice; see `context`
+- `error`: reason of the failure; the key is absent when nothing failed
 - optional: `context` on warnings or errors
-- array `paths` of preserved files or directories; this array reflects the configured paths not the actual restored path, e.g. if a path doesn't exist
+- array `paths` of preserved files or directories; this array reflects the configured paths not the actual restored path, e.g. if a path doesn't exist; the key is absent when nothing was preserved
+- `data_wiped`: `true` once the reset started wiping data; on status 2 it tells apart a safe abort, where nothing was touched yet, from a failure after the data was already gone
+
+A trigger the initramfs cannot use at all - invalid json, or a mode outside 1 to 3 - does not start a factory reset. The device boots normally, the reason is written to the kernel log, and no `factory_reset` object is reported. The bootloader environment variable keeps its value in that case.
 
 ### Update validation
 
-An A/B update is validated, if the update doesn't contain a bootloader update, after the device boots to the updated partition. Most of the logic is implemented in omnect-device-service repository and [documented there](https://github.com/omnect/omnect-device-service/blob/main/src/twin/firmware_update/update_validation.md). meta-omnect takes care of booting the right partition as well as providing appropriate states to the user space. This is done as part of [initramfs](./recipes-omnect/initrdscripts/omnect-os-initramfs/omnect-device-service-setup).
+An A/B update is validated, if the update doesn't contain a bootloader update, after the device boots to the updated partition. Most of the logic is implemented in omnect-device-service repository and [documented there](https://github.com/omnect/omnect-device-service/blob/main/src/twin/firmware_update/update_validation.md). meta-omnect takes care of booting the right partition as well as providing appropriate states to the user space. This is done as part of the initramfs init.
 
 ### Filesystem ckeck
 
