@@ -374,18 +374,15 @@ This kind of factory reset does not ensure any data privacy.
 In order to provide higher level of privacy, the desired wipe mode can be selected.
 For this purpose, the OS bootloader environment variable `factory-reset` can be set to the following values:
 
-|     | Factory Reset Mode                                      | Remark                                     |
-| --- | ------------------------------------------------------- | ------------------------------------------ |
-| 1   | no wipe; only filesystems re-created                    | no privacy, but fast                       |
-| 2   | use dd to write random data to etc and data partitions  | better privacy, but slow                   |
-| 3   | recursive remove files with rm; notify disk with fstrim | usability depends on use case and hardware |
-| 4   | custom wipe                                             |                                            |
+|     | Factory Reset Mode                            | Remark                                    |
+| --- | --------------------------------------------- | ----------------------------------------- |
+| 1   | no wipe; only filesystems re-created          | no privacy, but fast                      |
+| 2   | overwrite etc and data with random data       | better privacy, but slow                  |
+| 3   | discard all blocks of etc and data            | fast, but the disk has to support discard |
 
 **Note:** The provided wipe options don't guarantee total privacy. This is only possible using hardware features of the disk (e.g.; ATA secure erase).
 
-There is also the custom wipe mode. This mode provides the possibility to address customer requirements and hardware capabilities.
-In the case of custom wipe, the factory reset (initramfs context) calls `/opt/factory_reset/custom-wipe` before re-creating the filesystems inside the partitions `etc` and `data`.
-In order to establish the custom wipe mode, a Yocto recipe `omnect-os-initramfs-scripts.bbappend` has to be supplied, which has to install the required utilities.
+A failing wipe does not abort the factory reset: the filesystems are re-created anyway, so the device stays usable, and the status reports `2` with the reason in `error`.
 
 The factory reset provides the option "preserve" to exclude particular files or directories.
 The topics in the array "preserve" are defined by the keys of [`/etc/omnect/factory-reset.json`](recipes-omnect/omnect-device-service/omnect-device-service/factory-reset.json).<br>
