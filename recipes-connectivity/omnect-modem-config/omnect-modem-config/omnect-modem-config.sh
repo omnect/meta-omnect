@@ -3,8 +3,9 @@
 #
 # Modem settings live in the modem's own memory, where neither flashing nor a
 # factory reset reaches them, so the file is enforced on every boot and written
-# only when it differs. Problems only warn: a failed unit would make the system
-# "degraded" and break unrelated checks.
+# only when it differs. What the file doesn't mention stays as it is, so the
+# shipped default manages nothing. Problems only warn: a failed unit would make
+# the system "degraded" and break unrelated checks.
 
 set -u
 
