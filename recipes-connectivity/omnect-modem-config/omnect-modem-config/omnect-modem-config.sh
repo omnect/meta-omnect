@@ -11,7 +11,10 @@ set -u
 CAPS=/etc/omnect/device_caps.json
 CONFIG=/etc/omnect/modem-config.json
 CONFIG_VERSION=1
-MODEM_WAIT_SECS=60
+# a device that must have a modem is worth waiting for; where one is only optional
+# the unit should not keep the system in "starting" for a minute
+MODEM_WAIT_REQUIRED_SECS=60
+MODEM_WAIT_OPTIONAL_SECS=20
 
 cap() {
     jq -r --arg key "$1" '.[$key] // empty' "${CAPS}" 2>/dev/null
@@ -28,10 +31,15 @@ modem_bands() {
 }
 
 normalize() {
-    tr ',|' '\n\n' | tr -d '[:blank:]' | sed '/^$/d' | sort | tr '\n' ' '
+    tr '|' '\n' | tr -d '[:blank:]' | sed '/^$/d' | sort | tr '\n' ' '
 }
 
-[ "$(cap 3g)" = "yes" ] || { echo "no cellular capability, nothing to do"; exit 0; }
+case "$(cap 3g)" in
+    yes)      modem_required=1; wait_secs=${MODEM_WAIT_REQUIRED_SECS} ;;
+    optional) modem_required=0; wait_secs=${MODEM_WAIT_OPTIONAL_SECS} ;;
+    *)        echo "no cellular capability, nothing to do"; exit 0 ;;
+esac
+
 [ -r "${CONFIG}" ] || { echo "no ${CONFIG}, nothing to do"; exit 0; }
 
 version=$(jq -r '.version // empty' "${CONFIG}" 2>/dev/null)
@@ -40,20 +48,31 @@ if [ "${version}" != "${CONFIG_VERSION}" ]; then
     exit 0
 fi
 
-bands=$(jq -r '.bands // empty | if type == "array" then join("|") else . end' "${CONFIG}" 2>/dev/null)
+bands=$(jq -r 'if (.bands | type) == "array" then (.bands | join("|"))
+               elif .bands == "all" then "all"
+               elif has("bands") then "invalid"
+               else empty end' "${CONFIG}" 2>/dev/null)
 if [ -z "${bands}" ]; then
     echo "no bands configured, nothing to do"
     exit 0
 fi
+if [ "${bands}" = "invalid" ]; then
+    echo "WARNING: \"bands\" in ${CONFIG} is neither a list nor \"all\", ignoring it"
+    exit 0
+fi
 
 waited=0
-while ! modem_present && [ "${waited}" -lt "${MODEM_WAIT_SECS}" ]; do
+while ! modem_present && [ "${waited}" -lt "${wait_secs}" ]; do
     waited=$((waited + 1))
     sleep 1
 done
 
 if ! modem_present; then
-    echo "WARNING: no modem after ${MODEM_WAIT_SECS}s, configuration not applied"
+    if [ "${modem_required}" -eq 1 ]; then
+        echo "WARNING: no modem after ${wait_secs}s, configuration not applied"
+    else
+        echo "no modem present, nothing to do"
+    fi
     exit 0
 fi
 
