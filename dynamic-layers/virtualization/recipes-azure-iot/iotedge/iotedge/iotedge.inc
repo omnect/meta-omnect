@@ -22,9 +22,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:"
 
 SRC_URI += "\
   file://apply_doesnt_restart_services.patch \
-  file://fix_docker_engine_api_version.patch \
-  file://fix_linter_findings-iotedge.patch \
-  file://fix_linter_findings-aziot-cert-client-async.patch;patchdir=${UNPACKDIR}/aziot-cert-client-async \
 "
 
 DEPENDS += "openssl"

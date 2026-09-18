@@ -6,8 +6,8 @@ repos:
   ext/bitbake:
     url: "https://git.openembedded.org/bitbake"
     branch: "2.18"
-    # tag yocto-6.0.2
-    commit: "acfe02fa38b5da9e6a36c6cedcf91d4fcbefbfbd"
+    # tag yocto-6.0.3
+    commit: "fae9db3168dbff1b8c76fe9c6726a9687ff97514"
     layers:
       .: 0
     patches:
@@ -17,13 +17,14 @@ repos:
   ext/_openembedded-core: #_ prefixed because of layer order with same prio e.g. meta-openembedded
     url: "https://git.openembedded.org/openembedded-core"
     branch: "wrynose"
-    # tag yocto-6.0.2
-    commit: "5d1aa5c806c061a2994f4decb59016610f093213"
+    # tag yocto-6.0.3
+    commit: "ef022bf82d79015802309d14c28b13373ebe53f5"
     layers:
       meta:
     patches:
       p001:
         repo: "meta-omnect"
-        path: "kas/patches/oe_layerdir.patch"
+        # generated: cat kas/patches/oe_*.patch, see kas/patches/README.md
+        path: "kas/patches/oe.patch"
 env:
-  OE_VERSION: "6.0.2"
+  OE_VERSION: "6.0.3"

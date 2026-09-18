@@ -14,11 +14,6 @@ python() {
     d.setVar('EXTRA_OECARGO_PATHS', paths.replace('${WORKDIR}/', '${UNPACKDIR}/'))
 }
 
-SRC_URI += "\
-  file://fix_linter_findings-aziot-edged.patch \
-  file://fix_linter_findings-aziot-cert-client-async.patch;patchdir=${UNPACKDIR}/aziot-cert-client-async \
-"
-
 # overwrite CARGO_SRC_DIR from cargo-bitbake generated recipe
 CARGO_SRC_DIR = "edgelet/aziot-edged"
 CARGO_LOCK_PATH = "${S}/edgelet/Cargo.lock"

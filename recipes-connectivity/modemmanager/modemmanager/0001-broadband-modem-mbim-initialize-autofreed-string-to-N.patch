@@ -1,0 +1,39 @@
+From 6a14658a421de4eedc606441a027cf97826c1844 Mon Sep 17 00:00:00 2001
+From: Semyon Maryasin <simeon@maryasin.name>
+Date: Wed, 26 Aug 2026 21:03:44 +0300
+Subject: [PATCH] broadband-modem-mbim: initialize autofreed string to NULL
+
+device_caps_query_ready() declares caps_custom_data_class_str as
+g_autofree without an initializer. On every early error return
+(command failure such as a transaction timeout or NotOpened, or a
+response parse failure) the variable is never assigned, so the
+autofree cleanup runs g_free() on uninitialized stack garbage,
+crashing ModemManager with a glibc "invalid free" abort (or SIGSEGV)
+whenever the device caps query fails during modem initialization.
+
+Fixes: 19c817cfe933 ("broadband-modem-mbim: consistently handle custom data classes")
+Closes: #1094
+
+Signed-off-by: Semyon Maryasin <simeon@maryasin.name>
+
+Upstream-Status: Backport [https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/commit/6a14658a421de4eedc606441a027cf97826c1844]
+---
+ src/mm-broadband-modem-mbim.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/mm-broadband-modem-mbim.c b/src/mm-broadband-modem-mbim.c
+index e752c279c..bba2c1b8f 100644
+--- a/src/mm-broadband-modem-mbim.c
++++ b/src/mm-broadband-modem-mbim.c
+@@ -519,7 +519,7 @@ device_caps_query_ready (MbimDevice   *device,
+     GError                         *error = NULL;
+     LoadCurrentCapabilitiesContext *ctx;
+     MbimDataClass                   caps_data_class = MBIM_DATA_CLASS_NONE;
+-    g_autofree gchar               *caps_custom_data_class_str;
++    g_autofree gchar               *caps_custom_data_class_str = NULL;
+ 
+     self = g_task_get_source_object (task);
+     ctx  = g_task_get_task_data (task);
+-- 
+GitLab
+

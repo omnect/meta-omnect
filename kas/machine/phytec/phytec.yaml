@@ -7,7 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "wrynose"
-    commit: "d4afe1789657da17b9a87bb7e942ee9a0ed1274c"
+    commit: "59f5dc1dfdc8a593df08ce5c57f6083cd7c74f90"
     patches:
       p001:
         repo: "meta-omnect"
@@ -15,7 +15,10 @@ repos:
   ext/meta-freescale:
     url: "https://github.com/Freescale/meta-freescale.git"
     branch: "wrynose"
-    commit: "25ce7c63c234af499674392751c67aaae8f43958"
+    # held back: the next commit (8fc22268) renames udev-rules-imx.bb to
+    # udev-rules-imx_1.0.bb, which orphans meta-imx's versionless
+    # udev-rules-imx.bbappend and halts parsing. Move on once meta-imx follows.
+    commit: "08473ac7b039a3a71da76bd6471010efc77d1b61"
     patches:
       p001:
         repo: "meta-omnect"
@@ -23,7 +26,7 @@ repos:
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
     branch: "wrynose-6.18.20-2.0.0"
-    commit: "1001299baf5a3b468c93e381c62aeb486a639aa1"
+    commit: "52516b92a70669eb58b805810f2a27a07c874771"
     layers:
       meta-imx-bsp:
     patches:
@@ -33,7 +36,7 @@ repos:
   ext/meta-arm:
     url: "https://git.yoctoproject.org/meta-arm"
     branch: "wrynose"
-    commit: "caa36c53f796beb25d9b9f58b1b7a492e9987e15"
+    commit: "0979b80429099f1a42dc0026c8c466cee780bc74"
     layers:
       meta-arm:
       meta-arm-toolchain:

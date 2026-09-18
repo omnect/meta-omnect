@@ -23,6 +23,9 @@ IMAGE_BOOT_FILES:remove:pn-omnect-os-image = " \
 
 IMAGE_INSTALL:append:pn-omnect-os-image = " kernel-devicetree"
 
+# the imx BSP installs the cryptodev module; restrict its device node to root
+IMAGE_INSTALL:append:pn-omnect-os-image = " cryptodev-udev"
+
 # initramfs type
 OMNECT_INITRAMFS_FSTYPE = "cpio.gz.u-boot"
 
@@ -64,6 +67,16 @@ BBMASK:append = " \
     meta-imx/meta-imx-bsp/recipes-connectivity/openssl/openssl_3.2.6.bb \
     meta-imx/meta-imx-bsp/recipes-connectivity/openssl/openssl_3.2.%.bbappend \
 "
+
+# don't let meta-imx-bsp's qemu fork override the one from oecore: it is meant
+# for mx95 only and its ui/sdl2.c assigns qemu_egl_display outside of any
+# CONFIG_OPENGL guard, so nativesdk-qemu fails to compile for meta-toolchain.
+BBMASK:append = " meta-imx/meta-imx-bsp/recipes-devtools/qemu/"
+
+# meta-phytec pins QEMUVERSION to "8.2%", which no longer resolves and thereby
+# defeats meta-imx's pin to oecore's qemu; with the fork masked above there is
+# only one qemu left to choose, so drop the dangling preferred-version pins.
+QEMUVERSION = ""
 
 # mask phytec's Cortex-M demo bbappend: its base recipe lives in the dropped
 # meta-imx-sdk, so it would dangle; we don't want the demos anyway.
@@ -111,3 +124,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-ph
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned is set
 OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "c216ffb0a152441906dc9a158b39161cf5fe368e5ebb9715fe59e6cf08b1b34c"
+OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned = "d12c63dd7c5c0f3ef4ed91b47513b4c722ddef558407bc350c440f97406928d9 c216ffb0a152441906dc9a158b39161cf5fe368e5ebb9715fe59e6cf08b1b34c"
