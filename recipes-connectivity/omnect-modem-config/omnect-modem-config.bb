@@ -20,8 +20,7 @@ SRC_URI += "\
     file://modem-config.json \
 "
 
-# jq: the script reads device_caps.json and modem-config.json; modemmanager: mmcli
-# applies the settings and the unit is ordered after it.
+# jq parses the config files, mmcli applies the settings
 RDEPENDS:${PN} += "jq modemmanager"
 
 do_install() {

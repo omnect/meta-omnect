@@ -1,12 +1,10 @@
 #!/bin/sh
 # Apply /etc/omnect/modem-config.json to the modem.
 #
-# The modem keeps settings like the band mask in its own non-volatile memory, where
-# they survive reflashing and firmware updates. The file therefore describes the
-# wanted state, which is enforced on every boot and written only when it differs.
-#
-# Nothing here fails the unit: a failed unit puts the system into "degraded" and
-# breaks unrelated checks. Problems are logged and retried on the next boot.
+# Modem settings live in the modem's own memory, where neither flashing nor a
+# factory reset reaches them, so the file is enforced on every boot and written
+# only when it differs. Problems only warn: a failed unit would make the system
+# "degraded" and break unrelated checks.
 
 set -u
 
@@ -23,8 +21,7 @@ modem_present() {
     mmcli -L 2>/dev/null | grep -q '/Modem/'
 }
 
-# mmcli -K prints one "...<kind>-bands.value[N] : <band>" line per band, next to a
-# "...<kind>-bands.length" line that must not end up in the list.
+# mmcli -K also prints a "...-bands.length" line, which must not end up in the list
 modem_bands() {
     mmcli -m any -K 2>/dev/null |
         sed -n "s/^modem\.generic\.$1-bands\.value\[[0-9]*\][[:space:]]*:[[:space:]]*//p"
