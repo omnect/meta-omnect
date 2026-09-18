@@ -62,8 +62,8 @@ after every boot, writing to the modem only when it differs.
 }
 ```
 
-What the file does not mention stays as it is, which is why the image ships a file
-that configures nothing. `"bands"` is a list of band names as `mmcli` prints them,
+What the file does not mention stays as it is, and an image ships no such file, so
+nothing is configured until one is installed. `"bands"` is a list of band names as `mmcli` prints them,
 or `"all"` for every band the modem supports — that is how a list inherited from
 an earlier configuration is reset.
 

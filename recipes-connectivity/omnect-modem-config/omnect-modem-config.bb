@@ -17,7 +17,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://omnect-modem-config.service \
     file://omnect-modem-config.sh \
-    file://modem-config.json \
 "
 
 # jq parses the config files, mmcli applies the settings
@@ -26,7 +25,6 @@ RDEPENDS:${PN} += "jq modemmanager"
 do_install() {
     install -m 0644 -D ${UNPACKDIR}/omnect-modem-config.service ${D}${systemd_system_unitdir}/omnect-modem-config.service
     install -m 0755 -D ${UNPACKDIR}/omnect-modem-config.sh ${D}${bindir}/omnect-modem-config.sh
-    install -m 0644 -D ${UNPACKDIR}/modem-config.json ${D}${sysconfdir}/omnect/modem-config.json
 }
 
 SYSTEMD_SERVICE:${PN} = "omnect-modem-config.service"
@@ -34,5 +32,4 @@ SYSTEMD_SERVICE:${PN} = "omnect-modem-config.service"
 FILES:${PN} = "\
     ${bindir}/omnect-modem-config.sh \
     ${systemd_system_unitdir}/omnect-modem-config.service \
-    ${sysconfdir}/omnect/modem-config.json \
 "
