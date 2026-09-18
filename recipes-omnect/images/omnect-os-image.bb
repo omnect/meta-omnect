@@ -54,6 +54,7 @@ EXTRA_PACKAGES_CELLULAR = "\
     mobile-broadband-provider-info \
     networkmanager networkmanager-wwan \
     modemmanager \
+    omnect-modem-config \
     usb-modeswitch usb-modeswitch-data \
 "
 

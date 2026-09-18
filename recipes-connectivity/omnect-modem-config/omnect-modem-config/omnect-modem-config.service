@@ -1,0 +1,13 @@
+[Unit]
+Description=Apply the modem configuration
+ConditionPathExists=/etc/omnect/device_caps.json
+After=ModemManager.service
+Wants=ModemManager.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/omnect-modem-config.sh
+
+[Install]
+WantedBy=multi-user.target
