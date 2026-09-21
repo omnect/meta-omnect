@@ -400,6 +400,7 @@ A custom configuration to preserve files from a factory reset is a json file in 
 }
 ```
 This example preserves the `bash_history` of the users `omnect` and `root`.<br>
+Each file has to carry a `paths` array; an empty array is allowed. A file without one fails the factory reset with a configuration error, because skipping it would wipe the paths it was meant to keep and still report success.<br>
 Nonexisting files listed here, will produce a warning during the factory reset process, but will result in a success.<br>
 Note that home directories in the example above work, because they are actually located on the data partition via overlay mount. Paths which are not overlayed respectively not located in the data partition, will result in a failure of the factory reset on restore.
 
@@ -440,16 +441,16 @@ Example for an error, where "preserve" names a key which `/etc/omnect/factory-re
 The overall `factory reset status` consists of:
 - `status` (general processing state):
   - 0: success
-  - 1: invalid configuration, e.g. a preserved path which leaves the rootfs
+  - 1: the request itself is unusable, e.g. an unsupported mode; see `error`
   - 2: the reset ran, but a step failed; see `error`
-  - 3: configuration error, e.g. a preserve key without definition; see `error`
+  - 3: configuration error, e.g. a preserve key without definition, or a preserved path which leaves the rootfs; see `error`
   - 4: the reset succeeded, but a partition had to be formatted twice; see `context`
 - `error`: reason of the failure; the key is absent when nothing failed
 - optional: `context` on warnings or errors
 - array `paths` of preserved files or directories; this array reflects the configured paths not the actual restored path, e.g. if a path doesn't exist; the key is absent when nothing was preserved
 - `data_wiped`: `true` once the reset started wiping data; on status 2 it tells apart a safe abort, where nothing was touched yet, from a failure after the data was already gone
 
-A trigger the initramfs cannot use at all - invalid json, or a mode outside 1 to 3 - does not start a factory reset. The device boots normally, the reason is written to the kernel log, and no `factory_reset` object is reported. The bootloader environment variable keeps its value in that case.
+A trigger the initramfs cannot use at all - invalid json, a mode outside 1 to 3, or a missing `preserve` - does not start a factory reset. The bootloader environment variable is cleared anyway and the failure is reported like any other, with `data_wiped` false, so the request is answered once instead of repeating on every boot.
 
 ### Update validation
 
@@ -469,7 +470,7 @@ If the object is empty, there were no filesystem issues. If the filesystem check
 
   },
 
-  "factory-reset": {}
+  "factory_reset": {}
 
 }
 
