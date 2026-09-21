@@ -362,7 +362,7 @@ Set the OS bootloader environment variable `factory-reset`, in order to reset `d
 sudo bootloader_env.sh set factory-reset '{"mode": 1, "preserve": ["network", "firewall", "certificates", "applications"]}'
 sudo reboot
 ```
-**Note**: The key "preserve" is optional.
+**Note**: The key "preserve" is mandatory. Use an empty array to keep nothing.
 
 This re-creates the corresponding filesystems of partitions `data` and `etc` on the next boot (in the initramfs context).
 If the `factory` partition contains a directory `etc`, then the content is copied to the `etc` partition.
