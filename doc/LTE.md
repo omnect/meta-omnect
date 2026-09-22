@@ -50,10 +50,11 @@ apn=web.vodafone.de
 ## Modem configuration
 
 Settings like the band mask live in the modem's own memory. Neither flashing nor
-a factory reset reaches them, so the modem keeps whatever was written to it last
-and the image alone does not say what that is. `/etc/omnect/modem-config.json`
-describes the wanted state, and `omnect-modem-config.service` enforces it after
-every boot, writing to the modem only when it differs.
+a factory reset reaches them, so the modem keeps whatever was written to it last:
+its factory preset, or the bands set for wherever the device was used before. The
+image alone does not say which. `/etc/omnect/modem-config.json` describes the
+wanted state, and `omnect-modem-config.service` enforces it after every boot,
+writing to the modem only when it differs.
 
 ```
 {

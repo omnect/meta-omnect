@@ -1,6 +1,7 @@
 [Unit]
 Description=Apply the modem configuration
 ConditionPathExists=/etc/omnect/device_caps.json
+ConditionPathExists=/etc/omnect/modem-config.json
 After=ModemManager.service
 Wants=ModemManager.service
 # write the bands before anything brings the modem up, so a write cannot drop a
