@@ -110,6 +110,24 @@ python __anonymous() {
                      "MACHINE_FEATURES lacks it, so there is no kernel driver/firmware. "
                      "Add MACHINE_FEATURES '%s' for this machine or set device_caps "
                      "'%s' to 'no'." % (machine, feat, feat, feat))
+
+    # 3g runs the other way round: MACHINE_FEATURES installs the cellular packages
+    # and device_caps only tells omnect-modem-config whether a modem is expected, so
+    # a disagreement is silent in both directions - the package is installed and the
+    # service finds nothing to configure, or the capability is set and no package is
+    # there to read it. Machines without a device_caps.json ('') keep building.
+    value = d.getVar('OMNECT_DEVICE_CAP_3G')
+    if value not in ('', 'no', 'optional', 'yes'):
+        bb.fatal("%s: device_caps.json '3g' has invalid value '%s' "
+                 "(expected 'no', 'optional' or 'yes')." % (machine, value))
+    if value:
+        cap_on = value in ('optional', 'yes')
+        machine_on = bb.utils.contains('MACHINE_FEATURES', '3g', True, False, d)
+        if cap_on != machine_on:
+            bb.fatal("%s: device_caps.json '3g' is '%s' but MACHINE_FEATURES %s it. "
+                     "Both must agree, otherwise the modem configuration is either "
+                     "never installed or never applied."
+                     % (machine, value, "has" if machine_on else "lacks"))
 }
 
 # We don't want to add initramfs to

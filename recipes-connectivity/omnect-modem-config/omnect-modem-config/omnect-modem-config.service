@@ -3,11 +3,17 @@ Description=Apply the modem configuration
 ConditionPathExists=/etc/omnect/device_caps.json
 After=ModemManager.service
 Wants=ModemManager.service
+# write the bands before anything brings the modem up, so a write cannot drop a
+# registration that is already in progress
+Before=NetworkManager.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/usr/bin/omnect-modem-config.sh
+# the unit waits for a modem that may never appear; keep it clear of the default
+# start timeout, which would kill it and leave the system degraded
+TimeoutStartSec=120
 
 [Install]
 WantedBy=multi-user.target

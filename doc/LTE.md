@@ -50,10 +50,10 @@ apn=web.vodafone.de
 ## Modem configuration
 
 Settings like the band mask live in the modem's own memory. Neither flashing nor
-a factory reset reaches them, so a device can carry a configuration from an
-earlier owner that nothing in the image accounts for. `/etc/omnect/modem-config.json`
-describes the wanted state instead, and `omnect-modem-config.service` enforces it
-after every boot, writing to the modem only when it differs.
+a factory reset reaches them, so the modem keeps whatever was written to it last
+and the image alone does not say what that is. `/etc/omnect/modem-config.json`
+describes the wanted state, and `omnect-modem-config.service` enforces it after
+every boot, writing to the modem only when it differs.
 
 ```
 {
@@ -77,7 +77,9 @@ decides: `yes` means a modem is expected and its absence is logged, `optional`
 means the service applies the configuration if a modem shows up, anything else
 means it does nothing.
 
-A missing modem, a band the modem does not support, a file version the service
-does not know or a rejected write only produce a warning and are retried on the
-next boot. The service never fails: a failed unit would put the system into
-`degraded` and break unrelated checks.
+Nothing fails the unit: a failed unit would put the system into `degraded` and
+break unrelated checks. A missing modem or a rejected write only warn, and the
+next boot tries again. A band the modem does not support and a file version the
+service does not know are fixed properties of the hardware or of the file, so
+they repeat unchanged on every boot until the file is corrected; the warning in
+the journal is the only sign.
