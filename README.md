@@ -267,6 +267,7 @@ There are the following three flash modes:
 #### Flash Mode 1
 For the flash mode 1, it is required to specify the destination disk, the current disk image will be cloned to.
 For this purpose, the block device path has to be used.
+Use the kernel device name, e.g. `/dev/mmcblk2` or `/dev/sda`. Links such as `/dev/disk/by-path/...` are created by udev, which does not run in the initramfs, so the clone would wait for them until it times out.
 
 The flash mode 1 behaves like a factory reset, related to the new boot device:
 - reset to default bootloader environment
