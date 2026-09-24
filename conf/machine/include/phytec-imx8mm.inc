@@ -123,5 +123,5 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-ph
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-bootloader-versioned - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "73bd4e376d74a2db6c1aca38c83ade09a87c661ffc6d00f1c78b4033376eeeec"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "7d1aa1438f8d928f4df7af5c1e8f9c35943ce3bd0335856396f67b1fa2e57641"
 OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned = "d12c63dd7c5c0f3ef4ed91b47513b4c722ddef558407bc350c440f97406928d9 c216ffb0a152441906dc9a158b39161cf5fe368e5ebb9715fe59e6cf08b1b34c"
