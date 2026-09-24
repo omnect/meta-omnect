@@ -30,8 +30,8 @@ Depending on `MACHINE_FEATURES` we also set `3g`. `wifi` and `bluetooth` are der
     - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedge` runtime dependency `moby`
 - `persistent-var-log`
     - enables a persistent /var/log which is stored in the data partition
-- `flash-mode`
-    - provides the possibility to flash complete disk images
+- `flash-mode-2`, `flash-mode-3`
+    - enable flash modes 2 and 3; flash mode 1 is always available
     - please see section [Flash Modes](#flash-modes) below
 - `resize-data`
     - expands the data partition to available space on first boot
@@ -282,7 +282,7 @@ bootloader_env.sh set flash-mode 1
 bootloader_env.sh set flash-mode-devpath '/dev/mmcblk2'
 reboot
 ...
-Entering omnect flashing mode 1...
+flash mode 1: cloning /dev/mmcblk1 onto /dev/mmcblk2
 ...
 ```
 **Note1**: The *bootloader_env.sh* command requires root permissions.<br>
@@ -291,9 +291,21 @@ Entering omnect flashing mode 1...
 initiate flash mode 1 and trigger reboot, make sure that you boot from usb again. This reboot will enter the initramfs and execute the flash process.<br>
 
 After flash mode 1 has been finished successfully, the target system will be switched-off.
-The bootloader environment variables *flash-mode* and *flash-mode-devpath* will be deleted automatically.
+The bootloader environment variables *flash-mode* and *flash-mode-devpath* are deleted before the clone starts, so a failed clone is not repeated on the next boot.
+
+Flash mode 1 is refused before anything is written when:
+- *flash-mode-devpath* is not set, is not a block device, or does not appear within 30 seconds
+- *flash-mode-devpath* is the disk the system booted from, or one of its partitions
+- a factory reset is set at the same time; both variables are deleted, set the one you meant again
+
+A refused or failed clone ends in the error handling of the initramfs: a debug shell on a developer image, a halted system on a release image.
+A value of *flash-mode* that selects no mode is ignored and the system boots normally.
+
+The log of the run is written to `flash-mode-1.log` on the data partition of the disk the system booted from, on success and on failure. After a normal boot it is found at `/mnt/data/flash-mode-1.log`. A conflict with a factory reset is refused before the run starts and leaves no log file; its reason is only in the kernel log.
 
 #### Flash Mode 2
+**Note:** the initramfs does not implement flash mode 2 yet; the distribution feature `flash-mode-2` currently has no effect.
+
 Enable the distribution feature `flash-mode-2` at build time, if you want to use it.
 
 In order to trigger the flash mode 2,
@@ -329,6 +341,8 @@ After finishing the flash procedure, the system reboots automatically.
 The bootloader environment variable *flash-mode* will be deleted automatically.
 
 #### Flash Mode 3
+**Note:** the initramfs does not implement flash mode 3 yet; the distribution feature `flash-mode-3` currently has no effect.
+
 Enable the distribution feature `flash-mode-3` at build time, if you want to use it.
 
 In order to trigger the flash mode 3,
