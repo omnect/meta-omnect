@@ -36,6 +36,7 @@ RESIZE_DATA_PACKAGES = "\
 PACKAGE_INSTALL = "\
     bash \
     coreutils \
+    dosfstools \
     e2fsprogs \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
