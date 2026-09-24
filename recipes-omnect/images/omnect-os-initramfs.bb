@@ -62,9 +62,13 @@ add_uboot_env() {
 
 
 IMAGE_PREPROCESS_COMMAND:append = "add_fsck_vfat_support;"
+# fsck looks for its helpers in /sbin. On a merged-/usr image /sbin is
+# /usr/sbin already, and the links would replace fsck.fat with a link to itself.
 add_fsck_vfat_support() {
-    ln -sf /usr/sbin/fsck.fat ${IMAGE_ROOTFS}/sbin/
-    ln -sf /usr/sbin/fsck.vfat ${IMAGE_ROOTFS}/sbin/
+    if [ ! -L ${IMAGE_ROOTFS}/sbin ]; then
+        ln -sf /usr/sbin/fsck.fat ${IMAGE_ROOTFS}/sbin/
+        ln -sf /usr/sbin/fsck.vfat ${IMAGE_ROOTFS}/sbin/
+    fi
 }
 
 inherit ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', 'omnect_user', '', d)}
