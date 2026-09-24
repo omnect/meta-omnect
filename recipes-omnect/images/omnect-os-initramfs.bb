@@ -36,6 +36,7 @@ RESIZE_DATA_PACKAGES = "\
 PACKAGE_INSTALL = "\
     bash \
     coreutils \
+    e2fsprogs \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \      
@@ -47,6 +48,7 @@ PACKAGE_INSTALL = "\
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'efi', 'efibootmgr', '', d)} \
 "
 
 PACKAGE_INSTALL:append:omnect_grub = " ${GRUB_SUPPORT_PACKAGES}"

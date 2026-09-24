@@ -19,6 +19,14 @@ CARGO_FEATURES:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', ',rel
 CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ',persistent-var-log', '', d)}"
 CARGO_BUILD_FLAGS += "--features ${CARGO_FEATURES}"
 
+# Read by build.rs for flash mode 1; a variable a machine does not set is not
+# exported and becomes None in the build.
+export OMNECT_PART_OFFSET_UBOOT_ENV1
+export OMNECT_PART_OFFSET_UBOOT_ENV2
+export OMNECT_PART_SIZE_UBOOT_ENV
+export OMNECT_PART_SIZE_DATA
+export BOOTLOADER_SEEK
+
 do_compile:prepend() {
     export LIBCLANG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/lib"
 }
