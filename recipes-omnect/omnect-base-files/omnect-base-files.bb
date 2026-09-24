@@ -38,6 +38,7 @@ FILES:${PN} = "\
     /mnt/etc \
     /mnt/factory \
     /mnt/rootCurrent \
+    /mnt/rootCurrentPrivate \
     /usr/bin/omnect_extra_bootargs.sh \
     /usr/bin/omnect_get_deviceid.sh \
     /usr/bin/omnect_get_dps_tpm_enrollment.sh \
@@ -65,6 +66,7 @@ do_install() {
     install -d -D ${D}/mnt/etc \
     install -d -D ${D}/mnt/factory \
     install -d -D ${D}/mnt/rootCurrent \
+    install -d -D ${D}/mnt/rootCurrentPrivate \
     install -d -D ${D}/var/lib \
     install -d -D ${D}${exec_prefix}/local
 

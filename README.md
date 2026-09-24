@@ -30,8 +30,8 @@ Depending on `MACHINE_FEATURES` we also set `3g`. `wifi` and `bluetooth` are der
     - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedge` runtime dependency `moby`
 - `persistent-var-log`
     - enables a persistent /var/log which is stored in the data partition
-- `flash-mode`
-    - provides the possibility to flash complete disk images
+- `flash-mode-2`, `flash-mode-3`
+    - enable flash modes 2 and 3; flash mode 1 is always available
     - please see section [Flash Modes](#flash-modes) below
 - `resize-data`
     - expands the data partition to available space on first boot
@@ -267,6 +267,7 @@ There are the following three flash modes:
 #### Flash Mode 1
 For the flash mode 1, it is required to specify the destination disk, the current disk image will be cloned to.
 For this purpose, the block device path has to be used.
+Use the kernel device name, e.g. `/dev/mmcblk2` or `/dev/sda`. Links such as `/dev/disk/by-path/...` are created by udev, which does not run in the initramfs, so the clone would wait for them until it times out.
 
 The flash mode 1 behaves like a factory reset, related to the new boot device:
 - reset to default bootloader environment
@@ -282,7 +283,7 @@ bootloader_env.sh set flash-mode 1
 bootloader_env.sh set flash-mode-devpath '/dev/mmcblk2'
 reboot
 ...
-Entering omnect flashing mode 1...
+flash mode 1: cloning /dev/mmcblk1 onto /dev/mmcblk2
 ...
 ```
 **Note1**: The *bootloader_env.sh* command requires root permissions.<br>
@@ -291,9 +292,21 @@ Entering omnect flashing mode 1...
 initiate flash mode 1 and trigger reboot, make sure that you boot from usb again. This reboot will enter the initramfs and execute the flash process.<br>
 
 After flash mode 1 has been finished successfully, the target system will be switched-off.
-The bootloader environment variables *flash-mode* and *flash-mode-devpath* will be deleted automatically.
+The bootloader environment variables *flash-mode* and *flash-mode-devpath* are deleted before the clone starts, so a failed clone is not repeated on the next boot.
+
+Flash mode 1 is refused before anything is written when:
+- *flash-mode-devpath* is not set, is not a block device, or does not appear within 30 seconds
+- *flash-mode-devpath* is the disk the system booted from, or one of its partitions
+- a factory reset is set at the same time; both variables are deleted, set the one you meant again
+
+A refused or failed clone ends in the error handling of the initramfs: a debug shell on a developer image, a halted system on a release image.
+A value of *flash-mode* that selects no mode is ignored and the system boots normally.
+
+The log of the run is written to `flash-mode-1.log` on the data partition of the disk the system booted from, on success and on failure. After a normal boot it is found at `/mnt/data/flash-mode-1.log`. A conflict with a factory reset is refused before the run starts and leaves no log file; its reason is only in the kernel log.
 
 #### Flash Mode 2
+**Note:** the initramfs does not implement flash mode 2 yet; the distribution feature `flash-mode-2` currently has no effect.
+
 Enable the distribution feature `flash-mode-2` at build time, if you want to use it.
 
 In order to trigger the flash mode 2,
@@ -329,6 +342,8 @@ After finishing the flash procedure, the system reboots automatically.
 The bootloader environment variable *flash-mode* will be deleted automatically.
 
 #### Flash Mode 3
+**Note:** the initramfs does not implement flash mode 3 yet; the distribution feature `flash-mode-3` currently has no effect.
+
 Enable the distribution feature `flash-mode-3` at build time, if you want to use it.
 
 In order to trigger the flash mode 3,
@@ -362,7 +377,7 @@ Set the OS bootloader environment variable `factory-reset`, in order to reset `d
 sudo bootloader_env.sh set factory-reset '{"mode": 1, "preserve": ["network", "firewall", "certificates", "applications"]}'
 sudo reboot
 ```
-**Note**: The key "preserve" is optional.
+**Note**: The key "preserve" is mandatory. Use an empty array to keep nothing.
 
 This re-creates the corresponding filesystems of partitions `data` and `etc` on the next boot (in the initramfs context).
 If the `factory` partition contains a directory `etc`, then the content is copied to the `etc` partition.
@@ -374,18 +389,15 @@ This kind of factory reset does not ensure any data privacy.
 In order to provide higher level of privacy, the desired wipe mode can be selected.
 For this purpose, the OS bootloader environment variable `factory-reset` can be set to the following values:
 
-|     | Factory Reset Mode                                      | Remark                                     |
-| --- | ------------------------------------------------------- | ------------------------------------------ |
-| 1   | no wipe; only filesystems re-created                    | no privacy, but fast                       |
-| 2   | use dd to write random data to etc and data partitions  | better privacy, but slow                   |
-| 3   | recursive remove files with rm; notify disk with fstrim | usability depends on use case and hardware |
-| 4   | custom wipe                                             |                                            |
+|     | Factory Reset Mode                            | Remark                                    |
+| --- | --------------------------------------------- | ----------------------------------------- |
+| 1   | no wipe; only filesystems re-created          | no privacy, but fast                      |
+| 2   | overwrite etc and data with random data       | better privacy, but slow                  |
+| 3   | discard all blocks of etc and data            | fast, but the disk has to support discard |
 
 **Note:** The provided wipe options don't guarantee total privacy. This is only possible using hardware features of the disk (e.g.; ATA secure erase).
 
-There is also the custom wipe mode. This mode provides the possibility to address customer requirements and hardware capabilities.
-In the case of custom wipe, the factory reset (initramfs context) calls `/opt/factory_reset/custom-wipe` before re-creating the filesystems inside the partitions `etc` and `data`.
-In order to establish the custom wipe mode, a Yocto recipe `omnect-os-initramfs-scripts.bbappend` has to be supplied, which has to install the required utilities.
+A failing wipe does not abort the factory reset: the filesystems are re-created anyway, so the device stays usable, and the status reports `2` with the reason in `error`.
 
 The factory reset provides the option "preserve" to exclude particular files or directories.
 The topics in the array "preserve" are defined by the keys of [`/etc/omnect/factory-reset.json`](recipes-omnect/omnect-device-service/omnect-device-service/factory-reset.json).<br>
@@ -403,6 +415,7 @@ A custom configuration to preserve files from a factory reset is a json file in 
 }
 ```
 This example preserves the `bash_history` of the users `omnect` and `root`.<br>
+Each file has to carry a `paths` array; an empty array is allowed. A file without one fails the factory reset with a configuration error, because skipping it would wipe the paths it was meant to keep and still report success.<br>
 Nonexisting files listed here, will produce a warning during the factory reset process, but will result in a success.<br>
 Note that home directories in the example above work, because they are actually located on the data partition via overlay mount. Paths which are not overlayed respectively not located in the data partition, will result in a failure of the factory reset on restore.
 
@@ -412,50 +425,51 @@ and the partitions `etc` and `data` remain untouched.
 In the case of an error during the restore of a file or directory, the restore processing will be continued for the other files or directories.
 In both cases, the error will be indicated by the factory reset status (see below).
 
-The status of the factory reset is returned by the json object `factory-reset` in `/run/omnect-device-service/omnect-os-initramfs.json`.
+The status of the factory reset is returned by the json object `factory_reset` in `/run/omnect-device-service/omnect-os-initramfs.json`.
 
 Example for a success:
 ```sh
-# jq '."factory-reset"' /run/omnect-device-service/omnect-os-initramfs.json
+# jq '.factory_reset' /run/omnect-device-service/omnect-os-initramfs.json
 ```
 ```json
 {
   "status": 0,
-  "error": "0",
   "paths": [
     "/etc/omnect/factory-reset.d/",
     "/etc/restore_file",
     "/home/omnect/.bash_history",
     "/home/root/.bash_history"
-  ]
+  ],
+  "data_wiped": true
 }
 ```
 
-Example for an error, where ´/etc/omnect/factory-reset.d/restore_file_error.json´ doesn't have a `paths` object.:
+Example for an error, where "preserve" names a key which `/etc/omnect/factory-reset.json` doesn't define:
 ```json
 {
   "status": 3,
-  "error": "5",
-  "context": "/etc/omnect/factory-reset.d/restore_file_error.json:paths",
-  "paths": [
-    "/etc/omnect/factory-reset.d/"
-  ]
+  "error": "/rootfs/etc/omnect/factory-reset.json: no 'network' key",
+  "data_wiped": false
 }
 ```
 
 The overall `factory reset status` consists of:
 - `status` (general processing state):
-  - 0: wipe mode supported
-  - 1: wipe mode unsupported
-  - 2: backup/restore failure
-  - 3: configuration error; see "context" for details
-- `error`:  execution exit status; in case of of status == 0, if not applicaple: `-`
+  - 0: success
+  - 1: the request itself is unusable, e.g. an unsupported mode; see `error`
+  - 2: the reset ran, but a step failed; see `error`
+  - 3: configuration error, e.g. a preserve key without definition, or a preserved path which leaves the rootfs; see `error`
+  - 4: the reset succeeded, but a partition had to be formatted twice; see `context`
+- `error`: reason of the failure; the key is absent when nothing failed
 - optional: `context` on warnings or errors
-- array `paths` of preserved files or directories; this array reflects the configured paths not the actual restored path, e.g. if a path doesn't exist
+- array `paths` of preserved files or directories; this array reflects the configured paths not the actual restored path, e.g. if a path doesn't exist; the key is absent when nothing was preserved
+- `data_wiped`: `true` once the reset started wiping data; on status 2 it tells apart a safe abort, where nothing was touched yet, from a failure after the data was already gone
+
+A trigger the initramfs cannot use at all - invalid json, a mode outside 1 to 3, or a missing `preserve` - does not start a factory reset. The bootloader environment variable is cleared anyway and the failure is reported like any other, with `data_wiped` false, so the request is answered once instead of repeating on every boot.
 
 ### Update validation
 
-An A/B update is validated, if the update doesn't contain a bootloader update, after the device boots to the updated partition. Most of the logic is implemented in omnect-device-service repository and [documented there](https://github.com/omnect/omnect-device-service/blob/main/src/twin/firmware_update/update_validation.md). meta-omnect takes care of booting the right partition as well as providing appropriate states to the user space. This is done as part of [initramfs](./recipes-omnect/initrdscripts/omnect-os-initramfs/omnect-device-service-setup).
+An A/B update is validated, if the update doesn't contain a bootloader update, after the device boots to the updated partition. Most of the logic is implemented in omnect-device-service repository and [documented there](https://github.com/omnect/omnect-device-service/blob/main/src/twin/firmware_update/update_validation.md). meta-omnect takes care of booting the right partition as well as providing appropriate states to the user space. This is done as part of the initramfs init.
 
 ### Filesystem ckeck
 
@@ -471,7 +485,7 @@ If the object is empty, there were no filesystem issues. If the filesystem check
 
   },
 
-  "factory-reset": {}
+  "factory_reset": {}
 
 }
 
