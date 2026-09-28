@@ -91,9 +91,6 @@ do_install:append() {
 
 # health-check stuff
 do_install:append() {
-    # FIXME: the shell helper library should really be located somewhere else,
-    #        probably all of the health check stuff shoul reside in a dedicated
-    #        folder
     install -m 0755 -D ${S}/healthcheck/omnect_health_check.sh              ${D}/${sbindir}/omnect_health_check.sh
     install -m 0755 -D ${S}/healthcheck/healthchecklib.sh                   ${D}/${libdir}/omnect/healthcheck/healthchecklib.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health__coredumps.sh         ${D}/${libdir}/omnect/healthcheck/omnect_health__coredumps.sh
