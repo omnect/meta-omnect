@@ -92,7 +92,7 @@ do_install:append() {
 # health-check stuff
 do_install:append() {
     install -m 0755 -D ${S}/healthcheck/omnect_health_check.sh              ${D}/${sbindir}/omnect_health_check.sh
-    install -m 0755 -D ${S}/healthcheck/healthchecklib.sh                   ${D}/${libdir}/omnect/healthcheck/healthchecklib.sh
+    install -m 0644 -D ${S}/healthcheck/healthchecklib.sh                   ${D}/${libdir}/omnect/healthcheck/healthchecklib.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health__coredumps.sh         ${D}/${libdir}/omnect/healthcheck/omnect_health__coredumps.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health__services.sh          ${D}/${libdir}/omnect/healthcheck/omnect_health__services.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health__system_running.sh    ${D}/${libdir}/omnect/healthcheck/omnect_health__system_running.sh
