@@ -94,13 +94,13 @@ do_install:append() {
     # FIXME: the shell helper library should really be located somewhere else,
     #        probably all of the health check stuff shoul reside in a dedicated
     #        folder
-    install -m 0755 -D ${S}/healthcheck/healthchecklib.sh                   ${D}/${sbindir}/healthchecklib.sh
     install -m 0755 -D ${S}/healthcheck/omnect_health_check.sh              ${D}/${sbindir}/omnect_health_check.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_health__coredumps.sh         ${D}/${sbindir}/omnect_health__coredumps.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_health__services.sh          ${D}/${sbindir}/omnect_health__services.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_health__system_running.sh    ${D}/${sbindir}/omnect_health__system_running.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_health__crash_loop.sh        ${D}/${sbindir}/omnect_health__crash_loop.sh
-    install -m 0755 -D ${S}/healthcheck/omnect_health__timesync.sh          ${D}/${sbindir}/omnect_health__timesync.sh
+    install -m 0755 -D ${S}/healthcheck/healthchecklib.sh                   ${D}/${libdir}/omnect/healthcheck/healthchecklib.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__coredumps.sh         ${D}/${libdir}/omnect/healthcheck/omnect_health__coredumps.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__services.sh          ${D}/${libdir}/omnect/healthcheck/omnect_health__services.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__system_running.sh    ${D}/${libdir}/omnect/healthcheck/omnect_health__system_running.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__crash_loop.sh        ${D}/${libdir}/omnect/healthcheck/omnect_health__crash_loop.sh
+    install -m 0755 -D ${S}/healthcheck/omnect_health__timesync.sh          ${D}/${libdir}/omnect/healthcheck/omnect_health__timesync.sh
     install -m 0755 -D ${S}/healthcheck/omnect_service_log.sh               ${D}/${sbindir}/omnect_service_log.sh
     # NOTE:
     #    the next script needs to be always there, regardless of whether
@@ -163,13 +163,13 @@ FILES:${PN} += "\
 
 # health-check stuff
 FILES:${PN} += "\
-	${sbindir}/healthchecklib.sh \
 	${sbindir}/omnect_health_check.sh \
-	${sbindir}/omnect_health__coredumps.sh \
-	${sbindir}/omnect_health__services.sh \
-	${sbindir}/omnect_health__system_running.sh \
-	${sbindir}/omnect_health__crash_loop.sh \
-	${sbindir}/omnect_health__timesync.sh \
+	${libdir}/omnect/healthcheck/healthchecklib.sh \
+	${libdir}/omnect/healthcheck/omnect_health__coredumps.sh \
+	${libdir}/omnect/healthcheck/omnect_health__services.sh \
+	${libdir}/omnect/healthcheck/omnect_health__system_running.sh \
+	${libdir}/omnect/healthcheck/omnect_health__crash_loop.sh \
+	${libdir}/omnect/healthcheck/omnect_health__timesync.sh \
 	${sbindir}/omnect_service_log.sh \
 	${sbindir}/omnect_reboot_reason.sh \
 	${sysconfdir}/omnect/health_check/omnect_service_log_analysis.json \
