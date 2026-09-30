@@ -27,6 +27,14 @@ UBOOT_SUPPORT_PACKAGES = " \
     libubootenv \
     libubootenv-bin \
 "
+FLASH_MODE_2_PACKAGES = "\
+    base-passwd \
+    bmaptool \
+    dhcpcd \
+    dropbear \
+    xz \
+"
+
 RESIZE_DATA_PACKAGES = "\
     e2fsprogs-resize2fs \
     gptfdisk \
@@ -48,6 +56,7 @@ PACKAGE_INSTALL = "\
     util-linux-sfdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', '${FLASH_MODE_2_PACKAGES}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'efi', 'efibootmgr', '', d)} \
 "

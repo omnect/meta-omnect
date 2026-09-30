@@ -305,9 +305,9 @@ A value of *flash-mode* that selects no mode is ignored and the system boots nor
 The log of the run is written to `flash-mode-1.log` on the data partition of the disk the system booted from, on success and on failure. After a normal boot it is found at `/mnt/data/flash-mode-1.log`. A conflict with a factory reset is refused before the run starts and leaves no log file; its reason is only in the kernel log.
 
 #### Flash Mode 2
-**Note:** the initramfs does not implement flash mode 2 yet; the distribution feature `flash-mode-2` currently has no effect.
-
 Enable the distribution feature `flash-mode-2` at build time, if you want to use it.
+
+By default the initramfs first reads the whole image into RAM and checks it against the bmap file, and only then writes the disk. A broken transfer then fails before anything is written. Set `OMNECT_FLASH_MODE_2_DIRECT_FLASHING = "1"` to write the disk straight from the `scp` stream instead, for devices with too little RAM for the image.
 
 In order to trigger the flash mode 2,
 1. use the following commands on the target system:<br>
@@ -316,8 +316,9 @@ In order to trigger the flash mode 2,
     bootloader_env.sh set flash-mode 2
     reboot
     ...
-    Entering omnect flashing mode 2...
+    flash mode 2: flashing /dev/mmcblk0 with an image pushed in over scp
     ...
+    please run: scp <bmap-file> omnect@<target-ip>:wic.bmap
     ```
     **Note1**: *bootloader_env.sh* command requires root permissions.<br>
     **Note2**: `flash-mode 2` is restricted to eth0.<br>
@@ -339,7 +340,13 @@ At build time, the configuration (OMNECT_USER_PASSWORD) is applied for both. The
 Later during runtime, changing the password in the rootfs is not synchronized to the initramfs.
 
 After finishing the flash procedure, the system reboots automatically.
-The bootloader environment variable *flash-mode* will be deleted automatically.
+The bootloader environment variable *flash-mode* is deleted before the flash starts, so a failed flash is not repeated on the next boot.
+
+The network setup is bounded: eth0 must come up within 60 seconds and get an IPv4 address within 120 seconds. The wait for `wic.bmap` has no limit.
+
+A failed flash ends in the error handling of the initramfs: a debug shell on a developer image, a halted system on a release image. A flash that failed while writing leaves the disk partly written; flash it again.
+
+The log of the run is written to `flash-mode-2.log` on the data partition of the new image, after a successful flash only. After a normal boot it is found at `/mnt/data/flash-mode-2.log`.
 
 #### Flash Mode 3
 **Note:** the initramfs does not implement flash mode 3 yet; the distribution feature `flash-mode-3` currently has no effect.

@@ -17,6 +17,8 @@ CARGO_FEATURES:append = ",factory-reset"
 CARGO_FEATURES:append = ",gpt"
 CARGO_FEATURES:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', ',release-image', '', d)}"
 CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ',persistent-var-log', '', d)}"
+CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', ',flash-mode-2', '', d)}"
+CARGO_FEATURES:append = "${@',flash-mode-2-direct' if bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', True, False, d) and d.getVar('OMNECT_FLASH_MODE_2_DIRECT_FLASHING') == '1' else ''}"
 CARGO_BUILD_FLAGS += "--features ${CARGO_FEATURES}"
 
 # Read by build.rs for flash mode 1; a variable a machine does not set is not
@@ -26,6 +28,11 @@ export OMNECT_PART_OFFSET_UBOOT_ENV2
 export OMNECT_PART_SIZE_UBOOT_ENV
 export OMNECT_PART_SIZE_DATA
 export BOOTLOADER_SEEK
+
+# Read by build.rs for flash mode 2.
+export OMNECT_PART_OFFSET_BOOT
+export OMNECT_PART_SIZE_BOOT
+export OMNECT_USER_ID
 
 do_compile:prepend() {
     export LIBCLANG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/lib"
