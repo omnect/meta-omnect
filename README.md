@@ -299,7 +299,7 @@ Flash mode 1 is refused before anything is written when:
 - *flash-mode-devpath* is the disk the system booted from, or one of its partitions
 - a factory reset is set at the same time; both variables are deleted, set the one you meant again
 
-A refused or failed clone ends in the error handling of the initramfs: a debug shell on a developer image, a halted system on a release image.
+A refused or failed clone ends in the error handling of the initramfs: a debug shell on a developer image, a halted system on a release image, or a reboot while an update is being validated.
 A value of *flash-mode* that selects no mode is ignored and the system boots normally.
 
 The log of the run is written to `flash-mode-1.log` on the data partition of the disk the system booted from, on success and on failure. After a normal boot it is found at `/mnt/data/flash-mode-1.log`. A conflict with a factory reset is refused before the run starts and leaves no log file; its reason is only in the kernel log.
@@ -342,11 +342,11 @@ Later during runtime, changing the password in the rootfs is not synchronized to
 After finishing the flash procedure, the system reboots automatically.
 The bootloader environment variable *flash-mode* is deleted before the flash starts, so a failed flash is not repeated on the next boot.
 
-The network setup is bounded: eth0 must come up within 60 seconds and get an IPv4 address within 120 seconds. The wait for `wic.bmap` has no limit.
+The network setup is bounded: eth0 must come up within 60 seconds, and must have an IPv4 address within 120 seconds after `dhcpcd` returns. Without a DHCP server, `dhcpcd` assigns a link-local address (169.254.x.x), which is used as well. The wait for `wic.bmap` has no limit.
 
-A failed flash ends in the error handling of the initramfs: a debug shell on a developer image, a halted system on a release image. A flash that failed while writing leaves the disk partly written; flash it again.
+A failed flash ends in the error handling of the initramfs: a debug shell on a developer image, a halted system on a release image, or a reboot while an update is being validated. A flash that failed while writing leaves the disk partly written; flash it again.
 
-The log of the run is written to `flash-mode-2.log` on the data partition of the new image, after a successful flash only. After a normal boot it is found at `/mnt/data/flash-mode-2.log`.
+The log of the run is written to `flash-mode-2.log` on the data partition, unless the flash failed while writing the disk. After a normal boot it is found at `/mnt/data/flash-mode-2.log`.
 
 #### Flash Mode 3
 **Note:** the initramfs does not implement flash mode 3 yet; the distribution feature `flash-mode-3` currently has no effect.
