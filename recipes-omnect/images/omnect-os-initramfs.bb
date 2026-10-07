@@ -32,6 +32,9 @@ FLASH_MODE_2_PACKAGES = "\
     dhcpcd \
     dropbear \
 "
+# dhcpcd pulls in udev, whose libsystemd-shared recommends apparmor, and apparmor
+# brings python3. The initramfs loads no AppArmor profiles.
+BAD_RECOMMENDATIONS += "apparmor"
 
 RESIZE_DATA_PACKAGES = "\
     e2fsprogs-resize2fs \
