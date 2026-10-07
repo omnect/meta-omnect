@@ -29,10 +29,8 @@ UBOOT_SUPPORT_PACKAGES = " \
 "
 FLASH_MODE_2_PACKAGES = "\
     base-passwd \
-    bmaptool \
     dhcpcd \
     dropbear \
-    xz \
 "
 
 RESIZE_DATA_PACKAGES = "\
