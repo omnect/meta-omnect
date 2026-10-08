@@ -36,7 +36,6 @@ DEPENDS = " \
   azure-iot-sdk-c \
   boost \
   jq-native \
-  libxml2 \
   systemd \
 "
 
