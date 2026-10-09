@@ -2,7 +2,8 @@ DEPENDS = "u-boot-mkimage-native"
 COMPATIBLE = "rpi"
 
 python create_boot_cmd () {
-    bootargs_1st_boot=d.getVar("OMNECT_APPEND_1ST_BOOT")
+    # unset on developer images
+    bootargs_1st_boot=d.getVar("OMNECT_APPEND_1ST_BOOT") or ""
     boot_cmd=d.getVar("KERNEL_BOOTCMD")
     boot_cmd_file=d.getVar("WORKDIR") + "/boot.cmd"
     fdt_load_script_file=d.getVar("WORKDIR") + "/fdt-load.cmd"
