@@ -15,6 +15,11 @@ RDEPENDS:${PN} += "bash"
 # degraded.
 PACKAGECONFIG:remove = "tpm2"
 
+# the MIME database is unused on the device; without it shared-mime-info and
+# its libxml2 dependency leave the image and the SBOM
+DEPENDS:remove = "shared-mime-info"
+RRECOMMENDS:${PN}:remove = "${PN}-mime"
+
 # enable bash-completion
 bashcompletiondir = "${datadir}/bash-completion/completions"
 
@@ -71,6 +76,8 @@ do_install:append() {
     # and per-device debugging enable capture via /etc drop-ins.
     sed -i 's/^#\?Storage=.*/Storage=none/' ${D}${sysconfdir}/systemd/coredump.conf
     rm -f ${D}${systemd_system_unitdir}/systemd-journald-audit.socket
+
+    rm -rf ${D}${MIMEDIR}
 
     # sync time on sysinit
     install -d ${D}${sysconfdir}/systemd/system/sysinit.target.wants
