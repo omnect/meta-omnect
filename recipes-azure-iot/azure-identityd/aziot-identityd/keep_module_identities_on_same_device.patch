@@ -1,0 +1,186 @@
+From 1cfd59b7297c02ebee2750c03a3035905d43d9e0 Mon Sep 17 00:00:00 2001
+From: Jan Zachmann <50990105+JanZachmann@users.noreply.github.com>
+Date: Fri, 9 Oct 2026 09:18:35 +0200
+Subject: [PATCH] identityd: keep module identities when reprovisioning returns
+ the same device
+
+An API reprovision removes the device info backup before it provisions
+again. Reconciliation then has no previous module set, so it deletes every
+module identity on the hub and creates it again, even when DPS assigned
+the same hub and device. If the hub fails a create in between, the module
+stays missing until identityd restarts.
+
+Write the backup back when hub, gateway host and device id are unchanged.
+
+Upstream-Status: Pending
+
+Signed-off-by: Jan Zachmann <50990105+JanZachmann@users.noreply.github.com>
+---
+ identity/aziot-identityd/src/identity.rs | 118 +++++++++++++++++++++++
+ identity/aziot-identityd/src/lib.rs      |   6 ++
+ 2 files changed, 124 insertions(+)
+
+diff --git a/identity/aziot-identityd/src/identity.rs b/identity/aziot-identityd/src/identity.rs
+index 331dfba..79d5103 100644
+--- a/identity/aziot-identityd/src/identity.rs
++++ b/identity/aziot-identityd/src/identity.rs
+@@ -97,6 +97,29 @@ impl IdentityManager {
+         self.iot_hub_device = None;
+     }
+ 
++    pub fn get_device_backup(&self) -> Option<HubDeviceInfo> {
++        read_device_backup(&self.homedir_path)
++    }
++
++    /// Writes `prev` back as the device backup if reprovisioning assigned the same hub and
++    /// device. Reconciliation then keeps the module identities on the hub instead of deleting
++    /// and creating them again, which leaves a module missing if the create fails.
++    pub fn restore_device_backup(&self, prev: &HubDeviceInfo) {
++        let Some(device) = &self.iot_hub_device else {
++            return;
++        };
++
++        let curr = HubDeviceInfo {
++            hub_name: device.iothub_hostname.clone(),
++            local_gateway_hostname: device.local_gateway_hostname.clone(),
++            device_id: device.device_id.clone(),
++        };
++
++        if write_device_backup_if_unchanged(&self.homedir_path, prev, &curr) {
++            log::info!("Hub and device unchanged after reprovisioning. Keeping module identities.");
++        }
++    }
++
+     pub async fn create_module_identity(&self, module_id: &str) -> Result<Identity, Error> {
+         if module_id.trim().is_empty() {
+             return Err(Error::invalid_parameter(
+@@ -1063,6 +1086,32 @@ fn get_prev_modules(
+     prev_hub_modules
+ }
+ 
++fn read_device_backup(homedir_path: &Path) -> Option<HubDeviceInfo> {
++    HubDeviceInfo::new(&homedir_path.join(DEVICE_BACKUP_LOCATION))
++        .ok()
++        .flatten()
++}
++
++fn write_device_backup_if_unchanged(
++    homedir_path: &Path,
++    prev: &HubDeviceInfo,
++    curr: &HubDeviceInfo,
++) -> bool {
++    if prev != curr {
++        return false;
++    }
++
++    let device_status = toml::to_string(curr).expect("serializing device info cannot fail");
++
++    if let Err(err) = std::fs::write(homedir_path.join(DEVICE_BACKUP_LOCATION), device_status) {
++        log::warn!("Failed to restore device info backup: {err}");
++
++        return false;
++    }
++
++    true
++}
++
+ #[derive(Debug, Eq, PartialEq, PartialOrd, serde::Deserialize, serde::Serialize)]
+ pub struct HubDeviceInfo {
+     pub hub_name: String,
+@@ -1268,3 +1317,72 @@ impl ModuleBackup {
+         Ok(path)
+     }
+ }
++
++#[cfg(test)]
++mod tests {
++    use super::{
++        DEVICE_BACKUP_LOCATION, HubDeviceInfo, read_device_backup, write_device_backup_if_unchanged,
++    };
++
++    fn device_info(hub_name: &str, device_id: &str) -> HubDeviceInfo {
++        HubDeviceInfo {
++            hub_name: hub_name.to_owned(),
++            local_gateway_hostname: hub_name.to_owned(),
++            device_id: device_id.to_owned(),
++        }
++    }
++
++    fn homedir(name: &str) -> std::path::PathBuf {
++        let path = std::env::temp_dir().join(format!(
++            "aziot-identityd-test-{name}-{}",
++            std::process::id()
++        ));
++        let _ = std::fs::remove_dir_all(&path);
++        std::fs::create_dir_all(&path).expect("create test homedir");
++        path
++    }
++
++    #[test]
++    fn device_backup_missing() {
++        let homedir = homedir("backup-missing");
++
++        assert_eq!(read_device_backup(&homedir), None);
++    }
++
++    #[test]
++    fn device_backup_restored_for_same_device() {
++        let homedir = homedir("same-device");
++        let info = device_info("hub", "device");
++
++        assert!(write_device_backup_if_unchanged(
++            &homedir,
++            &info,
++            &device_info("hub", "device")
++        ));
++        assert_eq!(read_device_backup(&homedir), Some(info));
++    }
++
++    #[test]
++    fn device_backup_not_restored_for_other_hub() {
++        let homedir = homedir("other-hub");
++
++        assert!(!write_device_backup_if_unchanged(
++            &homedir,
++            &device_info("hub", "device"),
++            &device_info("other-hub", "device")
++        ));
++        assert!(!homedir.join(DEVICE_BACKUP_LOCATION).exists());
++    }
++
++    #[test]
++    fn device_backup_not_restored_for_other_device() {
++        let homedir = homedir("other-device");
++
++        assert!(!write_device_backup_if_unchanged(
++            &homedir,
++            &device_info("hub", "device"),
++            &device_info("hub", "other-device")
++        ));
++        assert!(!homedir.join(DEVICE_BACKUP_LOCATION).exists());
++    }
++}
+diff --git a/identity/aziot-identityd/src/lib.rs b/identity/aziot-identityd/src/lib.rs
+index 9237a8d..47f2de9 100644
+--- a/identity/aziot-identityd/src/lib.rs
++++ b/identity/aziot-identityd/src/lib.rs
+@@ -534,6 +534,8 @@ impl Api {
+                 // updates will only reconcile identities.
+             }
+             ReprovisionTrigger::Api => {
++                let prev_device = self.id_manager.get_device_backup();
++
+                 // Purge current device information before reprovisioning. This is needed only
+                 // when triggered by the reprovision API, since:
+                 // - The ConfigurationFileUpdate trigger doesn't reprovision
+@@ -547,6 +549,10 @@ impl Api {
+                         credential_override,
+                     )
+                     .await?;
++
++                if let Some(prev_device) = prev_device {
++                    self.id_manager.restore_device_backup(&prev_device);
++                }
+             }
+             ReprovisionTrigger::Startup => {
+                 self.id_manager
