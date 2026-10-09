@@ -12,7 +12,7 @@ stays missing until identityd restarts.
 
 Write the backup back when hub, gateway host and device id are unchanged.
 
-Upstream-Status: Pending
+Upstream-Status: Pending [reported: https://github.com/Azure/iot-identity-service/issues/677]
 
 Signed-off-by: Jan Zachmann <50990105+JanZachmann@users.noreply.github.com>
 ---
