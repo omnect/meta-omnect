@@ -56,6 +56,7 @@ CARGO_FEATURES:omnect_grub = "bootloader_grub"
 CARGO_FEATURES:omnect_uboot = "bootloader_uboot"
 CARGO_FEATURES:append = "${@bb.utils.contains('MACHINE_FEATURES', '3g', ',modem_info', '', d)}"
 
+CARGO_BUILD_FLAGS += "-p omnect-device-service"
 CARGO_BUILD_FLAGS += "--features ${CARGO_FEATURES}"
 
 export SOCKET_DIR = "/run/aziot"
