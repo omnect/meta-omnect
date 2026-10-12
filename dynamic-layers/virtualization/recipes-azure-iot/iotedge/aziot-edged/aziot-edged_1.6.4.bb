@@ -5,12 +5,13 @@ inherit cargo
 # If this is git based prefer versioned ones if they exist
 # DEFAULT_PREFERENCE = "-1"
 
-# how to get iotedge could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/iotedge/0.1.0"
+# how to get aziot-edged could be as easy as but default to a git checkout:
+# SRC_URI += "crate://crates.io/aziot-edged/0.1.0"
 SRC_URI += "git://github.com/Azure/iotedge.git;protocol=https;nobranch=1"
-SRCREV = "314983eaa92809521518a95631a22d7a9259a3eb"
+SRCREV = "e3584a30318c50dc5b35fd554727d76da7117034"
 S = "${WORKDIR}/git"
-CARGO_SRC_DIR = "iotedge"
+CARGO_SRC_DIR = "aziot-edged"
+CARGO_BUILD_FLAGS += "-p aziot-edged"
 
 
 # please note if you have entries that do not begin with crate://
@@ -737,15 +738,15 @@ SRC_URI[zopfli-0.8.3.sha256sum] = "f05cd8797d63865425ff89b5c4a48804f35ba0ce8d125
 
 # FIXME: update generateme with the real MD5 of the license file
 LIC_FILES_CHKSUM = " \
-    file://iotedge/LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d \
+    file://aziot-edged/LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d \
 "
 
-SUMMARY = "The iotedge tool is used to manage the IoT Edge runtime."
+SUMMARY = "The aziot-edged is the main binary for the IoT edge daemon."
 HOMEPAGE = "https://aka.ms/iotedge"
 LICENSE = "MIT"
 
 # includes this file if it exists but does not fail
 # this is useful for anything you may want to override from
 # what cargo-bitbake generates.
-include iotedge-${PV}.inc
-include iotedge.inc
+include aziot-edged-${PV}.inc
+include aziot-edged.inc

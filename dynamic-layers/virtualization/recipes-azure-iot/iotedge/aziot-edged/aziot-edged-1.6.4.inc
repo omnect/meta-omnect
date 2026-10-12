@@ -1,7 +1,7 @@
 # override rolling SRCREV  "main" of iot-identity-service dependency
 # with static rev
-# aka 1.6.0:
-iot_identity_service_rev = "a6b1d1628be550ddda8cc65573e509c753b7cb65"
+# aka the iot-identity-service main rev pinned by iotedge 1.6.4's Cargo.lock:
+iot_identity_service_rev = "0bcc2dbc40c7bfa80a4cad4a408351bf16325226"
 SRCREV_aziot-cert-client-async = "${iot_identity_service_rev}"
 SRCREV_aziot-cert-common-http = "${iot_identity_service_rev}"
 SRCREV_aziot-certd-config = "${iot_identity_service_rev}"

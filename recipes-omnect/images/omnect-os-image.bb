@@ -111,6 +111,10 @@ python __anonymous() {
                      "'%s' to 'no'." % (machine, feat, feat, feat))
 }
 
+# journalling on read-only files ystems doesn't make sense
+# NOTE: this also avoids orphan warnings during mount
+EXTRA_IMAGECMD:ext4 = "-i 4096 -O ^has_journal,^orphan_file"
+
 # We don't want to add initramfs to
 # IMAGE_BOOT_FILES to get it into rootfs, so we do it via post.
 # If we add it to IMAGE_BOOT_FILES, wic would move it to the boot
