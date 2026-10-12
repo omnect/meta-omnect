@@ -19,6 +19,9 @@ CARGO_FEATURES:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', ',rel
 CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ',persistent-var-log', '', d)}"
 CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', ',flash-mode-2', '', d)}"
 CARGO_FEATURES:append = "${@',flash-mode-2-direct' if bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', True, False, d) and d.getVar('OMNECT_FLASH_MODE_2_DIRECT_FLASHING') == '1' else ''}"
+CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', ',flash-mode-3', '', d)}"
+# Without a reliable clock, flash mode 3 cannot check TLS certificates.
+CARGO_FEATURES:append = "${@bb.utils.contains('MACHINE_FEATURES', 'rtc', ',rtc', '', d)}"
 CARGO_BUILD_FLAGS += "--features ${CARGO_FEATURES}"
 
 # Read by build.rs for flash mode 1; a variable a machine does not set is not

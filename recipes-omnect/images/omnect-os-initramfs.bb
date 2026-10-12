@@ -27,10 +27,17 @@ UBOOT_SUPPORT_PACKAGES = " \
     libubootenv \
     libubootenv-bin \
 "
-FLASH_MODE_2_PACKAGES = "\
+FLASH_MODE_NETWORK_PACKAGES = "\
     base-passwd \
     dhcpcd \
+"
+FLASH_MODE_2_PACKAGES = "\
     dropbear \
+"
+# curl checks TLS certificates only on machines with a real-time clock.
+FLASH_MODE_3_PACKAGES = "\
+    curl \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'rtc', 'ca-certificates', '', d)} \
 "
 # dhcpcd pulls in udev, whose libsystemd-shared recommends apparmor, and apparmor
 # brings python3. The initramfs loads no AppArmor profiles.
@@ -57,7 +64,9 @@ PACKAGE_INSTALL = "\
     util-linux-sfdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
+    ${@bb.utils.contains_any('DISTRO_FEATURES', 'flash-mode-2 flash-mode-3', '${FLASH_MODE_NETWORK_PACKAGES}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', '${FLASH_MODE_2_PACKAGES}', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', '${FLASH_MODE_3_PACKAGES}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', '${RESIZE_DATA_PACKAGES}', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'efi', 'efibootmgr', '', d)} \
 "

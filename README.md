@@ -351,8 +351,6 @@ If the bmap file is rejected, or the image is broken or cut off, the initramfs l
 The log of the run is written to `flash-mode-2.log` on the data partition, unless the partition table could not be re-read after the flash. After a normal boot it is found at `/mnt/data/flash-mode-2.log`.
 
 #### Flash Mode 3
-**Note:** the initramfs does not implement flash mode 3 yet; the distribution feature `flash-mode-3` currently has no effect.
-
 Enable the distribution feature `flash-mode-3` at build time, if you want to use it.
 
 In order to trigger the flash mode 3,
@@ -368,17 +366,21 @@ In order to trigger the flash mode 3,
     bootloader_env.sh set flash-mode-url-sha256 $(echo "http://url.to/image.wic.sha256" | base64 -w 0 -)
     reboot
     ...
-    Entering omnect flashing mode 3... (http://url.to/image.wic.xz)
+    flash mode 3: flashing /dev/mmcblk0 with an image downloaded from http://url.to/image.wic.xz
     ...
     ```
     **Note1**: *bootloader_env.sh* command requires root permissions.<br>
     **Note2**: the urls have to be escaped with \"\".<br>
-    **Note3**: on systems without realtime clock the certificate of an url gets not verified.<br>
+    **Note3**: on machines without `rtc` in `MACHINE_FEATURES`, the certificate of an url is not checked. The sha256 file then only detects a corrupted download, not a changed one.<br>
     **Note4**: `flash-mode 3` is restricted to eth0.<br>
+
+The initramfs downloads the sha256 file and the image into RAM, checks the image against the sha256 file, and checks that it fits the disk before it writes anything. A download fails on an HTTP error, when the connection cannot be made within 30 seconds, or when it stays below 1 byte per second for 60 seconds. The log shows the urls without user name, password and query string, which can hold an access token.
 
 After finishing the flash procedure, the system reboots automatically.
 The bootloader environment variables *flash-mode*, *flash-mode-url* and
-*flash-mode-url-sha256* will be deleted automatically.
+*flash-mode-url-sha256* are deleted before the flash starts, so a failed flash is not repeated on the next boot. A failure ends in the error handling of the initramfs, as for flash mode 2; the disk is written only after all checks passed.
+
+The log of the run is written to `flash-mode-3.log` on the data partition, unless the write to the disk failed or the partition table could not be re-read after the flash. After a normal boot it is found at `/mnt/data/flash-mode-3.log`.
 
 ### Factory Reset
 Set the OS bootloader environment variable `factory-reset`, in order to reset `data` and `etc` partitions
