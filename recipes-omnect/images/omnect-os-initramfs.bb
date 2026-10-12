@@ -34,10 +34,11 @@ FLASH_MODE_NETWORK_PACKAGES = "\
 FLASH_MODE_2_PACKAGES = "\
     dropbear \
 "
-# curl checks TLS certificates only on machines with a real-time clock.
+# libcurl recommends ca-certificates, so the bundle is installed on every
+# machine; curl checks against it only on machines with a real-time clock.
 FLASH_MODE_3_PACKAGES = "\
+    ca-certificates \
     curl \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'rtc', 'ca-certificates', '', d)} \
 "
 # dhcpcd pulls in udev, whose libsystemd-shared recommends apparmor, and apparmor
 # brings python3. The initramfs loads no AppArmor profiles.
