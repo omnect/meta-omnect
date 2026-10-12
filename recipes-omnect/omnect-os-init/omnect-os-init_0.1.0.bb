@@ -8,15 +8,16 @@ inherit cargo
 # how to get omnect-os-init could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/omnect-os-init/0.1.0"
 SRC_URI += "git://github.com/omnect/omnect-os-init.git;protocol=https;nobranch=1"
-SRCREV = "08ed112d34aec4146c66ddab32444baf2f8ba066"
+SRCREV = "9d2c64aba8376086012414aa36e4a787aef67f1c"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+1b0ca5af7e"
+PV:append = ".AUTOINC+9d2c64aba8"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
 SRC_URI += " \
     crate://crates.io/autocfg/1.5.1 \
+    crate://crates.io/base64/0.22.1 \
     crate://crates.io/bitflags/2.10.0 \
     crate://crates.io/block-buffer/0.12.1 \
     crate://crates.io/cfg-if/1.0.4 \
@@ -60,6 +61,7 @@ SRC_URI += " \
 "
 
 SRC_URI[autocfg-1.5.1.sha256sum] = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
+SRC_URI[base64-0.22.1.sha256sum] = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 SRC_URI[bitflags-2.10.0.sha256sum] = "812e12b5285cc515a9c72a5c1d3b6d46a19dac5acfef5265968c166106e31dd3"
 SRC_URI[block-buffer-0.12.1.sha256sum] = "d2f6c7dbe95a6ed67ad9f18e57daf93a2f034c524b99fd2b76d18fdfeb6660aa"
 SRC_URI[cfg-if-1.0.4.sha256sum] = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
