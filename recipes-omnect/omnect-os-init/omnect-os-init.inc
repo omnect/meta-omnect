@@ -22,6 +22,8 @@ CARGO_FEATURES:append = "${@',flash-mode-2-direct' if bb.utils.contains('DISTRO_
 CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', ',flash-mode-3', '', d)}"
 # Without a reliable clock, flash mode 3 cannot check TLS certificates.
 CARGO_FEATURES:append = "${@bb.utils.contains('MACHINE_FEATURES', 'rtc', ',rtc', '', d)}"
+# imx_sdma is a module; load it before switch_root so SPI and UART users find SDMA.
+CARGO_FEATURES:append:mx8mm-nxp-bsp = ",early-modules"
 CARGO_BUILD_FLAGS += "--features ${CARGO_FEATURES}"
 
 # Read by build.rs for flash mode 1; a variable a machine does not set is not
