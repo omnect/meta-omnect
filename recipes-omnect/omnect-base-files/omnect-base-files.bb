@@ -20,6 +20,8 @@ SRC_URI = "\
     file://usr/bin/omnect_get_dps_tpm_enrollment.sh \
 "
 
+SRC_URI:append:mx8mm-nxp-bsp = " file://etc/omnect/early-modules.d/imx-sdma.conf"
+
 RDEPENDS:${PN} += "\
   bash \
   toml-cli \
@@ -38,11 +40,13 @@ FILES:${PN} = "\
     /mnt/etc \
     /mnt/factory \
     /mnt/rootCurrent \
+    /mnt/rootCurrentPrivate \
     /usr/bin/omnect_extra_bootargs.sh \
     /usr/bin/omnect_get_deviceid.sh \
     /usr/bin/omnect_get_dps_tpm_enrollment.sh \
     /var/lib \
 "
+FILES:${PN}:append:mx8mm-nxp-bsp = " /etc/omnect/early-modules.d/imx-sdma.conf"
 
 do_install() {
     install -m 0644 -D ${UNPACKDIR}/etc/bashrc ${D}/etc/bashrc
@@ -65,6 +69,7 @@ do_install() {
     install -d -D ${D}/mnt/etc \
     install -d -D ${D}/mnt/factory \
     install -d -D ${D}/mnt/rootCurrent \
+    install -d -D ${D}/mnt/rootCurrentPrivate \
     install -d -D ${D}/var/lib \
     install -d -D ${D}${exec_prefix}/local
 
@@ -75,6 +80,10 @@ do_install() {
     echo "z /etc/hostname 0664 root root -"     >> ${D}${libdir}/tmpfiles.d/omnect-base-files.conf
     echo "z /mnt/cert/ca 0755 root root -"      >> ${D}${libdir}/tmpfiles.d/omnect-base-files.conf
     echo "z /mnt/cert/priv 0755 root root -"    >> ${D}${libdir}/tmpfiles.d/omnect-base-files.conf
+}
+
+do_install:append:mx8mm-nxp-bsp() {
+    install -m 0644 -D ${UNPACKDIR}/etc/omnect/early-modules.d/imx-sdma.conf ${D}/etc/omnect/early-modules.d/imx-sdma.conf
 }
 
 do_deploy() {
