@@ -29,15 +29,20 @@ Depending on `MACHINE_FEATURES` we also set `3g`. `wifi` and `bluetooth` are der
     - adds the `iotedge` service with its dependencies
     - adds `virtualization` to `DISTRO_FEATURES` (from [meta-virtualization](https://git.yoctoproject.org/git/meta-virtualization)) needed by `iotedge` runtime dependency `moby`
 - `persistent-var-log`
-    - enables a persistent /var/log which is stored in the data partition
+    - enables a persistent /var/log which is stored in the data partition; the initramfs bind-mounts it
 - `flash-mode-2`, `flash-mode-3`
     - enable flash modes 2 and 3; flash mode 1 is always available
     - please see section [Flash Modes](#flash-modes) below
 - `resize-data`
-    - expands the data partition to available space on first boot
+    - the initramfs expands the data partition to available space on first boot
 
 ### `MACHINE_FEATURES`
 `meta-omnect` extends the following `MACHINE_FEATURES`:
+- `efi`
+    - the initramfs is built for GRUB; without `efi` it is built for U-Boot
+- `rtc`
+    - the machine has a real-time clock that keeps the time over power off and sets the system clock in the initramfs
+    - flash mode 3 checks the TLS certificate of an HTTPS url only with this feature
 - `tpm2`
     - adds tpm kernel overlay, driver and auto modprobe for raspberry pi
 
@@ -92,11 +97,13 @@ Device         Boot   Start      End  Sectors  Size Id Type
 - `mmcblkXp8` is the writable `data` partition with ext4 filesystem
 
 **Note1**: The partition layout is an example, sizes may differ depending on your board and image variant (development or release).<br>
-**Note2**: The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M and is resized on the first boot to the max available size.<br>
+**Note2**: The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M. With `resize-data` in `DISTRO_FEATURES` it is resized on the first boot to the max available size.<br>
 **Note3 (only for images where u-boot is used as OS bootloader)**: There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks. For this purpose, the following configuration variables are used:
 - `OMNECT_PART_OFFSET_UBOOT_ENV1`: offset of 1st u-boot environment bank (in KiB, decimal)
 - `OMNECT_PART_OFFSET_UBOOT_ENV2`: offset of 2nd u-boot environment bank (in KiB, decimal)
 - `OMNECT_PART_SIZE_UBOOT_ENV`: size of one u-boot environment bank (in KiB, decimal)
+
+**Note4**: The initramfs is built for the partition table set in `OMNECT_PART_TABLE` (default `gpt`). A machine whose wks file uses `--ptable msdos` sets `OMNECT_PART_TABLE = "dos"`.
 
 ## Compatibility
 `meta-omnect` is compatible with the current yocto LTS release branch `wrynose`.
@@ -142,10 +149,12 @@ Differences:
   - default firewall config which allows input for established connections only
   - reduced serial console output (only output high priority messages).
   - local ssh login disabled (alternatively a tunneled ssh connection can be established via [omnect-cli](https://github.com/omnect/omnect-cli#creating-an-ssh-tunnel))
+  - the initramfs halts on a fatal error, and boots on without a usable bootloader environment
 - Developer build
   - default firewall config as in Release build, additionally allow ssh connections
   - local ssh login enabled
   - includes some useful developer tools
+  - the initramfs starts a debug shell on a fatal error
 
 ### Example build via `kas`
 
@@ -254,270 +263,39 @@ Set `OMNECT_WAIT_ONLINE_TIMEOUT_IN_SECS` to configure the timeout in seconds, de
 
 ## Usage
 
-### Flash Modes
-The flash modes are used to flash the complete disk image including all partitions to the target system.
-It uses the initramfs context, because in this mode the block device is free for writing images.
-Also, no filesystem is mounted in this state.
+The initramfs is [omnect-os-init](https://github.com/omnect/omnect-os-init). Its behaviour at run time is described in the [omnect-os-init usage docs](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md). This section lists only the build settings of this layer.
 
-There are the following three flash modes:
-  1. clone disk image from the disk the system is currently running to another disk of the system
-  2. flash disk image from network to same disk the system is currently running (in local network via scp)
-  3. flash disk image from network to same disk the system is currently running (by providing a download link to the image)
+### Flash Modes
+Flash mode 1 is in every image. Add `flash-mode-2` or `flash-mode-3` to `DISTRO_FEATURES` to enable modes 2 and 3. See [flash modes](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#flash-modes).
 
 #### Flash Mode 1
-For the flash mode 1, it is required to specify the destination disk, the current disk image will be cloned to.
-For this purpose, the block device path has to be used.
-Use the kernel device name, e.g. `/dev/mmcblk2` or `/dev/sda`. Links such as `/dev/disk/by-path/...` are created by udev, which does not run in the initramfs, so the clone would wait for them until it times out.
-
-The flash mode 1 behaves like a factory reset, related to the new boot device:
-- reset to default bootloader environment
-- enforce first boot condition
-- reset *etc* partition
-- reset *data* partition; optionally resize
-
-
-The following example shows how to trigger the flash mode 1 using the block device path, on the target system:<br>
-```sh
-sudo -s
-bootloader_env.sh set flash-mode 1
-bootloader_env.sh set flash-mode-devpath '/dev/mmcblk2'
-reboot
-...
-flash mode 1: cloning /dev/mmcblk1 onto /dev/mmcblk2
-...
-```
-**Note1**: The *bootloader_env.sh* command requires root permissions.<br>
-**Note2**: The corresponding platform specific block device paths can be found in the [doc](/doc/) folder.<br>
-**Note3**: Make sure that the system boots from the same device after the triggered reboot. E.g. if you boot from usb and
-initiate flash mode 1 and trigger reboot, make sure that you boot from usb again. This reboot will enter the initramfs and execute the flash process.<br>
-
-After flash mode 1 has been finished successfully, the target system will be switched-off.
-The bootloader environment variables *flash-mode* and *flash-mode-devpath* are deleted before the clone starts, so a failed clone is not repeated on the next boot.
-
-Flash mode 1 is refused before anything is written when:
-- *flash-mode-devpath* is not set, is not a block device, or does not appear within 30 seconds
-- *flash-mode-devpath* is the disk the system booted from, or one of its partitions
-- a factory reset is set at the same time; both variables are deleted, set the one you meant again
-
-A refused or failed clone ends in the error handling of the initramfs: a debug shell on a developer image, a halted system on a release image, or a reboot while an update is being validated.
-A value of *flash-mode* that selects no mode is ignored and the system boots normally.
-
-The log of the run is written to `flash-mode-1.log` on the data partition of the disk the system booted from, on success and on failure. After a normal boot it is found at `/mnt/data/flash-mode-1.log`. A conflict with a factory reset is refused before the run starts and leaves no log file; its reason is only in the kernel log.
+See [flash mode 1](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#flash-mode-1). The block device paths of the supported platforms are in the [doc](/doc/) folder.
 
 #### Flash Mode 2
-Enable the distribution feature `flash-mode-2` at build time, if you want to use it.
-
-The initramfs checks the bmap file before it asks for the image and before it writes anything: the bmap file checksum, its format version, its block ranges, and that the image fits the disk.
-
-By default the initramfs first reads the whole image into RAM and checks it against the bmap file, and only then writes the disk. A broken transfer then fails before anything is written. Set `OMNECT_FLASH_MODE_2_DIRECT_FLASHING = "1"` to write the disk straight from the `scp` stream instead, for devices with too little RAM for the image. A broken image is then seen only after the disk was partly written.
-
-In order to trigger the flash mode 2,
-1. use the following commands on the target system:<br>
-    ```sh
-    sudo -s
-    bootloader_env.sh set flash-mode 2
-    reboot
-    ...
-    flash mode 2: flashing /dev/mmcblk0 with an image pushed in over scp
-    ...
-    please run: scp -O <bmap-file> omnect@<target-ip>:wic.bmap
-    ```
-    **Note1**: *bootloader_env.sh* command requires root permissions.<br>
-    **Note2**: `flash-mode 2` is restricted to eth0.<br>
-
-2. In the next step, the bmap file and the wic image file have to be transferred from the host system:
-    ```sh
-    scp image.wic.bmap omnect@<target-ip>:wic.bmap
-    scp image.wic.xz omnect@<target-ip>:wic.xz
-    ```
-    On systems with new openssh clients >= 9.0 you have to use the legacy option when using `scp`. (See [here](https://www.openssh.com/txt/release-9.0) for details.) :
-    ```sh
-    scp -O image.wic.bmap omnect@<target-ip>:wic.bmap
-    scp -O image.wic.xz omnect@<target-ip>:wic.xz
-    ```
-
-The password for the *omnect* user used by the rootfs has to be used.
-The *omnect* user used by the initramfs is independent from the *omnect* user used by the rootfs.
-At build time, the configuration (OMNECT_USER_PASSWORD) is applied for both. The passwords are identical.
-Later during runtime, changing the password in the rootfs is not synchronized to the initramfs.
-
-After finishing the flash procedure, the system reboots automatically.
-The bootloader environment variable *flash-mode* is deleted before the flash starts, so a failed flash is not repeated on the next boot.
-
-The network setup is bounded: eth0 must come up within 60 seconds, and must have an IPv4 address within 120 seconds after `dhcpcd` returns. Without a DHCP server, `dhcpcd` assigns a link-local address (169.254.x.x), which is used as well. The wait for `wic.bmap` has no limit.
-
-If the bmap file is rejected, or the image is broken or cut off, the initramfs logs the reason and asks for the bmap file and the image again. The device must stay powered: the initramfs runs from RAM, but after a failed write the disk may no longer boot. Other failures, for example a network setup that times out, or a partition table that cannot be re-read after the flash, end in the error handling of the initramfs: a debug shell on a developer image, a halted system on a release image, or a reboot while an update is being validated.
-
-The log of the run is written to `flash-mode-2.log` on the data partition, unless the partition table could not be re-read after the flash. After a normal boot it is found at `/mnt/data/flash-mode-2.log`.
+See [flash mode 2](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#flash-mode-2).
+- The *omnect* user of the initramfs gets its password from `OMNECT_USER_PASSWORD`, as the rootfs user.
+- `OMNECT_FLASH_MODE_2_DIRECT_FLASHING = "1"` writes the disk straight from the `scp` stream, for devices with too little RAM for the image; see [Variables Glossary](doc/Variables_Glossary.md#omnect_flash_mode_2_direct_flashing).
 
 #### Flash Mode 3
-Enable the distribution feature `flash-mode-3` at build time, if you want to use it.
-
-In order to trigger the flash mode 3,
-1. compute the sha256 checksum of your image.wic.xz
-   ```sh
-   sha256sum image.wic.xz > image.wic.sha256
-   ```
-2. use the following commands on the target system:<br>
-    ```sh
-    sudo -s
-    bootloader_env.sh set flash-mode 3
-    bootloader_env.sh set flash-mode-url $(echo "http://url.to/image.wic.xz" | base64 -w 0 -)
-    bootloader_env.sh set flash-mode-url-sha256 $(echo "http://url.to/image.wic.sha256" | base64 -w 0 -)
-    reboot
-    ...
-    flash mode 3: flashing /dev/mmcblk0 with an image downloaded from http://url.to/image.wic.xz
-    ...
-    ```
-    **Note1**: *bootloader_env.sh* command requires root permissions.<br>
-    **Note2**: the urls have to be escaped with \"\".<br>
-    **Note3**: on machines without `rtc` in `MACHINE_FEATURES`, the certificate of an url is not checked. The sha256 file then only detects a corrupted download, not a changed one.<br>
-    **Note4**: `flash-mode 3` is restricted to eth0.<br>
-
-The initramfs downloads the sha256 file and the image into RAM, checks the image against the sha256 file, and checks that it fits the disk before it writes anything. A download fails on an HTTP error, when the connection cannot be made within 30 seconds, or when it stays below 1 byte per second for 60 seconds. The log shows the urls without user name, password and query string, which can hold an access token.
-
-After finishing the flash procedure, the system reboots automatically.
-The bootloader environment variables *flash-mode*, *flash-mode-url* and
-*flash-mode-url-sha256* are deleted before the flash starts, so a failed flash is not repeated on the next boot. A failure ends in the error handling of the initramfs, as for flash mode 2; the disk is written only after all checks passed.
-
-The log of the run is written to `flash-mode-3.log` on the data partition, unless the write to the disk failed or the partition table could not be re-read after the flash. After a normal boot it is found at `/mnt/data/flash-mode-3.log`.
+See [flash mode 3](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#flash-mode-3). The TLS certificate of an HTTPS url is checked only on machines with `rtc` in `MACHINE_FEATURES`.
 
 ### Factory Reset
-Set the OS bootloader environment variable `factory-reset`, in order to reset `data` and `etc` partitions
-```sh
-sudo bootloader_env.sh set factory-reset '{"mode": 1, "preserve": ["network", "firewall", "certificates", "applications"]}'
-sudo reboot
-```
-**Note**: The key "preserve" is mandatory. Use an empty array to keep nothing.
+See [factory reset](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#factory-reset). The topics of the key "preserve" are the keys of [`/etc/omnect/factory-reset.json`](recipes-omnect/omnect-device-service/omnect-device-service/factory-reset.json).
 
-This re-creates the corresponding filesystems of partitions `data` and `etc` on the next boot (in the initramfs context).
-If the `factory` partition contains a directory `etc`, then the content is copied to the `etc` partition.
-
-In the example above, `factory-reset` is set to the value `1`.
-This means, old data is not wiped before re-creating the respective filesystems.
-This kind of factory reset does not ensure any data privacy.
-
-In order to provide higher level of privacy, the desired wipe mode can be selected.
-For this purpose, the OS bootloader environment variable `factory-reset` can be set to the following values:
-
-|     | Factory Reset Mode                            | Remark                                    |
-| --- | --------------------------------------------- | ----------------------------------------- |
-| 1   | no wipe; only filesystems re-created          | no privacy, but fast                      |
-| 2   | overwrite etc and data with random data       | better privacy, but slow                  |
-| 3   | discard all blocks of etc and data            | fast, but the disk has to support discard |
-
-**Note:** The provided wipe options don't guarantee total privacy. This is only possible using hardware features of the disk (e.g.; ATA secure erase).
-
-A failing wipe does not abort the factory reset: the filesystems are re-created anyway, so the device stays usable, and the status reports `2` with the reason in `error`.
-
-The factory reset provides the option "preserve" to exclude particular files or directories.
-The topics in the array "preserve" are defined by the keys of [`/etc/omnect/factory-reset.json`](recipes-omnect/omnect-device-service/omnect-device-service/factory-reset.json).<br>
-Furthermore the topic "applications" preserves custom
-configurations defined by configurations in `/etc/omnect/factory-reset.d`.
 #### Custom Factory Reset Configuration
-A custom configuration to preserve files from a factory reset is a json file in `/etc/omnect/factory-reset.d` with the format:<br>
-
-```json
-{
-  "paths": [
-    "/home/omnect/.bash_history",
-    "/home/root/.bash_history"
-  ]
-}
-```
-This example preserves the `bash_history` of the users `omnect` and `root`.<br>
-Each file has to carry a `paths` array; an empty array is allowed. A file without one fails the factory reset with a configuration error, because skipping it would wipe the paths it was meant to keep and still report success.<br>
-Nonexisting files listed here, will produce a warning during the factory reset process, but will result in a success.<br>
-Note that home directories in the example above work, because they are actually located on the data partition via overlay mount. Paths which are not overlayed respectively not located in the data partition, will result in a failure of the factory reset on restore.
+See [preserve topics](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#preserve-topics).
 
 #### Factory Reset Result
-In the case of an error during the backup of files or directories the whole factory reset will be aborted
-and the partitions `etc` and `data` remain untouched.
-In the case of an error during the restore of a file or directory, the restore processing will be continued for the other files or directories.
-In both cases, the error will be indicated by the factory reset status (see below).
-
-The status of the factory reset is returned by the json object `factory_reset` in `/run/omnect-device-service/omnect-os-initramfs.json`.
-
-Example for a success:
-```sh
-# jq '.factory_reset' /run/omnect-device-service/omnect-os-initramfs.json
-```
-```json
-{
-  "status": 0,
-  "paths": [
-    "/etc/omnect/factory-reset.d/",
-    "/etc/restore_file",
-    "/home/omnect/.bash_history",
-    "/home/root/.bash_history"
-  ],
-  "data_wiped": true
-}
-```
-
-Example for an error, where "preserve" names a key which `/etc/omnect/factory-reset.json` doesn't define:
-```json
-{
-  "status": 3,
-  "error": "/rootfs/etc/omnect/factory-reset.json: no 'network' key",
-  "data_wiped": false
-}
-```
-
-The overall `factory reset status` consists of:
-- `status` (general processing state):
-  - 0: success
-  - 1: the request itself is unusable, e.g. an unsupported mode; see `error`
-  - 2: the reset ran, but a step failed; see `error`
-  - 3: configuration error, e.g. a preserve key without definition, or a preserved path which leaves the rootfs; see `error`
-  - 4: the reset succeeded, but a partition had to be formatted twice; see `context`
-- `error`: reason of the failure; the key is absent when nothing failed
-- optional: `context` on warnings or errors
-- array `paths` of preserved files or directories; this array reflects the configured paths not the actual restored path, e.g. if a path doesn't exist; the key is absent when nothing was preserved
-- `data_wiped`: `true` once the reset started wiping data; on status 2 it tells apart a safe abort, where nothing was touched yet, from a failure after the data was already gone
-
-A trigger the initramfs cannot use at all - invalid json, a mode outside 1 to 3, or a missing `preserve` - does not start a factory reset. The bootloader environment variable is cleared anyway and the failure is reported like any other, with `data_wiped` false, so the request is answered once instead of repeating on every boot.
+See [factory reset result](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#factory-reset-result).
 
 ### Update validation
+An A/B update is validated, if the update doesn't contain a bootloader update, after the device boots to the updated partition. Most of the logic is implemented in omnect-device-service repository and [documented there](https://github.com/omnect/omnect-device-service/blob/main/src/twin/firmware_update/update_validation.md). The initramfs side is described in [update validation](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#update-validation).
 
-An A/B update is validated, if the update doesn't contain a bootloader update, after the device boots to the updated partition. Most of the logic is implemented in omnect-device-service repository and [documented there](https://github.com/omnect/omnect-device-service/blob/main/src/twin/firmware_update/update_validation.md). meta-omnect takes care of booting the right partition as well as providing appropriate states to the user space. This is done as part of the initramfs init.
+### Filesystem check
+See [filesystem check](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#filesystem-check).
 
-### Filesystem ckeck
-
-The `boot`, `cert`, `etc` and `data` partition get checked non-interactively at boot via `fsck`. All questions of `fsck` regarding repairing the filesystem are answered with `yes`. The result of this process is returned as part of `/run/omnect-device-service/omnect-os-initramfs.json` via json object `fsck`.<br>
-If the object is empty, there were no filesystem issues. If the filesystem check encounters an error for a partition, the output of `fsck` for this parition is stored as json object named after the partition, e.g. if we encountered an error checking the `boot` partition the resulting `omnect-os-initramfs.json` has an entry `fsck.boot`.:
-
-```json
-{
-
-  "fsck": {
-
-    "boot": "fsck from util-linux 2.37.4\nfsck.fat 4.2 (2021-01-31)\nDirty bit is set. Fs was not properly unmounted and some data may be corrupt.\n Automatically removing dirty bit.\n\n*** Filesystem was changed ***\nWriting changes.\n/dev/mmcblk0p1: 75 files, 11264/20431 clusters"
-
-  },
-
-  "factory_reset": {}
-
-}
-
-```
-
-### Debug Mount Options of Data Partition
-
-The filesystem inside the data partition is mounted using the mount options `defaults,noatime,nodiratime,async,rw`, per default.
-For debugging purpose, it is possible to enforce different mount options for the data partition, using the OS bootloader environment variable `data-mount-options`:<br>
-```sh
-# enforce sync mount
-sudo bootloader_env.sh set data-mount-options defaults,noatime,nodiratime,sync,rw
-sudo reboot
-...
-# remove debug mount options; continue with default
-sudo bootloader_env.sh unset data-mount-options
-sudo reboot
-```
-
-**Note1:** The bootloader environment variable `data-mount-options` should be removed at the end of the debugging session.<br>
-**Note2:** It is not advised to use sync mount in operational mode.<br>
+### Early module load
+On i.MX8MM machines the initramfs loads `imx_sdma` before `switch_root`, listed in `/etc/omnect/early-modules.d/imx-sdma.conf`. See [early module load](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#early-module-load).
 
 ### Coredumps
 
