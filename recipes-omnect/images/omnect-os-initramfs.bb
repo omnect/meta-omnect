@@ -57,9 +57,8 @@ PACKAGE_INSTALL = "\
     e2fsprogs \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
-    e2fsprogs-tune2fs \      
+    e2fsprogs-tune2fs \
     omnect-os-init \
-    os-release \
     util-linux-blkid \
     util-linux-fsck \
     util-linux-sfdisk \
