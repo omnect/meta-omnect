@@ -11,7 +11,6 @@ SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=http
 SRCREV = "0c54172a68d54018bd0c2ecc042fbff671a9e2bf"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+0c54172a68"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
