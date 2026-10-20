@@ -33,9 +33,9 @@ if [ -r "$WCS_ENV" ]; then
     val=${val%\"}; val=${val#\"}
     case "$val" in
         1|true|yes|on) ble_disabled=yes ;;
-        0|false|no|off) ;;
+        ''|0|false|no|off) ;;
         *)
-            log_warn "unrecognized wifi commissioning enabled option \"$val\""
+            log_warn "unrecognized WCS_DISABLE_BLE value \"$val\" in $WCS_ENV, BLE not disabled"
             ;;
     esac
 fi
