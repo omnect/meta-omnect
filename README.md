@@ -41,7 +41,7 @@ Depending on `MACHINE_FEATURES` we also set `3g`. `wifi` and `bluetooth` are der
 - `efi`
     - the initramfs is built for GRUB; without `efi` it is built for U-Boot
 - `rtc`
-    - the machine has a real-time clock that keeps the time over power off and sets the system clock in the initramfs
+    - set by default for every machine; a machine without a real-time clock that keeps the time over power off and sets the system clock before the initramfs runs adds `rtc` to `MACHINE_FEATURES_OPTED_OUT`
     - flash mode 3 checks the TLS certificate of an HTTPS url only with this feature
 - `tpm2`
     - adds tpm kernel overlay, driver and auto modprobe for raspberry pi
