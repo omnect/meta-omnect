@@ -16,7 +16,7 @@ def _find_json_path(d, machine):
             # tell bitbake the dependency on this file for proper rebuilding
             # note that bitbake deduplicates in case the path is already in
             # dependency list
-             bb.parse.mark_dependency(d, json_path)
+            bb.parse.mark_dependency(d, json_path)
             return json_path
     return None
 
