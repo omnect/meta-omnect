@@ -16,7 +16,7 @@ def _find_json_path(d, machine):
             # tell bitbake the dependency on this file for proper rebuilding
             # note that bitbake deduplicates in case the path is already in
             # dependency list
-            d.appendVarFlag('__base_depends', json_path, '')
+             bb.parse.mark_dependency(d, json_path)
             return json_path
     return None
 
@@ -81,7 +81,7 @@ def get_cap(d, cap_name):
         available_keys = ", ".join(list(machine_caps.keys())) if machine_caps else "None"
         bb.fatal(
             f"mycustom: Requested unknown capability '{cap_name}'. "
-            f"Please check for typos or add it to '{_LOADED_FILE_PATHS[machine]}'.\n"
+            f"Please check for typos or add it to '{loaded_file_path}'.\n"
             f"Available capabilities in this file: [{available_keys}]"
         )
  
