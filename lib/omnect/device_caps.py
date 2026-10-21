@@ -28,7 +28,7 @@ def _load_device_caps(d):
     # search layers for relevant files
     for layer_path in bblayers_str.split():
         json_path = os.path.join(layer_path, 'files', 'device_caps', f"{machine}.json")
-        bb.debug(f"device_caps: checking for file {json_path}")
+        bb.debug(1, f"device_caps: checking for file {json_path}")
         if os.path.exists(json_path):
             try:
                 with open(json_path, 'r') as f:
