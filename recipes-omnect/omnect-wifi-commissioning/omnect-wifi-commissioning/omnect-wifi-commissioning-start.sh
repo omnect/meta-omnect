@@ -8,6 +8,10 @@ WCS_ENV=/etc/omnect/wifi-commissioning-service.env
 ENV_FILE=/run/omnect-wifi-commissioning.env
 IFACE=wlan0
 
+# systemd reads a <N> prefix on a line as that line's journal priority
+log_info() { echo "<6>$*"; }
+log_warn() { echo "<4>$*"; }
+
 # cap KEY -> value of "KEY" from the flat device_caps JSON in $CAPS ('' if absent).
 cap() {
     jq -r --arg k "$1" '.[$k] // empty' "$CAPS"
@@ -15,7 +19,7 @@ cap() {
 
 wifi=$(cap wifi)
 if [ "$wifi" != "yes" ]; then
-    echo "wifi=${wifi:-<unset>}: not starting wifi commissioning"
+    log_info "wifi=${wifi:-<unset>}: not starting wifi commissioning"
     exit 0
 fi
 
@@ -29,19 +33,19 @@ if [ -r "$WCS_ENV" ]; then
     val=${val%\"}; val=${val#\"}
     case "$val" in
         1|true|yes|on) ble_disabled=yes ;;
-        0|false|no|off) ;;
+        ''|0|false|no|off) ;;
         *)
-            echo "WARNING: unrecognized wifi commissioning enabled option \"$val\"" >&2
+            log_warn "unrecognized WCS_DISABLE_BLE value \"$val\" in $WCS_ENV, BLE not disabled"
             ;;
     esac
 fi
 
 if [ "$(cap bluetooth)" = "yes" ] && [ "$ble_disabled" = "no" ]; then
     printf 'WCS_BLE_ARGS=--enable-ble\n' > "$ENV_FILE"
-    echo "starting wifi commissioning on ${IFACE} with BLE"
+    log_info "starting wifi commissioning on ${IFACE} with BLE"
 else
     printf 'WCS_BLE_ARGS=\n' > "$ENV_FILE"
-    echo "starting wifi commissioning on ${IFACE} without BLE"
+    log_info "starting wifi commissioning on ${IFACE} without BLE"
 fi
 
 # --no-block: we are inside the boot transaction; do not wait on the started jobs.
