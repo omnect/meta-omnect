@@ -39,6 +39,6 @@ fi
 menuentry 'omnect-os' --unrestricted {
     set root=(hd0,gpt${omnect_os_bootpart})
     probe --set=bootpart_fsuuid --fs-uuid ${root}
-    linux /boot/bzImage rootpart=${omnect_os_bootpart} bootpart_fsuuid=${bootpart_fsuuid} ${kernel_param_rootblk} ${omnect_extra_bootargs} @@OMNECT_APPEND_1ST_BOOT@@
+    linux /boot/bzImage rootpart=${omnect_os_bootpart} bootpart_fsuuid=${bootpart_fsuuid} ${omnect_extra_bootargs} @@OMNECT_APPEND_1ST_BOOT@@
     initrd /boot/initramfs.cpio.gz
 }
