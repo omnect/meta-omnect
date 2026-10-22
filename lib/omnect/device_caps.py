@@ -22,8 +22,7 @@ def _find_json_path(d, machine):
 
 def _load_device_caps_for_machine(d, machine, json_path):
     """
-    Read capabilities from JSON file and store them in array for retrieval by
-    get_function.
+    Read capabilities from JSON file and store them in machine specific array.
     """
     global _CACHED_CAPS
 
@@ -39,16 +38,14 @@ def _load_device_caps_for_machine(d, machine, json_path):
                 }
                 return
             else:
-                bb.fatal(f"mycustom: JSON file {json_path} is malformed. Top-level element must be a dictionary.")
+                bb.fatal(f"device_caps: JSON file {json_path} is malformed. Top-level element must be a dictionary.")
     except (json.JSONDecodeError, IOError) as e:
-        bb.fatal(f"mycustom: Failed to read or parse JSON file {json_path}: {e}")
+        bb.fatal(f"device_caps: Failed to read or parse JSON file {json_path}: {e}")
 
 def get_cap(d, cap_name):
     """
-    public API for recipes: returns a capability's value if it exists, an empty
-    string otherwise.
-    NOTE: the empty string is also returned in case the expected file doesn't
-    exist!.
+    public API for recipes: returns a capability's value; any error results in
+    a bitbake parse abortion with a fatal message.
     """
     global _CACHED_CAPS
     
@@ -64,7 +61,8 @@ def get_cap(d, cap_name):
     current_mtime = os.path.getmtime(json_path)
     if machine in _CACHED_CAPS:
         cached_mtime = _CACHED_CAPS[machine]["mtime"]
-        if current_mtime != cached_mtime:
+        cached_path = _CACHED_CAPS[machine]["path"]
+        if current_mtime != cached_mtime or json_path != cached_path:
             # invalidate cache due to changed file
             del _CACHED_CAPS[machine]
 
@@ -80,7 +78,7 @@ def get_cap(d, cap_name):
     if cap_name not in machine_caps:
         available_keys = ", ".join(list(machine_caps.keys())) if machine_caps else "None"
         bb.fatal(
-            f"mycustom: Requested unknown capability '{cap_name}'. "
+            f"device_caps: Requested unknown capability '{cap_name}'. "
             f"Please check for typos or add it to '{loaded_file_path}'.\n"
             f"Available capabilities in this file: [{available_keys}]"
         )
