@@ -7,11 +7,11 @@ inherit cargo
 
 # how to get omnect-os-init could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/omnect-os-init/0.1.0"
-SRC_URI += "git://github.com/omnect/omnect-os-init.git;protocol=https;nobranch=1"
-SRCREV = "2e7a32e489dda07b0343867907e1f6b6750e0913"
+SRC_URI += "git://github.com/omnect/omnect-os-init.git;protocol=https;nobranch=1;branch=main"
+SRCREV = "6b494fd178478894b3366c98bd4b89395bfa949c"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+2e7a32e489"
+PV:append = ".AUTOINC+6b494fd178"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -34,7 +34,7 @@ SRC_URI += " \
     crate://crates.io/libc/0.2.180 \
     crate://crates.io/linux-raw-sys/0.11.0 \
     crate://crates.io/log/0.4.29 \
-    crate://crates.io/lzma-rust2/0.21.0 \
+    crate://crates.io/lzma-rust2/0.23.0 \
     crate://crates.io/memchr/2.7.6 \
     crate://crates.io/memoffset/0.9.1 \
     crate://crates.io/nix/0.29.0 \
@@ -78,7 +78,7 @@ SRC_URI[itoa-1.0.17.sha256sum] = "92ecc6618181def0457392ccd0ee51198e065e016d1d52
 SRC_URI[libc-0.2.180.sha256sum] = "bcc35a38544a891a5f7c865aca548a982ccb3b8650a5b06d0fd33a10283c56fc"
 SRC_URI[linux-raw-sys-0.11.0.sha256sum] = "df1d3c3b53da64cf5760482273a98e575c651a67eec7f77df96b5b642de8f039"
 SRC_URI[log-0.4.29.sha256sum] = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
-SRC_URI[lzma-rust2-0.21.0.sha256sum] = "fde178a3caf126c440fa15628147772d8ee590a39477d711353fbe2e58a73a5b"
+SRC_URI[lzma-rust2-0.23.0.sha256sum] = "f1c46f3fcd2e888afdb01a07efc071cb21300e07c68d32c3e8b01b5c8cb1fcaa"
 SRC_URI[memchr-2.7.6.sha256sum] = "f52b00d39961fc5b2736ea853c9cc86238e165017a493d1d5c8eac6bdc4cc273"
 SRC_URI[memoffset-0.9.1.sha256sum] = "488016bfae457b036d996092f6cb448677611ce4449e970ceaf42695203f218a"
 SRC_URI[nix-0.29.0.sha256sum] = "71e2746dc3a24dd78b3cfcb7be93368c6de9963d30f43a6a73998a9cf4b17b46"
