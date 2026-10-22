@@ -37,8 +37,12 @@ if [ "${default}" != "Certificate Provision" ]; then
 fi
 
 menuentry 'omnect-os' --unrestricted {
-    set root=(hd0,gpt${omnect_os_bootpart})
-    probe --set=bootpart_fsuuid --fs-uuid (hd0,gpt1)
+    # boot from the disk GRUB was loaded from; hd0 can be another disk
+    if ! regexp --set=1:omnect_disk '^\(([^,)]+)' "${cmdpath}"; then
+        set omnect_disk=hd0
+    fi
+    set root=(${omnect_disk},gpt${omnect_os_bootpart})
+    probe --set=bootpart_fsuuid --fs-uuid (${omnect_disk},gpt1)
     linux /boot/bzImage rootpart=${omnect_os_bootpart} bootpart_fsuuid=${bootpart_fsuuid} ${omnect_extra_bootargs} @@OMNECT_APPEND_1ST_BOOT@@
     initrd /boot/initramfs.cpio.gz
 }
