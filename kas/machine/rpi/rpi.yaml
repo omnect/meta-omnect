@@ -7,7 +7,7 @@ repos:
   ext/meta-raspberrypi:
     url: "https://github.com/agherzan/meta-raspberrypi.git"
     branch: "wrynose"
-    commit: "f62c67921474370829d24a4fa01ef88543f3906b"
+    commit: "919588393f41b48cb6c5d832aa35e58a19b6762d"
     patches:
       p001:
         repo: "meta-omnect"
