@@ -7,7 +7,7 @@ repos:
   ext/meta-phytec:
     url: "https://github.com/phytec/meta-phytec"
     branch: "wrynose"
-    commit: "59f5dc1dfdc8a593df08ce5c57f6083cd7c74f90"
+    commit: "3210d9dbd3cabcb92d607042bf7e20207521589e"
     patches:
       p001:
         repo: "meta-omnect"
@@ -26,7 +26,7 @@ repos:
   ext/meta-imx:
     url: "https://github.com/nxp-imx/meta-imx.git"
     branch: "wrynose-6.18.20-2.0.0"
-    commit: "52516b92a70669eb58b805810f2a27a07c874771"
+    commit: "7163fab7d8923da56d5cf8a29c05ae4edab3ac2f"
     layers:
       meta-imx-bsp:
     patches:
@@ -36,7 +36,7 @@ repos:
   ext/meta-arm:
     url: "https://git.yoctoproject.org/meta-arm"
     branch: "wrynose"
-    commit: "0979b80429099f1a42dc0026c8c466cee780bc74"
+    commit: "673e8d7c5dcd14de58092eb73e6ecc5eee5c1735"
     layers:
       meta-arm:
       meta-arm-toolchain:
