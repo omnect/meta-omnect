@@ -16,6 +16,6 @@ omnect_setup_hash() {
 
 inherit extrausers
 EXTRA_USERS_PARAMS = "\
-    groupadd -g 15581 omnect; \
-    useradd -p '$(cat ${WORKDIR}/omnect_pwd_hash)' -u 15581 -g omnect omnect; \
+    groupadd -g ${OMNECT_USER_ID} omnect; \
+    useradd -p '$(cat ${WORKDIR}/omnect_pwd_hash)' -u ${OMNECT_USER_ID} -g omnect omnect; \
 "

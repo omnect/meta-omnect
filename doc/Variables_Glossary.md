@@ -122,7 +122,7 @@ Size of boot partition. See [partition layout](https://github.com/omnect/meta-om
 Size of certificate partition. See [partition layout](https://github.com/omnect/meta-omnect?tab=readme-ov-file#partition-layout).
 
 # OMNECT_PART_SIZE_DATA
-Size of data partition. Gets increased to available space on first boot, if `resized-data` is in [DISTRO_FEATURES](https://docs.yoctoproject.org/ref-manual/variables.html#term-MACHINE_FEATURES).
+Size of data partition. Gets increased to available space on first boot, if `resize-data` is in [DISTRO_FEATURES](https://docs.yoctoproject.org/ref-manual/variables.html#term-DISTRO_FEATURES). Flash mode 1 sets the data partition of the clone to this size.
 
 # OMNECT_PART_SIZE_ETC
 Size of etc overlay parition. See [partition layout](https://github.com/omnect/meta-omnect?tab=readme-ov-file#partition-layout).
@@ -137,6 +137,9 @@ Size of rootA resp. rootB parition. See [partition layout](https://github.com/om
 Size of u-boot environment.
 *Note*: This variable is used to create u-boot userspace runtime config files and the omnect-os-image. If you want to configure the u-boot env size for u-boot, you have to set it in the appropriate u-boot redundant-env.cfg file, e.g.
 https://github.com/omnect/meta-omnect/blob/main/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot/redundant-env.cfg.
+
+# OMNECT_PART_TABLE
+Partition table the initramfs is built for: `gpt` or `dos`. Default is `gpt`. Set it to `dos` for a machine whose wks file uses `--ptable msdos`.
 
 # OMNECT_RELEASE_IMAGE
 Boolean to reflect if a devel or a release image gets build.
