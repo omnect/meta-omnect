@@ -93,9 +93,11 @@ _timestamp=
 # that we use to tell swupdate which partition to target.
 if [[ $(readlink -f /dev/omnect/rootCurrent) == $(readlink -f /dev/omnect/rootA) ]]; then
     selection="stable,copy2"
+    current_part=2
     update_part=3
 else
     selection="stable,copy1"
+    current_part=3
     update_part=2
 fi
 
@@ -863,6 +865,21 @@ ApplyUpdate() {
 }
 
 #
+# Restores the omnect bootargs of the current rootfs saved by InstallUpdate().
+#
+RestoreBootargs() {
+    cp /tmp/omnect_extra_bootargs_omnect.backup /boot/omnect_extra_bootargs_omnect || return
+    bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
+    bootargs="$(echo ${bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
+    sudo bootloader_env.sh unset omnect_validate_extra_bootargs
+    if [ -n "${bootargs}" ]; then
+        sudo bootloader_env.sh set omnect_extra_bootargs "${bootargs}"
+    else
+        sudo bootloader_env.sh unset omnect_extra_bootargs
+    fi
+}
+
+#
 # Cancel current update.
 #
 CancelUpdate() {
@@ -881,29 +898,34 @@ CancelUpdate() {
 
     echo "Revert update." >> "${log_file}"
     if [[ ! -f "/tmp/omnect-bootloader-update" ]]; then
-        # revert bootargs if we didn't trigger a bootloader update
-        # if we have a bootloader update we can not rollback it, and also successfully installed root+kernelargs
         if [[ -f "/tmp/omnect_extra_bootargs.done" ]]; then
-            cp /tmp/omnect_extra_bootargs_omnect.backup /boot/omnect_extra_bootargs_omnect
-            new_bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
-            new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
-            sudo bootloader_env.sh unset omnect_validate_extra_bootargs
-            sudo bootloader_env.sh set omnect_extra_bootargs "${new_bootargs}"
+            RestoreBootargs
         fi
 
         sudo bootloader_env.sh unset omnect_validate_update_part
+        ret_val=$?
+        errorDetails="Failed to unset omnect_validate_update_part"
     else
-        # we can not do much without a bootloader rollback
-        ret_val=0
+        # the bootloader cannot be rolled back, but the current rootfs boots again and needs its own bootargs.
+        # ApplyUpdate() may already have switched omnect_os_bootpart: switch it back first, so that the
+        # old bootargs are never restored while the new rootfs is selected.
+        log_info "bootloader was updated: rollback of the bootloader not possible"
+        sudo bootloader_env.sh set omnect_os_bootpart ${current_part}
+        ret_val=$?
+        errorDetails="Failed to set omnect_os_bootpart"
+        if [[ $ret_val -eq 0 ]] && [[ -f "/tmp/omnect_extra_bootargs.done" ]]; then
+            RestoreBootargs
+            ret_val=$?
+            errorDetails="Failed to restore omnect_extra_bootargs"
+        fi
     fi
-    ret_val=$?
 
     if [[ $ret_val -eq 0 ]]; then
         resultCode=800
     else
         resultCode=801
         make_swupdate_handler_erc "$ret_val" extendedResultCode
-        resultDetails="Failed to unset omnect_validate_update_part"
+        resultDetails="${errorDetails}"
         ret_val=0
     fi
 
