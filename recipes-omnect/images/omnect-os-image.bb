@@ -97,8 +97,7 @@ python __anonymous() {
     machine = d.getVar('MACHINE')
     for feat, var in (('wifi', 'OMNECT_DEVICE_CAP_WIFI'), ('bluetooth', 'OMNECT_DEVICE_CAP_BLUETOOTH')):
         value = d.getVar(var)
-        # '' is treated like 'no' meaning "feature off"
-        if value not in ('', 'no', 'optional', 'yes'):
+        if value not in ('no', 'optional', 'yes'):
             bb.fatal("%s: device_caps.json '%s' has invalid value '%s' "
                      "(expected 'no', 'optional' or 'yes')." % (machine, feat, value))
         distro_on = bb.utils.contains('DISTRO_FEATURES', feat, True, False, d)
