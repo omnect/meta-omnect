@@ -10,7 +10,7 @@ repos:
   ext/meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded.git"
     branch: "wrynose"
-    commit: "14282a02be9c74a1276a7cda7d6c89e054699a11"
+    commit: "f28a144aa0a0ae05ca2ee91e1aef6aa05f6a12db"
     layers:
       # meta-multimedia is used by qemu_8.2.2.imx.bb (tauri) ToDo: possible to handle that in the machine specific kas file?
       meta-multimedia:
@@ -23,7 +23,7 @@ repos:
   ext/meta-security:
     url: "https://git.yoctoproject.org/meta-security"
     branch: "wrynose"
-    commit: "c0d1d6200e7a84c39fb940cb1f22aad4b0b3d808"
+    commit: "2703974d5e2d61b221dffa302c2e059a522adbf3"
     layers:
       # base layer (collection "security") - provides the AppArmor userspace
       .:
@@ -31,11 +31,11 @@ repos:
   ext/meta-swupdate:
     url: "https://github.com/sbabic/meta-swupdate.git"
     branch: "wrynose"
-    commit: "c0658455606b3a37d85d7cf03703d8b8d2ead667"
+    commit: "de47bacb283f579bff8617dc9e11cbd8b00c16e0"
   ext/meta-virtualization:
     url: "https://git.yoctoproject.org/meta-virtualization"
     branch: "wrynose"
-    commit: "70a5d5a65d7237cfe978961fa4d8765c895cddc8"
+    commit: "2807579615834a143c8ed453b463f93f43446019"
     patches:
       p001:
         repo: "meta-omnect"

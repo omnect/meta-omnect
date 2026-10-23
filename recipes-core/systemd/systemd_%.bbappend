@@ -41,7 +41,10 @@ do_install:append() {
 
     # persistent /var/log
     if ${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', 'true', 'false', d)}; then
-        sed -i 's/^#Storage=auto/Storage=persistent/' ${D}${sysconfdir}/systemd/journald.conf
+        local journald_conf="${D}${sysconfdir}/systemd/journald.conf"
+        sed -i 's/^#\?Storage=.*/Storage=persistent/' "$journald_conf"
+        grep -q '^Storage=persistent$' "$journald_conf" || \
+            bbfatal "journald.conf: Storage=persistent not set (source conf format changed?)"
 
         # fix journal corruption on reboot resp. "umount of /var/log failed"
         sed -i 's/^\[Unit\]/\[Unit\]\nPartOf=var-log.mount/' ${D}${systemd_system_unitdir}/systemd-journal-flush.service
@@ -70,12 +73,16 @@ do_install:append() {
 
     # delete systemd-journald-audit.socket - we don't use this feature (yet)
     rm -f ${D}${systemd_system_unitdir}/sockets.target.wants/systemd-journald-audit.socket
+    rm -f ${D}${systemd_system_unitdir}/systemd-journald-audit.socket
 
     # coredump storage: keep no cores by default on any image, so process memory
     # (which may hold secrets) is never written to disk. The CI test environment
-    # and per-device debugging enable capture via /etc drop-ins.
-    sed -i 's/^#\?Storage=.*/Storage=none/' ${D}${sysconfdir}/systemd/coredump.conf
-    rm -f ${D}${systemd_system_unitdir}/systemd-journald-audit.socket
+    # and per-device debugging enable capture via /etc (CI replaces
+    # /etc/systemd/coredump.conf through the factory partition).
+    local coredump_conf="${D}${sysconfdir}/systemd/coredump.conf"
+    sed -i 's/^#\?Storage=.*/Storage=none/' "$coredump_conf"
+    grep -q '^Storage=none$' "$coredump_conf" || \
+        bbfatal "coredump.conf: Storage=none not set (source conf format changed?)"
 
     rm -rf ${D}${MIMEDIR}
 
