@@ -89,17 +89,13 @@ IMAGE_INSTALL = "\
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 
-# Validate the device_caps values and guard them against MACHINE_FEATURES. An
-# unknown value would silently drop the feature, and wifi or bluetooth enabled in
-# device_caps but absent from MACHINE_FEATURES installs a userspace stack with no
-# kernel driver/firmware. Fail the build so both are caught here, not in the field.
+# Guard the device_caps values against MACHINE_FEATURES: wifi or bluetooth enabled
+# in device_caps but absent from MACHINE_FEATURES installs a userspace stack with no
+# kernel driver/firmware. Fail the build so it is caught here, not in the field.
+# The values themselves are validated in lib/omnect/device_caps.py.
 python __anonymous() {
     machine = d.getVar('MACHINE')
-    for feat, var in (('wifi', 'OMNECT_DEVICE_CAP_WIFI'), ('bluetooth', 'OMNECT_DEVICE_CAP_BLUETOOTH')):
-        value = d.getVar(var)
-        if value not in ('no', 'optional', 'yes'):
-            bb.fatal("%s: device_caps.json '%s' has invalid value '%s' "
-                     "(expected 'no', 'optional' or 'yes')." % (machine, feat, value))
+    for feat in ('wifi', 'bluetooth'):
         distro_on = bb.utils.contains('DISTRO_FEATURES', feat, True, False, d)
         machine_on = bb.utils.contains('MACHINE_FEATURES', feat, True, False, d)
         if distro_on and not machine_on:

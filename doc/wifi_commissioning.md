@@ -15,9 +15,15 @@ The same file drives both **what is installed/compiled** (build time) and
 ## Build time: install and compile
 
 `DISTRO_FEATURES` `wifi` and `bluetooth` are derived from `device_caps.json`
-for the target `MACHINE` (see `conf/distro/include/omnect-os-distro.conf`; the
-values are validated in `recipes-omnect/images/omnect-os-image.bb`). They are
+for the target `MACHINE` (see `conf/distro/include/omnect-os-distro.conf`). They are
 independent: each follows its own `device_caps` value.
+
+Every `MACHINE` needs a `files/device_caps/${MACHINE}.json`; it is searched in all
+layers listed in `BBLAYERS` and the first match wins. The file must contain the
+`wifi` and `bluetooth` keys, each set to `no`, `optional` or `yes`. A missing file,
+a missing key or any other value aborts the build in `lib/omnect/device_caps.py`.
+In addition, `recipes-omnect/images/omnect-os-image.bb` rejects a capability that is
+enabled here but missing from `MACHINE_FEATURES`.
 
 | `device_caps` value | `DISTRO_FEATURES` |
 | --- | --- |

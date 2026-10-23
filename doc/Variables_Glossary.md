@@ -76,10 +76,10 @@ See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_ve
 List of tools which get installed into an omnect-os devel image.
 
 # OMNECT_DEVICE_CAP_BLUETOOTH
-Internal helper holding the `bluetooth` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`). Set in `conf/distro/include/omnect-os-distro.conf` and used to derive the `bluetooth` `DISTRO_FEATURE`. See [doc/wifi_commissioning.md](wifi_commissioning.md).
+Internal helper holding the `bluetooth` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`). The file is mandatory for every `MACHINE`; it is searched in all layers listed in `BBLAYERS`, first match wins, and a missing file, a missing key or any other value aborts the build. Set in `conf/distro/include/omnect-os-distro.conf` through `omnect.device_caps.get_cap()` and used to derive the `bluetooth` `DISTRO_FEATURE`. Recipes must read this variable instead of calling `get_cap()` in task code, because only its `[vardepvalue]` flag puts the value into task signatures. See [doc/wifi_commissioning.md](wifi_commissioning.md).
 
 # OMNECT_DEVICE_CAP_WIFI
-Internal helper holding the `wifi` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`). Set in `conf/distro/include/omnect-os-distro.conf` and used to derive the `wifi` `DISTRO_FEATURE`. See [doc/wifi_commissioning.md](wifi_commissioning.md).
+Internal helper holding the `wifi` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`). The file is mandatory for every `MACHINE`; it is searched in all layers listed in `BBLAYERS`, first match wins, and a missing file, a missing key or any other value aborts the build. Set in `conf/distro/include/omnect-os-distro.conf` through `omnect.device_caps.get_cap()` and used to derive the `wifi` `DISTRO_FEATURE`. Recipes must read this variable instead of calling `get_cap()` in task code, because only its `[vardepvalue]` flag puts the value into task signatures. See [doc/wifi_commissioning.md](wifi_commissioning.md).
 
 # OMNECT_FDT_LOAD_NAME
 Name of u-boot device-tree bootscript to be generated for devices using u-boot as bootloader. Default is "fdt-load.scr".
