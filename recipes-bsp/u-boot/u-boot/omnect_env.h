@@ -13,7 +13,6 @@
  */
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA
 #define OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS \
-    "data-mount-options:sw," \
     "factory-reset:sw," \
     "flash-mode:dw," \
     "flash-mode-devpath:sw," \
@@ -31,7 +30,6 @@
     "omnect_validate_update:bw," \
     "omnect_validate_update_failed:bw," \
     "omnect_validate_update_part:dw," \
-    "resized-data:sw," \
     OMNECT_REQUIRED_WRITEABLE_ENV_FLAGS_EXTRA
 
 // for secureboot, or forcing e.g. silent env var not to be changeable in release image
