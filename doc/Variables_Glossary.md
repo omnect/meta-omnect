@@ -76,16 +76,16 @@ See https://github.com/omnect/meta-omnect/blob/main/classes/omnect_bootloader_ve
 List of tools which get installed into an omnect-os devel image.
 
 # OMNECT_DEVICE_CAP_3G
-Internal helper holding the `3g` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`). Set in `conf/distro/include/omnect-os-distro.conf` through `omnect.device_caps.get_cap()`. Recipes must read this variable instead of calling `get_cap()` in task code, because only its `[vardepvalue]` flag puts the value into task signatures. See [doc/device_caps.md](device_caps.md).
+Value of the `3g` device capability of `MACHINE` (`no` | `optional` | `yes`), set in `conf/distro/include/omnect-os-distro.conf`. See [doc/device_caps.md](device_caps.md).
 
 # OMNECT_DEVICE_CAP_BLUETOOTH
-Internal helper holding the `bluetooth` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`), also used to derive the `bluetooth` `DISTRO_FEATURE`. Set in `conf/distro/include/omnect-os-distro.conf` through `omnect.device_caps.get_cap()`. Recipes must read this variable instead of calling `get_cap()` in task code, because only its `[vardepvalue]` flag puts the value into task signatures. See [doc/device_caps.md](device_caps.md).
+Value of the `bluetooth` device capability of `MACHINE` (`no` | `optional` | `yes`), set in `conf/distro/include/omnect-os-distro.conf`. See [doc/device_caps.md](device_caps.md).
 
 # OMNECT_DEVICE_CAP_TPM2
-Internal helper holding the `tpm2` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`). Set in `conf/distro/include/omnect-os-distro.conf` through `omnect.device_caps.get_cap()`. Recipes must read this variable instead of calling `get_cap()` in task code, because only its `[vardepvalue]` flag puts the value into task signatures. See [doc/device_caps.md](device_caps.md).
+Value of the `tpm2` device capability of `MACHINE` (`no` | `optional` | `yes`), set in `conf/distro/include/omnect-os-distro.conf`. See [doc/device_caps.md](device_caps.md).
 
 # OMNECT_DEVICE_CAP_WIFI
-Internal helper holding the `wifi` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`), also used to derive the `wifi` `DISTRO_FEATURE`. Set in `conf/distro/include/omnect-os-distro.conf` through `omnect.device_caps.get_cap()`. Recipes must read this variable instead of calling `get_cap()` in task code, because only its `[vardepvalue]` flag puts the value into task signatures. See [doc/device_caps.md](device_caps.md).
+Value of the `wifi` device capability of `MACHINE` (`no` | `optional` | `yes`), set in `conf/distro/include/omnect-os-distro.conf`. See [doc/device_caps.md](device_caps.md).
 
 # OMNECT_FDT_LOAD_NAME
 Name of u-boot device-tree bootscript to be generated for devices using u-boot as bootloader. Default is "fdt-load.scr".

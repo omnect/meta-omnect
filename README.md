@@ -16,7 +16,7 @@ This yocto meta layer provides the device management distribution `omnect-os`. I
     - [Secure Boot for x86 UEFI devices](doc/efi_secure_boot.md).
     - [Mandatory Access Control (AppArmor)](doc/mac_lsm.md): the AppArmor Linux Security Module (LSM) is compiled in and its userspace is installed; DAC stays the default and AppArmor is boot-selectable.
     - [Wifi commissioning](doc/wifi_commissioning.md): join a Wi-Fi network over a BLE GATT interface or a local Unix-socket API on `wifi`-enabled images.
-    - [Device capabilities](doc/device_caps.md): per-machine declaration of the hardware a device class offers, driving both build and runtime behaviour.
+    - [Device capabilities](doc/device_caps.md): per-machine declaration of the hardware a device class offers, checked against `MACHINE_FEATURES` and, for `wifi` and `bluetooth`, driving build and runtime behaviour.
 - `omnect-os update image`: the [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image with the following implicit features:
     - Updating the bootloader
 

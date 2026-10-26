@@ -89,19 +89,26 @@ IMAGE_INSTALL = "\
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 
-# Guard the device capabilities against MACHINE_FEATURES: a capability enabled in
-# device_caps but absent from MACHINE_FEATURES installs a userspace stack with no
-# kernel driver/firmware. Fail the build so it is caught here, not in the field.
+# Guard the device capabilities and DISTRO_FEATURES against MACHINE_FEATURES,
+# which carry the same names. Driver and firmware come from the BSP through
+# MACHINE_FEATURES; neither of the other two pulls them in. For wifi and
+# bluetooth this would install a userspace stack with nothing behind it, for 3g
+# and tpm2 it keeps the JSON and MACHINE_FEATURES from stating different things.
 python __anonymous() {
     machine = d.getVar('MACHINE')
     for cap in omnect.device_caps.KNOWN_CAPS:
-        if d.getVar('OMNECT_DEVICE_CAP_%s' % cap.upper()) not in omnect.device_caps.ENABLED_CAP_VALUES:
+        if bb.utils.contains('MACHINE_FEATURES', cap, True, False, d):
             continue
-        if not bb.utils.contains('MACHINE_FEATURES', cap, True, False, d):
+        if omnect.device_caps.get_cap(d, cap) in omnect.device_caps.ENABLED_CAP_VALUES:
             bb.fatal("%s: device_caps.json enables '%s' but MACHINE_FEATURES lacks it, "
                      "so there is no kernel driver/firmware. Add MACHINE_FEATURES '%s' "
                      "for this machine or set device_caps '%s' to 'no'."
                      % (machine, cap, cap, cap))
+        if bb.utils.contains('DISTRO_FEATURES', cap, True, False, d):
+            bb.fatal("%s: DISTRO_FEATURES contains '%s' but MACHINE_FEATURES lacks it, "
+                     "so there is no kernel driver/firmware. Look for a "
+                     "DISTRO_FEATURES:append in a layer or in local.conf."
+                     % (machine, cap))
 }
 
 # journalling on read-only files ystems doesn't make sense

@@ -22,15 +22,29 @@ Every capability takes one of three values:
 
 | Value | Meaning |
 | --- | --- |
-| `no` | the device class never has this hardware |
+| `no` | the capability is not available, either because the hardware is absent or because it is deliberately not used |
 | `optional` | the hardware may be present on an individual device |
 | `yes` | the hardware is present on every device of this class |
 
-`optional` and `yes` are identical at build time — both build and install the
-support. They differ only at runtime, where the installed
-`/etc/omnect/device_caps.json` decides what is actually used. The build-time file
-is therefore an upper bound: a capability set to `no` is not built into the image,
-so editing the installed file cannot enable it afterwards.
+`optional` and `yes` are identical at build time; they differ only on the device.
+
+What the value controls depends on the capability:
+
+| Capability | Effect of the value |
+| --- | --- |
+| `bluetooth`, `wifi` | drives the `DISTRO_FEATURE` of the same name, and is read on the device |
+| `3g`, `tpm2` | only checked against `MACHINE_FEATURES` |
+
+For `wifi` and `bluetooth` the build-time file is an upper bound: `no` keeps the
+support out of the image, so editing the installed copy cannot enable it
+afterwards. `optional` and `yes` both build it in, and the installed copy decides
+what is started.
+
+For `3g` and `tpm2` the value changes nothing in the build. Their
+`DISTRO_FEATURES` follow `MACHINE_FEATURES` instead, so a machine with
+`"tpm2": "no"` and `tpm2` in `MACHINE_FEATURES` still gets the full TPM support,
+and nothing on the device reads these two values. For them the entry is a
+declaration that is kept consistent with `MACHINE_FEATURES`, nothing more.
 
 ## Where the file is looked up
 
@@ -51,7 +65,7 @@ own directory for `base-files`, in its machine conf:
 FILESEXTRAPATHS:prepend:pn-base-files := "${LAYERDIR_<layer>}/files/device_caps:"
 ```
 
-Without that, the build configures correctly, but `base-files` fails in `do_fetch`
+Without that, the configuration parses, but parsing `base-files` aborts
 because it cannot find `${MACHINE}.json`. Keep a machine's file in exactly one
 layer: if meta-omnect carries it as well, the build configuration follows the
 `BBLAYERS` match while the installed file is the meta-omnect one, and build time
@@ -69,13 +83,22 @@ so an entry such as `"_comment"` may be used to explain a setting.
 The capabilities do not control the kernel side. Drivers and firmware come from the
 BSP through `MACHINE_FEATURES`, whose entries carry the same names as the
 capabilities. A capability set to `optional` or `yes` therefore requires the
-matching `MACHINE_FEATURES` entry; otherwise the userspace stack is installed with
-no driver behind it. `recipes-omnect/images/omnect-os-image.bb` checks this per
-machine and aborts the build when they disagree.
+matching `MACHINE_FEATURES` entry; for `wifi` and `bluetooth` the userspace stack
+would otherwise be installed with no driver behind it, for `3g` and `tpm2` the two
+would simply state different things.
+
+`recipes-omnect/images/omnect-os-image.bb` checks this per machine and aborts the
+build when they disagree. It applies the same rule to `DISTRO_FEATURES`, which
+catches a feature added by a `DISTRO_FEATURES:append` in a layer or in
+`local.conf` on a machine whose `MACHINE_FEATURES` do not carry it.
+
+The reverse is allowed: a machine may have the hardware in `MACHINE_FEATURES` and
+still set the capability to `no`, which is how a device class is shipped with
+hardware that is deliberately not used.
 
 ## Reading a capability during the build
 
-`conf/distro/include/omnect-os-distro.conf` exports one variable per capability:
+`conf/distro/include/omnect-os-distro.conf` defines one variable per capability:
 
 | Capability | Variable |
 | --- | --- |
@@ -96,8 +119,10 @@ are derived from `MACHINE_FEATURES` instead, in `omnect-os-distro.conf` and in
 
 ## Runtime
 
-`/etc/omnect/device_caps.json` is read by the device software to decide what to
-start; see [wifi commissioning](wifi_commissioning.md) for the `wifi` and
-`bluetooth` case. The file may be adapted per device, so a device class shipped
-with a capability set to `optional` can be narrowed down or switched on for an
-individual unit without a rebuild.
+`/etc/omnect/device_caps.json` is read by
+`omnect-wifi-commissioning-start.sh`, which looks at `wifi` and `bluetooth` to
+decide what to start; see [wifi commissioning](wifi_commissioning.md). No other
+component reads the file, so `3g` and `tpm2` have no effect on the device. The
+file may be adapted per device, so a device class shipped with `wifi` or
+`bluetooth` set to `optional` can be narrowed down for an individual unit without
+a rebuild.

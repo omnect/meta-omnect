@@ -39,8 +39,6 @@ def _load_device_caps(json_path):
         bb.fatal(f"device_caps: JSON file {json_path} does not set the capabilities "
                  f"{', '.join(missing)}. Expected all of: {', '.join(KNOWN_CAPS)}.")
 
-    # keys that are not capabilities are left alone, which keeps entries such as
-    # a comment possible
     for cap in KNOWN_CAPS:
         if data[cap] not in VALID_CAP_VALUES:
             bb.fatal(f"device_caps: Capability '{cap}' in '{json_path}' has invalid value "
@@ -52,14 +50,7 @@ def _load_device_caps(json_path):
 def get_cap(d, cap_name):
     """
     Return the value of cap_name from the device_caps JSON of MACHINE; call
-    bb.fatal() on any error.
-
-    Recipes must read a capability through its OMNECT_DEVICE_CAP_* variable, or
-    through another variable carrying a [vardepvalue] flag, rather than calling
-    this function from task code: only that flag puts the JSON value into the
-    task signature. A task calling get_cap() directly hashes just this
-    function's source and MACHINE, so it would still be served from sstate
-    after a capability value changed.
+    bb.fatal() on any error. See doc/device_caps.md.
     """
     if cap_name not in KNOWN_CAPS:
         bb.fatal(f"device_caps: Requested unknown capability '{cap_name}'. "

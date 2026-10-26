@@ -3,19 +3,19 @@
 `omnect-os` can commission Wi-Fi (join a network) over a BLE GATT interface and
 a local Unix-socket API, provided by `wifi-commissioning-service` (wcs).
 
-The single source of truth is `/etc/omnect/device_caps.json`, a flat per-machine
-JSON file ([device capabilities](device_caps.md)). Two of its keys control this
-feature:
+The build reads `files/device_caps/${MACHINE}.json`, the device reads its
+installed copy `/etc/omnect/device_caps.json`; see
+[device capabilities](device_caps.md). Two of its keys control this feature:
 
 - `wifi` — `no` | `optional` | `yes`
 - `bluetooth` — `no` | `optional` | `yes`
 
-The same file drives both **what is installed/compiled** (build time) and
+These two keys control both **what is installed/compiled** (build time) and
 **what actually starts** (runtime). The interface is assumed to be `wlan0`.
 
 ## Build time: install and compile
 
-`DISTRO_FEATURES` `wifi` and `bluetooth` are derived from `device_caps.json`
+`DISTRO_FEATURES` `wifi` and `bluetooth` are derived from the capability values
 for the target `MACHINE` (see `conf/distro/include/omnect-os-distro.conf`). They are
 independent: each follows its own `device_caps` value.
 
