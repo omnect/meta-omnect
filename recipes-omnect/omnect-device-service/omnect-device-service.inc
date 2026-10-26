@@ -13,6 +13,10 @@ SRC_URI += "\
 
 CVE_PRODUCT = "omnect:${PN}"
 
+# Only the revision of omnect-device-service goes into the package version. With
+# the revision of every git crate the ipk file name gets too long.
+SRCREV_FORMAT = "default"
+
 # we have to truncate ${PV}, it's to long for do_fetch
 python() {
     pv = d.getVar('PV')
