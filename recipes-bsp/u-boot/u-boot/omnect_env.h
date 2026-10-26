@@ -16,6 +16,8 @@
     "factory-reset:sw," \
     "flash-mode:dw," \
     "flash-mode-devpath:sw," \
+    "flash-mode-url:sw," \
+    "flash-mode-url-sha256:sw," \
     "omnect_bootloader_updated:bw," \
     "omnect_extra_bootargs:sw," \
     "omnect_factory_reset_last_error:sw," \
