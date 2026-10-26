@@ -100,6 +100,10 @@ SYSTEMD_RebootWatchdogSec   = "60"
 MACHINEOVERRIDES:prepend = "omnect_uboot:omnect_pstore:"
 MACHINEOVERRIDES:append = ":phytec-imx8mm"
 
+# imx_sdma is a module; load it in the initramfs, so SPI and UART drivers do
+# not wait for udev to load it.
+OMNECT_EARLY_MODULES ?= "imx_sdma"
+
 # For now remove optee from MACHINE_FEATURES. We don't support secure boot at
 # the moment and tee-supplicant will fail, because we don't boot with the
 # appropriate device-tree.

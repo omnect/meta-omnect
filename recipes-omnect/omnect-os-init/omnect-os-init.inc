@@ -10,6 +10,9 @@ LIC_FILES_CHKSUM = "\
 "
 INSANE_SKIP:${PN} += "already-stripped"
 
+# The features and build.rs read machine settings.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 CARGO_FEATURES:append = "${@bb.utils.contains('MACHINE_FEATURES', 'efi', 'grub', 'uboot', d)}"
 CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ',resize-data', '', d)}"
 CARGO_FEATURES:append = ",factory-reset"
@@ -22,8 +25,7 @@ CARGO_FEATURES:append = "${@',flash-mode-2-direct' if bb.utils.contains('DISTRO_
 CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', ',flash-mode-3', '', d)}"
 # Without a reliable clock, flash mode 3 cannot check TLS certificates.
 CARGO_FEATURES:append = "${@bb.utils.contains('MACHINE_FEATURES', 'rtc', ',rtc', '', d)}"
-# imx_sdma is a module; load it before switch_root so SPI and UART users find SDMA.
-CARGO_FEATURES:append:mx8mm-nxp-bsp = ",early-modules"
+CARGO_FEATURES:append = "${@',early-modules' if d.getVar('OMNECT_EARLY_MODULES') else ''}"
 CARGO_BUILD_FLAGS += "--features ${CARGO_FEATURES}"
 
 # Read by build.rs for flash mode 1; a variable a machine does not set is not
@@ -42,5 +44,15 @@ export OMNECT_USER_ID
 do_install:append() {
     mv ${D}/usr/bin/omnect-os-init ${D}/init
     rmdir ${D}/usr/bin ${D}/usr
+
+    if [ -n "${OMNECT_EARLY_MODULES}" ]; then
+        install -d ${D}${sysconfdir}/omnect/early-modules.d
+        printf '%s\n' ${OMNECT_EARLY_MODULES} > ${D}${sysconfdir}/omnect/early-modules.d/omnect.conf
+    fi
 }
 FILES:${PN} += "init"
+
+# The init reads the module list from the rootfs, so the rootfs image installs
+# this package.
+PACKAGES =+ "${PN}-early-modules"
+FILES:${PN}-early-modules = "${sysconfdir}/omnect/early-modules.d"

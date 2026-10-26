@@ -81,6 +81,9 @@ Internal helper holding the `bluetooth` value read from `files/device_caps/${MAC
 # OMNECT_DEVICE_CAP_WIFI
 Internal helper holding the `wifi` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`). Set in `conf/distro/include/omnect-os-distro.conf` and used to derive the `wifi` `DISTRO_FEATURE`. See [doc/wifi_commissioning.md](wifi_commissioning.md).
 
+# OMNECT_EARLY_MODULES
+Kernel modules the initramfs loads before `switch_root`, separated by spaces. When set, the init is built with early module load and the rootfs gets the list in `/etc/omnect/early-modules.d/omnect.conf`. Set to `imx_sdma` on i.MX8MM machines; empty by default.
+
 # OMNECT_FDT_LOAD_NAME
 Name of u-boot device-tree bootscript to be generated for devices using u-boot as bootloader. Default is "fdt-load.scr".
 

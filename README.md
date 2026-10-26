@@ -295,7 +295,7 @@ An A/B update is validated, if the update doesn't contain a bootloader update, a
 See [filesystem check](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#filesystem-check).
 
 ### Early module load
-On i.MX8MM machines the initramfs loads `imx_sdma` before `switch_root`, listed in `/etc/omnect/early-modules.d/imx-sdma.conf`. See [early module load](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#early-module-load).
+On i.MX8MM machines the initramfs loads `imx_sdma` before `switch_root`, listed in `/etc/omnect/early-modules.d/omnect.conf`; the machine variable `OMNECT_EARLY_MODULES` sets the list. See [early module load](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#early-module-load).
 
 ### Coredumps
 
