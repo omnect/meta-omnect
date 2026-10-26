@@ -721,6 +721,8 @@ InstallUpdate() {
 
             ret_val=255
             if [[ ${public_key_file} != "" ]]; then
+                # markers of a cancelled previous attempt must not leak into this one
+                rm -f /tmp/omnect-bootloader-update /tmp/omnect_extra_bootargs.done
                 cp /boot/omnect_extra_bootargs_omnect /tmp/omnect_extra_bootargs_omnect.backup
                 swupdate -v -i "${image_file}" -k "${public_key_file}" -e ${selection} &>> "${swupdate_log_file}" && \
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,kernelargs &>> "${swupdate_log_file}"
@@ -865,18 +867,31 @@ ApplyUpdate() {
 }
 
 #
-# Restores the omnect bootargs of the current rootfs saved by InstallUpdate().
+# Restores the omnect bootargs of the current rootfs saved by InstallUpdate() and reverts
+# exactly the env change ApplyUpdate() made. The file is restored even without ApplyUpdate():
+# InstallUpdate() already overwrote it. The env goes first, as it is what the next boot uses.
 #
 RestoreBootargs() {
-    cp /tmp/omnect_extra_bootargs_omnect.backup /boot/omnect_extra_bootargs_omnect || return
-    bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
-    bootargs="$(echo ${bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
-    sudo bootloader_env.sh unset omnect_validate_extra_bootargs
-    if [ -n "${bootargs}" ]; then
-        sudo bootloader_env.sh set omnect_extra_bootargs "${bootargs}"
-    else
-        sudo bootloader_env.sh unset omnect_extra_bootargs
+    local backup="/tmp/omnect_extra_bootargs_omnect.backup"
+    local bootargs
+
+    [ -f "${backup}" ] || return 0
+
+    if [ -f "/tmp/omnect_extra_bootargs.done" ]; then
+        if [ -f "/tmp/omnect-bootloader-update" ]; then
+            bootargs="$(< ${backup}) $(< /boot/omnect_extra_bootargs_custom)"
+            bootargs="$(echo ${bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
+            if [ -n "${bootargs}" ]; then
+                sudo bootloader_env.sh set omnect_extra_bootargs "${bootargs}" || return
+            else
+                sudo bootloader_env.sh unset omnect_extra_bootargs || return
+            fi
+        else
+            sudo bootloader_env.sh unset omnect_validate_extra_bootargs || return
+        fi
     fi
+
+    cp "${backup}" /boot/omnect_extra_bootargs_omnect
 }
 
 #
@@ -897,27 +912,30 @@ CancelUpdate() {
     ret_val=
 
     echo "Revert update." >> "${log_file}"
-    if [[ ! -f "/tmp/omnect-bootloader-update" ]]; then
-        if [[ -f "/tmp/omnect_extra_bootargs.done" ]]; then
-            RestoreBootargs
-        fi
-
-        sudo bootloader_env.sh unset omnect_validate_update_part
-        ret_val=$?
-        errorDetails="Failed to unset omnect_validate_update_part"
-    else
+    if [[ -f "/tmp/omnect-bootloader-update" ]]; then
         # the bootloader cannot be rolled back, but the current rootfs boots again and needs its own bootargs.
         # ApplyUpdate() may already have switched omnect_os_bootpart: switch it back first, so that the
         # old bootargs are never restored while the new rootfs is selected.
         log_info "bootloader was updated: rollback of the bootloader not possible"
+        errorDetails="Failed to set omnect_os_bootpart"
         sudo bootloader_env.sh set omnect_os_bootpart ${current_part}
         ret_val=$?
-        errorDetails="Failed to set omnect_os_bootpart"
-        if [[ $ret_val -eq 0 ]] && [[ -f "/tmp/omnect_extra_bootargs.done" ]]; then
-            RestoreBootargs
+        if [[ $ret_val -eq 0 ]]; then
+            errorDetails="Failed to unset omnect_bootloader_updated"
+            sudo bootloader_env.sh unset omnect_bootloader_updated
             ret_val=$?
-            errorDetails="Failed to restore omnect_extra_bootargs"
         fi
+    else
+        # same order as above: deselect the update partition before the old bootargs are restored
+        errorDetails="Failed to unset omnect_validate_update_part"
+        sudo bootloader_env.sh unset omnect_validate_update_part
+        ret_val=$?
+    fi
+
+    if [[ $ret_val -eq 0 ]]; then
+        errorDetails="Failed to restore omnect_extra_bootargs"
+        RestoreBootargs
+        ret_val=$?
     fi
 
     if [[ $ret_val -eq 0 ]]; then
