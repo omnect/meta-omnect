@@ -41,7 +41,7 @@ Depending on `MACHINE_FEATURES` we also set `3g`. `wifi` and `bluetooth` are der
 - `efi`
     - the initramfs is built for GRUB; without `efi` it is built for U-Boot
 - `rtc`
-    - set by default for every machine; a machine without a real-time clock that keeps the time over power off and sets the system clock before the initramfs runs adds `rtc` to `MACHINE_FEATURES_OPTED_OUT`
+    - set by default for every machine. A machine whose system clock is not correct when the initramfs starts (no real-time clock that keeps the time over power off) adds `rtc` to `MACHINE_FEATURES_OPTED_OUT`
     - flash mode 3 checks the TLS certificate of an HTTPS url only with this feature
 - `tpm2`
     - adds tpm kernel overlay, driver and auto modprobe for raspberry pi
@@ -97,7 +97,7 @@ Device         Boot   Start      End  Sectors  Size Id Type
 - `mmcblkXp8` is the writable `data` partition with ext4 filesystem
 
 **Note1**: The partition layout is an example, sizes may differ depending on your board and image variant (development or release).<br>
-**Note2**: The size of `data` depends on your sdcard/emmc/nvme size. Per default it has a size of 512M. With `resize-data` in `DISTRO_FEATURES` it is resized on the first boot to the max available size.<br>
+**Note2**: The size of `data` depends on your sdcard/emmc/nvme size. By default it has a size of 512M. With `resize-data` in `DISTRO_FEATURES` it is resized on the first boot to the max available size.<br>
 **Note3 (only for images where u-boot is used as OS bootloader)**: There is a reserved area between the boot partition and the rootA partition used for two redundant u-boot environment banks. For this purpose, the following configuration variables are used:
 - `OMNECT_PART_OFFSET_UBOOT_ENV1`: offset of 1st u-boot environment bank (in KiB, decimal)
 - `OMNECT_PART_OFFSET_UBOOT_ENV2`: offset of 2nd u-boot environment bank (in KiB, decimal)
@@ -149,7 +149,7 @@ Differences:
   - default firewall config which allows input for established connections only
   - reduced serial console output (only output high priority messages).
   - local ssh login disabled (alternatively a tunneled ssh connection can be established via [omnect-cli](https://github.com/omnect/omnect-cli#creating-an-ssh-tunnel))
-  - the initramfs halts on a fatal error, and boots on without a usable bootloader environment
+  - the initramfs halts on a fatal error, and still boots when the bootloader environment cannot be read
 - Developer build
   - default firewall config as in Release build, additionally allow ssh connections
   - local ssh login enabled
@@ -289,7 +289,7 @@ See [preserve topics](https://github.com/omnect/omnect-os-init/blob/main/docs/us
 See [factory reset result](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#factory-reset-result).
 
 ### Update validation
-An A/B update is validated, if the update doesn't contain a bootloader update, after the device boots to the updated partition. Most of the logic is implemented in omnect-device-service repository and [documented there](https://github.com/omnect/omnect-device-service/blob/main/src/twin/firmware_update/update_validation.md). The initramfs side is described in [update validation](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#update-validation).
+An A/B update is validated after the device boots into the updated partition, unless the update contains a bootloader update. Most of the logic is implemented in omnect-device-service repository and [documented there](https://github.com/omnect/omnect-device-service/blob/main/src/twin/firmware_update/update_validation.md). The initramfs side is described in [update validation](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#update-validation).
 
 ### Filesystem check
 See [filesystem check](https://github.com/omnect/omnect-os-init/blob/main/docs/usage.md#filesystem-check).
