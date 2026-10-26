@@ -93,11 +93,9 @@ _timestamp=
 # that we use to tell swupdate which partition to target.
 if [[ $(readlink -f /dev/omnect/rootCurrent) == $(readlink -f /dev/omnect/rootA) ]]; then
     selection="stable,copy2"
-    current_part=2
     update_part=3
 else
     selection="stable,copy1"
-    current_part=3
     update_part=2
 fi
 
@@ -789,44 +787,36 @@ ApplyUpdate() {
 
     echo "Applying." >> "${log_file}"
 
-    # bootargs handling
-    # normally we would use omnect_extra_bootargs.sh here, but it isn't available prior to 5.0.16
-    current_bootargs="$(sudo bootloader_env.sh get omnect_extra_bootargs)"
-    new_bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
-    new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
-    if [ "${current_bootargs}" != "${new_bootargs}" ]; then
-        if [ -f "/tmp/omnect-bootloader-update" ]; then
-            if [ -n "${new_bootargs}" ]; then
-                sudo bootloader_env.sh set omnect_extra_bootargs "${new_bootargs}"
-            else
-                sudo bootloader_env.sh unset omnect_extra_bootargs
-            fi
-        else
+    if [ -f "/tmp/omnect-bootloader-update" ]; then
+        # the bootloader cannot be rolled back, so the update is not validated: switch directly
+        SwitchToUpdatePart
+        ret_val=$?
+        echo "use omnect_os_bootpart environment" >> "${log_file}"
+    else
+        # bootargs handling
+        # normally we would use omnect_extra_bootargs.sh here, but it isn't available prior to 5.0.16
+        current_bootargs="$(sudo bootloader_env.sh get omnect_extra_bootargs)"
+        new_bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
+        new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
+        if [ "${current_bootargs}" != "${new_bootargs}" ]; then
             if [ -n "${new_bootargs}" ]; then
                 sudo bootloader_env.sh set omnect_validate_extra_bootargs "${new_bootargs}"
             else
                 sudo bootloader_env.sh set omnect_validate_extra_bootargs "#noargs"
             fi
+            ret_val=$?
+            if [[ $ret_val -eq 0 ]]; then
+                touch /tmp/omnect_extra_bootargs.done
+            fi
         fi
-        ret_val=$?
-        if [[ $ret_val -eq 0 ]]; then
-            touch /tmp/omnect_extra_bootargs.done
-        fi
-    fi
 
-    # Set the bootloader environment variable
-    # to tell the bootloader to boot into the update partition.
-    # omnect_os_bootpart variable is specific to our boot.scr script.
-    # if the bootloader is also updated, the update will not be validated.
-    # -> revert to old rootFS not possible
-    if [[ $ret_val -eq 0 ]] && [[ -f "/tmp/omnect-bootloader-update" ]]; then
-        sudo bootloader_env.sh set omnect_bootloader_updated 1 && sudo bootloader_env.sh set omnect_os_bootpart $update_part
-        ret_val=$?
-        echo "use omnect_os_bootpart environment" >> "${log_file}"
-    elif [[ $ret_val -eq 0 ]]; then
-        sudo bootloader_env.sh set omnect_validate_update_part $update_part
-        ret_val=$?
-        echo "use omnect_validate_update_part environment" >> "${log_file}"
+        # Set the bootloader environment variable
+        # to tell the bootloader to boot into the update partition.
+        if [[ $ret_val -eq 0 ]]; then
+            sudo bootloader_env.sh set omnect_validate_update_part $update_part
+            ret_val=$?
+            echo "use omnect_validate_update_part environment" >> "${log_file}"
+        fi
     fi
 
     if [[ $ret_val -eq 0 ]]; then
@@ -867,28 +857,37 @@ ApplyUpdate() {
 }
 
 #
-# Restores the omnect bootargs of the current rootfs saved by InstallUpdate() and reverts
-# exactly the env change ApplyUpdate() made. The file is restored even without ApplyUpdate():
-# InstallUpdate() already overwrote it. The env goes first, as it is what the next boot uses.
+# Boots the new rootfs with its bootargs from now on, without validation. Used if the bootloader was
+# updated: it cannot be rolled back and must not boot the current rootfs again.
+#
+SwitchToUpdatePart() {
+    local bootargs
+
+    bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
+    bootargs="$(echo ${bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
+    if [ "$(sudo bootloader_env.sh get omnect_extra_bootargs)" != "${bootargs}" ]; then
+        if [ -n "${bootargs}" ]; then
+            sudo bootloader_env.sh set omnect_extra_bootargs "${bootargs}" || return
+        else
+            sudo bootloader_env.sh unset omnect_extra_bootargs || return
+        fi
+    fi
+    sudo bootloader_env.sh set omnect_bootloader_updated 1 || return
+    sudo bootloader_env.sh set omnect_os_bootpart ${update_part}
+}
+
+#
+# Restores the omnect bootargs of the current rootfs saved by InstallUpdate() and reverts the env
+# change of ApplyUpdate(). The file is restored even without ApplyUpdate(): InstallUpdate() already
+# overwrote it. The env goes first, as it is what the next boot uses.
 #
 RestoreBootargs() {
     local backup="/tmp/omnect_extra_bootargs_omnect.backup"
-    local bootargs
 
     [ -f "${backup}" ] || return 0
 
     if [ -f "/tmp/omnect_extra_bootargs.done" ]; then
-        if [ -f "/tmp/omnect-bootloader-update" ]; then
-            bootargs="$(< ${backup}) $(< /boot/omnect_extra_bootargs_custom)"
-            bootargs="$(echo ${bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
-            if [ -n "${bootargs}" ]; then
-                sudo bootloader_env.sh set omnect_extra_bootargs "${bootargs}" || return
-            else
-                sudo bootloader_env.sh unset omnect_extra_bootargs || return
-            fi
-        else
-            sudo bootloader_env.sh unset omnect_validate_extra_bootargs || return
-        fi
+        sudo bootloader_env.sh unset omnect_validate_extra_bootargs || return
     fi
 
     cp "${backup}" /boot/omnect_extra_bootargs_omnect
@@ -900,52 +899,47 @@ RestoreBootargs() {
 CancelUpdate() {
     log_info "CancelUpdate called"
 
-    # Set the bootloader environment variable
-    # to tell the bootloader to boot into the current partition
-    # instead of the one that was updated.
-    # omnect_validate_update_part variable is specific to our boot.scr script.
-
     echo "Cancelling update." >> "${log_file}"
     resultCode=0
     extendedResultCode=0
     resultDetails=""
     ret_val=
 
-    echo "Revert update." >> "${log_file}"
     if [[ -f "/tmp/omnect-bootloader-update" ]]; then
-        # the bootloader cannot be rolled back, but the current rootfs boots again and needs its own bootargs.
-        # ApplyUpdate() may already have switched omnect_os_bootpart: switch it back first, so that the
-        # old bootargs are never restored while the new rootfs is selected.
-        log_info "bootloader was updated: rollback of the bootloader not possible"
-        errorDetails="Failed to set omnect_os_bootpart"
-        sudo bootloader_env.sh set omnect_os_bootpart ${current_part}
+        # rootfs and kernelargs are already installed, so complete the update instead of leaving the
+        # new bootloader with the current rootfs. ApplyUpdate() may have done some or all of it already.
+        log_info "bootloader was updated: cancel not possible, switching to the new rootfs"
+        echo "Complete update." >> "${log_file}"
+        SwitchToUpdatePart
         ret_val=$?
+        resultCode=801
         if [[ $ret_val -eq 0 ]]; then
-            errorDetails="Failed to unset omnect_bootloader_updated"
-            sudo bootloader_env.sh unset omnect_bootloader_updated
-            ret_val=$?
+            resultDetails="Bootloader was updated: cancel not possible, switched to the new rootfs"
+        else
+            make_swupdate_handler_erc "$ret_val" extendedResultCode
+            resultDetails="Bootloader was updated: cancel not possible, failed to switch to the new rootfs"
         fi
     else
-        # same order as above: deselect the update partition before the old bootargs are restored
-        errorDetails="Failed to unset omnect_validate_update_part"
+        echo "Revert update." >> "${log_file}"
+        # deselect the update partition before the current bootargs are restored
+        resultDetails="Failed to unset omnect_validate_update_part"
         sudo bootloader_env.sh unset omnect_validate_update_part
         ret_val=$?
-    fi
+        if [[ $ret_val -eq 0 ]]; then
+            resultDetails="Failed to restore omnect_extra_bootargs"
+            RestoreBootargs
+            ret_val=$?
+        fi
 
-    if [[ $ret_val -eq 0 ]]; then
-        errorDetails="Failed to restore omnect_extra_bootargs"
-        RestoreBootargs
-        ret_val=$?
+        if [[ $ret_val -eq 0 ]]; then
+            resultCode=800
+            resultDetails=""
+        else
+            resultCode=801
+            make_swupdate_handler_erc "$ret_val" extendedResultCode
+        fi
     fi
-
-    if [[ $ret_val -eq 0 ]]; then
-        resultCode=800
-    else
-        resultCode=801
-        make_swupdate_handler_erc "$ret_val" extendedResultCode
-        resultDetails="${errorDetails}"
-        ret_val=0
-    fi
+    ret_val=0
 
     make_aduc_result_json "$resultCode" "$extendedResultCode" "$resultDetails" aduc_result
 

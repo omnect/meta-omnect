@@ -7,7 +7,6 @@ adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh unset omnect_extra_bootargs
 adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh set omnect_validate_extra_bootargs *
 adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh unset omnect_validate_extra_bootargs
 adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh set omnect_bootloader_updated 1
-adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh unset omnect_bootloader_updated
 adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh set omnect_os_bootpart [2-3]
 adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh set omnect_validate_update_part [2-3]
 adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh unset omnect_validate_update_part
