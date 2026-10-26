@@ -16,12 +16,13 @@ This yocto meta layer provides the device management distribution `omnect-os`. I
     - [Secure Boot for x86 UEFI devices](doc/efi_secure_boot.md).
     - [Mandatory Access Control (AppArmor)](doc/mac_lsm.md): the AppArmor Linux Security Module (LSM) is compiled in and its userspace is installed; DAC stays the default and AppArmor is boot-selectable.
     - [Wifi commissioning](doc/wifi_commissioning.md): join a Wi-Fi network over a BLE GATT interface or a local Unix-socket API on `wifi`-enabled images.
+    - [Device capabilities](doc/device_caps.md): per-machine declaration of the hardware a device class offers, driving both build and runtime behaviour.
 - `omnect-os update image`: the [`swupdate`](https://sbabic.github.io/swupdate/swupdate.html) update image with the following implicit features:
     - Updating the bootloader
 
 ### `DISTRO_FEATURES`
 `omnect-os` is built with yocto [`DISTRO_FEATURES`](https://docs.yoctoproject.org/ref-manual/features.html#distro-features) = `apparmor ipv4 ipv6 polkit seccomp xattr zeroconf`.
-Depending on `MACHINE_FEATURES` we also set `3g`. `wifi` and `bluetooth` are derived from `/etc/omnect/device_caps.json` instead; see [doc/wifi_commissioning.md](doc/wifi_commissioning.md).
+Depending on `MACHINE_FEATURES` we also set `3g`. `wifi` and `bluetooth` are derived from the device capabilities instead; see [doc/device_caps.md](doc/device_caps.md).
 `apparmor` enables Mandatory Access Control support; see [doc/mac_lsm.md](doc/mac_lsm.md).
 
 `meta-omnect` adds the following `DISTRO_FEATURES`:
@@ -182,7 +183,7 @@ meta-omnect/kas/machine/rpi/rpi4.yaml
 The resulting image artifacts are located in `$(pwd)/build/deploy/images/raspberrypi4-64`.<br>
 The `omnect-os-image` artefact is named `omnect-os-raspberrypi4-64.wic.xz`.<br>
 The `omnect-os-update-image` artefact is named `omnect-os-update-image-raspberrypi4-64.swu`.<br>
-Wifi/bluetooth commissioning is controlled per machine by `/etc/omnect/device_caps.json`; see [doc/wifi_commissioning.md](doc/wifi_commissioning.md).
+Wifi/bluetooth commissioning is controlled per machine by the [device capabilities](doc/device_caps.md); see [doc/wifi_commissioning.md](doc/wifi_commissioning.md).
 
 ### Layer prioritization orchestration
 If you want to add additional yocto layers to your build, you can adapt layer priorities in `conf/layer.conf`. This layer is the last in the `BBLAYERS` yocto variable when you build with our `kas` configuration files. If not, you have to possibly adapt layer prioritization values in the last layer included in `BBLAYERS`.

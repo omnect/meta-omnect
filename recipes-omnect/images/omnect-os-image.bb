@@ -89,20 +89,19 @@ IMAGE_INSTALL = "\
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 
-# Guard the device_caps values against MACHINE_FEATURES: wifi or bluetooth enabled
-# in device_caps but absent from MACHINE_FEATURES installs a userspace stack with no
+# Guard the device capabilities against MACHINE_FEATURES: a capability enabled in
+# device_caps but absent from MACHINE_FEATURES installs a userspace stack with no
 # kernel driver/firmware. Fail the build so it is caught here, not in the field.
-# The values themselves are validated in lib/omnect/device_caps.py.
 python __anonymous() {
     machine = d.getVar('MACHINE')
-    for feat in ('wifi', 'bluetooth'):
-        distro_on = bb.utils.contains('DISTRO_FEATURES', feat, True, False, d)
-        machine_on = bb.utils.contains('MACHINE_FEATURES', feat, True, False, d)
-        if distro_on and not machine_on:
-            bb.fatal("%s: device_caps.json enables '%s' (DISTRO_FEATURES) but "
-                     "MACHINE_FEATURES lacks it, so there is no kernel driver/firmware. "
-                     "Add MACHINE_FEATURES '%s' for this machine or set device_caps "
-                     "'%s' to 'no'." % (machine, feat, feat, feat))
+    for cap in omnect.device_caps.KNOWN_CAPS:
+        if d.getVar('OMNECT_DEVICE_CAP_%s' % cap.upper()) not in omnect.device_caps.ENABLED_CAP_VALUES:
+            continue
+        if not bb.utils.contains('MACHINE_FEATURES', cap, True, False, d):
+            bb.fatal("%s: device_caps.json enables '%s' but MACHINE_FEATURES lacks it, "
+                     "so there is no kernel driver/firmware. Add MACHINE_FEATURES '%s' "
+                     "for this machine or set device_caps '%s' to 'no'."
+                     % (machine, cap, cap, cap))
 }
 
 # journalling on read-only files ystems doesn't make sense

@@ -4,7 +4,8 @@
 a local Unix-socket API, provided by `wifi-commissioning-service` (wcs).
 
 The single source of truth is `/etc/omnect/device_caps.json`, a flat per-machine
-JSON file. Two keys control this feature:
+JSON file ([device capabilities](device_caps.md)). Two of its keys control this
+feature:
 
 - `wifi` — `no` | `optional` | `yes`
 - `bluetooth` — `no` | `optional` | `yes`
@@ -17,13 +18,6 @@ The same file drives both **what is installed/compiled** (build time) and
 `DISTRO_FEATURES` `wifi` and `bluetooth` are derived from `device_caps.json`
 for the target `MACHINE` (see `conf/distro/include/omnect-os-distro.conf`). They are
 independent: each follows its own `device_caps` value.
-
-Every `MACHINE` needs a `files/device_caps/${MACHINE}.json`; it is searched in all
-layers listed in `BBLAYERS` and the first match wins. The file must contain the
-`wifi` and `bluetooth` keys, each set to `no`, `optional` or `yes`. A missing file,
-a missing key or any other value aborts the build in `lib/omnect/device_caps.py`.
-In addition, `recipes-omnect/images/omnect-os-image.bb` rejects a capability that is
-enabled here but missing from `MACHINE_FEATURES`.
 
 | `device_caps` value | `DISTRO_FEATURES` |
 | --- | --- |
@@ -49,11 +43,8 @@ compile the same bits. Only runtime behavior differs between them.
 `device_caps.json` controls install and runtime behavior through `DISTRO_FEATURES`
 `wifi` and `bluetooth`. It does not control the kernel side. The kernel wifi/
 bluetooth driver and firmware still come from the BSP, through `MACHINE_FEATURES`.
-
-The two must agree per machine. A machine whose `device_caps` enables `wifi` or
-`bluetooth` must also have the matching `MACHINE_FEATURES`. If not, the build
-fails: `omnect-os-image.bb` checks this and aborts with `bb.fatal` when
-`device_caps` turns on `wifi` or `bluetooth` that `MACHINE_FEATURES` does not have.
+The two must agree per machine, which the build enforces; see
+[device capabilities](device_caps.md#machine_features-has-to-agree).
 
 Setting `device_caps` to a capability the machine has no `MACHINE_FEATURES` for
 does not add a driver. The userspace stack (wpa_supplicant, wcs) would install,
