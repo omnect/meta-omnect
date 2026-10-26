@@ -75,8 +75,8 @@ do_install() {
     echo "z /etc 0775 root root -"              >> ${D}${libdir}/tmpfiles.d/omnect-base-files.conf
     echo "z /etc/hosts 0664 root root -"        >> ${D}${libdir}/tmpfiles.d/omnect-base-files.conf
     echo "z /etc/hostname 0664 root root -"     >> ${D}${libdir}/tmpfiles.d/omnect-base-files.conf
-    echo "z /mnt/cert/ca 0755 root root -"      >> ${D}${libdir}/tmpfiles.d/omnect-base-files.conf
-    echo "z /mnt/cert/priv 0755 root root -"    >> ${D}${libdir}/tmpfiles.d/omnect-base-files.conf
+    echo "d /mnt/cert/ca 0755 root root -"      >> ${D}${libdir}/tmpfiles.d/omnect-base-files.conf
+    echo "d /mnt/cert/priv 0755 root root -"    >> ${D}${libdir}/tmpfiles.d/omnect-base-files.conf
 }
 
 do_deploy() {
