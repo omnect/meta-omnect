@@ -8,9 +8,10 @@ inherit cargo
 # how to get omnect-device-service could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/omnect-device-service/0.46.1"
 SRC_URI += "git://github.com/JanZachmann/omnect-device-service.git;protocol=https;nobranch=1;branch=jz-2026-07-28-factory-reset-json-contract"
-SRCREV = "71f43506a76ab4fd075ee7d26473ec0a5f13c549"
+SRCREV = "7768ecee1fd6c35e6a62f72acc9ca4e46bb35b59"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
+PV:append = ".AUTOINC+7768ecee1f"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -278,7 +279,7 @@ SRC_URI += " \
     crate://crates.io/rustls-pki-types/1.15.1 \
     crate://crates.io/rustls-platform-verifier-android/0.1.1 \
     crate://crates.io/rustls-platform-verifier/0.7.0 \
-    crate://crates.io/rustls-webpki/0.103.15 \
+    crate://crates.io/rustls-webpki/0.103.16 \
     crate://crates.io/rustls/0.23.46 \
     crate://crates.io/rustversion/1.0.23 \
     crate://crates.io/ryu/1.0.23 \
@@ -377,7 +378,7 @@ SRC_URI += " \
     crate://crates.io/wasmtimer/0.4.3 \
     crate://crates.io/web-sys/0.3.105 \
     crate://crates.io/web-time/1.1.0 \
-    crate://crates.io/webpki-root-certs/1.0.9 \
+    crate://crates.io/webpki-root-certs/1.0.10 \
     crate://crates.io/winapi-i686-pc-windows-gnu/0.4.0 \
     crate://crates.io/winapi-util/0.1.11 \
     crate://crates.io/winapi-x86_64-pc-windows-gnu/0.4.0 \
@@ -767,7 +768,7 @@ SRC_URI[rustls-native-certs-0.8.4.sha256sum] = "dab5152771c58876a2146916e53e3505
 SRC_URI[rustls-pki-types-1.15.1.sha256sum] = "2f4925028c7eb5d1fcdaf196971378ed9d2c1c4efc7dc5d011256f76c99c0a96"
 SRC_URI[rustls-platform-verifier-0.7.0.sha256sum] = "26d1e2536ce4f35f4846aa13bff16bd0ff40157cdb14cc056c7b14ba41233ba0"
 SRC_URI[rustls-platform-verifier-android-0.1.1.sha256sum] = "f87165f0995f63a9fbeea62b64d10b4d9d8e78ec6d7d51fb2125fda7bb36788f"
-SRC_URI[rustls-webpki-0.103.15.sha256sum] = "f3c3cf1d8b1e7d4927e2d154c3fcb02979afb9939629c62cd9048d4f07b60ac2"
+SRC_URI[rustls-webpki-0.103.16.sha256sum] = "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281"
 SRC_URI[rustversion-1.0.23.sha256sum] = "cf54715a573b99ac80df0bc206da022bcd442c974952c7b9720069370852e21f"
 SRC_URI[ryu-1.0.23.sha256sum] = "9774ba4a74de5f7b1c1451ed6cd5285a32eddb5cccb8cc655a4e50009e06477f"
 SRC_URI[same-file-1.0.6.sha256sum] = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
@@ -865,7 +866,7 @@ SRC_URI[wasm-bindgen-shared-0.2.128.sha256sum] = "81941cd78d0c92026c33e5e0131284
 SRC_URI[wasmtimer-0.4.3.sha256sum] = "1c598d6b99ea013e35844697fc4670d08339d5cda15588f193c6beedd12f644b"
 SRC_URI[web-sys-0.3.105.sha256sum] = "9fbddc4a036f00ec4f18c83445bd3115cb306a91da554919a099d9222fe4a7f8"
 SRC_URI[web-time-1.1.0.sha256sum] = "5a6580f308b1fad9207618087a65c04e7a10bc77e02c8e84e9b00dd4b12fa0bb"
-SRC_URI[webpki-root-certs-1.0.9.sha256sum] = "b96554aa2acc8ccdb7e1c9a58a7a68dd5d13bccc69cd124cb09406db612a1c9b"
+SRC_URI[webpki-root-certs-1.0.10.sha256sum] = "58ec80e73fd8baf57bf0d9615554c75348bda990d6d5bbeab964dd068319fecb"
 SRC_URI[winapi-0.3.9.sha256sum] = "5c839a674fcd7a98952e593242ea400abe93992746761e38641405d28b00f419"
 SRC_URI[winapi-i686-pc-windows-gnu-0.4.0.sha256sum] = "ac3b87c63620426dd9b991e5ce0329eff545bccbbb34f3be09ff6fb6ab51b7b6"
 SRC_URI[winapi-util-0.1.11.sha256sum] = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
