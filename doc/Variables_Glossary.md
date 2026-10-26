@@ -148,6 +148,9 @@ If set to `OMNECT_RELEASE_IMAGE=1` no `OMNECT_DEVEL_TOOLS` get installed. Getty 
 # OMNECT_UBOOT_WRITEABLE_ENV_FLAGS
 Additional u-boot flags which have to be writable. See `CONFIG_ENV_FLAGS_LIST_STATIC` in upstream [documentation](https://github.com/u-boot/u-boot/blob/v2022.01/README).
 
+# OMNECT_USER_ID
+Numeric uid and gid of the omnect user in the rootfs and, with `flash-mode-2`, in the initramfs. Default is `15581`.
+
 # OMNECT_USER_PASSWORD
 Password of the omnect user. Default is "omnect".
 

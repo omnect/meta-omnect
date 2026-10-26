@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "\
 "
 INSANE_SKIP:${PN} += "already-stripped"
 
-CARGO_FEATURES:append = "${@'grub' if 'efi' in d.getVar('MACHINE_FEATURES') else 'uboot'}"
+CARGO_FEATURES:append = "${@bb.utils.contains('MACHINE_FEATURES', 'efi', 'grub', 'uboot', d)}"
 CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ',resize-data', '', d)}"
 CARGO_FEATURES:append = ",factory-reset"
 OMNECT_PART_TABLE ??= "gpt"
@@ -38,10 +38,6 @@ export BOOTLOADER_SEEK
 export OMNECT_PART_OFFSET_BOOT
 export OMNECT_PART_SIZE_BOOT
 export OMNECT_USER_ID
-
-do_compile:prepend() {
-    export LIBCLANG_PATH="${STAGING_LIBDIR_NATIVE}/llvm-rust/lib"
-}
 
 do_install:append() {
     mv ${D}/usr/bin/omnect-os-init ${D}/init

@@ -21,6 +21,7 @@ IMAGE_OVERHEAD_FACTOR = "1"
 GRUB_SUPPORT_PACKAGES = " \
     grub-editenv \
     grub-env \
+    util-linux-blkid \
 "
 
 UBOOT_SUPPORT_PACKAGES = " \
@@ -50,8 +51,8 @@ RESIZE_DATA_PACKAGES = "\
     parted \
 "
 
+# bash is only the debug shell, which a release image never starts.
 PACKAGE_INSTALL = "\
-    bash \
     coreutils \
     dosfstools \
     e2fsprogs \
@@ -59,11 +60,11 @@ PACKAGE_INSTALL = "\
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
     omnect-os-init \
-    util-linux-blkid \
     util-linux-fsck \
     util-linux-sfdisk \
     ${ROOTFS_BOOTSTRAP_INSTALL} \
     ${VIRTUAL-RUNTIME_base-utils} \
+    ${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', '', 'bash', d)} \
     ${@bb.utils.contains_any('DISTRO_FEATURES', 'flash-mode-2 flash-mode-3', '${FLASH_MODE_NETWORK_PACKAGES}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', '${FLASH_MODE_2_PACKAGES}', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', '${FLASH_MODE_3_PACKAGES}', '', d)} \
