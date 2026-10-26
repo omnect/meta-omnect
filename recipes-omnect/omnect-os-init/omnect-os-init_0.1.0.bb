@@ -7,11 +7,11 @@ inherit cargo
 
 # how to get omnect-os-init could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/omnect-os-init/0.1.0"
-SRC_URI += "git://github.com/omnect/omnect-os-init.git;protocol=https;nobranch=1"
-SRCREV = "4d02021ccba6a877a373da4de3b962db99d37e3b"
+SRC_URI += "git://github.com/JanZachmann/omnect-os-init.git;protocol=https;nobranch=1;branch=fix/legacy-parity"
+SRCREV = "4329c508bc3d595376c7ce2eb7391eb92a225d68"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+4d02021ccb"
+PV:append = ".AUTOINC+4329c508bc"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
