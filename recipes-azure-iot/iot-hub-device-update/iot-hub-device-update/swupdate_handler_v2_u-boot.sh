@@ -699,6 +699,14 @@ InstallUpdate() {
         # Failed to determine whether the update has been installed or not.
         # Return current ADUC_Result
         echo "Failed to determine wehther the update has been installed or not."
+    elif [[ $resultCode -eq 901 ]] && [[ "$(sudo bootloader_env.sh get omnect_os_bootpart)" == "${update_part}" ]]; then
+        # a bootloader update already switched to the update partition, which cannot be undone: writing
+        # it again would leave no complete rootfs to boot if this install or its validation fails
+        resultCode=0
+        make_swupdate_handler_erc 300 extendedResultCode
+        resultDetails="Switch to the update partition pending: reboot before installing another update."
+        log_error "$resultDetails"
+        ret_val=0
     elif [[ $resultCode -eq 901 ]]; then
         # Not installed.
 
