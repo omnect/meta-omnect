@@ -699,9 +699,10 @@ InstallUpdate() {
         # Failed to determine whether the update has been installed or not.
         # Return current ADUC_Result
         echo "Failed to determine wehther the update has been installed or not."
-    elif [[ $resultCode -eq 901 ]] && [[ "$(sudo bootloader_env.sh get omnect_os_bootpart)" == "${update_part}" ]]; then
-        # a bootloader update already switched to the update partition, which cannot be undone: writing
-        # it again would leave no complete rootfs to boot if this install or its validation fails
+    elif [[ $resultCode -eq 901 ]] && { [[ -f /tmp/omnect-bootloader-update ]] || [[ "$(sudo bootloader_env.sh get omnect_os_bootpart)" == "${update_part}" ]]; }; then
+        # the bootloader was updated in this boot, which cannot be undone, so only the switch to the update
+        # partition is left: writing it again would leave no complete rootfs to boot if this install or its
+        # validation fails
         resultCode=0
         make_swupdate_handler_erc 300 extendedResultCode
         resultDetails="Switch to the update partition pending: reboot before installing another update."
@@ -727,9 +728,8 @@ InstallUpdate() {
 
             ret_val=255
             if [[ ${public_key_file} != "" ]]; then
-                # markers of a cancelled previous attempt must not leak into this one
-                rm -f /tmp/omnect-bootloader-update /tmp/omnect_extra_bootargs.done
-                cp /boot/omnect_extra_bootargs_omnect /tmp/omnect_extra_bootargs_omnect.backup
+                # keep the backup of the first attempt in this boot: it holds the args of the current rootfs
+                [ -f /tmp/omnect_extra_bootargs_omnect.backup ] || cp /boot/omnect_extra_bootargs_omnect /tmp/omnect_extra_bootargs_omnect.backup
                 swupdate -v -i "${image_file}" -k "${public_key_file}" -e ${selection} &>> "${swupdate_log_file}" && \
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,kernelargs &>> "${swupdate_log_file}"
                 ret_val=$?
