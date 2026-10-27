@@ -1,5 +1,8 @@
 /tmp
 *~
 *.sw?
+# emacs auto-save buffers and lock symlinks
+\#*\#
+.\#*
 /docs
 __pycache__/
