@@ -732,6 +732,10 @@ InstallUpdate() {
                     if [ ${ret_val} -ne 0 ] && [ -f "/tmp/omnect-bootloader-update-not-necessary" ]; then
                         ret_val=0
                         rm /tmp/omnect-bootloader-update-not-necessary
+                    elif [ ${ret_val} -ne 0 ]; then
+                        # the sw-description hook sets the marker before the bootloader is written, so
+                        # without this a failed write would make CancelUpdate() switch to the new rootfs
+                        rm -f /tmp/omnect-bootloader-update
                     fi
                 fi
             fi
