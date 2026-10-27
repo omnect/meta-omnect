@@ -713,7 +713,18 @@ InstallUpdate() {
 
         # install an update.
         echo "Installing update." >> "${log_file}"
-        if [[ -f $image_file ]]; then
+        # keep the backup of the first attempt in this boot: it holds the args of the current rootfs. A
+        # missing file means no args, like in omnect_extra_bootargs.sh, and cancel needs a backup to restore.
+        if [[ ! -f /tmp/omnect_extra_bootargs_omnect.backup ]]; then
+            [ -f /boot/omnect_extra_bootargs_omnect ] || touch /boot/omnect_extra_bootargs_omnect
+            cp /boot/omnect_extra_bootargs_omnect /tmp/omnect_extra_bootargs_omnect.backup || rm -f /tmp/omnect_extra_bootargs_omnect.backup
+        fi
+        if [[ ! -f /tmp/omnect_extra_bootargs_omnect.backup ]]; then
+            resultCode=0
+            make_swupdate_handler_erc 301 extendedResultCode
+            resultDetails="Failed to back up /boot/omnect_extra_bootargs_omnect."
+            log_error "$resultDetails"
+        elif [[ -f $image_file ]]; then
 
             # Note: Swupdate can use a public key to validate the signature of an image.
             #
@@ -728,8 +739,6 @@ InstallUpdate() {
 
             ret_val=255
             if [[ ${public_key_file} != "" ]]; then
-                # keep the backup of the first attempt in this boot: it holds the args of the current rootfs
-                [ -f /tmp/omnect_extra_bootargs_omnect.backup ] || cp /boot/omnect_extra_bootargs_omnect /tmp/omnect_extra_bootargs_omnect.backup
                 swupdate -v -i "${image_file}" -k "${public_key_file}" -e ${selection} &>> "${swupdate_log_file}" && \
                     swupdate -v -i "${image_file}" -k "${public_key_file}" -e stable,kernelargs &>> "${swupdate_log_file}"
                 ret_val=$?
