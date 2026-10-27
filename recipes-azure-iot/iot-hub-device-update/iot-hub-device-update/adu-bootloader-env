@@ -1,5 +1,6 @@
 # firmware update + update validation finalization
 adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh get omnect_extra_bootargs
+adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh get omnect_os_bootpart
 # warning: using a wildcard here - the value is not static
 adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh set omnect_extra_bootargs *
 adu ALL=(root) NOPASSWD: /usr/sbin/bootloader_env.sh unset omnect_extra_bootargs
