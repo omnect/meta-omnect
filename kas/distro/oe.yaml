@@ -17,8 +17,8 @@ repos:
   ext/_openembedded-core: #_ prefixed because of layer order with same prio e.g. meta-openembedded
     url: "https://git.openembedded.org/openembedded-core"
     branch: "wrynose"
-    # tag yocto-6.0.4
-    commit: "0f03c732a0a2d0506b41b1abe60b3f368b2300dc"
+    # wrynose past tag yocto-6.0.4, for the ca-certificates eMudhra CA distrust
+    commit: "bb14ef50f1af8c96282e0533c53535deadda7365"
     layers:
       meta:
     patches:
