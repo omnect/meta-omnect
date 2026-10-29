@@ -81,6 +81,9 @@ Internal helper holding the `bluetooth` value read from `files/device_caps/${MAC
 # OMNECT_DEVICE_CAP_WIFI
 Internal helper holding the `wifi` value read from `files/device_caps/${MACHINE}.json` (`no` | `optional` | `yes`). Set in `conf/distro/include/omnect-os-distro.conf` and used to derive the `wifi` `DISTRO_FEATURE`. See [doc/wifi_commissioning.md](wifi_commissioning.md).
 
+# OMNECT_EARLY_MODULES
+Kernel modules the initramfs loads before `switch_root`, separated by spaces. When set, the init is built with early module load and the rootfs gets the list in `/etc/omnect/early-modules.d/omnect.conf`. Set to `imx_sdma` on i.MX8MM machines; empty by default.
+
 # OMNECT_FDT_LOAD_NAME
 Name of u-boot device-tree bootscript to be generated for devices using u-boot as bootloader. Default is "fdt-load.scr".
 
@@ -122,7 +125,7 @@ Size of boot partition. See [partition layout](https://github.com/omnect/meta-om
 Size of certificate partition. See [partition layout](https://github.com/omnect/meta-omnect?tab=readme-ov-file#partition-layout).
 
 # OMNECT_PART_SIZE_DATA
-Size of data partition. Gets increased to available space on first boot, if `resized-data` is in [DISTRO_FEATURES](https://docs.yoctoproject.org/ref-manual/variables.html#term-MACHINE_FEATURES).
+Size of data partition. Gets increased to available space on first boot, if `resize-data` is in [DISTRO_FEATURES](https://docs.yoctoproject.org/ref-manual/variables.html#term-DISTRO_FEATURES). Flash mode 1 sets the data partition of the clone to this size.
 
 # OMNECT_PART_SIZE_ETC
 Size of etc overlay parition. See [partition layout](https://github.com/omnect/meta-omnect?tab=readme-ov-file#partition-layout).
@@ -138,12 +141,18 @@ Size of u-boot environment.
 *Note*: This variable is used to create u-boot userspace runtime config files and the omnect-os-image. If you want to configure the u-boot env size for u-boot, you have to set it in the appropriate u-boot redundant-env.cfg file, e.g.
 https://github.com/omnect/meta-omnect/blob/main/dynamic-layers/raspberrypi/recipes-bsp/u-boot/u-boot/redundant-env.cfg.
 
+# OMNECT_PART_TABLE
+Partition table the initramfs is built for: `gpt` or `dos`. Default is `gpt`. Set it to `dos` for a machine whose wks file uses `--ptable msdos`.
+
 # OMNECT_RELEASE_IMAGE
 Boolean to reflect if a devel or a release image gets build.
 If set to `OMNECT_RELEASE_IMAGE=1` no `OMNECT_DEVEL_TOOLS` get installed. Getty is disabled. U-boot and grub are configured to be non-interruptible and silent as possible. Kernel is silent on ttyS0. Local ssh access via omnect user is disabled.
 
 # OMNECT_UBOOT_WRITEABLE_ENV_FLAGS
 Additional u-boot flags which have to be writable. See `CONFIG_ENV_FLAGS_LIST_STATIC` in upstream [documentation](https://github.com/u-boot/u-boot/blob/v2022.01/README).
+
+# OMNECT_USER_ID
+Numeric uid and gid of the omnect user in the rootfs and, with `flash-mode-2`, in the initramfs. Default is `15581`.
 
 # OMNECT_USER_PASSWORD
 Password of the omnect user. Default is "omnect".

@@ -87,6 +87,7 @@ IMAGE_INSTALL = "\
     sudo \
     systemd-analyze \
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
+    ${@'omnect-os-init-early-modules' if d.getVar('OMNECT_EARLY_MODULES') else ''} \
 "
 
 # Validate the device_caps values and guard them against MACHINE_FEATURES. An

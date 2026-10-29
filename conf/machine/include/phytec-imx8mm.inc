@@ -100,6 +100,10 @@ SYSTEMD_RebootWatchdogSec   = "60"
 MACHINEOVERRIDES:prepend = "omnect_uboot:omnect_pstore:"
 MACHINEOVERRIDES:append = ":phytec-imx8mm"
 
+# imx_sdma is a module; load it in the initramfs, so SPI and UART drivers do
+# not wait for udev to load it.
+OMNECT_EARLY_MODULES ?= "imx_sdma"
+
 # For now remove optee from MACHINE_FEATURES. We don't support secure boot at
 # the moment and tee-supplicant will fail, because we don't boot with the
 # appropriate device-tree.
@@ -123,5 +127,4 @@ OMNECT_BOOTLOADER_RECIPE_PATH = "${LAYERDIR_phytec}/recipes-bsp/u-boot/u-boot-ph
 # OMNECT_BOOTLOADER_CHECKSUM_EXPTECTED:pn-bootloader-versioned - build will fail, if the
 # computed checksum is different to this; set to <oldchecksum> when
 # OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned is set
-OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "c216ffb0a152441906dc9a158b39161cf5fe368e5ebb9715fe59e6cf08b1b34c"
-OMNECT_BOOTLOADER_CHECKSUM_COMPATIBLE:pn-bootloader-versioned = "d03f5a886c652885ac5dd2c41edf5c3d467dbf78ff0bfdad25d5dd5717b983d3 c216ffb0a152441906dc9a158b39161cf5fe368e5ebb9715fe59e6cf08b1b34c"
+OMNECT_BOOTLOADER_CHECKSUM_EXPECTED:pn-bootloader-versioned = "1590d2144f65d610cf052c4b88605fb2bf36ba077abb7d5bc876523bd6aa6220"
