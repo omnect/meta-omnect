@@ -42,8 +42,8 @@ export OMNECT_PART_SIZE_BOOT
 export OMNECT_USER_ID
 
 do_install:append() {
-    mv ${D}/usr/bin/omnect-os-init ${D}/init
-    rmdir ${D}/usr/bin ${D}/usr
+    mv ${D}${bindir}/omnect-os-init ${D}/init
+    rmdir ${D}${bindir} ${D}${exec_prefix}
 
     if [ -n "${OMNECT_EARLY_MODULES}" ]; then
         install -d ${D}${sysconfdir}/omnect/early-modules.d

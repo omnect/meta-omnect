@@ -61,13 +61,13 @@ do_install() {
     fi
 
     # install mountpoints
-    install -d -D ${D}/mnt/cert \
-    install -d -D ${D}/mnt/data \
-    install -d -D ${D}/mnt/etc \
-    install -d -D ${D}/mnt/factory \
-    install -d -D ${D}/mnt/rootCurrent \
-    install -d -D ${D}/mnt/rootCurrentPrivate \
-    install -d -D ${D}/var/lib \
+    install -d -D ${D}/mnt/cert
+    install -d -D ${D}/mnt/data
+    install -d -D ${D}/mnt/etc
+    install -d -D ${D}/mnt/factory
+    install -d -D ${D}/mnt/rootCurrent
+    install -d -D ${D}/mnt/rootCurrentPrivate
+    install -d -D ${D}/var/lib
     install -d -D ${D}${exec_prefix}/local
 
     # create tmpfiles.d entry to (re)create permissions on injectables

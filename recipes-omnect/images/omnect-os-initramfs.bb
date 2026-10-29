@@ -36,7 +36,7 @@ FLASH_MODE_2_PACKAGES = "\
     dropbear \
 "
 # libcurl recommends ca-certificates, so the bundle is installed on every
-# machine; curl checks against it only on machines with a real-time clock.
+# machine.
 FLASH_MODE_3_PACKAGES = "\
     ca-certificates \
     curl \
