@@ -4,7 +4,6 @@ import bb
 
 KNOWN_CAPS = ('3g', 'bluetooth', 'tpm2', 'wifi')
 VALID_CAP_VALUES = ('no', 'optional', 'yes')
-ENABLED_CAP_VALUES = ('optional', 'yes')
 
 
 def _rel_json_path(machine):
@@ -45,6 +44,12 @@ def _load_device_caps(json_path):
                      f"{data[cap]!r} (expected one of {', '.join(VALID_CAP_VALUES)}).")
 
     return data
+
+
+def is_enabled(value):
+    # The values stay literal: bitbake hashes the source of a public function,
+    # but not module constants.
+    return value in ('optional', 'yes')
 
 
 def get_cap(d, cap_name):

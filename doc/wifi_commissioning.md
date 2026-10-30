@@ -40,8 +40,8 @@ compile the same bits. Only runtime behavior differs between them.
 
 ## MACHINE_FEATURES and device_caps must agree
 
-`device_caps.json` controls install and runtime behavior through `DISTRO_FEATURES`
-`wifi` and `bluetooth`. It does not control the kernel side. The kernel wifi/
+The `wifi` and `bluetooth` values control install and runtime behavior. They do
+not control the kernel side. The kernel wifi/
 bluetooth driver and firmware still come from the BSP, through `MACHINE_FEATURES`.
 The two must agree per machine, which the build enforces; see
 [device capabilities](device_caps.md#machine_features-has-to-agree).

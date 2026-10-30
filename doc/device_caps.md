@@ -40,11 +40,12 @@ support out of the image, so editing the installed copy cannot enable it
 afterwards. `optional` and `yes` both build it in, and the installed copy decides
 what is started.
 
-For `3g` and `tpm2` the value changes nothing in the build. Their
-`DISTRO_FEATURES` follow `MACHINE_FEATURES` instead, so a machine with
-`"tpm2": "no"` and `tpm2` in `MACHINE_FEATURES` still gets the full TPM support,
-and nothing on the device reads these two values. For them the entry is a
-declaration that is kept consistent with `MACHINE_FEATURES`, nothing more.
+For `3g` and `tpm2` the value changes nothing in the build. Their behavior follows
+`MACHINE_FEATURES` instead: `3g` in `omnect-os-distro.conf`, `tpm2` in
+`omnect-os-user_classes.conf`. A machine with `"tpm2": "no"` and `tpm2` in
+`MACHINE_FEATURES` still gets the full TPM support, and nothing on the device reads
+these two values. For them the entry is a declaration that is kept consistent with
+`MACHINE_FEATURES`, nothing more.
 
 ## Where the file is looked up
 
@@ -114,17 +115,11 @@ task code. Only the variable's `[vardepvalue]` flag puts the JSON value into the
 task signature; a task calling `get_cap()` directly hashes just the function source
 and `MACHINE`, and would still be served from sstate after a capability changed.
 
-Not every capability drives a `DISTRO_FEATURE` from its value. `wifi` and
-`bluetooth` do, in `omnect-os-distro.conf`. The `3g` and `tpm2` `DISTRO_FEATURES`
-are derived from `MACHINE_FEATURES` instead, in `omnect-os-distro.conf` and in
-`conf/distro/include/omnect-os-user_classes.conf`.
-
 ## Runtime
 
 `/etc/omnect/device_caps.json` is read by
 `omnect-wifi-commissioning-start.sh`, which looks at `wifi` and `bluetooth` to
-decide what to start; see [wifi commissioning](wifi_commissioning.md). No other
-component reads the file, so `3g` and `tpm2` have no effect on the device. The
+decide what to start; see [wifi commissioning](wifi_commissioning.md). The
 file may be adapted per device, so a device class shipped with `wifi` or
-`bluetooth` set to `optional` can be narrowed down for an individual unit without
-a rebuild.
+`bluetooth` set to `optional` can be switched on for an individual unit, by
+setting the value to `yes`, without a rebuild.

@@ -89,11 +89,9 @@ IMAGE_INSTALL = "\
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 
-# Guard the device capabilities and DISTRO_FEATURES against MACHINE_FEATURES,
-# which carry the same names. Driver and firmware come from the BSP through
-# MACHINE_FEATURES; neither of the other two pulls them in. For wifi and
-# bluetooth this would install a userspace stack with nothing behind it, for 3g
-# and tpm2 it keeps the JSON and MACHINE_FEATURES from stating different things.
+# An enabled capability or DISTRO_FEATURE needs the MACHINE_FEATURES entry of
+# the same name, which brings the driver and firmware from the BSP. For 3g and
+# tpm2 the capability check only keeps the JSON and MACHINE_FEATURES consistent.
 python __anonymous() {
     machine = d.getVar('MACHINE')
     for cap in omnect.device_caps.KNOWN_CAPS:
@@ -108,7 +106,7 @@ python __anonymous() {
                          "layer or in local.conf."
                          % (machine, cap))
             continue
-        if value in omnect.device_caps.ENABLED_CAP_VALUES:
+        if omnect.device_caps.is_enabled(value):
             bb.fatal("%s: device_caps.json enables '%s' but MACHINE_FEATURES lacks it, "
                      "so there is no kernel driver/firmware. Add MACHINE_FEATURES '%s' "
                      "for this machine or set device_caps '%s' to 'no'."
