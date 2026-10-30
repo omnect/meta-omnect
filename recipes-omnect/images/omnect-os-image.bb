@@ -97,14 +97,23 @@ IMAGE_INSTALL = "\
 python __anonymous() {
     machine = d.getVar('MACHINE')
     for cap in omnect.device_caps.KNOWN_CAPS:
+        value = omnect.device_caps.get_cap(d, cap)
+        in_distro = bb.utils.contains('DISTRO_FEATURES', cap, True, False, d)
         if bb.utils.contains('MACHINE_FEATURES', cap, True, False, d):
+            # For 3g and tpm2 DISTRO_FEATURES follow MACHINE_FEATURES, so only
+            # wifi and bluetooth can contradict the value 'no'.
+            if cap in ('wifi', 'bluetooth') and value == 'no' and in_distro:
+                bb.fatal("%s: device_caps.json sets '%s' to 'no' but DISTRO_FEATURES "
+                         "contains it. Look for a DISTRO_FEATURES:append in a "
+                         "layer or in local.conf."
+                         % (machine, cap))
             continue
-        if omnect.device_caps.get_cap(d, cap) in omnect.device_caps.ENABLED_CAP_VALUES:
+        if value in omnect.device_caps.ENABLED_CAP_VALUES:
             bb.fatal("%s: device_caps.json enables '%s' but MACHINE_FEATURES lacks it, "
                      "so there is no kernel driver/firmware. Add MACHINE_FEATURES '%s' "
                      "for this machine or set device_caps '%s' to 'no'."
                      % (machine, cap, cap, cap))
-        if bb.utils.contains('DISTRO_FEATURES', cap, True, False, d):
+        if in_distro:
             bb.fatal("%s: DISTRO_FEATURES contains '%s' but MACHINE_FEATURES lacks it, "
                      "so there is no kernel driver/firmware. Look for a "
                      "DISTRO_FEATURES:append in a layer or in local.conf."

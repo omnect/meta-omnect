@@ -94,7 +94,9 @@ catches a feature added by a `DISTRO_FEATURES:append` in a layer or in
 
 The reverse is allowed: a machine may have the hardware in `MACHINE_FEATURES` and
 still set the capability to `no`, which is how a device class is shipped with
-hardware that is deliberately not used.
+hardware that is deliberately not used. For `wifi` and `bluetooth` the check then
+aborts the build if `DISTRO_FEATURES` contains the feature anyway, for example
+through a `DISTRO_FEATURES:append`, because `no` must keep it out of the image.
 
 ## Reading a capability during the build
 
