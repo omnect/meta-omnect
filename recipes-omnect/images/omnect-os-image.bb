@@ -89,26 +89,33 @@ IMAGE_INSTALL = "\
     ${@oe.utils.conditional('OMNECT_RELEASE_IMAGE', '1', '', '${OMNECT_DEVEL_TOOLS}', d)} \
 "
 
-# Validate the device_caps values and guard them against MACHINE_FEATURES. An
-# unknown value would silently drop the feature, and wifi or bluetooth enabled in
-# device_caps but absent from MACHINE_FEATURES installs a userspace stack with no
-# kernel driver/firmware. Fail the build so both are caught here, not in the field.
+# An enabled capability or DISTRO_FEATURE needs the MACHINE_FEATURES entry of
+# the same name, which brings the driver and firmware from the BSP. For 3g and
+# tpm2 the capability check only keeps the JSON and MACHINE_FEATURES consistent.
 python __anonymous() {
     machine = d.getVar('MACHINE')
-    for feat, var in (('wifi', 'OMNECT_DEVICE_CAP_WIFI'), ('bluetooth', 'OMNECT_DEVICE_CAP_BLUETOOTH')):
-        value = d.getVar(var)
-        # '' = no device_caps.json (or key) for this machine -> feature off. Machines
-        # without the file (e.g. qemu) must still build, so '' is allowed here.
-        if value not in ('', 'no', 'optional', 'yes'):
-            bb.fatal("%s: device_caps.json '%s' has invalid value '%s' "
-                     "(expected 'no', 'optional' or 'yes')." % (machine, feat, value))
-        distro_on = bb.utils.contains('DISTRO_FEATURES', feat, True, False, d)
-        machine_on = bb.utils.contains('MACHINE_FEATURES', feat, True, False, d)
-        if distro_on and not machine_on:
-            bb.fatal("%s: device_caps.json enables '%s' (DISTRO_FEATURES) but "
-                     "MACHINE_FEATURES lacks it, so there is no kernel driver/firmware. "
-                     "Add MACHINE_FEATURES '%s' for this machine or set device_caps "
-                     "'%s' to 'no'." % (machine, feat, feat, feat))
+    for cap in omnect.device_caps.KNOWN_CAPS:
+        value = omnect.device_caps.get_cap(d, cap)
+        in_distro = bb.utils.contains('DISTRO_FEATURES', cap, True, False, d)
+        if bb.utils.contains('MACHINE_FEATURES', cap, True, False, d):
+            # For 3g and tpm2 DISTRO_FEATURES follow MACHINE_FEATURES, so only
+            # wifi and bluetooth can contradict the value 'no'.
+            if cap in ('wifi', 'bluetooth') and value == 'no' and in_distro:
+                bb.fatal("%s: device_caps.json sets '%s' to 'no' but DISTRO_FEATURES "
+                         "contains it. Look for a DISTRO_FEATURES:append in a "
+                         "layer or in local.conf."
+                         % (machine, cap))
+            continue
+        if omnect.device_caps.is_enabled(value):
+            bb.fatal("%s: device_caps.json enables '%s' but MACHINE_FEATURES lacks it, "
+                     "so there is no kernel driver/firmware. Add MACHINE_FEATURES '%s' "
+                     "for this machine or set device_caps '%s' to 'no'."
+                     % (machine, cap, cap, cap))
+        if in_distro:
+            bb.fatal("%s: DISTRO_FEATURES contains '%s' but MACHINE_FEATURES lacks it, "
+                     "so there is no kernel driver/firmware. Look for a "
+                     "DISTRO_FEATURES:append in a layer or in local.conf."
+                     % (machine, cap))
 }
 
 # journalling on read-only files ystems doesn't make sense
