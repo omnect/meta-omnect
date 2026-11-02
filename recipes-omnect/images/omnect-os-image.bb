@@ -99,12 +99,17 @@ python __anonymous() {
         in_distro = bb.utils.contains('DISTRO_FEATURES', cap, True, False, d)
         if bb.utils.contains('MACHINE_FEATURES', cap, True, False, d):
             # For 3g and tpm2 DISTRO_FEATURES follow MACHINE_FEATURES, so only
-            # wifi and bluetooth can contradict the value 'no'.
-            if cap in ('wifi', 'bluetooth') and value == 'no' and in_distro:
-                bb.fatal("%s: device_caps.json sets '%s' to 'no' but DISTRO_FEATURES "
-                         "contains it. Look for a DISTRO_FEATURES:append in a "
-                         "layer or in local.conf."
-                         % (machine, cap))
+            # wifi and bluetooth can contradict the value.
+            if cap in ('wifi', 'bluetooth'):
+                if value == 'no' and in_distro:
+                    bb.fatal("%s: device_caps.json sets '%s' to 'no' but DISTRO_FEATURES "
+                             "contains it. Look for a DISTRO_FEATURES:append in a "
+                             "layer or in local.conf."
+                             % (machine, cap))
+                if omnect.device_caps.is_enabled(value) and not in_distro:
+                    bb.fatal("%s: device_caps.json enables '%s' but DISTRO_FEATURES lacks it. "
+                             "Look for a DISTRO_FEATURES:remove in a layer or in local.conf."
+                             % (machine, cap))
             continue
         if omnect.device_caps.is_enabled(value):
             bb.fatal("%s: device_caps.json enables '%s' but MACHINE_FEATURES lacks it, "

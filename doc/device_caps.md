@@ -95,9 +95,15 @@ catches a feature added by a `DISTRO_FEATURES:append` in a layer or in
 
 The reverse is allowed: a machine may have the hardware in `MACHINE_FEATURES` and
 still set the capability to `no`, which is how a device class is shipped with
-hardware that is deliberately not used. For `wifi` and `bluetooth` the check then
-aborts the build if `DISTRO_FEATURES` contains the feature anyway, for example
-through a `DISTRO_FEATURES:append`, because `no` must keep it out of the image.
+hardware that is deliberately not used.
+
+For `wifi` and `bluetooth` the value and `DISTRO_FEATURES` must also agree when the
+hardware is present. The check aborts the build if the value is `no` and
+`DISTRO_FEATURES` contains the feature, for example through a
+`DISTRO_FEATURES:append`, because `no` must keep it out of the image. It also aborts
+if the value is `optional` or `yes` and `DISTRO_FEATURES` lacks the feature, for
+example through a `DISTRO_FEATURES:remove`: the image would then lack the stack that
+the installed JSON asks the device to start.
 
 ## Reading a capability during the build
 
@@ -111,8 +117,9 @@ through a `DISTRO_FEATURES:append`, because `no` must keep it out of the image.
 | `wifi` | `OMNECT_DEVICE_CAP_WIFI` |
 
 Recipes must read a capability through its variable and never call `get_cap()` from
-task code. Only the variable's `[vardepvalue]` flag puts the JSON value into the
-task signature; a task calling `get_cap()` directly hashes just the function source
+task code. The variable holds the JSON value, which is read once while the
+configuration is parsed, so the value is part of the signature of every task that
+reads it. A task calling `get_cap()` directly hashes just the function source
 and `MACHINE`, and would still be served from sstate after a capability changed.
 
 ## Runtime
