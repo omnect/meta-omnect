@@ -3,20 +3,20 @@
 `omnect-os` can commission Wi-Fi (join a network) over a BLE GATT interface and
 a local Unix-socket API, provided by `wifi-commissioning-service` (wcs).
 
-The single source of truth is `/etc/omnect/device_caps.json`, a flat per-machine
-JSON file. Two keys control this feature:
+The build reads `files/device_caps/${MACHINE}.json`, the device reads its
+installed copy `/etc/omnect/device_caps.json`; see
+[device capabilities](device_caps.md). Two of its keys control this feature:
 
 - `wifi` — `no` | `optional` | `yes`
 - `bluetooth` — `no` | `optional` | `yes`
 
-The same file drives both **what is installed/compiled** (build time) and
+These two keys control both **what is installed/compiled** (build time) and
 **what actually starts** (runtime). The interface is assumed to be `wlan0`.
 
 ## Build time: install and compile
 
-`DISTRO_FEATURES` `wifi` and `bluetooth` are derived from `device_caps.json`
-for the target `MACHINE` (see `conf/distro/include/omnect-os-distro.conf`; the
-values are validated in `recipes-omnect/images/omnect-os-image.bb`). They are
+`DISTRO_FEATURES` `wifi` and `bluetooth` are derived from the capability values
+for the target `MACHINE` (see `conf/distro/include/omnect-os-distro.conf`). They are
 independent: each follows its own `device_caps` value.
 
 | `device_caps` value | `DISTRO_FEATURES` |
@@ -40,14 +40,11 @@ compile the same bits. Only runtime behavior differs between them.
 
 ## MACHINE_FEATURES and device_caps must agree
 
-`device_caps.json` controls install and runtime behavior through `DISTRO_FEATURES`
-`wifi` and `bluetooth`. It does not control the kernel side. The kernel wifi/
+The `wifi` and `bluetooth` values control install and runtime behavior. They do
+not control the kernel side. The kernel wifi/
 bluetooth driver and firmware still come from the BSP, through `MACHINE_FEATURES`.
-
-The two must agree per machine. A machine whose `device_caps` enables `wifi` or
-`bluetooth` must also have the matching `MACHINE_FEATURES`. If not, the build
-fails: `omnect-os-image.bb` checks this and aborts with `bb.fatal` when
-`device_caps` turns on `wifi` or `bluetooth` that `MACHINE_FEATURES` does not have.
+The two must agree per machine, which the build enforces; see
+[device capabilities](device_caps.md#machine_features-has-to-agree).
 
 Setting `device_caps` to a capability the machine has no `MACHINE_FEATURES` for
 does not add a driver. The userspace stack (wpa_supplicant, wcs) would install,
