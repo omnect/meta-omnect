@@ -823,6 +823,7 @@ ApplyUpdate() {
     else
         # bootargs handling
         # normally we would use omnect_extra_bootargs.sh here, but it isn't available prior to 5.0.16
+        # TODO: switch to omnect_extra_bootargs.sh once no supported release is older than 5.0.16 (updates from 5.0.9 on dehndetect)
         current_bootargs="$(sudo bootloader_env.sh get omnect_extra_bootargs)"
         new_bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
         new_bootargs="$(echo ${new_bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
