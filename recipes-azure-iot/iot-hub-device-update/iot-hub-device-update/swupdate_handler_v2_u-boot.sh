@@ -700,13 +700,20 @@ InstallUpdate() {
         # Return current ADUC_Result
         echo "Failed to determine wehther the update has been installed or not."
     elif [[ $resultCode -eq 901 ]] && { [[ -f /tmp/omnect-bootloader-update ]] || [[ "$(sudo bootloader_env.sh get omnect_os_bootpart)" == "${update_part}" ]]; }; then
-        # the bootloader was updated in this boot, which cannot be undone, so only the switch to the update
-        # partition is left: writing it again would leave no complete rootfs to boot if this install or its
-        # validation fails
-        resultCode=0
-        make_swupdate_handler_erc 300 extendedResultCode
-        resultDetails="Switch to the update partition pending: reboot before installing another update."
-        log_error "$resultDetails"
+        # a switch to the update partition is pending: writing it again would leave no complete rootfs to
+        # boot if this install or its validation fails. Finish the switch and reboot; the agent then checks
+        # the deployment again on the new rootfs. Without the marker the switch was already done.
+        if [[ ! -f /tmp/omnect-bootloader-update ]] || SwitchToUpdatePart; then
+            resultCode=605
+            extendedResultCode=0
+            resultDetails="Switch to the update partition pending: reboot before installing another update."
+            log_info "$resultDetails"
+        else
+            resultCode=0
+            make_swupdate_handler_erc 300 extendedResultCode
+            resultDetails="Switch to the update partition pending, but it failed: reboot before installing another update."
+            log_error "$resultDetails"
+        fi
         ret_val=0
     elif [[ $resultCode -eq 901 ]]; then
         # Not installed.
