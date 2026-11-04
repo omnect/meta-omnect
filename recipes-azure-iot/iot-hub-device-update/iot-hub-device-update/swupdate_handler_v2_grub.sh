@@ -828,9 +828,10 @@ ApplyUpdate() {
                 sudo bootloader_env.sh set omnect_validate_extra_bootargs "#noargs"
             fi
             ret_val=$?
-            if [[ $ret_val -eq 0 ]]; then
-                touch /tmp/omnect_extra_bootargs.done
-            fi
+        else
+            # a value left by an earlier attempt would otherwise be applied on the trial boot
+            sudo bootloader_env.sh unset omnect_validate_extra_bootargs
+            ret_val=$?
         fi
 
         # Set the bootloader environment variable
@@ -912,9 +913,7 @@ RestoreBootargs() {
 
     [ -f "${backup}" ] || return 0
 
-    if [ -f "/tmp/omnect_extra_bootargs.done" ]; then
-        sudo bootloader_env.sh unset omnect_validate_extra_bootargs || return
-    fi
+    sudo bootloader_env.sh unset omnect_validate_extra_bootargs || return
 
     cp "${backup}" /boot/omnect_extra_bootargs_omnect
 }
