@@ -1,0 +1,58 @@
+# The generated .bb sets S = "${WORKDIR}/git", which do_qa_unpack rejects.
+# Restore the oe-core default; this .inc is included after that assignment.
+S = "${UNPACKDIR}/${BP}"
+
+LICENSE = "MIT | Apache-2.0"
+
+LIC_FILES_CHKSUM = "\
+    file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302 \
+    file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10 \
+"
+INSANE_SKIP:${PN} += "already-stripped"
+
+# The features and build.rs read machine settings.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+CARGO_FEATURES:append = "${@bb.utils.contains('MACHINE_FEATURES', 'efi', 'grub', 'uboot', d)}"
+CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'resize-data', ',resize-data', '', d)}"
+CARGO_FEATURES:append = ",factory-reset"
+OMNECT_PART_TABLE ??= "gpt"
+CARGO_FEATURES:append = ",${OMNECT_PART_TABLE}"
+CARGO_FEATURES:append = "${@bb.utils.contains('OMNECT_RELEASE_IMAGE', '1', ',release-image', '', d)}"
+CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'persistent-var-log', ',persistent-var-log', '', d)}"
+CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', ',flash-mode-2', '', d)}"
+CARGO_FEATURES:append = "${@',flash-mode-2-direct' if bb.utils.contains('DISTRO_FEATURES', 'flash-mode-2', True, False, d) and d.getVar('OMNECT_FLASH_MODE_2_DIRECT_FLASHING') == '1' else ''}"
+CARGO_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flash-mode-3', ',flash-mode-3', '', d)}"
+# Without a reliable clock, flash mode 3 cannot check TLS certificates.
+CARGO_FEATURES:append = "${@bb.utils.contains('MACHINE_FEATURES', 'rtc', ',rtc', '', d)}"
+CARGO_FEATURES:append = "${@',early-modules' if d.getVar('OMNECT_EARLY_MODULES') else ''}"
+CARGO_BUILD_FLAGS += "--features ${CARGO_FEATURES}"
+
+# Read by build.rs for flash mode 1; a variable a machine does not set is not
+# exported and becomes None in the build.
+export OMNECT_PART_OFFSET_UBOOT_ENV1
+export OMNECT_PART_OFFSET_UBOOT_ENV2
+export OMNECT_PART_SIZE_UBOOT_ENV
+export OMNECT_PART_SIZE_DATA
+export BOOTLOADER_SEEK
+
+# Read by build.rs for flash mode 2.
+export OMNECT_PART_OFFSET_BOOT
+export OMNECT_PART_SIZE_BOOT
+export OMNECT_USER_ID
+
+do_install:append() {
+    mv ${D}${bindir}/omnect-os-init ${D}/init
+    rmdir ${D}${bindir} ${D}${exec_prefix}
+
+    if [ -n "${OMNECT_EARLY_MODULES}" ]; then
+        install -d ${D}${sysconfdir}/omnect/early-modules.d
+        printf '%s\n' ${OMNECT_EARLY_MODULES} > ${D}${sysconfdir}/omnect/early-modules.d/omnect.conf
+    fi
+}
+FILES:${PN} += "init"
+
+# The init reads the module list from the rootfs, so the rootfs image installs
+# this package.
+PACKAGES =+ "${PN}-early-modules"
+FILES:${PN}-early-modules = "${sysconfdir}/omnect/early-modules.d"
