@@ -881,22 +881,25 @@ ApplyUpdate() {
 
 #
 # Boots the new rootfs with its bootargs from now on, without validation. Used if the bootloader was
-# updated: it cannot be rolled back and must not boot the current rootfs again.
+# updated: it cannot be rolled back and must not boot the current rootfs again. The partition is set
+# first and the other steps run even if one fails: the new rootfs with the old args is the lesser failure.
 #
 SwitchToUpdatePart() {
-    local bootargs
+    local bootargs rc
 
+    sudo bootloader_env.sh set omnect_os_bootpart ${update_part} || return
+    sudo bootloader_env.sh set omnect_bootloader_updated 1
+    rc=$?
     bootargs="$(< /boot/omnect_extra_bootargs_omnect) $(< /boot/omnect_extra_bootargs_custom)"
     bootargs="$(echo ${bootargs} | awk '{$1=$1};1')" # remove possibly trailing space
     if [ "$(sudo bootloader_env.sh get omnect_extra_bootargs)" != "${bootargs}" ]; then
         if [ -n "${bootargs}" ]; then
-            sudo bootloader_env.sh set omnect_extra_bootargs "${bootargs}" || return
+            sudo bootloader_env.sh set omnect_extra_bootargs "${bootargs}" || rc=$?
         else
-            sudo bootloader_env.sh unset omnect_extra_bootargs || return
+            sudo bootloader_env.sh unset omnect_extra_bootargs || rc=$?
         fi
     fi
-    sudo bootloader_env.sh set omnect_bootloader_updated 1 || return
-    sudo bootloader_env.sh set omnect_os_bootpart ${update_part}
+    return $rc
 }
 
 #
