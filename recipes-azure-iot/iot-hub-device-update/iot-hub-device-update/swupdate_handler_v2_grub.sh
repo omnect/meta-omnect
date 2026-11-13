@@ -726,10 +726,13 @@ InstallUpdate() {
         # install an update.
         echo "Installing update." >> "${log_file}"
         # keep the backup of the first attempt in this boot: it holds the args of the current rootfs. A
-        # missing file means no args, like in omnect_extra_bootargs.sh, and cancel needs a backup to restore.
+        # missing file means no args, like in omnect_extra_bootargs.sh, and is backed up as an empty one.
         if [[ ! -f /tmp/omnect_extra_bootargs_omnect.backup ]]; then
-            [ -f /boot/omnect_extra_bootargs_omnect ] || touch /boot/omnect_extra_bootargs_omnect
-            cp /boot/omnect_extra_bootargs_omnect /tmp/omnect_extra_bootargs_omnect.backup || rm -f /tmp/omnect_extra_bootargs_omnect.backup
+            if [ -f /boot/omnect_extra_bootargs_omnect ]; then
+                cp /boot/omnect_extra_bootargs_omnect /tmp/omnect_extra_bootargs_omnect.backup
+            else
+                : > /tmp/omnect_extra_bootargs_omnect.backup
+            fi || rm -f /tmp/omnect_extra_bootargs_omnect.backup
         fi
         if [[ ! -f /tmp/omnect_extra_bootargs_omnect.backup ]]; then
             resultCode=0
@@ -935,7 +938,12 @@ RestoreBootargs() {
     sudo bootloader_env.sh unset omnect_validate_extra_bootargs
     rc=$?
 
-    cp "${backup}" /boot/omnect_extra_bootargs_omnect || rc=$?
+    # leave /boot untouched if install failed before changing it; a missing file was backed up as an empty one
+    if [ -f /boot/omnect_extra_bootargs_omnect ]; then
+        cmp -s "${backup}" /boot/omnect_extra_bootargs_omnect || cp "${backup}" /boot/omnect_extra_bootargs_omnect || rc=$?
+    elif [ -s "${backup}" ]; then
+        cp "${backup}" /boot/omnect_extra_bootargs_omnect || rc=$?
+    fi
     return $rc
 }
 
