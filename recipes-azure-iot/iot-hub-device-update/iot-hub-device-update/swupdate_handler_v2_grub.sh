@@ -767,6 +767,10 @@ InstallUpdate() {
                         # the sw-description hook sets the marker before the bootloader is written, so
                         # without this a failed write would make CancelUpdate() switch to the new rootfs
                         rm -f /tmp/omnect-bootloader-update
+                    elif [ ! -f "/tmp/omnect-bootloader-update-not-necessary" ]; then
+                        # the bootloader was written: make apply and cancel switch without validation even if
+                        # the hook did not create the marker
+                        touch /tmp/omnect-bootloader-update
                     fi
                 fi
             fi
