@@ -712,7 +712,11 @@ InstallUpdate() {
         else
             resultCode=0
             make_swupdate_handler_erc 300 extendedResultCode
-            resultDetails="Switch to the update partition pending, but it failed: reboot before installing another update."
+            if [[ "$(sudo bootloader_env.sh get omnect_os_bootpart)" == "${update_part}" ]]; then
+                resultDetails="Switch to the update partition pending, but it failed: reboot before installing another update."
+            else
+                resultDetails="Bootloader updated, but the new rootfs is not selected: do not reboot, the current rootfs may not start with the new bootloader."
+            fi
             log_error "$resultDetails"
         fi
         ret_val=0
