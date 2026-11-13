@@ -699,10 +699,11 @@ InstallUpdate() {
         # Failed to determine whether the update has been installed or not.
         # Return current ADUC_Result
         echo "Failed to determine wehther the update has been installed or not."
-    elif [[ $resultCode -eq 901 ]] && { [[ -f /tmp/omnect-bootloader-update ]] || [[ "$(sudo bootloader_env.sh get omnect_os_bootpart)" == "${update_part}" ]]; }; then
+    elif [[ $resultCode -eq 901 ]] && { [[ -f /tmp/omnect-bootloader-update ]] || [[ "$(sudo bootloader_env.sh get omnect_os_bootpart)" == "${update_part}" ]] || [[ "$(sudo bootloader_env.sh get omnect_validate_update_part)" == "${update_part}" ]]; }; then
         # a switch to the update partition is pending: writing it again would leave no complete rootfs to
         # boot if this install or its validation fails. Finish the switch and reboot; the agent then checks
-        # the deployment again on the new rootfs. Without the marker the switch was already done.
+        # the deployment again on the new rootfs. Without the marker the update partition is already
+        # selected, directly or for the trial boot.
         if [[ ! -f /tmp/omnect-bootloader-update ]] || SwitchToUpdatePart; then
             resultCode=605
             extendedResultCode=0
