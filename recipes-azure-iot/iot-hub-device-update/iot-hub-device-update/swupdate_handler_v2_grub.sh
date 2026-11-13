@@ -923,16 +923,20 @@ SwitchToUpdatePart() {
 #
 # Restores the omnect bootargs of the current rootfs saved by InstallUpdate() and reverts the env
 # change of ApplyUpdate(). The file is restored even without ApplyUpdate(): InstallUpdate() already
-# overwrote it. The env goes first, as it is what the next boot uses.
+# overwrote it. The file is restored even if the env change cannot be reverted: otherwise the current
+# rootfs boots with the new args.
 #
 RestoreBootargs() {
     local backup="/tmp/omnect_extra_bootargs_omnect.backup"
+    local rc
 
     [ -f "${backup}" ] || return 0
 
-    sudo bootloader_env.sh unset omnect_validate_extra_bootargs || return
+    sudo bootloader_env.sh unset omnect_validate_extra_bootargs
+    rc=$?
 
-    cp "${backup}" /boot/omnect_extra_bootargs_omnect
+    cp "${backup}" /boot/omnect_extra_bootargs_omnect || rc=$?
+    return $rc
 }
 
 #
