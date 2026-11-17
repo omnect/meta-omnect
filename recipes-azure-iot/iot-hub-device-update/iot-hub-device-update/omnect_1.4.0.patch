@@ -990,6 +990,24 @@ index e7bcad3c..65e92251 100644
  endif ()
  add_subdirectory (download_handlers)
  add_subdirectory (extension_manager)
+diff --git a/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.cpp b/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.cpp
+index 541a32e2..6b09b511 100644
+--- a/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.cpp
++++ b/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.cpp
+@@ -115,6 +115,13 @@ ADUC_Result Download_curl(
+     args.emplace_back("-C");
+     args.emplace_back("-");
+ 
++    // The ADU CDN sporadically ends a response early (curl exit 18); plain --retry does not cover that.
++    args.emplace_back("--retry");
++    args.emplace_back("5");
++    args.emplace_back("--retry-all-errors");
++    args.emplace_back("--retry-delay");
++    args.emplace_back("5");
++
+     // -o (or --output). Output to file instead of stdout. See https://curl.se/docs/manpage.html#-o
+     // NOTE: -O (or --remote-name) is not needed as we already have an /absolute/ file path.
+     args.emplace_back("-o");
 diff --git a/src/extensions/download_handlers/CMakeLists.txt b/src/extensions/download_handlers/CMakeLists.txt
 index 850c103f..bc0bb06f 100644
 --- a/src/extensions/download_handlers/CMakeLists.txt
