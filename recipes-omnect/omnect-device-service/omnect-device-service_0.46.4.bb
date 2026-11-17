@@ -6,9 +6,9 @@ inherit cargo
 # DEFAULT_PREFERENCE = "-1"
 
 # how to get omnect-device-service could be as easy as but default to a git checkout:
-# SRC_URI += "crate://crates.io/omnect-device-service/0.46.3"
+# SRC_URI += "crate://crates.io/omnect-device-service/0.46.4"
 SRC_URI += "git://github.com/omnect/omnect-device-service.git;protocol=https;nobranch=1;branch=main"
-SRCREV = "fb4d4b5be4616bbfced48b339ffee06ce88ea349"
+SRCREV = "87faf5e9bb4bcc38c471fc8c0a6e7ad0dcdfc89e"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
@@ -17,7 +17,7 @@ CARGO_SRC_DIR = ""
 # you must change them to how that package can be fetched
 SRC_URI += " \
     crate://crates.io/actix-codec/0.5.4 \
-    crate://crates.io/actix-http/3.21.0 \
+    crate://crates.io/actix-http/3.22.0 \
     crate://crates.io/actix-macros/0.2.4 \
     crate://crates.io/actix-router/0.5.4 \
     crate://crates.io/actix-rt/2.15.0 \
@@ -448,7 +448,7 @@ SRC_URI += " \
 "
 
 SRC_URI[actix-codec-0.5.4.sha256sum] = "4c13df95297bcf9014dc89162b0cc69431e192e34e3b419612fc124cfcd45dbf"
-SRC_URI[actix-http-3.21.0.sha256sum] = "3422032be73eeb15bafdb64086386385875b653eb418a80241d1f98473e86ea6"
+SRC_URI[actix-http-3.22.0.sha256sum] = "50f98f47b03911915aa3f0b856749aa3d3915033afabb295ab6ac5ff3b8bd5c1"
 SRC_URI[actix-macros-0.2.4.sha256sum] = "e01ed3140b2f8d422c68afa1ed2e85d996ea619c988ac834d255db32138655cb"
 SRC_URI[actix-router-0.5.4.sha256sum] = "14f8c75c51892f18d9c46150c5ac7beb81c95f78c8b83a634d49f4ca32551fe7"
 SRC_URI[actix-rt-2.15.0.sha256sum] = "e5f794807f82bbd36430c12cd600c73bbab0f52fdde4f0ed49978df113f4807f"
