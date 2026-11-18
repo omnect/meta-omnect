@@ -938,9 +938,9 @@ RestoreBootargs() {
 
     # leave /boot untouched if install failed before changing it; a missing file was backed up as an empty one
     if [ -f /boot/omnect_extra_bootargs_omnect ]; then
-        cmp -s "${backup}" /boot/omnect_extra_bootargs_omnect || cp "${backup}" /boot/omnect_extra_bootargs_omnect || rc=$?
+        cmp -s "${backup}" /boot/omnect_extra_bootargs_omnect || { cp "${backup}" /boot/omnect_extra_bootargs_omnect && sync; } || rc=$?
     elif [ -s "${backup}" ]; then
-        cp "${backup}" /boot/omnect_extra_bootargs_omnect || rc=$?
+        { cp "${backup}" /boot/omnect_extra_bootargs_omnect && sync; } || rc=$?
     fi
     return $rc
 }
