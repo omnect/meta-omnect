@@ -923,6 +923,16 @@ SwitchToUpdatePart() {
     return $rc
 }
 
+RestoreOmnectBootargsFile() {
+    local tmp="/boot/omnect_extra_bootargs_omnect.tmp"
+
+    # copy to a temp file and rename it over the target, so a power loss never leaves a truncated file behind
+    cp "${1}" "${tmp}" && sync && mv "${tmp}" /boot/omnect_extra_bootargs_omnect && sync && return 0
+    local rc=$?
+    rm -f "${tmp}"
+    return $rc
+}
+
 #
 # Restores the omnect bootargs of the current rootfs saved by InstallUpdate() and reverts the env
 # change of ApplyUpdate(). The file is restored even without ApplyUpdate(): InstallUpdate() already
@@ -940,9 +950,9 @@ RestoreBootargs() {
 
     # leave /boot untouched if install failed before changing it; a missing file was backed up as an empty one
     if [ -f /boot/omnect_extra_bootargs_omnect ]; then
-        cmp -s "${backup}" /boot/omnect_extra_bootargs_omnect || { cp "${backup}" /boot/omnect_extra_bootargs_omnect && sync; } || rc=$?
+        cmp -s "${backup}" /boot/omnect_extra_bootargs_omnect || RestoreOmnectBootargsFile "${backup}" || rc=$?
     elif [ -s "${backup}" ]; then
-        { cp "${backup}" /boot/omnect_extra_bootargs_omnect && sync; } || rc=$?
+        RestoreOmnectBootargsFile "${backup}" || rc=$?
     fi
     return $rc
 }
