@@ -10,13 +10,27 @@ def _rel_json_path(machine):
     return os.path.join('files', 'device_caps', f"{machine}.json")
 
 
-def _find_json_path(d, machine):
+def find_json_path(d):
+    """
+    Return the path of files/device_caps/${MACHINE}.json in the first layer of
+    BBLAYERS that has it; call bb.fatal() if there is none. The build
+    configuration and the copy that base-files installs both use this path.
+    """
+    machine = d.getVar('MACHINE')
+    if not machine:
+        bb.fatal("device_caps: MACHINE variable is not set. Cannot determine device capabilities.")
+
     # Mark the misses too: bitbake stores them with mtime 0, so adding the file
     # to a layer earlier in BBLAYERS invalidates the parse cache.
     bblayers = ':'.join((d.getVar('BBLAYERS') or '').split())
     json_path, tried = bb.utils.which(bblayers, _rel_json_path(machine), history=True)
     for path in tried:
         bb.parse.mark_dependency(d, path)
+
+    if not json_path:
+        bb.fatal(f"device_caps: No device capability JSON file found for MACHINE '{machine}'. "
+                 f"Expected '{_rel_json_path(machine)}' in one of the layers in BBLAYERS.")
+
     return json_path
 
 
@@ -62,13 +76,4 @@ def get_cap(d, cap_name):
                  f"Please check for typos or add it to KNOWN_CAPS and to every "
                  f"device_caps JSON file.\nKnown capabilities: {', '.join(KNOWN_CAPS)}")
 
-    machine = d.getVar('MACHINE')
-    if not machine:
-        bb.fatal("device_caps: MACHINE variable is not set. Cannot determine device capabilities.")
-
-    json_path = _find_json_path(d, machine)
-    if not json_path:
-        bb.fatal(f"device_caps: No device capability JSON file found for MACHINE '{machine}'. "
-                 f"Expected '{_rel_json_path(machine)}' in one of the layers in BBLAYERS.")
-
-    return _load_device_caps(json_path)[cap_name]
+    return _load_device_caps(find_json_path(d))[cap_name]
