@@ -55,7 +55,9 @@ do_bootloader_package:phytec-imx8mm() {
 do_bootloader_package:omnect_grub() {
     mkdir -p ${WORKDIR}/EFI/BOOT
     for file in ${OMNECT_GRUB_EFI_SB_FILES}; do
-        # we may not overwrite the existing environment on an update
+        # the archive is unpacked over /boot of the running device, whose grubenv
+        # holds the boot state (omnect_os_bootpart, omnect_validate_update*); the
+        # empty default would reset it to partition 2
         [ "${file}" = "grubenv" ] && continue
         cp ${DEPLOY_DIR_IMAGE}/${file} ${WORKDIR}/EFI/BOOT/${file}
     done
