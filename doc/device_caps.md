@@ -49,28 +49,15 @@ these two values. For them the entry is a declaration that is kept consistent wi
 
 ## Where the file is looked up
 
-The file is resolved twice, by two independent mechanisms, and both have to find it:
+`find_json_path()` in `lib/omnect/device_caps.py` searches
+`files/device_caps/${MACHINE}.json` in every layer listed in `BBLAYERS` and takes
+the first match. The build configuration reads its capabilities from that file,
+and `recipes-core/base-files/base-files_%.bbappend` prepends its directory to
+`FILESEXTRAPATHS`, so the installed copy is the same file. A layer that provides
+the file for its machines needs nothing else.
 
-- **Build configuration** — `get_cap()` in `lib/omnect/device_caps.py` searches
-  `files/device_caps/${MACHINE}.json` in every layer listed in `BBLAYERS` and takes
-  the first match.
-- **Installed copy** — `recipes-core/base-files/base-files_%.bbappend` resolves the
-  file over `FILESEXTRAPATHS`, not over `BBLAYERS`. The bbappend prepends
-  `${LAYERDIR_omnect}/files/device_caps`, so meta-omnect's copy wins whenever it
-  exists, whatever the `BBLAYERS` order is.
-
-A layer other than meta-omnect that provides the file must therefore also add its
-own directory for `base-files`, in its machine conf:
-
-```
-FILESEXTRAPATHS:prepend:pn-base-files := "${LAYERDIR_<layer>}/files/device_caps:"
-```
-
-Without that, the configuration parses, but parsing `base-files` aborts
-because it cannot find `${MACHINE}.json`. Keep a machine's file in exactly one
-layer: if meta-omnect carries it as well, the build configuration follows the
-`BBLAYERS` match while the installed file is the meta-omnect one, and build time
-and runtime can disagree.
+If more than one layer has a file for the same machine, the one of the layer that
+comes first in `BBLAYERS` is used, for both.
 
 ## Validation
 
