@@ -14,7 +14,6 @@ FORMAT_VERSION = 1
 AR_MAGIC = b"!<arch>\n"
 AR_HEADER_SIZE = 60
 HASH_CHUNK_SIZE = 1024 * 1024
-# zlib window flag that accepts the gzip header
 GZIP_WBITS_FLAG = 16
 
 CONFIGURE_ARGS_BY_CLASS = (
@@ -28,6 +27,10 @@ CONFIGURE_ARGS_BY_CLASS = (
 # control.tar members that change what installing the package does; the
 # control file is left out, it holds the version
 CONTROL_SCRIPTS = ("conffiles", "postinst", "postrm", "preinst", "prerm")
+
+# their basehash covers the task code and all variables they use, also those
+# that no other field records (CFLAGS, DISTRO_FEATURES in a Kconfig, bbappends)
+HASHED_TASKS = ("do_configure", "do_compile", "do_install")
 
 
 def normalize_ws(value):
@@ -53,7 +56,6 @@ _JOBS = re.compile(r"(?<![\w-])-j\s*\d+")
 
 
 def mask_jobs(value):
-    """Replace the host specific number of make jobs ("-j 16") by "-j <N>"."""
     return _JOBS.sub("-j <N>", value)
 
 
@@ -66,14 +68,21 @@ def sha256_file(path):
 
 
 def sha256_dir(path):
-    """Hash the relative names and the content of all files below `path`."""
+    """
+    Hash the relative names and the content of all files below `path`. A
+    symlink is hashed by its target, as it is unpacked.
+    """
     h = hashlib.sha256()
     for root, dirs, files in os.walk(path):
         dirs.sort()
-        for name in sorted(files):
+        links = [name for name in dirs if os.path.islink(os.path.join(root, name))]
+        for name in sorted(files + links):
             full = os.path.join(root, name)
             h.update(os.path.relpath(full, path).encode() + b"\0")
-            h.update(sha256_file(full).encode() + b"\0")
+            if os.path.islink(full):
+                h.update(b"link:" + os.readlink(full).encode() + b"\0")
+            else:
+                h.update(sha256_file(full).encode() + b"\0")
     return h.hexdigest()
 
 
@@ -182,8 +191,17 @@ def ipk_filename(name, version, arch):
     return f"{name}_{re.sub(r'^.:', '', version)}_{arch}.ipk"
 
 
+def parse_manifest(text):
+    """Return {package: (arch, version)} from an image manifest."""
+    installed = {}
+    for line in text.splitlines():
+        fields = line.split()
+        if len(fields) == 3:
+            installed[fields[0]] = (fields[1], fields[2])
+    return installed
+
+
 def parse_pkgdata(text):
-    """Parse a pkgdata file ("KEY: value" lines) into a dict."""
     result = {}
     for line in text.splitlines():
         key, sep, value = line.partition(": ")
@@ -217,13 +235,16 @@ def linked_by(files_by_pn):
     """
     `files_by_pn` maps a recipe to ({file: [provides]}, {file: [depends]}) of
     its installed packages. Return {provider pn: {file: consumer pn}} for the
-    files that need a provide of another recipe.
+    files that need a shared library of another recipe. Path dependencies
+    (interpreters, update-alternatives links) are left out: their provider
+    depends on the alternative priorities and is often not in pkgdata.
     """
     provider_of = {}
     for pn, (provides, _) in files_by_pn.items():
         for items in provides.values():
             for item in items:
-                provider_of.setdefault(item, pn)
+                if not item.startswith("/"):
+                    provider_of.setdefault(item, pn)
 
     result = {}
     for pn, (_, depends) in files_by_pn.items():

@@ -129,6 +129,17 @@ class PathTest(unittest.TestCase):
             changed = build_facts.sha256_path(d)
         self.assertEqual(len({first, renamed, changed}), 3)
 
+    def test_sha256_dir_hashes_symlinks_by_target(self):
+        with tempfile.TemporaryDirectory() as d:
+            os.makedirs(os.path.join(d, "src", "a"))
+            os.makedirs(os.path.join(d, "src", "b"))
+            os.symlink("a", os.path.join(d, "src", "sub"))
+            os.symlink("missing", os.path.join(d, "src", "dangling"))
+            first = build_facts.sha256_path(os.path.join(d, "src"))
+            os.remove(os.path.join(d, "src", "sub"))
+            os.symlink("b", os.path.join(d, "src", "sub"))
+            self.assertNotEqual(build_facts.sha256_path(os.path.join(d, "src")), first)
+
 
 PKGDATA_DBUS_LIB = """PN: dbus
 PKG:dbus-lib: libdbus-1-3
@@ -148,9 +159,18 @@ FILERPROVIDES:/usr/lib/libc.so.6:glibc:  libc.so.6()(64bit) libc.so.6(GLIBC_2.34
 
 class PkgdataTest(unittest.TestCase):
     def test_parse(self):
-        pd = build_facts.parse_pkgdata(PKGDATA_DBUS_LIB)
+        pd = build_facts.parse_pkgdata(PKGDATA_DBUS_LIB + "RRECOMMENDS:dbus-lib:\n")
         self.assertEqual(pd["PN"], "dbus")
         self.assertEqual(pd["PKG:dbus-lib"], "libdbus-1-3")
+        self.assertEqual(pd["RRECOMMENDS:dbus-lib"], "")
+
+    def test_parse_manifest(self):
+        self.assertEqual(build_facts.parse_manifest("busybox cortexa72 1.37.0-r0\nlibc6 cortexa72 2.42-r0\n\n"),
+                         {"busybox": ("cortexa72", "1.37.0-r0"), "libc6": ("cortexa72", "2.42-r0")})
+
+    def test_per_file_deps_drops_version_constraints(self):
+        _, depends = build_facts.per_file_deps({"FILERDEPENDS:/usr/bin/a:a": "libfoo (>= 1.0) libc.so.6()(64bit)"})
+        self.assertEqual(depends, {"/usr/bin/a": ["libfoo", "libc.so.6()(64bit)"]})
 
     def test_per_file_deps(self):
         provides, depends = build_facts.per_file_deps(build_facts.parse_pkgdata(PKGDATA_DBUS_LIB))
@@ -166,6 +186,13 @@ class PkgdataTest(unittest.TestCase):
             "dbus": {"/usr/sbin/avahi-daemon": "avahi"},
             "glibc": {"/usr/lib/libdbus-1.so.3.38.3": "dbus", "/usr/sbin/avahi-daemon": "avahi"},
         })
+
+    def test_linked_by_ignores_path_dependencies(self):
+        files = {
+            "busybox": ({"/bin/busybox.nosuid": ["/usr/bin/env"]}, {}),
+            "python3": ({}, {"/usr/bin/script.py": ["/usr/bin/env"]}),
+        }
+        self.assertEqual(build_facts.linked_by(files), {})
 
     def test_linked_by_skips_own_files(self):
         pd = build_facts.parse_pkgdata(PKGDATA_GLIBC + "FILERDEPENDS:/usr/bin/ldd:glibc:  libc.so.6()(64bit)\n")

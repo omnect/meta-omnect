@@ -53,6 +53,7 @@ first check below does not apply to them.
       "remote_files": [
         {"url": "https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz", "sha256": "<sha256>"}
       ],
+      "task_hashes": {"do_compile": "<sha256>", "do_configure": "<sha256>", "do_install": "<sha256>"},
       "installed_packages": {
         "dbus-1": "<sha256>",
         "dbus-common": "<sha256>",
@@ -71,6 +72,7 @@ first check below does not apply to them.
       "kconfig": {},
       "src_files": [{"name": "lua.pc.in", "sha256": "<sha256>", "patch": false}],
       "remote_files": [{"url": "http://www.lua.org/ftp/lua-5.5.0.tar.gz", "sha256": "<sha256>"}],
+      "task_hashes": {"do_compile": "<sha256>", "do_configure": "<sha256>", "do_install": "<sha256>"},
       "installed_packages": {},
       "linked_by": {},
       "built_into": ["swupdate"]
@@ -92,15 +94,16 @@ fragments are applied in that order. All other lists are sorted.
 | Field | Content |
 | --- | --- |
 | `version` | `PV` |
-| `srcrev` | the commit the fetcher resolved for every git entry in `SRC_URI` (also for `;rev=`, `;tag=` and `AUTOREV`), by its `name`, or by its URL if it has no name; empty for tarball sources |
+| `srcrev` | the revision the fetcher resolved for every `SRC_URI` entry with a revision (git, also for `;rev=`, `;tag=` and `AUTOREV`), by its `name`, or by its URL if it has no name; empty for tarball sources |
 | `cve_products` | the `CVE_PRODUCT` entries, as the SBOM component names; the key to join with the SBOM |
 | `packageconfig` | final `PACKAGECONFIG` |
 | `configure_args` | `EXTRA_OECONF`, `EXTRA_OECMAKE`, `EXTRA_OEMESON`, `CARGO_BUILD_FLAGS` or `GOBUILDFLAGS`, only the one of the build system the recipe uses, plus `EXTRA_OEMAKE` and `CARGO_FEATURES` if set; the paths `WORKDIR`, `TMPDIR`, `TOPDIR`, `COREBASE` and `DL_DIR` replaced by `<WORKDIR>` and so on, the number of make jobs by `-j <N>`, whitespace normalized |
 | `kconfig` | kernel only: `KBUILD_DEFCONFIG` and `KERNEL_FEATURES` |
 | `src_files` | every local `file://` entry of `SRC_URI` with the sha256 of its content (for a directory: of all its files); `patch` marks the files that are applied as patches |
-| `remote_files` | every other entry of `SRC_URI` (tarballs, remote patches, crates, Go modules) with the sha256 from the recipe |
-| `installed_packages` | packages of the recipe in the image, with the sha256 of the uncompressed `data.tar` and the maintainer scripts and `conffiles` of the ipk; the build fails if an ipk is missing |
-| `linked_by` | image files of other recipes that need a library or a command of the recipe (pkgdata `FILERDEPENDS`), with the recipe of each file |
+| `remote_files` | every other entry of `SRC_URI` (tarballs, remote patches, crates, Go modules) with its parameters and the sha256 from the recipe |
+| `task_hashes` | the BitBake basehash of `do_configure`, `do_compile` and `do_install`: the task code and all variables the task uses, without the hashes of the dependencies |
+| `installed_packages` | packages of the recipe in the image manifest, with the sha256 of the uncompressed `data.tar` and the maintainer scripts and `conffiles` of the ipk; the build fails if an ipk is missing |
+| `linked_by` | image files of other recipes that link a shared library of the recipe (pkgdata `FILERDEPENDS`), with the recipe of each file. Libraries loaded with `dlopen()` and interpreters (`/bin/sh`, `/usr/bin/python3`) are not included |
 | `built_into` | target recipes in the recipe set that have this recipe in `DEPENDS` |
 
 `built_into` lists direct consumers only. A chain such as
@@ -115,7 +118,14 @@ the sstate cache.
 The configuration of Kconfig recipes (kernel, BusyBox, swupdate) is covered
 by other fields: the defconfig and the `.cfg` fragments are in `src_files`,
 the `.scc` files of `KERNEL_FEATURES` come from the yocto-kernel-cache, whose
-revision is in `srcrev` (`meta`).
+revision is in `srcrev` (`meta`). Options that `do_configure` sets from
+variables, such as BusyBox options from `DISTRO_FEATURES`, are covered by
+`task_hashes`.
+
+`task_hashes` also covers inputs that no other field records: `CFLAGS`,
+`LDFLAGS`, the configure arguments of `PACKAGECONFIG` and task code from
+bbappends. It changes as well when a class of the build system changes,
+for example after an update of the Yocto layers.
 
 ### Image fields
 
@@ -140,8 +150,8 @@ A recipe has the same facts in two builds if one of the two checks passes.
 2. **Same inputs:** if the binaries differ, for example after a compiler
    update, these fields are equal: `version`, `srcrev`, `cve_products`,
    `packageconfig`, `configure_args`, `kconfig`, `src_files` (names and
-   hashes, in order), `remote_files`, the names in `installed_packages`, the
-   recipes in `linked_by`, and `built_into`.
+   hashes, in order), `remote_files`, `task_hashes`, the names in
+   `installed_packages`, the recipes in `linked_by`, and `built_into`.
 
 The file paths in `linked_by` are not compared: a library such as glibc
 often gets a new user binary, but rarely a new user recipe.

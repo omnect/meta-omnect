@@ -202,8 +202,8 @@ def write_recipe_facts(d):
     for url in fetch.urls:
         ud = fetch.ud[url]
         address = url.split(";")[0]
-        if ud.type in ("git", "gitsm"):
-            # the resolved commit, also for ;rev=, ;tag= and AUTOREV
+        if ud.method.supports_srcrev():
+            # the resolved revision, also for ;rev=, ;tag= and AUTOREV
             srcrev[ud.parm["name"] if "name" in ud.parm else address] = ud.revision
         elif ud.type == "file":
             local = fetch.localpath(url)
@@ -213,20 +213,24 @@ def write_recipe_facts(d):
                 "patch": local in patches,
             })
         else:
+            # with its parameters, e.g. ;apply=no
             remote_files.append({
-                "url": clean(address),
+                "url": clean(url),
                 "sha256": getattr(ud, "sha256_expected", None),
             })
+
+    basehashes = d.getVar("__siggen_basehashes", False) or {}
 
     facts = {
         "version": d.getVar("PV"),
         "srcrev": dict(sorted(srcrev.items())),
-        "cve_products": (d.getVar("CVE_PRODUCT") or "").split(),
+        "cve_products": omnect.build_facts.sorted_words(d.getVar("CVE_PRODUCT")),
         "packageconfig": omnect.build_facts.sorted_words(d.getVar("PACKAGECONFIG")),
         "configure_args": configure_args,
         "kconfig": kconfig,
         "src_files": src_files,
         "remote_files": remote_files,
+        "task_hashes": {t: basehashes[t] for t in omnect.build_facts.HASHED_TASKS if t in basehashes},
         "provides": (d.getVar("PROVIDES") or "").split(),
         "depends": bb.utils.explode_deps(d.getVar("DEPENDS") or ""),
     }
@@ -239,7 +243,6 @@ python dependencytrack_write_facts() {
     import json
     import os
     import oe.package
-    import oe.rootfs
 
     # Only the recipes of this image: the fragment directory also holds
     # recipes of other images and of earlier builds.
@@ -257,13 +260,18 @@ python dependencytrack_write_facts() {
 
     pkgdata_dir = d.getVar("PKGDATA_DIR")
     deploy_ipk = d.getVar("DEPLOY_DIR_IPK")
+    # do_rootfs removes the opkg status of images without package-management
+    with open(d.getVar("IMAGE_MANIFEST")) as f:
+        installed = omnect.build_facts.parse_manifest(f.read())
+    if not installed:
+        bb.fatal("build facts: no packages in %s" % d.getVar("IMAGE_MANIFEST"))
     packages = {}
     files = {}
-    for pkg, info in sorted(oe.rootfs.image_list_installed_packages(d).items()):
+    for pkg, (arch, ver) in sorted(installed.items()):
         with open(os.path.join(pkgdata_dir, "runtime-reverse", pkg)) as f:
             pkgdata = omnect.build_facts.parse_pkgdata(f.read())
         pn = pkgdata.get("PN")
-        ipk = os.path.join(deploy_ipk, info["arch"], omnect.build_facts.ipk_filename(pkg, info["ver"], info["arch"]))
+        ipk = os.path.join(deploy_ipk, arch, omnect.build_facts.ipk_filename(pkg, ver, arch))
         if not os.path.exists(ipk):
             bb.fatal("build facts: %s not found" % ipk)
         packages.setdefault(pn, {})[pkg] = omnect.build_facts.ipk_sha256(ipk)
@@ -296,8 +304,13 @@ python dependencytrack_write_facts() {
         },
     }
 
+    own_path = d.getVar("DEPENDENCYTRACK_FACTS")
     for image in (d.getVar("DEPENDENCYTRACK_FACTS_MERGE") or "").split():
-        path = d.getVar("DEPENDENCYTRACK_FACTS").replace("build-facts.%s." % d.getVar("PN"), "build-facts.%s." % image)
+        localdata = bb.data.createCopy(d)
+        localdata.setVar("PN", image)
+        path = localdata.getVar("DEPENDENCYTRACK_FACTS")
+        if path == own_path:
+            bb.fatal("build facts: DEPENDENCYTRACK_FACTS does not depend on PN")
         if not os.path.exists(path):
             bb.fatal("build facts: %s not found, run do_image of %s again" % (path, image))
         with open(path) as f:
@@ -308,7 +321,7 @@ python dependencytrack_write_facts() {
             bb.fatal("build facts: %s" % e)
         omnect.build_facts.merge_recipes(out, other["recipes"])
 
-    path = d.getVar("DEPENDENCYTRACK_FACTS")
+    path = own_path
     bb.utils.mkdirhier(os.path.dirname(path))
     with open(path, "w") as f:
         json.dump(facts, f, indent=2, sort_keys=True)
