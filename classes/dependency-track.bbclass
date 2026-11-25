@@ -230,7 +230,7 @@ def write_recipe_facts(d):
         "kconfig": kconfig,
         "src_files": src_files,
         "remote_files": remote_files,
-        "task_hashes": {t: basehashes[t] for t in omnect.build_facts.HASHED_TASKS if t in basehashes},
+        "task_hashes": omnect.build_facts.task_hashes(basehashes),
         "provides": (d.getVar("PROVIDES") or "").split(),
         "depends": bb.utils.explode_deps(d.getVar("DEPENDS") or ""),
     }
@@ -282,6 +282,9 @@ python dependencytrack_write_facts() {
 
     linked_by = omnect.build_facts.linked_by(files)
     built_into = omnect.build_facts.built_into(recipes)
+    # recipes whose deployed files the image uses, e.g. for the boot partition
+    deploys = omnect.build_facts.resolve_names(omnect.build_facts.deploy_dependencies(
+        d.getVarFlag(task, "depends") for task in d.getVar("__BBTASKS", False)), recipes)
 
     out = {}
     for pn, r in recipes.items():
@@ -290,6 +293,7 @@ python dependencytrack_write_facts() {
         r["installed_packages"] = packages.get(pn, {})
         r["linked_by"] = linked_by.get(pn, {})
         r["built_into"] = built_into[pn]
+        r["deploys"] = pn in deploys
         out[pn] = r
 
     facts = {
@@ -297,10 +301,12 @@ python dependencytrack_write_facts() {
         "machine": d.getVar("MACHINE"),
         "distro_version": d.getVar("DISTRO_VERSION"),
         "recipes": out,
-        "image": {
-            "image_features": omnect.build_facts.sorted_words(d.getVar("IMAGE_FEATURES")),
-            "enabled_units": omnect.build_facts.enabled_units(
-                os.path.join(d.getVar("IMAGE_ROOTFS"), d.getVar("sysconfdir").lstrip("/"), "systemd", "system")),
+        "images": {
+            d.getVar("PN"): {
+                "image_features": omnect.build_facts.sorted_words(d.getVar("IMAGE_FEATURES")),
+                "unit_links": omnect.build_facts.unit_links(
+                    os.path.join(d.getVar("IMAGE_ROOTFS"), d.getVar("sysconfdir").lstrip("/"), "systemd", "system")),
+            },
         },
     }
 
@@ -320,6 +326,7 @@ python dependencytrack_write_facts() {
         except ValueError as e:
             bb.fatal("build facts: %s" % e)
         omnect.build_facts.merge_recipes(out, other["recipes"])
+        facts["images"].update(other["images"])
 
     path = own_path
     bb.utils.mkdirhier(os.path.dirname(path))

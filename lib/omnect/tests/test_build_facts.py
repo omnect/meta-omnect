@@ -219,20 +219,24 @@ class BuiltIntoTest(unittest.TestCase):
 
 class MergeTest(unittest.TestCase):
     def test_check_merge(self):
-        facts = {"machine": "raspberrypi4-64", "distro_version": "1"}
+        facts = {"format_version": 1, "machine": "raspberrypi4-64", "distro_version": "1"}
         build_facts.check_merge(facts, dict(facts), "initramfs")
-        with self.assertRaises(ValueError):
-            build_facts.check_merge(facts, {"machine": "genericx86-64", "distro_version": "1"}, "initramfs")
+        for key, value in (("machine", "genericx86-64"), ("distro_version", "2"), ("format_version", 2)):
+            with self.assertRaises(ValueError):
+                build_facts.check_merge(facts, {**facts, key: value}, "initramfs")
 
     def test_merge_recipes(self):
-        def recipe(packages, linked_by, built_into):
-            return {"version": "1", "installed_packages": packages, "linked_by": linked_by, "built_into": built_into}
+        def recipe(packages, linked_by, built_into, deploys=False):
+            return {"version": "1", "installed_packages": packages, "linked_by": linked_by, "built_into": built_into,
+                    "deploys": deploys}
 
         image = {
             "glibc": recipe({"libc6": "a"}, {"/usr/bin/x": "x"}, ["x"]),
             "lua": recipe({}, {}, ["swupdate"]),
+            "u-boot": recipe({}, {}, []),
         }
         initramfs = {
+            "u-boot": recipe({}, {}, [], deploys=True),
             "glibc": recipe({"ldd": "b", "libc6": "a"}, {"/sbin/parted": "parted"}, ["parted"]),
             "parted": recipe({"parted": "c"}, {}, []),
         }
@@ -240,23 +244,47 @@ class MergeTest(unittest.TestCase):
             "glibc": recipe({"ldd": "b", "libc6": "a"}, {"/sbin/parted": "parted", "/usr/bin/x": "x"}, ["parted", "x"]),
             "lua": recipe({}, {}, ["swupdate"]),
             "parted": recipe({"parted": "c"}, {}, []),
+            "u-boot": recipe({}, {}, [], deploys=True),
         })
+
+    def test_deploy_dependencies(self):
+        names = build_facts.deploy_dependencies([
+            "virtual/kernel:do_deploy omnect-os-initramfs:do_image_complete",
+            None,
+            "rpi-bootfiles:do_deploy openssl-native:do_populate_sysroot",
+        ])
+        self.assertEqual(names, {"virtual/kernel", "rpi-bootfiles"})
+        recipes = {"linux-raspberrypi": {"provides": ["virtual/kernel"]}, "rpi-bootfiles": {"provides": []}}
+        self.assertEqual(build_facts.resolve_names(names | {"other"}, recipes), {"linux-raspberrypi", "rpi-bootfiles"})
 
 
 class UnitsTest(unittest.TestCase):
-    def test_enabled_units(self):
+    def test_unit_links(self):
         with tempfile.TemporaryDirectory() as d:
             os.makedirs(os.path.join(d, "multi-user.target.wants"))
-            os.makedirs(os.path.join(d, "sockets.target.requires"))
-            os.symlink("/usr/lib/systemd/system/sshd.socket", os.path.join(d, "sockets.target.requires", "sshd.socket"))
             os.symlink("/usr/lib/systemd/system/a.service", os.path.join(d, "multi-user.target.wants", "a.service"))
+            os.symlink("/usr/lib/systemd/system/multi-user.target", os.path.join(d, "default.target"))
+            os.symlink("/dev/null", os.path.join(d, "getty@.service"))
             with open(os.path.join(d, "local.service"), "w"):
                 pass
-            self.assertEqual(build_facts.enabled_units(d),
-                             ["multi-user.target.wants/a.service", "sockets.target.requires/sshd.socket"])
+            self.assertEqual(build_facts.unit_links(d), {
+                "default.target": "/usr/lib/systemd/system/multi-user.target",
+                "getty@.service": "/dev/null",
+                "multi-user.target.wants/a.service": "/usr/lib/systemd/system/a.service",
+            })
 
     def test_missing_dir(self):
-        self.assertEqual(build_facts.enabled_units("/nonexistent"), [])
+        self.assertEqual(build_facts.unit_links("/nonexistent"), {})
+
+
+class TaskHashesTest(unittest.TestCase):
+    def test_task_hashes(self):
+        basehashes = {t: t + "-hash" for t in (
+            "do_build", "do_cleansstate", "do_compile", "do_configure", "do_create_spdx", "do_deploy", "do_dependencytrack_collect",
+            "do_devshell", "do_kernel_configme", "do_kernel_metadata", "do_menuconfig", "do_package",
+            "do_package_qa", "do_package_setscene", "do_populate_lic")}
+        self.assertEqual(list(build_facts.task_hashes(basehashes)),
+                         ["do_compile", "do_configure", "do_deploy", "do_kernel_configme", "do_kernel_metadata", "do_package"])
 
 
 if __name__ == "__main__":

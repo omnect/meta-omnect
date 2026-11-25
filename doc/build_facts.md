@@ -24,12 +24,15 @@ installed packages and no consumers. Image recipes have no entry.
 An image can add the facts of other images that ship with it, such as its
 initramfs, by naming them in `DEPENDENCYTRACK_FACTS_MERGE`. The file then has
 the recipes of all these images, and the packages, users and consumers of a
-recipe are joined. The other images still write their own file. The build
-fails if a merged file has another `machine` or `distro_version`.
+recipe are joined, and `images` has an entry per image. The other images
+still write their own file. The build fails if a merged file has another
+`format_version`, `machine` or `distro_version`. The path of a merged file is
+taken from the global `DEPENDENCYTRACK_FACTS`; a setting in the recipe of the
+merged image is not seen.
 
-Some recipes put files into the boot partition and have no package in the
-image (bootloader, firmware). Their `installed_packages` is empty, so the
-first check below does not apply to them.
+Some recipes put files into the boot partition with `do_deploy` (bootloader,
+kernel, firmware). They are marked with `deploys`, and the first check below
+does not apply to them or to the recipes built into them.
 
 ## Format
 
@@ -78,9 +81,11 @@ first check below does not apply to them.
       "built_into": ["swupdate"]
     }
   },
-  "image": {
-    "image_features": ["..."],
-    "enabled_units": ["multi-user.target.wants/sshd.socket", "..."]
+  "images": {
+    "omnect-os-image": {
+      "image_features": ["..."],
+      "unit_links": {"default.target": "/usr/lib/systemd/system/multi-user.target", "...": "..."}
+    }
   }
 }
 ```
@@ -100,8 +105,9 @@ fragments are applied in that order. All other lists are sorted.
 | `configure_args` | `EXTRA_OECONF`, `EXTRA_OECMAKE`, `EXTRA_OEMESON`, `CARGO_BUILD_FLAGS` or `GOBUILDFLAGS`, only the one of the build system the recipe uses, plus `EXTRA_OEMAKE` and `CARGO_FEATURES` if set; the paths `WORKDIR`, `TMPDIR`, `TOPDIR`, `COREBASE` and `DL_DIR` replaced by `<WORKDIR>` and so on, the number of make jobs by `-j <N>`, whitespace normalized |
 | `kconfig` | kernel only: `KBUILD_DEFCONFIG` and `KERNEL_FEATURES` |
 | `src_files` | every local `file://` entry of `SRC_URI` with the sha256 of its content (for a directory: of all its files); `patch` marks the files that are applied as patches |
-| `remote_files` | every other entry of `SRC_URI` (tarballs, remote patches, crates, Go modules) with its parameters and the sha256 from the recipe |
-| `task_hashes` | the BitBake basehash of `do_configure`, `do_compile` and `do_install`: the task code and all variables the task uses, without the hashes of the dependencies |
+| `remote_files` | every other entry of `SRC_URI` without a revision (tarballs, remote patches, crates, Go modules) with its parameters and the sha256 from the recipe |
+| `task_hashes` | the BitBake basehash of every task that can change the output of the recipe (all tasks except clean, devshell, QA, SPDX, CVE and license tasks): the task code and all variables the task uses, without the hashes of the dependencies |
+| `deploys` | the image uses files that the recipe deploys: a task of the image depends on its `do_deploy` (boot partition files) |
 | `installed_packages` | packages of the recipe in the image manifest, with the sha256 of the uncompressed `data.tar` and the maintainer scripts and `conffiles` of the ipk; the build fails if an ipk is missing |
 | `linked_by` | image files of other recipes that link a shared library of the recipe (pkgdata `FILERDEPENDS`), with the recipe of each file. Libraries loaded with `dlopen()` and interpreters (`/bin/sh`, `/usr/bin/python3`) are not included |
 | `built_into` | target recipes in the recipe set that have this recipe in `DEPENDS` |
@@ -118,28 +124,32 @@ the sstate cache.
 The configuration of Kconfig recipes (kernel, BusyBox, swupdate) is covered
 by other fields: the defconfig and the `.cfg` fragments are in `src_files`,
 the `.scc` files of `KERNEL_FEATURES` come from the yocto-kernel-cache, whose
-revision is in `srcrev` (`meta`). Options that `do_configure` sets from
-variables, such as BusyBox options from `DISTRO_FEATURES`, are covered by
-`task_hashes`.
+revision is in `srcrev` (`meta`). Options set from variables, such as
+BusyBox options from `DISTRO_FEATURES` or `KCONFIG_MODE` of the kernel, are
+covered by `task_hashes`.
 
-`task_hashes` also covers inputs that no other field records: `CFLAGS`,
-`LDFLAGS`, the configure arguments of `PACKAGECONFIG` and task code from
-bbappends. It changes as well when a class of the build system changes,
-for example after an update of the Yocto layers.
+`task_hashes` covers every input that is a variable or task code: `CFLAGS`,
+`FILES`, `RDEPENDS`, `pkg_postinst`, the configure arguments of
+`PACKAGECONFIG`, task code from bbappends. It changes as well when a class of
+the build system changes, for example after an update of the Yocto layers.
+`packageconfig`, `configure_args` and `kconfig` show what changed.
 
 ### Image fields
+
+`images` has one entry per image of the file, with these fields:
 
 | Field | Content |
 | --- | --- |
 | `image_features` | `IMAGE_FEATURES` |
-| `enabled_units` | the units enabled in `/etc/systemd/system` after `IMAGE_PREPROCESS_COMMAND`, as `<target>.wants/<unit>` or `<target>.requires/<unit>` |
+| `unit_links` | every symlink in `/etc/systemd/system` after `IMAGE_PREPROCESS_COMMAND`, with its target: enabled units (`*.wants`, `*.requires`), `default.target` and masked units (`/dev/null`) |
 
 ## Comparing two builds
 
 A recipe has the same facts in two builds if one of the two checks passes.
 
-1. **Same binaries:** the recipe or a recipe along its `built_into` chain has
-   installed packages, and these are equal:
+1. **Same binaries:** no recipe along the `built_into` chain, the recipe
+   itself included, has `deploys`; the recipe or a recipe along the chain has
+   installed packages; and these are equal:
    - `installed_packages`, names and hashes
    - the recipes in `linked_by`
    - `installed_packages` of every recipe in `built_into`, followed
@@ -149,9 +159,9 @@ A recipe has the same facts in two builds if one of the two checks passes.
    package hash. This check also covers recipes without own packages, such as lua.
 2. **Same inputs:** if the binaries differ, for example after a compiler
    update, these fields are equal: `version`, `srcrev`, `cve_products`,
-   `packageconfig`, `configure_args`, `kconfig`, `src_files` (names and
-   hashes, in order), `remote_files`, `task_hashes`, the names in
-   `installed_packages`, the recipes in `linked_by`, and `built_into`.
+   `src_files` (names and hashes, in order), `remote_files`, `task_hashes`,
+   `deploys`, the names in `installed_packages`, the recipes in `linked_by`,
+   and `built_into`.
 
 The file paths in `linked_by` are not compared: a library such as glibc
 often gets a new user binary, but rarely a new user recipe.
@@ -159,4 +169,5 @@ often gets a new user binary, but rarely a new user recipe.
 A recipe that is missing in one of the two files does not have the same
 facts.
 
-The image fields are compared only when an assessment depends on them.
+The image fields are compared only when an assessment depends on them, per
+image.

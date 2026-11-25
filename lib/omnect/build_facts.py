@@ -28,9 +28,10 @@ CONFIGURE_ARGS_BY_CLASS = (
 # control file is left out, it holds the version
 CONTROL_SCRIPTS = ("conffiles", "postinst", "postrm", "preinst", "prerm")
 
-# their basehash covers the task code and all variables they use, also those
-# that no other field records (CFLAGS, DISTRO_FEATURES in a Kconfig, bbappends)
-HASHED_TASKS = ("do_configure", "do_compile", "do_install")
+# tasks that do not change what the recipe puts into the image
+_TASKS_NOT_HASHED = re.compile(
+    r"^do_(build|checkuri|listtasks|printdiff|.*clean.*|.*devshell|.*config|.*spdx.*|cve_check"
+    r"|.*qa|populate_lic|rm_work.*|dependencytrack_.*|.*_setscene)$")
 
 
 def normalize_ws(value):
@@ -275,9 +276,37 @@ def built_into(recipes):
     return {pn: sorted(consumers) for pn, consumers in result.items()}
 
 
+def task_hashes(basehashes):
+    """The basehashes of the tasks that can change the output of a recipe."""
+    return {task: h for task, h in sorted(basehashes.items()) if not _TASKS_NOT_HASHED.match(task)}
+
+
+def deploy_dependencies(task_depends):
+    """
+    Return the recipe names whose do_deploy one of `task_depends` (the
+    [depends] flags of the image tasks) needs.
+    """
+    names = set()
+    for depends in task_depends:
+        for dep in (depends or "").split():
+            name, _, task = dep.partition(":")
+            if task == "do_deploy":
+                names.add(name)
+    return names
+
+
+def resolve_names(names, recipes):
+    """Map recipe names and PROVIDES entries in `names` to the PN in `recipes`."""
+    pn_of = {}
+    for pn, r in recipes.items():
+        for name in [pn] + list(r.get("provides", [])):
+            pn_of.setdefault(name, pn)
+    return {pn_of[name] for name in names if name in pn_of}
+
+
 def check_merge(facts, other, name):
     """Fail if the facts of another image belong to another build."""
-    for key in ("machine", "distro_version"):
+    for key in ("format_version", "machine", "distro_version"):
         if facts[key] != other[key]:
             raise ValueError(f"{name}: {key} is {other[key]}, expected {facts[key]}")
 
@@ -296,19 +325,19 @@ def merge_recipes(recipes, other):
         mine["installed_packages"] = dict(sorted({**mine["installed_packages"], **r["installed_packages"]}.items()))
         mine["linked_by"] = dict(sorted({**mine["linked_by"], **r["linked_by"]}.items()))
         mine["built_into"] = sorted(set(mine["built_into"]) | set(r["built_into"]))
+        mine["deploys"] = mine["deploys"] or r["deploys"]
     return recipes
 
 
-def enabled_units(unit_dir):
+def unit_links(unit_dir):
     """
-    Return the "<target>.wants/<unit>" and "<target>.requires/<unit>" links in
-    `unit_dir`, the units that were enabled in the rootfs.
+    Return {link: target} of all symlinks below `unit_dir`: enabled units
+    (*.wants, *.requires), default.target and masked units (/dev/null).
     """
-    if not os.path.isdir(unit_dir):
-        return []
-    units = set()
-    for entry in os.listdir(unit_dir):
-        if entry.endswith(".wants") or entry.endswith(".requires"):
-            for unit in os.listdir(os.path.join(unit_dir, entry)):
-                units.add(f"{entry}/{unit}")
-    return sorted(units)
+    links = {}
+    for root, dirs, files in os.walk(unit_dir):
+        for name in dirs + files:
+            full = os.path.join(root, name)
+            if os.path.islink(full):
+                links[os.path.relpath(full, unit_dir)] = os.readlink(full)
+    return dict(sorted(links.items()))
