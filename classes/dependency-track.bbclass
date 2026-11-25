@@ -216,7 +216,6 @@ def write_recipe_facts(d):
             remote_files.append({
                 "url": clean(address),
                 "sha256": getattr(ud, "sha256_expected", None),
-                "patch": fetch.localpath(url) in patches,
             })
 
     facts = {

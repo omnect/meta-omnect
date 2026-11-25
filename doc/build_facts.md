@@ -51,7 +51,7 @@ first check below does not apply to them.
         {"name": "run-ptest", "sha256": "<sha256>", "patch": false}
       ],
       "remote_files": [
-        {"url": "https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz", "sha256": "<sha256>", "patch": false}
+        {"url": "https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz", "sha256": "<sha256>"}
       ],
       "installed_packages": {
         "dbus-1": "<sha256>",
@@ -70,7 +70,7 @@ first check below does not apply to them.
       "configure_args": {"EXTRA_OEMAKE": "'CC=aarch64-omnect-linux-gcc ... --sysroot=<WORKDIR>/recipe-sysroot' ..."},
       "kconfig": {},
       "src_files": [{"name": "lua.pc.in", "sha256": "<sha256>", "patch": false}],
-      "remote_files": [{"url": "http://www.lua.org/ftp/lua-5.5.0.tar.gz", "sha256": "<sha256>", "patch": false}],
+      "remote_files": [{"url": "http://www.lua.org/ftp/lua-5.5.0.tar.gz", "sha256": "<sha256>"}],
       "installed_packages": {},
       "linked_by": {},
       "built_into": ["swupdate"]
@@ -98,7 +98,7 @@ fragments are applied in that order. All other lists are sorted.
 | `configure_args` | `EXTRA_OECONF`, `EXTRA_OECMAKE`, `EXTRA_OEMESON`, `CARGO_BUILD_FLAGS` or `GOBUILDFLAGS`, only the one of the build system the recipe uses, plus `EXTRA_OEMAKE` and `CARGO_FEATURES` if set; the paths `WORKDIR`, `TMPDIR`, `TOPDIR`, `COREBASE` and `DL_DIR` replaced by `<WORKDIR>` and so on, the number of make jobs by `-j <N>`, whitespace normalized |
 | `kconfig` | kernel only: `KBUILD_DEFCONFIG` and `KERNEL_FEATURES` |
 | `src_files` | every local `file://` entry of `SRC_URI` with the sha256 of its content (for a directory: of all its files); `patch` marks the files that are applied as patches |
-| `remote_files` | every other entry of `SRC_URI` (tarballs, remote patches, crates, Go modules) with the sha256 from the recipe; `patch` as above |
+| `remote_files` | every other entry of `SRC_URI` (tarballs, remote patches, crates, Go modules) with the sha256 from the recipe |
 | `installed_packages` | packages of the recipe in the image, with the sha256 of the uncompressed `data.tar` and the maintainer scripts and `conffiles` of the ipk; the build fails if an ipk is missing |
 | `linked_by` | image files of other recipes that need a library or a command of the recipe (pkgdata `FILERDEPENDS`), with the recipe of each file |
 | `built_into` | target recipes in the recipe set that have this recipe in `DEPENDS` |
