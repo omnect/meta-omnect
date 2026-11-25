@@ -1,1 +1,1 @@
-BBIMPORTS = ["device_caps"]
+BBIMPORTS = ["build_facts", "device_caps"]

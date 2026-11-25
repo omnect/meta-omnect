@@ -1,7 +1,8 @@
 # Build facts
 
-The image build writes `build-facts.json` next to the SBOM (`bom.json`) in
-`${DEPLOY_DIR}/dependency-track/`. It records, per recipe, the inputs and
+Each image build writes `build-facts.<image>.json` next to the SBOM
+(`bom.json`) in `${DEPLOY_DIR}/dependency-track/`, at the same point as the
+image manifest. It records, per recipe, the inputs and
 outputs a CVE assessment depends on: version, sources, patches, configuration,
 installed packages and which parts of the image use the recipe.
 
@@ -12,12 +13,22 @@ applies.
 
 ## Recipe set
 
-The file has one entry for every target recipe in the SBOM, also for recipes
+The file has one entry for every target recipe the SBOM collects for the
+image, also for recipes
 without a package in the image. Such a recipe can still be part of the image:
 swupdate links `liblua.a` and `libmtd.a` statically, so a CVE in lua or
 mtd-utils is a CVE in swupdate. Other recipes are only in the SBOM because a
 package that is not installed depends on them at runtime. Their entry has no
-installed packages and no consumers.
+installed packages and no consumers. Image recipes have no entry.
+
+An image can add the facts of other images that ship with it, such as its
+initramfs, by naming them in `DEPENDENCYTRACK_FACTS_MERGE`. The file then has
+the recipes of all these images, and the packages, users and consumers of a
+recipe are joined. The other images still write their own file.
+
+Some recipes put files into the boot partition and have no package in the
+image (bootloader, firmware). Their `installed_packages` is empty, so only
+the second check below applies to them.
 
 ## Format
 
@@ -52,7 +63,7 @@ installed packages and no consumers.
       "srcrev": {},
       "cve_products": ["lua"],
       "packageconfig": ["readline"],
-      "configure_args": {"EXTRA_OEMAKE": "'CC=aarch64-omnect-linux-gcc ... --sysroot=${WORKDIR}/recipe-sysroot' ..."},
+      "configure_args": {"EXTRA_OEMAKE": "'CC=aarch64-omnect-linux-gcc ... --sysroot=<WORKDIR>/recipe-sysroot' ..."},
       "kconfig": {},
       "src_files": [{"name": "lua.pc.in", "sha256": "<sha256>", "patch": false}],
       "installed_packages": {},
@@ -62,11 +73,7 @@ installed packages and no consumers.
   },
   "image": {
     "image_features": ["..."],
-    "enabled_units": ["..."],
-    "kernel_cmdline": "..."
-  },
-  "crates": {
-    "tokio@1.54.1": {"recipe": "omnect-device-service", "cargo_lock_sha256": "<sha256>"}
+    "enabled_units": ["multi-user.target.wants/sshd.socket", "..."]
   }
 }
 ```
@@ -81,7 +88,7 @@ The values are shortened examples. All lists are sorted.
 | `srcrev` | revision of every git entry in `SRC_URI`, by its `name`; empty for tarball sources |
 | `cve_products` | the `CVE_PRODUCT` entries, as the SBOM component names; the key to join with the SBOM |
 | `packageconfig` | final `PACKAGECONFIG` |
-| `configure_args` | `EXTRA_OECONF`, `EXTRA_OECMAKE` or `EXTRA_OEMESON`, only the one of the build system the recipe uses, plus `EXTRA_OEMAKE` if set; build paths replaced by placeholders, whitespace normalized |
+| `configure_args` | `EXTRA_OECONF`, `EXTRA_OECMAKE` or `EXTRA_OEMESON`, only the one of the build system the recipe uses, plus `EXTRA_OEMAKE` if set; the paths `WORKDIR`, `TMPDIR`, `TOPDIR` and `COREBASE` replaced by `<WORKDIR>` and so on, whitespace normalized |
 | `kconfig` | kernel only: `KBUILD_DEFCONFIG` and `KERNEL_FEATURES` |
 | `src_files` | every local `file://` entry of `SRC_URI` with the sha256 of its content (for a directory: of all its files); `patch` marks the files that are applied as patches |
 | `installed_packages` | packages of the recipe in the image, with the sha256 of the uncompressed `data.tar` of the ipk |
@@ -107,15 +114,7 @@ revision is in `srcrev` (`meta`).
 | Field | Content |
 | --- | --- |
 | `image_features` | `IMAGE_FEATURES` |
-| `enabled_units` | systemd units enabled in the rootfs |
-| `kernel_cmdline` | the final kernel command line |
-
-### Crates
-
-Rust crates come from the CycloneDX SBOMs of the Rust services in the image,
-not from recipes. `crates` maps each `<name>@<version>` to the recipe that
-builds it and holds the sha256 of that recipe's `Cargo.lock`. The code of a
-crate is part of the packages of that recipe.
+| `enabled_units` | the units enabled in `/etc/systemd/system`, as `<target>.wants/<unit>` or `<target>.requires/<unit>` |
 
 ## Comparing two builds
 
@@ -128,8 +127,7 @@ A recipe has the same facts in two builds if one of the two checks passes.
      transitively
 
    The build sets `SOURCE_DATE_EPOCH`, so the same input gives the same
-   package hash.
-   This check also covers recipes without own packages, such as lua.
+   package hash. This check also covers recipes without own packages, such as lua.
 2. **Same inputs:** if the binaries differ, for example after a compiler
    update, these fields are equal: `version`, `srcrev`, `cve_products`,
    `packageconfig`, `configure_args`, `kconfig`, `src_files` (names and
@@ -140,7 +138,6 @@ The file paths in `linked_by` are not compared: a library such as glibc
 often gets a new user binary, but rarely a new user recipe.
 
 A recipe that is missing in one of the two files does not have the same
-facts. A crate has the same facts if its version is the same and its recipe
-has the same facts.
+facts.
 
 The image fields are compared only when an assessment depends on them.

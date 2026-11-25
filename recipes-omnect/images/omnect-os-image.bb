@@ -26,6 +26,8 @@ DEPENDS:append = " libcap-native"
 do_rootfs[depends] += "virtual/kernel:do_deploy"
 do_rootfs[depends] += "omnect-os-initramfs:do_image_complete"
 
+DEPENDENCYTRACK_FACTS_MERGE = "omnect-os-initramfs"
+
 IMAGE_BOOT_FILES:append:omnect_uboot = " boot.scr"
 IMAGE_BOOT_FILES:append = "${@bb.utils.contains('UBOOT_FDT_LOAD', '1', ' fdt-load.scr', '', d)}"
 
