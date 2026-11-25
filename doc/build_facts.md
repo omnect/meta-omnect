@@ -109,11 +109,15 @@ fragments are applied in that order. All other lists are sorted.
 | `task_hashes` | the BitBake basehash of every task that can change the output of the recipe (all tasks except clean, devshell, QA, SPDX, CVE and license tasks): the task code and all variables the task uses, without the hashes of the dependencies |
 | `deploys` | the image uses files that the recipe deploys: a task of the image depends on its `do_deploy` (boot partition files) |
 | `installed_packages` | packages of the recipe in the image manifest, with the sha256 of the uncompressed `data.tar` and the maintainer scripts and `conffiles` of the ipk; the build fails if an ipk is missing |
-| `linked_by` | image files of other recipes that link a shared library of the recipe (pkgdata `FILERDEPENDS`), with the recipe of each file. Libraries loaded with `dlopen()` and interpreters (`/bin/sh`, `/usr/bin/python3`) are not included |
+| `linked_by` | image files of other recipes that link a shared library of the recipe (pkgdata `FILERDEPENDS`), with the recipe of each file |
 | `built_into` | target recipes in the recipe set that have this recipe in `DEPENDS` |
 
 `built_into` lists direct consumers only. A chain such as
 lzo → mtd-utils → swupdate is followed by the reader.
+
+A new user that loads a library with `dlopen()` or runs a script with an
+interpreter (`/bin/sh`, `/usr/bin/python3`) does not change `linked_by` of
+that recipe, so the comparison does not see it.
 
 All recipe fields except `installed_packages`, `linked_by` and `built_into`
 come from the BitBake data store. They are read for every recipe, also when
