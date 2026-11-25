@@ -4,6 +4,7 @@ import lzma
 import os
 import re
 import shutil
+import struct
 import subprocess
 import tarfile
 import threading
@@ -15,6 +16,10 @@ AR_MAGIC = b"!<arch>\n"
 AR_HEADER_SIZE = 60
 HASH_CHUNK_SIZE = 1024 * 1024
 GZIP_WBITS_FLAG = 16
+UIMAGE_MAGIC = 0x27051956
+UIMAGE_HEADER_SIZE = 64
+UIMAGE_TYPE_OFFSET = 30
+UIMAGE_TYPE_SCRIPT = 6
 
 CONFIGURE_ARGS_BY_CLASS = (
     ("autotools", "EXTRA_OECONF"),
@@ -341,3 +346,33 @@ def unit_links(unit_dir):
             if os.path.islink(full):
                 links[os.path.relpath(full, unit_dir)] = os.readlink(full)
     return dict(sorted(links.items()))
+
+
+def uboot_script(data):
+    """Return the text of a U-Boot script image (mkimage -T script)."""
+    if len(data) < UIMAGE_HEADER_SIZE or struct.unpack_from(">I", data)[0] != UIMAGE_MAGIC \
+            or data[UIMAGE_TYPE_OFFSET] != UIMAGE_TYPE_SCRIPT:
+        raise ValueError("not a U-Boot script image")
+    # the header is followed by the sizes of the parts, ending with 0
+    offset = UIMAGE_HEADER_SIZE
+    sizes = []
+    while True:
+        (size,) = struct.unpack_from(">I", data, offset)
+        offset += 4
+        if not size:
+            break
+        sizes.append(size)
+    return data[offset:offset + sizes[0]].decode()
+
+
+def boot_args(path):
+    """
+    Return the kernel arguments that a boot file adds: the `setenv bootargs`
+    lines of a U-Boot script, else the whole text.
+    """
+    with open(path, "rb") as f:
+        data = f.read()
+    if data[:4] == struct.pack(">I", UIMAGE_MAGIC):
+        return "\n".join(normalize_ws(line) for line in uboot_script(data).splitlines()
+                         if line.split()[:2] == ["setenv", "bootargs"])
+    return normalize_ws(data.decode())

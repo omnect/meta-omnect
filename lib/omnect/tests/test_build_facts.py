@@ -4,6 +4,7 @@ import io
 import lzma
 import os
 import shutil
+import struct
 import subprocess
 import tarfile
 import tempfile
@@ -275,6 +276,37 @@ class UnitsTest(unittest.TestCase):
 
     def test_missing_dir(self):
         self.assertEqual(build_facts.unit_links("/nonexistent"), {})
+
+
+class BootArgsTest(unittest.TestCase):
+    SCRIPT = ('fdt get value bootargs /chosen bootargs\n'
+              'setenv bootargs "root=/dev/${devtype}blk${devnum}p2 ${bootargs}  quiet"\n'
+              'booti ${kernel_addr_r}\n')
+
+    @staticmethod
+    def script_image(text, image_type=build_facts.UIMAGE_TYPE_SCRIPT):
+        header = bytearray(build_facts.UIMAGE_HEADER_SIZE)
+        struct.pack_into(">I", header, 0, build_facts.UIMAGE_MAGIC)
+        header[build_facts.UIMAGE_TYPE_OFFSET] = image_type
+        data = text.encode()
+        return bytes(header) + struct.pack(">II", len(data), 0) + data
+
+    def boot_args(self, data):
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(data)
+            f.flush()
+            return build_facts.boot_args(f.name)
+
+    def test_uboot_script(self):
+        self.assertEqual(self.boot_args(self.script_image(self.SCRIPT)),
+                         'setenv bootargs "root=/dev/${devtype}blk${devnum}p2 ${bootargs} quiet"')
+
+    def test_not_a_script(self):
+        with self.assertRaises(ValueError):
+            self.boot_args(self.script_image(self.SCRIPT, image_type=2))
+
+    def test_text(self):
+        self.assertEqual(self.boot_args(b"  quiet loglevel=3\n"), "quiet loglevel=3")
 
 
 class TaskHashesTest(unittest.TestCase):

@@ -84,7 +84,12 @@ does not apply to them or to the recipes built into them.
   "images": {
     "omnect-os-image": {
       "image_features": ["..."],
-      "unit_links": {"default.target": "/usr/lib/systemd/system/multi-user.target", "...": "..."}
+      "unit_links": {"default.target": "/usr/lib/systemd/system/multi-user.target", "...": "..."},
+      "boot_args": {
+        "boot.scr": "setenv bootargs \"root=/dev/${devtype}blk${devnum}p${omnect_os_bootpart} ${bootargs} ${omnect_extra_bootargs} quiet loglevel=3\"",
+        "bootfiles/cmdline.txt": "console=tty0 dwc_otg.lpm_enable=0 ... bcm2835-wdt.nowayout=1",
+        "omnect_extra_bootargs_omnect": "quiet loglevel=3 systemd.getty_auto=false ..."
+      }
     }
   }
 }
@@ -146,6 +151,12 @@ the build system changes, for example after an update of the Yocto layers.
 | --- | --- |
 | `image_features` | `IMAGE_FEATURES` |
 | `unit_links` | every symlink in `/etc/systemd/system` after `IMAGE_PREPROCESS_COMMAND`, with its target: enabled units (`*.wants`, `*.requires`), `default.target` and masked units (`/dev/null`) |
+| `boot_args` | the kernel arguments the build sets, by source: the deployed files in `DEPENDENCYTRACK_BOOT_ARGS_FILES` (the `setenv bootargs` lines of a U-Boot script, else the whole text) and the variables in `DEPENDENCYTRACK_BOOT_ARGS_VARS` |
+
+`boot_args` keeps the parts as they are; the bootloader puts them together
+when the device boots. Arguments that the firmware adds, that come from a
+device tree of the kernel, or that are set on the device
+(`omnect_extra_bootargs_custom`) are not in the file.
 
 ## Comparing two builds
 

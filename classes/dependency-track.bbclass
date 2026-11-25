@@ -43,6 +43,10 @@ DEPENDENCYTRACK_LOCK ??= "${DEPENDENCYTRACK_TMP}/bom.lock"
 DEPENDENCYTRACK_FACTS_TMP ??= "${DEPENDENCYTRACK_TMP}/build-facts"
 DEPENDENCYTRACK_FACTS ??= "${DEPENDENCYTRACK_DIR}/build-facts.${PN}.json"
 DEPENDENCYTRACK_FACTS_MERGE ??= ""
+# "<recipe>:<path below DEPLOY_DIR_IMAGE>" of the deployed files that set kernel arguments
+DEPENDENCYTRACK_BOOT_ARGS_FILES ??= ""
+# variables with kernel arguments that are in no deployed file
+DEPENDENCYTRACK_BOOT_ARGS_VARS ??= ""
 
 python do_dependencytrack_init() {
     import uuid
@@ -296,6 +300,16 @@ python dependencytrack_write_facts() {
         r["deploys"] = pn in deploys
         out[pn] = r
 
+    boot_args = {}
+    for entry in d.getVar("DEPENDENCYTRACK_BOOT_ARGS_FILES").split():
+        name = entry.partition(":")[2]
+        path = os.path.join(d.getVar("DEPLOY_DIR_IMAGE"), name)
+        if not os.path.exists(path):
+            bb.fatal("build facts: %s not found" % path)
+        boot_args[name] = omnect.build_facts.boot_args(path)
+    for var in d.getVar("DEPENDENCYTRACK_BOOT_ARGS_VARS").split():
+        boot_args[var] = omnect.build_facts.normalize_ws(d.getVar(var))
+
     facts = {
         "format_version": omnect.build_facts.FORMAT_VERSION,
         "machine": d.getVar("MACHINE"),
@@ -306,6 +320,7 @@ python dependencytrack_write_facts() {
                 "image_features": omnect.build_facts.sorted_words(d.getVar("IMAGE_FEATURES")),
                 "unit_links": omnect.build_facts.unit_links(
                     os.path.join(d.getVar("IMAGE_ROOTFS"), d.getVar("sysconfdir").lstrip("/"), "systemd", "system")),
+                "boot_args": boot_args,
             },
         },
     }
@@ -334,7 +349,9 @@ python dependencytrack_write_facts() {
         json.dump(facts, f, indent=2, sort_keys=True)
 }
 dependencytrack_write_facts[vardepsexclude] += "BB_TASKDEPDATA"
+dependencytrack_write_facts[vardeps] += "${DEPENDENCYTRACK_BOOT_ARGS_VARS}"
 
 # after IMAGE_PREPROCESS_COMMAND, which can still change the rootfs
 do_image[postfuncs] += "dependencytrack_write_facts"
 do_image[depends] += "${@' '.join('%s:do_image' % i for i in d.getVar('DEPENDENCYTRACK_FACTS_MERGE').split())}"
+do_image[depends] += "${@' '.join('%s:do_deploy' % e.split(':')[0] for e in d.getVar('DEPENDENCYTRACK_BOOT_ARGS_FILES').split())}"
