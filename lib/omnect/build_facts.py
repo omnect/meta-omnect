@@ -1,9 +1,11 @@
 import hashlib
+import io
 import lzma
 import os
 import re
 import shutil
 import subprocess
+import tarfile
 import threading
 import zlib
 
@@ -19,7 +21,13 @@ CONFIGURE_ARGS_BY_CLASS = (
     ("autotools", "EXTRA_OECONF"),
     ("cmake", "EXTRA_OECMAKE"),
     ("meson", "EXTRA_OEMESON"),
+    ("cargo", "CARGO_BUILD_FLAGS"),
+    ("go", "GOBUILDFLAGS"),
 )
+
+# control.tar members that change what installing the package does; the
+# control file is left out, it holds the version
+CONTROL_SCRIPTS = ("conffiles", "postinst", "postrm", "preinst", "prerm")
 
 
 def normalize_ws(value):
@@ -39,6 +47,14 @@ def replace_paths(value, paths):
         if path:
             value = value.replace(path, placeholder)
     return value
+
+
+_JOBS = re.compile(r"(?<![\w-])-j\s*\d+")
+
+
+def mask_jobs(value):
+    """Replace the host specific number of make jobs ("-j 16") by "-j <N>"."""
+    return _JOBS.sub("-j <N>", value)
 
 
 def sha256_file(path):
@@ -92,10 +108,9 @@ def _member_chunks(f, size):
         yield chunk
 
 
-def _hash_zstd(chunks):
+def _zstd_chunks(chunks):
     if not shutil.which("zstd"):
         raise ValueError("zstd not found")
-    h = hashlib.sha256()
     proc = subprocess.Popen(["zstd", "-dc"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
     def feed():
@@ -107,53 +122,64 @@ def _hash_zstd(chunks):
 
     feeder = threading.Thread(target=feed)
     feeder.start()
-    for chunk in iter(lambda: proc.stdout.read(HASH_CHUNK_SIZE), b""):
-        h.update(chunk)
+    yield from iter(lambda: proc.stdout.read(HASH_CHUNK_SIZE), b"")
     feeder.join()
     if proc.wait() != 0:
         raise ValueError("zstd failed")
-    return h.hexdigest()
 
 
-def _hash_with(decompressor, chunks):
-    h = hashlib.sha256()
-    for chunk in chunks:
-        h.update(decompressor.decompress(chunk))
-    return h.hexdigest()
+def _decompressed(name, chunks):
+    if name.endswith(".zst"):
+        return _zstd_chunks(chunks)
+    if name.endswith(".xz"):
+        decompressor = lzma.LZMADecompressor()
+    elif name.endswith(".gz"):
+        decompressor = zlib.decompressobj(zlib.MAX_WBITS | GZIP_WBITS_FLAG)
+    elif name.endswith(".tar"):
+        return chunks
+    else:
+        raise ValueError(f"unknown compression of {name}")
+    return (decompressor.decompress(chunk) for chunk in chunks)
 
 
-def ipk_data_sha256(path):
+def _member(members, prefix, path):
+    name = next((m for m in members if m.startswith(prefix)), None)
+    if name is None:
+        raise ValueError(f"{path}: no {prefix} member")
+    return name
+
+
+def ipk_sha256(path):
     """
-    sha256 of the uncompressed data.tar of an ipk. The compressed member is
-    not hashed, so the hash does not depend on compressor settings.
+    sha256 of the uncompressed data.tar and of the maintainer scripts of an
+    ipk. The compressed members are not hashed, so the hash does not depend
+    on compressor settings.
     """
     members = ar_members(path)
-    name = next((m for m in members if m.startswith("data.tar")), None)
-    if name is None:
-        raise ValueError(f"{path}: no data.tar member")
-    offset, size = members[name]
+    h = hashlib.sha256()
     with open(path, "rb") as f:
+        name = _member(members, "data.tar", path)
+        offset, size = members[name]
         f.seek(offset)
-        chunks = _member_chunks(f, size)
-        if name.endswith(".zst"):
-            return _hash_zstd(chunks)
-        if name.endswith(".xz"):
-            return _hash_with(lzma.LZMADecompressor(), chunks)
-        if name.endswith(".gz"):
-            return _hash_with(zlib.decompressobj(zlib.MAX_WBITS | GZIP_WBITS_FLAG), chunks)
-        if name == "data.tar":
-            return _hash_with(_Identity(), chunks)
-    raise ValueError(f"{path}: unknown compression of {name}")
+        for chunk in _decompressed(name, _member_chunks(f, size)):
+            h.update(chunk)
 
-
-class _Identity:
-    def decompress(self, chunk):
-        return chunk
+        name = _member(members, "control.tar", path)
+        offset, size = members[name]
+        f.seek(offset)
+        control = b"".join(_decompressed(name, _member_chunks(f, size)))
+    with tarfile.open(fileobj=io.BytesIO(control)) as tar:
+        scripts = {os.path.basename(m.name): m for m in tar.getmembers() if m.isfile()}
+        for script in CONTROL_SCRIPTS:
+            if script in scripts:
+                h.update(script.encode() + b"\0")
+                h.update(tar.extractfile(scripts[script]).read() + b"\0")
+    return h.hexdigest()
 
 
 def ipk_filename(name, version, arch):
-    """File name of an ipk; the epoch of the version is not part of it."""
-    return f"{name}_{version.split(':', 1)[-1]}_{arch}.ipk"
+    """File name of an ipk; opkg-build leaves out a one-character epoch."""
+    return f"{name}_{re.sub(r'^.:', '', version)}_{arch}.ipk"
 
 
 def parse_pkgdata(text):
@@ -226,6 +252,13 @@ def built_into(recipes):
             if provider and provider != consumer:
                 result[provider].add(consumer)
     return {pn: sorted(consumers) for pn, consumers in result.items()}
+
+
+def check_merge(facts, other, name):
+    """Fail if the facts of another image belong to another build."""
+    for key in ("machine", "distro_version"):
+        if facts[key] != other[key]:
+            raise ValueError(f"{name}: {key} is {other[key]}, expected {facts[key]}")
 
 
 def merge_recipes(recipes, other):

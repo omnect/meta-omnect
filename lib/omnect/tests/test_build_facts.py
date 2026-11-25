@@ -1,9 +1,11 @@
 import gzip
 import hashlib
+import io
 import lzma
 import os
 import shutil
 import subprocess
+import tarfile
 import tempfile
 import unittest
 
@@ -17,11 +19,21 @@ def ar_member(name, data):
     return header + data + (b"\n" if len(data) % 2 else b"")
 
 
-def write_ipk(path, data_name, data):
+def control_tar(files):
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w") as tar:
+        for name, content in files.items():
+            info = tarfile.TarInfo("./" + name)
+            info.size = len(content)
+            tar.addfile(info, io.BytesIO(content))
+    return gzip.compress(buf.getvalue())
+
+
+def write_ipk(path, data_name, data, control=None):
     with open(path, "wb") as f:
         f.write(build_facts.AR_MAGIC)
         f.write(ar_member("debian-binary", b"2.0\n"))
-        f.write(ar_member("control.tar.gz", gzip.compress(b"control")))
+        f.write(ar_member("control.tar.gz", control_tar(control or {"control": b"Version: 1\n"})))
         f.write(ar_member(data_name, data))
 
 
@@ -31,10 +43,13 @@ class IpkTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.dir)
         self.expected = hashlib.sha256(DATA_TAR).hexdigest()
 
-    def check(self, data_name, data):
+    def hash(self, data_name, data, control=None):
         path = os.path.join(self.dir, "p.ipk")
-        write_ipk(path, data_name, data)
-        self.assertEqual(build_facts.ipk_data_sha256(path), self.expected)
+        write_ipk(path, data_name, data, control)
+        return build_facts.ipk_sha256(path)
+
+    def check(self, data_name, data):
+        self.assertEqual(self.hash(data_name, data), self.expected)
 
     def test_xz(self):
         self.check("data.tar.xz", lzma.compress(DATA_TAR))
@@ -55,18 +70,30 @@ class IpkTest(unittest.TestCase):
         self.check("data.tar.xz", lzma.compress(DATA_TAR, preset=0))
         self.check("data.tar.xz", lzma.compress(DATA_TAR, preset=9))
 
+    def test_control_version_does_not_change_hash(self):
+        self.assertEqual(self.hash("data.tar", DATA_TAR, {"control": b"Version: 2\n"}), self.expected)
+
+    def test_maintainer_script_changes_hash(self):
+        plain = self.hash("data.tar", DATA_TAR, {"control": b"", "postinst": b"#!/bin/sh\n"})
+        setcap = self.hash("data.tar", DATA_TAR, {"control": b"", "postinst": b"#!/bin/sh\nsetcap x\n"})
+        self.assertNotEqual(plain, self.expected)
+        self.assertNotEqual(plain, setcap)
+
     def test_no_ar_archive(self):
         path = os.path.join(self.dir, "p.ipk")
         with open(path, "wb") as f:
             f.write(b"something else")
         with self.assertRaises(ValueError):
-            build_facts.ipk_data_sha256(path)
+            build_facts.ipk_sha256(path)
 
 
 class IpkFilenameTest(unittest.TestCase):
     def test_epoch_is_dropped(self):
         self.assertEqual(build_facts.ipk_filename("kernel-image", "1:6.18.33+git0-r0", "raspberrypi4_64"),
                          "kernel-image_6.18.33+git0-r0_raspberrypi4_64.ipk")
+
+    def test_only_one_character_epoch_is_dropped(self):
+        self.assertEqual(build_facts.ipk_filename("p", "10:1.0-r0", "all"), "p_10:1.0-r0_all.ipk")
 
     def test_without_epoch(self):
         self.assertEqual(build_facts.ipk_filename("dbus-1", "1.16.2-r0", "cortexa72"), "dbus-1_1.16.2-r0_cortexa72.ipk")
@@ -78,6 +105,10 @@ class PathTest(unittest.TestCase):
         self.assertEqual(
             build_facts.replace_paths("--sysroot=/b/tmp/work/x/sysroot -I/b/tmp/a", paths),
             "--sysroot=<WORKDIR>/sysroot -I<TMPDIR>/a")
+
+    def test_mask_jobs(self):
+        self.assertEqual(build_facts.mask_jobs('PARALLELMFLAGS="-j 16" -j8 --no-j 3'),
+                         'PARALLELMFLAGS="-j <N>" -j <N> --no-j 3')
 
     def test_normalize_ws(self):
         self.assertEqual(build_facts.normalize_ws("  a   b\n c "), "a b c")
@@ -160,6 +191,12 @@ class BuiltIntoTest(unittest.TestCase):
 
 
 class MergeTest(unittest.TestCase):
+    def test_check_merge(self):
+        facts = {"machine": "raspberrypi4-64", "distro_version": "1"}
+        build_facts.check_merge(facts, dict(facts), "initramfs")
+        with self.assertRaises(ValueError):
+            build_facts.check_merge(facts, {"machine": "genericx86-64", "distro_version": "1"}, "initramfs")
+
     def test_merge_recipes(self):
         def recipe(packages, linked_by, built_into):
             return {"version": "1", "installed_packages": packages, "linked_by": linked_by, "built_into": built_into}

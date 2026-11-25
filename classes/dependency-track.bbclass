@@ -42,8 +42,6 @@ DEPENDENCYTRACK_TMP ??= "${TMPDIR}/dependency-track"
 DEPENDENCYTRACK_LOCK ??= "${DEPENDENCYTRACK_TMP}/bom.lock"
 DEPENDENCYTRACK_FACTS_TMP ??= "${DEPENDENCYTRACK_TMP}/build-facts"
 DEPENDENCYTRACK_FACTS ??= "${DEPENDENCYTRACK_DIR}/build-facts.${PN}.json"
-# images whose build facts are added to the facts of this image, e.g. the
-# initramfs that ships with it
 DEPENDENCYTRACK_FACTS_MERGE ??= ""
 
 python do_dependencytrack_init() {
@@ -153,15 +151,12 @@ def write_sbom(d, sbom):
         json.dumps(sbom, indent=2)
     )
 
-# Build facts: see doc/build_facts.md. The recipe part comes from the data
-# store, so it is also there for recipes from the sstate cache. The image part
-# needs the installed packages and is written with the image manifest.
+# Build facts: see doc/build_facts.md
 
 def write_recipe_facts(d):
     import json
     import os
     import oe.patch
-    from omnect import build_facts
 
     path = os.path.join(d.getVar("DEPENDENCYTRACK_FACTS_TMP"), d.getVar("PN") + ".json")
     if bb.data.inherits_class("image", d):
@@ -174,51 +169,65 @@ def write_recipe_facts(d):
         "<TMPDIR>": d.getVar("TMPDIR"),
         "<TOPDIR>": d.getVar("TOPDIR"),
         "<COREBASE>": d.getVar("COREBASE"),
+        "<DL_DIR>": d.getVar("DL_DIR"),
     }
 
     def clean(value):
-        return build_facts.normalize_ws(build_facts.replace_paths(value or "", paths))
+        value = omnect.build_facts.replace_paths(value or "", paths)
+        return omnect.build_facts.normalize_ws(omnect.build_facts.mask_jobs(value))
 
     configure_args = {}
-    for cls, var in build_facts.CONFIGURE_ARGS_BY_CLASS:
+    for cls, var in omnect.build_facts.CONFIGURE_ARGS_BY_CLASS:
         if bb.data.inherits_class(cls, d):
             configure_args[var] = clean(d.getVar(var))
-    if (d.getVar("EXTRA_OEMAKE") or "").strip():
-        configure_args["EXTRA_OEMAKE"] = clean(d.getVar("EXTRA_OEMAKE"))
+    for var in ("EXTRA_OEMAKE", "CARGO_FEATURES"):
+        if (d.getVar(var) or "").strip():
+            configure_args[var] = clean(d.getVar(var))
 
     kconfig = {}
     if bb.data.inherits_class("kernel", d):
         kconfig["KBUILD_DEFCONFIG"] = clean(d.getVar("KBUILD_DEFCONFIG"))
-        kconfig["KERNEL_FEATURES"] = build_facts.sorted_words(d.getVar("KERNEL_FEATURES"))
+        # the order of the features is the order of the config fragments
+        kconfig["KERNEL_FEATURES"] = (d.getVar("KERNEL_FEATURES") or "").split()
 
     fetch = bb.fetch2.Fetch([], d)
     patches = set()
     for patch in oe.patch.src_patches(d, expand=False):
         patches.add(bb.fetch2.decodeurl(patch)[2])
 
+    # SRC_URI order: patches and config fragments are applied in this order
     srcrev = {}
     src_files = []
+    remote_files = []
     for url in fetch.urls:
         ud = fetch.ud[url]
+        address = url.split(";")[0]
         if ud.type in ("git", "gitsm"):
-            for name in ud.parm.get("name", "default").split(","):
-                srcrev[name] = d.getVar("SRCREV_%s" % name) or d.getVar("SRCREV")
+            # the resolved commit, also for ;rev=, ;tag= and AUTOREV
+            srcrev[ud.parm["name"] if "name" in ud.parm else address] = ud.revision
         elif ud.type == "file":
             local = fetch.localpath(url)
             src_files.append({
-                "name": url.split(";")[0][len("file://"):],
-                "sha256": build_facts.sha256_path(local) if os.path.exists(local) else None,
+                "name": address[len("file://"):],
+                "sha256": omnect.build_facts.sha256_path(local),
                 "patch": local in patches,
+            })
+        else:
+            remote_files.append({
+                "url": clean(address),
+                "sha256": getattr(ud, "sha256_expected", None),
+                "patch": fetch.localpath(url) in patches,
             })
 
     facts = {
         "version": d.getVar("PV"),
         "srcrev": dict(sorted(srcrev.items())),
         "cve_products": (d.getVar("CVE_PRODUCT") or "").split(),
-        "packageconfig": build_facts.sorted_words(d.getVar("PACKAGECONFIG")),
+        "packageconfig": omnect.build_facts.sorted_words(d.getVar("PACKAGECONFIG")),
         "configure_args": configure_args,
         "kconfig": kconfig,
-        "src_files": sorted(src_files, key=lambda f: f["name"]),
+        "src_files": src_files,
+        "remote_files": remote_files,
         "provides": (d.getVar("PROVIDES") or "").split(),
         "depends": bb.utils.explode_deps(d.getVar("DEPENDS") or ""),
     }
@@ -232,7 +241,6 @@ python dependencytrack_write_facts() {
     import os
     import oe.package
     import oe.rootfs
-    from omnect import build_facts
 
     # Only the recipes of this image: the fragment directory also holds
     # recipes of other images and of earlier builds.
@@ -254,23 +262,19 @@ python dependencytrack_write_facts() {
     files = {}
     for pkg, info in sorted(oe.rootfs.image_list_installed_packages(d).items()):
         with open(os.path.join(pkgdata_dir, "runtime-reverse", pkg)) as f:
-            pkgdata = build_facts.parse_pkgdata(f.read())
+            pkgdata = omnect.build_facts.parse_pkgdata(f.read())
         pn = pkgdata.get("PN")
-        ipk = os.path.join(deploy_ipk, info["arch"], build_facts.ipk_filename(pkg, info["ver"], info["arch"]))
-        if os.path.exists(ipk):
-            digest = build_facts.ipk_data_sha256(ipk)
-        else:
-            # a missing hash never compares equal, so the recipe counts as changed
-            bb.warn("build facts: %s not found" % ipk)
-            digest = None
-        packages.setdefault(pn, {})[pkg] = digest
-        provides, depends = build_facts.per_file_deps(pkgdata)
+        ipk = os.path.join(deploy_ipk, info["arch"], omnect.build_facts.ipk_filename(pkg, info["ver"], info["arch"]))
+        if not os.path.exists(ipk):
+            bb.fatal("build facts: %s not found" % ipk)
+        packages.setdefault(pn, {})[pkg] = omnect.build_facts.ipk_sha256(ipk)
+        provides, depends = omnect.build_facts.per_file_deps(pkgdata)
         file_provides, file_depends = files.setdefault(pn, ({}, {}))
         file_provides.update({oe.package.file_reverse_translate(f): v for f, v in provides.items()})
         file_depends.update({oe.package.file_reverse_translate(f): v for f, v in depends.items()})
 
-    linked_by = build_facts.linked_by(files)
-    built_into = build_facts.built_into(recipes)
+    linked_by = omnect.build_facts.linked_by(files)
+    built_into = omnect.build_facts.built_into(recipes)
 
     out = {}
     for pn, r in recipes.items():
@@ -281,22 +285,29 @@ python dependencytrack_write_facts() {
         r["built_into"] = built_into[pn]
         out[pn] = r
 
-    for image in (d.getVar("DEPENDENCYTRACK_FACTS_MERGE") or "").split():
-        path = os.path.join(d.getVar("DEPENDENCYTRACK_DIR"), "build-facts.%s.json" % image)
-        with open(path) as f:
-            build_facts.merge_recipes(out, json.load(f)["recipes"])
-
     facts = {
-        "format_version": build_facts.FORMAT_VERSION,
+        "format_version": omnect.build_facts.FORMAT_VERSION,
         "machine": d.getVar("MACHINE"),
         "distro_version": d.getVar("DISTRO_VERSION"),
         "recipes": out,
         "image": {
-            "image_features": build_facts.sorted_words(d.getVar("IMAGE_FEATURES")),
-            "enabled_units": build_facts.enabled_units(
+            "image_features": omnect.build_facts.sorted_words(d.getVar("IMAGE_FEATURES")),
+            "enabled_units": omnect.build_facts.enabled_units(
                 os.path.join(d.getVar("IMAGE_ROOTFS"), d.getVar("sysconfdir").lstrip("/"), "systemd", "system")),
         },
     }
+
+    for image in (d.getVar("DEPENDENCYTRACK_FACTS_MERGE") or "").split():
+        path = d.getVar("DEPENDENCYTRACK_FACTS").replace("build-facts.%s." % d.getVar("PN"), "build-facts.%s." % image)
+        if not os.path.exists(path):
+            bb.fatal("build facts: %s not found, run do_image of %s again" % (path, image))
+        with open(path) as f:
+            other = json.load(f)
+        try:
+            omnect.build_facts.check_merge(facts, other, path)
+        except ValueError as e:
+            bb.fatal("build facts: %s" % e)
+        omnect.build_facts.merge_recipes(out, other["recipes"])
 
     path = d.getVar("DEPENDENCYTRACK_FACTS")
     bb.utils.mkdirhier(os.path.dirname(path))
@@ -305,5 +316,6 @@ python dependencytrack_write_facts() {
 }
 dependencytrack_write_facts[vardepsexclude] += "BB_TASKDEPDATA"
 
-ROOTFS_POSTUNINSTALL_COMMAND += "dependencytrack_write_facts"
-do_rootfs[depends] += "${@' '.join('%s:do_rootfs' % i for i in d.getVar('DEPENDENCYTRACK_FACTS_MERGE').split())}"
+# after IMAGE_PREPROCESS_COMMAND, which can still change the rootfs
+do_image[postfuncs] += "dependencytrack_write_facts"
+do_image[depends] += "${@' '.join('%s:do_image' % i for i in d.getVar('DEPENDENCYTRACK_FACTS_MERGE').split())}"
