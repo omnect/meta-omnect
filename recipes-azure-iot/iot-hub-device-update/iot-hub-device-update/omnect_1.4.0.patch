@@ -23,6 +23,25 @@ index 0574fed5..a489288e 100644
  set (
      ADUC_IOT_HUB_PROTOCOL
      "IotHub_Protocol_from_Config"
+diff --git a/cmake/agentRules.cmake b/cmake/agentRules.cmake
+index 33e07f85..257bf0af 100644
+--- a/cmake/agentRules.cmake
++++ b/cmake/agentRules.cmake
+@@ -19,13 +19,8 @@ endmacro (disableRTTI)
+ 
+ function (target_link_aziotsharedutil target scope)
+     find_package (azure_c_shared_utility REQUIRED CONFIG)
++    # aziotsharedutil pulls in macro_utils_c and c_logging_v2 itself
+     target_link_libraries (${target} ${scope} aziotsharedutil)
+-
+-    # azure_c_shared_utility uses azure_macro_utils, but with VCPKG it doesn't have a dependency?
+-    # Without this, build errors out with:
+-    # azure_c_shared_utility/map.h(18,10): fatal  error C1083: Cannot open include file: 'azure_macro_utils/macro_utils.h'
+-    find_package (azure_macro_utils_c REQUIRED CONFIG)
+-    target_link_libraries (${target} ${scope} azure_macro_utils_c)
+ endfunction ()
+ 
+ function (target_link_umock_c target scope)
 diff --git a/scripts/error_code_generator_defs/result_codes.json b/scripts/error_code_generator_defs/result_codes.json
 index 686fce7d..32357462 100644
 --- a/scripts/error_code_generator_defs/result_codes.json
@@ -611,10 +630,19 @@ index 38ad9ea5..b32dcc33 100644
              S_IRGRP | S_IXGRP;  // R-X group
          // clang-format on
 diff --git a/src/agent/src/main.c b/src/agent/src/main.c
-index 70f28c4f..6a350e07 100644
+index 70f28c4f..9b87e559 100644
 --- a/src/agent/src/main.c
 +++ b/src/agent/src/main.c
-@@ -886,7 +886,7 @@ done:
+@@ -60,6 +60,8 @@
+ 
+ #include "eis_utils.h"
+ 
++#include <c_logging/logger.h>
++
+ // make this last so that it does not interfere when system headers are included after it
+ #include "aduc/aduc_banned.h"
+ 
+@@ -886,7 +888,7 @@ done:
   */
  void ShutdownAgent()
  {
@@ -623,6 +651,29 @@ index 70f28c4f..6a350e07 100644
  
      AducTimer_Stop(&g_idle_pause_timer);
  
+@@ -1009,6 +1011,14 @@ int main(int argc, char** argv)
+         return 0;
+     }
+ 
++    // The SDK aborts on its first log line until logger_init() is called. IoTHub_Init() calls it too,
++    // but the connection info is read from the identity service before that.
++    if (logger_init() != 0)
++    {
++        puts("logger_init failed");
++        return -1;
++    }
++
+     // Need to set ret and goto done after this to ensure proper shutdown and deinitialization.
+     ADUC_Logging_Init(launchArgs.logLevel, "du-agent");
+ 
+@@ -1229,5 +1239,7 @@ done:
+ 
+     ADUC_ConfigInfo_ReleaseInstance(config);
+ 
++    logger_deinit();
++
+     return ret;
+ }
 diff --git a/src/communication_managers/iothub_communication_manager/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
 index 0e52b667..8620349c 100644
 --- a/src/communication_managers/iothub_communication_manager/CMakeLists.txt
