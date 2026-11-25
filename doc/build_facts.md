@@ -100,13 +100,13 @@ fragments are applied in that order. All other lists are sorted.
 | --- | --- |
 | `version` | `PV` |
 | `srcrev` | the revision the fetcher resolved for every `SRC_URI` entry with a revision (git, also for `;rev=`, `;tag=` and `AUTOREV`), by its `name`, or by its URL if it has no name; empty for tarball sources |
-| `cve_products` | the `CVE_PRODUCT` entries, as the SBOM component names; the key to join with the SBOM |
+| `cve_products` | the `CVE_PRODUCT` entries, as the SBOM component names; joins the recipe with the SBOM components, and one component can belong to several recipes |
 | `packageconfig` | final `PACKAGECONFIG` |
 | `configure_args` | `EXTRA_OECONF`, `EXTRA_OECMAKE`, `EXTRA_OEMESON`, `CARGO_BUILD_FLAGS` or `GOBUILDFLAGS`, only the one of the build system the recipe uses, plus `EXTRA_OEMAKE` and `CARGO_FEATURES` if set; the paths `WORKDIR`, `TMPDIR`, `TOPDIR`, `COREBASE` and `DL_DIR` replaced by `<WORKDIR>` and so on, the number of make jobs by `-j <N>`, whitespace normalized |
 | `kconfig` | kernel only: `KBUILD_DEFCONFIG` and `KERNEL_FEATURES` |
 | `src_files` | every local `file://` entry of `SRC_URI` with the sha256 of its content (for a directory: of all its files); `patch` marks the files that are applied as patches |
 | `remote_files` | every other entry of `SRC_URI` without a revision (tarballs, remote patches, crates, Go modules) with its parameters and the sha256 from the recipe |
-| `task_hashes` | the BitBake basehash of every task that can change the output of the recipe (all tasks except clean, devshell, QA, SPDX, CVE and license tasks): the task code and all variables the task uses, without the hashes of the dependencies |
+| `task_hashes` | the BitBake basehash of every task that can change the output of the recipe (all tasks except `do_build`, `do_checkuri`, `do_listtasks`, `do_printdiff`, the clean, devshell and Kconfig editing tasks such as `do_menuconfig`, and the QA, SPDX, CVE, license, `rm_work` and dependency-track tasks): the task code and all variables the task uses, without the hashes of the dependencies |
 | `deploys` | the image uses files that the recipe deploys: a task of the image depends on its `do_deploy` (boot partition files) |
 | `installed_packages` | packages of the recipe in the image manifest, with the sha256 of the uncompressed `data.tar` and the maintainer scripts and `conffiles` of the ipk; the build fails if an ipk is missing |
 | `linked_by` | image files of other recipes that link a shared library of the recipe (pkgdata `FILERDEPENDS`), with the recipe of each file |
@@ -176,6 +176,11 @@ often gets a new user binary, but rarely a new user recipe.
 
 A recipe that is missing in one of the two files does not have the same
 facts.
+
+An SBOM component can belong to several recipes: `gcc` is in
+`cve_products` of libgcc and gcc-runtime, the SBOM lists it once. The
+assessment of a component applies only if every recipe in either file with the
+component in `cve_products` has the same facts.
 
 The image fields are compared only when an assessment depends on them, per
 image.
