@@ -145,6 +145,10 @@ the build system changes, for example after an update of the Yocto layers.
 
 ## Comparing two builds
 
+Compare only files of the same image built with the same configuration. A
+different distro feature can change `task_hashes` of most recipes,
+even when their packages are equal.
+
 A recipe has the same facts in two builds if one of the two checks passes.
 
 1. **Same binaries:** no recipe along the `built_into` chain, the recipe
