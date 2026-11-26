@@ -43,6 +43,7 @@ DEPENDENCYTRACK_LOCK ??= "${DEPENDENCYTRACK_TMP}/bom.lock"
 DEPENDENCYTRACK_FACTS_TMP ??= "${DEPENDENCYTRACK_TMP}/build-facts"
 DEPENDENCYTRACK_FACTS ??= "${DEPENDENCYTRACK_DIR}/build-facts.${PN}.json"
 DEPENDENCYTRACK_FACTS_MERGE ??= ""
+DEPENDENCYTRACK_FACTS_DEPLOY ??= "1"
 DEPENDENCYTRACK_BOOT_ARGS_FILES ??= ""
 
 python do_dependencytrack_init() {
@@ -325,13 +326,13 @@ python dependencytrack_write_facts() {
         },
     }
 
-    own_path = d.getVar("DEPENDENCYTRACK_FACTS")
+    images_dir = os.path.join(d.getVar("DEPENDENCYTRACK_FACTS_TMP"), "images")
+    bb.utils.mkdirhier(images_dir)
+    with open(os.path.join(images_dir, d.getVar("PN") + ".json"), "w") as f:
+        json.dump(facts, f, indent=2, sort_keys=True)
+
     for image in (d.getVar("DEPENDENCYTRACK_FACTS_MERGE") or "").split():
-        localdata = bb.data.createCopy(d)
-        localdata.setVar("PN", image)
-        path = localdata.getVar("DEPENDENCYTRACK_FACTS")
-        if path == own_path:
-            bb.fatal("build facts: DEPENDENCYTRACK_FACTS does not depend on PN")
+        path = os.path.join(images_dir, image + ".json")
         if not os.path.exists(path):
             bb.fatal("build facts: %s not found, run do_image of %s again" % (path, image))
         with open(path) as f:
@@ -343,7 +344,11 @@ python dependencytrack_write_facts() {
         omnect.build_facts.merge_recipes(out, other["recipes"])
         facts["images"].update(other["images"])
 
-    path = own_path
+    path = d.getVar("DEPENDENCYTRACK_FACTS")
+    if d.getVar("DEPENDENCYTRACK_FACTS_DEPLOY") != "1":
+        # the facts are in the file of the image that merges them
+        bb.utils.remove(path)
+        return
     bb.utils.mkdirhier(os.path.dirname(path))
     with open(path, "w") as f:
         json.dump(facts, f, indent=2, sort_keys=True)

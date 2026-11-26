@@ -24,11 +24,10 @@ installed packages and no consumers. Image recipes have no entry.
 An image can add the facts of other images that ship with it, such as its
 initramfs, by naming them in `DEPENDENCYTRACK_FACTS_MERGE`. The file then has
 the recipes of all these images, and the packages, users and consumers of a
-recipe are joined, and `images` has an entry per image. The other images
-still write their own file. The build fails if a merged file has another
-`format_version`, `machine` or `distro_version`. The path of a merged file is
-taken from the global `DEPENDENCYTRACK_FACTS`; a setting in the recipe of the
-merged image is not seen.
+recipe are joined, and `images` has an entry per image. An image whose facts
+are only used in such a merge sets `DEPENDENCYTRACK_FACTS_DEPLOY = "0"`; it
+then writes no file of its own. The build fails if a merged image has another
+`format_version`, `machine` or `distro_version`.
 
 Some recipes put files into the boot partition with `do_deploy` (bootloader,
 kernel, firmware). They are marked with `deploys`, and the first check below
