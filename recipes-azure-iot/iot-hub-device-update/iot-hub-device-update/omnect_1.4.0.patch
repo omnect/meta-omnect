@@ -42,6 +42,52 @@ index 33e07f85..257bf0af 100644
  endfunction ()
  
  function (target_link_umock_c target scope)
+diff --git a/docs/agent-reference/how-to-build-agent-code.md b/docs/agent-reference/how-to-build-agent-code.md
+index 8e59b28b..69b26d91 100644
+--- a/docs/agent-reference/how-to-build-agent-code.md
++++ b/docs/agent-reference/how-to-build-agent-code.md
+@@ -81,7 +81,7 @@ These major components are built from source during the build process:
+ #### Azure IoT C SDK
+ - **Repository**: [Azure/azure-iot-sdk-c](https://github.com/Azure/azure-iot-sdk-c)
+ - **Purpose**: Connect to IoT Hub and call Azure IoT Plug and Play APIs
+-- **Default Branch**: `LTS_03_2025`
++- **Default Branch**: `LTS_10_2026`
+ - **Required For**: All Azure IoT Hub communication (MQTT, device authentication, telemetry)
+ - **Customization**: Use `--azure-iot-sdk-ref <branch/tag>` to specify version
+ 
+@@ -309,7 +309,7 @@ The [`scripts/install-deps.sh`](../../scripts/install-deps.sh) script provides e
+ 
+ | Option | Purpose | Default Version | Customization |
+ |--------|---------|-----------------|---------------|
+-| `--install-azure-iot-sdk` | Azure IoT C SDK | `LTS_03_2025` | `--azure-iot-sdk-ref <branch>` |
++| `--install-azure-iot-sdk` | Azure IoT C SDK | `LTS_10_2026` | `--azure-iot-sdk-ref <branch>` |
+ | `--install-do` | Delivery Optimization SDK | `develop` | `--do-ref <branch/tag>` |
+ | `--install-azure-storage-sdk` | Azure SDK for C++ | Latest | For blob storage features |
+ | `--install-catch2` | Testing framework | `v2.13.9` | `--catch2-ref <version>` |
+@@ -1118,7 +1118,7 @@ All platforms: cmake 3.23.2  # Guaranteed compatibility
+ 
+ The ADU project builds several key dependencies from source for similar cross-platform reliability:
+ 
+-#### Azure IoT C SDK (LTS_03_2025)
++#### Azure IoT C SDK (LTS_10_2026)
+ - **Reason**: Specific LTS branch with known stability
+ - **Benefit**: Consistent Azure connectivity across all platforms
+ - **Alternative**: System packages often have different versions/patches
+diff --git a/licenses/cgmanifest.json b/licenses/cgmanifest.json
+index b21152c0..b496b6d5 100644
+--- a/licenses/cgmanifest.json
++++ b/licenses/cgmanifest.json
+@@ -17,8 +17,8 @@
+         "Type": "git",
+         "git": {
+           "RepositoryUrl": "https://github.com/Azure/azure-iot-sdk-c",
+-          "CommitHash_Comment": "LTS_03_2025",
+-          "CommitHash": "79145b2cf2050b3a10d22003156db86f6e9c5c5e"
++          "CommitHash_Comment": "LTS_10_2026",
++          "CommitHash": "97cb2a98767a101d7bfeb51436bd838727d7eef1"
+         }
+       },
+       "DevelopmentDependency": false
 diff --git a/scripts/error_code_generator_defs/result_codes.json b/scripts/error_code_generator_defs/result_codes.json
 index 686fce7d..32357462 100644
 --- a/scripts/error_code_generator_defs/result_codes.json
@@ -54,9 +100,18 @@ index 686fce7d..32357462 100644
 +}
 \ No newline at end of file
 diff --git a/scripts/install-deps.sh b/scripts/install-deps.sh
-index 1871bae9..50bf1987 100755
+index 1871bae9..13093ce1 100755
 --- a/scripts/install-deps.sh
 +++ b/scripts/install-deps.sh
+@@ -54,7 +54,7 @@ use_ssh=false
+ 
+ install_aduc_deps=false
+ install_azure_iot_sdk=false
+-azure_sdk_ref=LTS_03_2025
++azure_sdk_ref=LTS_10_2026
+ 
+ # ADUC Diagnostics Deps
+ azure_storage_sdk_branch_ref=main
 @@ -130,7 +130,7 @@ mark_dep_installed() {
  }
  
@@ -215,7 +270,7 @@ index 770f8bd4..c09f286f 100644
      {
          taskResult = taskProc(launchArgs);
 diff --git a/src/adu-shell/src/main.cpp b/src/adu-shell/src/main.cpp
-index cf1f3bd5..0d715d2b 100644
+index cf1f3bd5..cdca7f30 100644
 --- a/src/adu-shell/src/main.cpp
 +++ b/src/adu-shell/src/main.cpp
 @@ -12,7 +12,6 @@
@@ -226,7 +281,15 @@ index cf1f3bd5..0d715d2b 100644
  
  #include <unordered_map>
  #include <vector>
-@@ -339,8 +338,6 @@ int main(int argc, char** argv)
+@@ -27,6 +26,7 @@
+ #include "adushell.hpp"
+ #include "adushell_const.hpp"
+ #include "azure_c_shared_utility/vector.h"
++#include "c_logging/logger.h"
+ #include "common_tasks.hpp"
+ 
+ namespace CommonTasks = Adu::Shell::Tasks::Common;
+@@ -339,8 +339,6 @@ int main(int argc, char** argv)
  {
      ADUShell_LaunchArguments launchArgs;
      const ADUC_ConfigInfo* config = NULL;
@@ -235,7 +298,23 @@ index cf1f3bd5..0d715d2b 100644
  
      int ret = ParseLaunchArguments(argc, argv, &launchArgs);
      if (ret != 0)
-@@ -385,27 +382,11 @@ int main(int argc, char** argv)
+@@ -356,6 +354,15 @@ int main(int argc, char** argv)
+         goto done;
+     }
+ 
++    // The SDK aborts on its first log line until logger_init() is called, and adu-shell never calls
++    // IoTHub_Init().
++    if (logger_init() != 0)
++    {
++        printf("logger_init failed\n");
++        ret = EXIT_FAILURE;
++        goto done;
++    }
++
+     signal(SIGINT, OnSignal);
+     signal(SIGTERM, OnSignal);
+ 
+@@ -385,27 +392,11 @@ int main(int argc, char** argv)
      }
      Log_Debug("Log level: %d", launchArgs.logLevel);
  
@@ -630,7 +709,7 @@ index 38ad9ea5..b32dcc33 100644
              S_IRGRP | S_IXGRP;  // R-X group
          // clang-format on
 diff --git a/src/agent/src/main.c b/src/agent/src/main.c
-index 70f28c4f..9b87e559 100644
+index 70f28c4f..9e3f2c13 100644
 --- a/src/agent/src/main.c
 +++ b/src/agent/src/main.c
 @@ -60,6 +60,8 @@
@@ -651,12 +730,13 @@ index 70f28c4f..9b87e559 100644
  
      AducTimer_Stop(&g_idle_pause_timer);
  
-@@ -1009,6 +1011,14 @@ int main(int argc, char** argv)
+@@ -1009,6 +1011,15 @@ int main(int argc, char** argv)
          return 0;
      }
  
 +    // The SDK aborts on its first log line until logger_init() is called. IoTHub_Init() calls it too,
-+    // but the connection info is read from the identity service before that.
++    // but the connection info is read from the identity service before that. There is no
++    // logger_deinit(): threads that end after main() returns still log.
 +    if (logger_init() != 0)
 +    {
 +        puts("logger_init failed");
@@ -666,14 +746,6 @@ index 70f28c4f..9b87e559 100644
      // Need to set ret and goto done after this to ensure proper shutdown and deinitialization.
      ADUC_Logging_Init(launchArgs.logLevel, "du-agent");
  
-@@ -1229,5 +1239,7 @@ done:
- 
-     ADUC_ConfigInfo_ReleaseInstance(config);
- 
-+    logger_deinit();
-+
-     return ret;
- }
 diff --git a/src/communication_managers/iothub_communication_manager/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
 index 0e52b667..8620349c 100644
 --- a/src/communication_managers/iothub_communication_manager/CMakeLists.txt
