@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "\
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-# Same file as the build configuration reads; prepended last, so it is searched first.
+# Same file as the build configuration reads.
 FILESEXTRAPATHS:prepend := "${@os.path.dirname(omnect.device_caps.find_json_path(d))}:"
 
 SRC_URI = "\
