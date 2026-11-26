@@ -4,8 +4,8 @@ HOMEPAGE = "https://github.com/Azure/azure-iot-sdk-c"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4283671594edec4c13aeb073c219237a"
 
-SRC_URI = "gitsm://github.com/Azure/azure-iot-sdk-c.git;branch=lts_03_2025;tag=LTS_03_2025;protocol=https"
-PV .= "+${SRCPV}"
+require azure-iot-sdk-c-${PV}.inc
+
 CVE_PRODUCT = "microsoft:azure-iot-sdk-c"
 
 # util-linux for uuid-dev
@@ -15,10 +15,6 @@ inherit cmake
 
 EXTRA_OECMAKE += "-Duse_prov_client:BOOL=OFF"
 EXTRA_OECMAKE += "-Dskip_samples:BOOL=ON"
-
-# cmake-native 4.x removed compat with cmake_minimum_required(VERSION <3.5),
-# which the bundled azure-macro-utils-c submodule still declares.
-EXTRA_OECMAKE += "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 # fix compilation of services which depend on azure-iot-sdk-c (e.g. iot-hub-device-update)
 do_configure:prepend() {

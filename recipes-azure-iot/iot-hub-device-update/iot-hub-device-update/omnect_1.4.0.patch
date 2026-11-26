@@ -23,6 +23,71 @@ index 0574fed5..a489288e 100644
  set (
      ADUC_IOT_HUB_PROTOCOL
      "IotHub_Protocol_from_Config"
+diff --git a/cmake/agentRules.cmake b/cmake/agentRules.cmake
+index 33e07f85..257bf0af 100644
+--- a/cmake/agentRules.cmake
++++ b/cmake/agentRules.cmake
+@@ -19,13 +19,8 @@ endmacro (disableRTTI)
+ 
+ function (target_link_aziotsharedutil target scope)
+     find_package (azure_c_shared_utility REQUIRED CONFIG)
++    # aziotsharedutil pulls in macro_utils_c and c_logging_v2 itself
+     target_link_libraries (${target} ${scope} aziotsharedutil)
+-
+-    # azure_c_shared_utility uses azure_macro_utils, but with VCPKG it doesn't have a dependency?
+-    # Without this, build errors out with:
+-    # azure_c_shared_utility/map.h(18,10): fatal  error C1083: Cannot open include file: 'azure_macro_utils/macro_utils.h'
+-    find_package (azure_macro_utils_c REQUIRED CONFIG)
+-    target_link_libraries (${target} ${scope} azure_macro_utils_c)
+ endfunction ()
+ 
+ function (target_link_umock_c target scope)
+diff --git a/docs/agent-reference/how-to-build-agent-code.md b/docs/agent-reference/how-to-build-agent-code.md
+index 8e59b28b..69b26d91 100644
+--- a/docs/agent-reference/how-to-build-agent-code.md
++++ b/docs/agent-reference/how-to-build-agent-code.md
+@@ -81,7 +81,7 @@ These major components are built from source during the build process:
+ #### Azure IoT C SDK
+ - **Repository**: [Azure/azure-iot-sdk-c](https://github.com/Azure/azure-iot-sdk-c)
+ - **Purpose**: Connect to IoT Hub and call Azure IoT Plug and Play APIs
+-- **Default Branch**: `LTS_03_2025`
++- **Default Branch**: `LTS_10_2026`
+ - **Required For**: All Azure IoT Hub communication (MQTT, device authentication, telemetry)
+ - **Customization**: Use `--azure-iot-sdk-ref <branch/tag>` to specify version
+ 
+@@ -309,7 +309,7 @@ The [`scripts/install-deps.sh`](../../scripts/install-deps.sh) script provides e
+ 
+ | Option | Purpose | Default Version | Customization |
+ |--------|---------|-----------------|---------------|
+-| `--install-azure-iot-sdk` | Azure IoT C SDK | `LTS_03_2025` | `--azure-iot-sdk-ref <branch>` |
++| `--install-azure-iot-sdk` | Azure IoT C SDK | `LTS_10_2026` | `--azure-iot-sdk-ref <branch>` |
+ | `--install-do` | Delivery Optimization SDK | `develop` | `--do-ref <branch/tag>` |
+ | `--install-azure-storage-sdk` | Azure SDK for C++ | Latest | For blob storage features |
+ | `--install-catch2` | Testing framework | `v2.13.9` | `--catch2-ref <version>` |
+@@ -1118,7 +1118,7 @@ All platforms: cmake 3.23.2  # Guaranteed compatibility
+ 
+ The ADU project builds several key dependencies from source for similar cross-platform reliability:
+ 
+-#### Azure IoT C SDK (LTS_03_2025)
++#### Azure IoT C SDK (LTS_10_2026)
+ - **Reason**: Specific LTS branch with known stability
+ - **Benefit**: Consistent Azure connectivity across all platforms
+ - **Alternative**: System packages often have different versions/patches
+diff --git a/licenses/cgmanifest.json b/licenses/cgmanifest.json
+index b21152c0..b496b6d5 100644
+--- a/licenses/cgmanifest.json
++++ b/licenses/cgmanifest.json
+@@ -17,8 +17,8 @@
+         "Type": "git",
+         "git": {
+           "RepositoryUrl": "https://github.com/Azure/azure-iot-sdk-c",
+-          "CommitHash_Comment": "LTS_03_2025",
+-          "CommitHash": "79145b2cf2050b3a10d22003156db86f6e9c5c5e"
++          "CommitHash_Comment": "LTS_10_2026",
++          "CommitHash": "97cb2a98767a101d7bfeb51436bd838727d7eef1"
+         }
+       },
+       "DevelopmentDependency": false
 diff --git a/scripts/error_code_generator_defs/result_codes.json b/scripts/error_code_generator_defs/result_codes.json
 index 686fce7d..32357462 100644
 --- a/scripts/error_code_generator_defs/result_codes.json
@@ -35,9 +100,18 @@ index 686fce7d..32357462 100644
 +}
 \ No newline at end of file
 diff --git a/scripts/install-deps.sh b/scripts/install-deps.sh
-index 1871bae9..50bf1987 100755
+index 1871bae9..13093ce1 100755
 --- a/scripts/install-deps.sh
 +++ b/scripts/install-deps.sh
+@@ -54,7 +54,7 @@ use_ssh=false
+ 
+ install_aduc_deps=false
+ install_azure_iot_sdk=false
+-azure_sdk_ref=LTS_03_2025
++azure_sdk_ref=LTS_10_2026
+ 
+ # ADUC Diagnostics Deps
+ azure_storage_sdk_branch_ref=main
 @@ -130,7 +130,7 @@ mark_dep_installed() {
  }
  
@@ -196,7 +270,7 @@ index 770f8bd4..c09f286f 100644
      {
          taskResult = taskProc(launchArgs);
 diff --git a/src/adu-shell/src/main.cpp b/src/adu-shell/src/main.cpp
-index cf1f3bd5..0d715d2b 100644
+index cf1f3bd5..cdca7f30 100644
 --- a/src/adu-shell/src/main.cpp
 +++ b/src/adu-shell/src/main.cpp
 @@ -12,7 +12,6 @@
@@ -207,7 +281,15 @@ index cf1f3bd5..0d715d2b 100644
  
  #include <unordered_map>
  #include <vector>
-@@ -339,8 +338,6 @@ int main(int argc, char** argv)
+@@ -27,6 +26,7 @@
+ #include "adushell.hpp"
+ #include "adushell_const.hpp"
+ #include "azure_c_shared_utility/vector.h"
++#include "c_logging/logger.h"
+ #include "common_tasks.hpp"
+ 
+ namespace CommonTasks = Adu::Shell::Tasks::Common;
+@@ -339,8 +339,6 @@ int main(int argc, char** argv)
  {
      ADUShell_LaunchArguments launchArgs;
      const ADUC_ConfigInfo* config = NULL;
@@ -216,7 +298,23 @@ index cf1f3bd5..0d715d2b 100644
  
      int ret = ParseLaunchArguments(argc, argv, &launchArgs);
      if (ret != 0)
-@@ -385,27 +382,11 @@ int main(int argc, char** argv)
+@@ -356,6 +354,15 @@ int main(int argc, char** argv)
+         goto done;
+     }
+ 
++    // The SDK aborts on its first log line until logger_init() is called, and adu-shell never calls
++    // IoTHub_Init().
++    if (logger_init() != 0)
++    {
++        printf("logger_init failed\n");
++        ret = EXIT_FAILURE;
++        goto done;
++    }
++
+     signal(SIGINT, OnSignal);
+     signal(SIGTERM, OnSignal);
+ 
+@@ -385,27 +392,11 @@ int main(int argc, char** argv)
      }
      Log_Debug("Log level: %d", launchArgs.logLevel);
  
@@ -611,10 +709,19 @@ index 38ad9ea5..b32dcc33 100644
              S_IRGRP | S_IXGRP;  // R-X group
          // clang-format on
 diff --git a/src/agent/src/main.c b/src/agent/src/main.c
-index 70f28c4f..6a350e07 100644
+index 70f28c4f..9e3f2c13 100644
 --- a/src/agent/src/main.c
 +++ b/src/agent/src/main.c
-@@ -886,7 +886,7 @@ done:
+@@ -60,6 +60,8 @@
+ 
+ #include "eis_utils.h"
+ 
++#include <c_logging/logger.h>
++
+ // make this last so that it does not interfere when system headers are included after it
+ #include "aduc/aduc_banned.h"
+ 
+@@ -886,7 +888,7 @@ done:
   */
  void ShutdownAgent()
  {
@@ -622,6 +729,22 @@ index 70f28c4f..6a350e07 100644
 +    Log_Info("Agent is shutting down.");
  
      AducTimer_Stop(&g_idle_pause_timer);
+ 
+@@ -1009,6 +1011,15 @@ int main(int argc, char** argv)
+         return 0;
+     }
+ 
++    // The SDK aborts on its first log line until logger_init() is called. IoTHub_Init() calls it too,
++    // but the connection info is read from the identity service before that. There is no
++    // logger_deinit(): threads that end after main() returns still log.
++    if (logger_init() != 0)
++    {
++        puts("logger_init failed");
++        return -1;
++    }
++
+     // Need to set ret and goto done after this to ensure proper shutdown and deinitialization.
+     ADUC_Logging_Init(launchArgs.logLevel, "du-agent");
  
 diff --git a/src/communication_managers/iothub_communication_manager/CMakeLists.txt b/src/communication_managers/iothub_communication_manager/CMakeLists.txt
 index 0e52b667..8620349c 100644
@@ -990,6 +1113,74 @@ index e7bcad3c..65e92251 100644
  endif ()
  add_subdirectory (download_handlers)
  add_subdirectory (extension_manager)
+diff --git a/src/extensions/content_downloaders/curl_downloader/CMakeLists.txt b/src/extensions/content_downloaders/curl_downloader/CMakeLists.txt
+index 39afadd2..b3aa8cd2 100644
+--- a/src/extensions/content_downloaders/curl_downloader/CMakeLists.txt
++++ b/src/extensions/content_downloaders/curl_downloader/CMakeLists.txt
+@@ -19,6 +19,8 @@ target_link_libraries (
+             aduc::logging
+             aduc::process_utils)
+ 
++target_link_aziotsharedutil (${target_name} PRIVATE)
++
+ target_link_libraries (${target_name} PRIVATE libaducpal)
+ 
+ install (TARGETS ${target_name} LIBRARY DESTINATION ${ADUC_EXTENSIONS_INSTALL_FOLDER})
+diff --git a/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.EXPORTS.cpp b/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.EXPORTS.cpp
+index 4f763efd..bc6d7f9d 100644
+--- a/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.EXPORTS.cpp
++++ b/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.EXPORTS.cpp
+@@ -12,9 +12,27 @@
+ #include <aduc/types/download.h> // for ADUC_DownloadProgressCallback
+ #include <aduc/types/update_content.h> // for ADUC_FileEntity
+ #include <aduc/logging.h> // ADUC_Logging_*, Log_*
++#include <c_logging/logger.h> // logger_init
++#include <cstdio> // puts
+ 
+ EXTERN_C_BEGIN
+ 
++/**
++ * @brief Initializes this module's copy of c-logging.
++ * @details The SDK is linked statically, so this module has its own c-logging, which aborts on its first log
++ * line until logger_init() is called. It stays initialized while the module is loaded.
++ * @return true on success.
++ */
++static bool InitSdkLogger()
++{
++    if (logger_init() != 0)
++    {
++        puts("curl-content-downloader: logger_init failed");
++        return false;
++    }
++    return true;
++}
++
+ /////////////////////////////////////////////////////////////////////////////
+ // BEGIN Shared Library Export Functions
+ //
+@@ -29,6 +47,11 @@ EXPORTED_METHOD ADUC_Result Download(
+     unsigned int timeoutInSeconds,
+     ADUC_DownloadProgressCallback downloadProgressCallback)
+ {
++    // The steps handler calls Download() through its own ExtensionManager, which never calls Initialize().
++    if (!InitSdkLogger())
++    {
++        return { ADUC_GeneralResult_Failure };
++    }
+     return Download_curl(entity, workflowId, workFolder, timeoutInSeconds, downloadProgressCallback);
+ }
+ 
+@@ -41,6 +64,10 @@ EXPORTED_METHOD ADUC_Result Download(
+ EXPORTED_METHOD ADUC_Result Initialize(const char* initializeData, ADUC_LOG_SEVERITY logLevel)
+ {
+     UNREFERENCED_PARAMETER(initializeData);
++    if (!InitSdkLogger())
++    {
++        return { ADUC_GeneralResult_Failure };
++    }
+     ADUC_Logging_Init(logLevel, "curl-content-downloader");
+     return { ADUC_GeneralResult_Success };
+ }
 diff --git a/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.cpp b/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.cpp
 index 541a32e2..6b09b511 100644
 --- a/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.cpp
@@ -1107,10 +1298,10 @@ index 0e26e415..e7bcb257 100644
  }
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
 new file mode 100644
-index 00000000..3f9afeff
+index 00000000..e71d6914
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,43 @@
 +cmake_minimum_required (VERSION 3.5)
 +
 +set (target_name omnect_swupdate_consent_1)
@@ -1146,6 +1337,8 @@ index 00000000..3f9afeff
 +            aduc::string_utils
 +            Parson::parson
 +            )
++
++target_link_aziotsharedutil (${target_name} PRIVATE)
 +
 +target_compile_definitions (
 +    ${target_name}
@@ -1280,10 +1473,10 @@ index 00000000..8ea0cf2a
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 00000000..c85a13c9
+index 00000000..938d9f1f
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
-@@ -0,0 +1,598 @@
+@@ -0,0 +1,608 @@
 +/**
 + * @file swupdate_consent_handler.cpp
 + * @brief Implementation of ContentHandler API for update content swupdate_consent.
@@ -1299,6 +1492,8 @@ index 00000000..c85a13c9
 +#include "aduc/swupdate_consent_handler.hpp"
 +#include "aduc/workflow_utils.h"
 +#include <azure_c_shared_utility/threadapi.h> // ThreadAPI_Sleep
++#include <c_logging/logger.h>
++#include <cstdio>
 +#include <parson.h>
 +
 +#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/etc/omnect/consent/consent_conf.json"
@@ -1320,6 +1515,14 @@ index 00000000..c85a13c9
 + */
 +ContentHandler* CreateUpdateContentHandlerExtension(ADUC_LOG_SEVERITY logLevel)
 +{
++    // The SDK is linked statically, so this module has its own c-logging, which aborts on its first log line
++    // until logger_init() is called. It stays initialized while the module is loaded.
++    if (logger_init() != 0)
++    {
++        puts("swupdate_consent-handler: logger_init failed");
++        return nullptr;
++    }
++
 +    ADUC_Logging_Init(logLevel, "swupdate_consent-handler");
 +    Log_Info("Instantiating a SWUpdateConsent Update Content Handler");
 +    try
@@ -1882,6 +2085,19 @@ index 00000000..c85a13c9
 +    ADUC_Result result = { ADUC_Result_Restore_Success };
 +    return result;
 +}
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/CMakeLists.txt b/src/extensions/step_handlers/swupdate_handler_v2/CMakeLists.txt
+index 2e087e62..45a3c6f2 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/CMakeLists.txt
++++ b/src/extensions/step_handlers/swupdate_handler_v2/CMakeLists.txt
+@@ -58,6 +58,8 @@ target_link_libraries (
+             aduc::workflow_utils
+             Parson::parson)
+ 
++target_link_aziotsharedutil (${target_name} PRIVATE)
++
+ target_link_libraries (${target_name} PRIVATE libaducpal)
+ 
+ target_compile_definitions (
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_result_codes.h b/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_result_codes.h
 index 11e68b88..385e2afc 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_result_codes.h
@@ -1912,6 +2128,34 @@ index 3c8b2157..26843f49 100644
  
  protected:
      //!< Protected constructor, must call CreateContentHandler factory method or from derived simulator class
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/handler_create.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/handler_create.cpp
+index 6792cf30..c9284c73 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/src/handler_create.cpp
++++ b/src/extensions/step_handlers/swupdate_handler_v2/src/handler_create.cpp
+@@ -9,6 +9,8 @@
+ #include <aduc/c_utils.h>
+ #include <aduc/logging.h>
+ #include <aduc/swupdate_handler_v2.hpp>
++#include <c_logging/logger.h>
++#include <cstdio>
+ #include <exception>
+ 
+ // keep this last to avoid interfering with system headers
+@@ -29,6 +31,14 @@ EXTERN_C_BEGIN
+  */
+ EXPORTED_METHOD ContentHandler* CreateUpdateContentHandlerExtension(ADUC_LOG_SEVERITY logLevel)
+ {
++    // The SDK is linked statically, so this module has its own c-logging, which aborts on its first log line
++    // until logger_init() is called. It stays initialized while the module is loaded.
++    if (logger_init() != 0)
++    {
++        puts("swupdate-handler-v2: logger_init failed");
++        return nullptr;
++    }
++
+     ADUC_Logging_Init(logLevel, "swupdate-handler-v2");
+     Log_Info("Instantiating a Step Handler for 'microsoft/swupdate:2'");
+     try
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
 index 670f54aa..7b24359b 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
@@ -2073,6 +2317,34 @@ index 7d61c89f..0acbf784 100644
          {
              "name": "ADUC_ERC_SWUPDATE_HANDLER_CANCEL_FAILURE",
              "value": 1024,
+diff --git a/src/extensions/update_manifest_handlers/steps_handler/src/handler_create.cpp b/src/extensions/update_manifest_handlers/steps_handler/src/handler_create.cpp
+index 3ac23d1a..48ca4a25 100644
+--- a/src/extensions/update_manifest_handlers/steps_handler/src/handler_create.cpp
++++ b/src/extensions/update_manifest_handlers/steps_handler/src/handler_create.cpp
+@@ -9,6 +9,8 @@
+ #include <aduc/c_utils.h>
+ #include <aduc/logging.h>
+ #include <aduc/steps_handler.hpp>
++#include <c_logging/logger.h>
++#include <cstdio>
+ #include <exception>
+ 
+ EXTERN_C_BEGIN
+@@ -26,6 +28,14 @@ EXTERN_C_BEGIN
+  */
+ EXPORTED_METHOD ContentHandler* CreateUpdateContentHandlerExtension(ADUC_LOG_SEVERITY logLevel)
+ {
++    // The SDK is linked statically, so this module has its own c-logging, which aborts on its first log line
++    // until logger_init() is called. It stays initialized while the module is loaded.
++    if (logger_init() != 0)
++    {
++        puts("steps-handler: logger_init failed");
++        return nullptr;
++    }
++
+     ADUC_Logging_Init(logLevel, "steps-handler");
+     Log_Info("Instantiating an Update Manifest Handler for MSOE");
+     try
 diff --git a/src/inc/aduc/swupdate_handler_result_codes.h b/src/inc/aduc/swupdate_handler_result_codes.h
 index 11e68b88..385e2afc 100644
 --- a/src/inc/aduc/swupdate_handler_result_codes.h
