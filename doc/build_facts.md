@@ -156,7 +156,8 @@ the build system changes, for example after an update of the Yocto layers.
 
 The image names the files in `DEPENDENCYTRACK_BOOT_ARGS_FILES`, each as
 `<recipe>:<path below DEPLOY_DIR_IMAGE>`. The image task depends on
-`do_deploy` of each named recipe, so the recipe is marked with `deploys`.
+`do_deploy` of each named recipe, so a named recipe that has an entry is
+marked with `deploys`.
 The build fails if a file is missing, if a device tree blob is broken, if a
 U-Boot image is truncated, is no script or has no `setenv bootargs` line, if
 a GRUB config has no `linux` line, or if any other file is no UTF-8 text.
