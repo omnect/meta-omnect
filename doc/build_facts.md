@@ -201,5 +201,14 @@ An SBOM component can belong to several recipes: `gcc` is in
 assessment of a component applies only if every recipe in either file with the
 component in `cve_products` has the same facts.
 
+A Rust recipe that inherits `cargo_cyclonedx` deploys its own SBOM
+(`<recipe>.cdx.json`) with the crates it is built from. Such a crate has no
+`cve_products` entry. It belongs to every recipe with
+`crate://crates.io/<name>/<version>` in `remote_files`, or, for a crate from
+git, with `<name>` in `srcrev`. The assessment of the crate applies only if
+each of these recipes has the same facts. A change of another crate or of the
+code of the recipe changes these facts, so all its crates then need a new
+assessment.
+
 The image fields are compared only when an assessment depends on them, per
 image.
