@@ -383,7 +383,10 @@ def boot_args(path):
         data = f.read()
     if data[:4] == struct.pack(">I", UIMAGE_MAGIC):
         return _lines_starting_with(uboot_script(data), ["setenv", "bootargs"], "U-Boot script")
-    text = data.decode()
+    try:
+        text = data.decode()
+    except UnicodeDecodeError:
+        raise ValueError("not a U-Boot script image and not UTF-8 text")
     if any(line.split()[:1] == ["menuentry"] for line in text.splitlines()):
         return _lines_starting_with(text, ["linux"], "GRUB config")
     return normalize_ws(text)

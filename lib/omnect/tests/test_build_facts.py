@@ -329,6 +329,10 @@ class BootArgsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.boot_args(b"menuentry 'os' {\n    chainloader /efi/boot/bootx64.efi\n}\n")
 
+    def test_binary(self):
+        with self.assertRaises(ValueError):
+            self.boot_args(b"\xd0\x0d\xfe\xed\x00\x00\x10\x00")
+
     def test_text(self):
         self.assertEqual(self.boot_args(b"  quiet loglevel=3\n"), "quiet loglevel=3")
 

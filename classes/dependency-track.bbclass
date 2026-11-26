@@ -299,7 +299,9 @@ python dependencytrack_write_facts() {
 
     boot_args = {}
     for entry in d.getVar("DEPENDENCYTRACK_BOOT_ARGS_FILES").split():
-        name = entry.partition(":")[2]
+        recipe, _, name = entry.partition(":")
+        if not recipe or not name:
+            bb.fatal("build facts: DEPENDENCYTRACK_BOOT_ARGS_FILES: '%s' is not <recipe>:<path>" % entry)
         path = os.path.join(d.getVar("DEPLOY_DIR_IMAGE"), name)
         if not os.path.exists(path):
             bb.fatal("build facts: %s not found" % path)

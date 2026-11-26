@@ -154,9 +154,11 @@ the build system changes, for example after an update of the Yocto layers.
 | `boot_args` | the kernel arguments the build sets, by deployed file: the `setenv bootargs` lines of a U-Boot script, the `linux` lines of a GRUB config (a file with a `menuentry`), else the whole text |
 
 The image names the files in `DEPENDENCYTRACK_BOOT_ARGS_FILES`, each as
-`<recipe>:<path below DEPLOY_DIR_IMAGE>`. The build fails if a file is
-missing, if a U-Boot script has no `setenv bootargs` line, or if a GRUB
-config has no `linux` line.
+`<recipe>:<path below DEPLOY_DIR_IMAGE>`. The image task depends on
+`do_deploy` of each named recipe, so the recipe is marked with `deploys`.
+The build fails if a file is missing, if a U-Boot image is truncated, is
+no script or has no `setenv bootargs` line, if a GRUB config has no `linux`
+line, or if any other file is no UTF-8 text.
 
 `boot_args` keeps the parts as they are; the bootloader puts them together
 when the device boots. Arguments that the firmware adds, that come from a
