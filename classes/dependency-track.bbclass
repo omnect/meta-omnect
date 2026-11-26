@@ -40,6 +40,9 @@ DEPENDENCYTRACK_DIR ??= "${DEPLOY_DIR}/dependency-track"
 DEPENDENCYTRACK_SBOM ??= "${DEPENDENCYTRACK_DIR}/bom.json"
 DEPENDENCYTRACK_TMP ??= "${TMPDIR}/dependency-track"
 DEPENDENCYTRACK_LOCK ??= "${DEPENDENCYTRACK_TMP}/bom.lock"
+DEPENDENCYTRACK_FACTS_TMP ??= "${DEPENDENCYTRACK_TMP}/build-facts"
+DEPENDENCYTRACK_FACTS ??= "${DEPENDENCYTRACK_DIR}/build-facts.${PN}.json"
+DEPENDENCYTRACK_FACTS_MERGE ??= ""
 
 python do_dependencytrack_init() {
     import uuid
@@ -127,6 +130,8 @@ python do_dependencytrack_collect() {
 
     # write it back to the deploy directory
     write_sbom(d, sbom)
+
+    write_recipe_facts(d)
 }
 
 addtask dependencytrack_collect before do_build after do_fetch
@@ -145,3 +150,191 @@ def write_sbom(d, sbom):
     Path(d.getVar("DEPENDENCYTRACK_SBOM")).write_text(
         json.dumps(sbom, indent=2)
     )
+
+# Build facts: see doc/build_facts.md
+
+def write_recipe_facts(d):
+    import json
+    import os
+    import oe.patch
+
+    path = os.path.join(d.getVar("DEPENDENCYTRACK_FACTS_TMP"), d.getVar("PN") + ".json")
+    if bb.data.inherits_class("image", d):
+        # an image is not a component of itself; drop a fragment from an older build
+        bb.utils.remove(path)
+        return
+
+    paths = {
+        "<WORKDIR>": d.getVar("WORKDIR"),
+        "<TMPDIR>": d.getVar("TMPDIR"),
+        "<TOPDIR>": d.getVar("TOPDIR"),
+        "<COREBASE>": d.getVar("COREBASE"),
+        "<DL_DIR>": d.getVar("DL_DIR"),
+    }
+
+    def clean(value):
+        value = omnect.build_facts.replace_paths(value or "", paths)
+        return omnect.build_facts.normalize_ws(omnect.build_facts.mask_jobs(value))
+
+    configure_args = {}
+    for cls, var in omnect.build_facts.CONFIGURE_ARGS_BY_CLASS:
+        if bb.data.inherits_class(cls, d):
+            configure_args[var] = clean(d.getVar(var))
+    for var in ("EXTRA_OEMAKE", "CARGO_FEATURES"):
+        if (d.getVar(var) or "").strip():
+            configure_args[var] = clean(d.getVar(var))
+
+    kconfig = {}
+    if bb.data.inherits_class("kernel", d):
+        kconfig["KBUILD_DEFCONFIG"] = clean(d.getVar("KBUILD_DEFCONFIG"))
+        # the order of the features is the order of the config fragments
+        kconfig["KERNEL_FEATURES"] = (d.getVar("KERNEL_FEATURES") or "").split()
+
+    fetch = bb.fetch2.Fetch([], d)
+    patches = set()
+    for patch in oe.patch.src_patches(d, expand=False):
+        patches.add(bb.fetch2.decodeurl(patch)[2])
+
+    # SRC_URI order: patches and config fragments are applied in this order
+    srcrev = {}
+    src_files = []
+    remote_files = []
+    for url in fetch.urls:
+        ud = fetch.ud[url]
+        address = url.split(";")[0]
+        if ud.method.supports_srcrev():
+            # the resolved revision, also for ;rev=, ;tag= and AUTOREV
+            srcrev[ud.parm["name"] if "name" in ud.parm else address] = ud.revision
+        elif ud.type == "file":
+            local = fetch.localpath(url)
+            src_files.append({
+                "name": address[len("file://"):],
+                "sha256": omnect.build_facts.sha256_path(local),
+                "patch": local in patches,
+            })
+        else:
+            # with its parameters, e.g. ;apply=no
+            remote_files.append({
+                "url": clean(url),
+                "sha256": getattr(ud, "sha256_expected", None),
+            })
+
+    basehashes = d.getVar("__siggen_basehashes", False) or {}
+
+    facts = {
+        "version": d.getVar("PV"),
+        "srcrev": dict(sorted(srcrev.items())),
+        "cve_products": omnect.build_facts.sorted_words(d.getVar("CVE_PRODUCT")),
+        "packageconfig": omnect.build_facts.sorted_words(d.getVar("PACKAGECONFIG")),
+        "configure_args": configure_args,
+        "kconfig": kconfig,
+        "src_files": src_files,
+        "remote_files": remote_files,
+        "task_hashes": omnect.build_facts.task_hashes(basehashes),
+        "provides": (d.getVar("PROVIDES") or "").split(),
+        "depends": bb.utils.explode_deps(d.getVar("DEPENDS") or ""),
+    }
+
+    bb.utils.mkdirhier(os.path.dirname(path))
+    with open(path, "w") as f:
+        json.dump(facts, f, indent=2, sort_keys=True)
+
+python dependencytrack_write_facts() {
+    import json
+    import os
+    import oe.package
+
+    # Only the recipes of this image: the fragment directory also holds
+    # recipes of other images and of earlier builds.
+    taskdepdata = d.getVar("BB_TASKDEPDATA", False)
+    pns = sorted({t[0] for t in taskdepdata.values() if t[1] == "do_dependencytrack_collect"})
+
+    facts_dir = d.getVar("DEPENDENCYTRACK_FACTS_TMP")
+    recipes = {}
+    for pn in pns:
+        path = os.path.join(facts_dir, pn + ".json")
+        # no fragment for recipes that are not built for the target
+        if os.path.exists(path):
+            with open(path) as f:
+                recipes[pn] = json.load(f)
+
+    pkgdata_dir = d.getVar("PKGDATA_DIR")
+    deploy_ipk = d.getVar("DEPLOY_DIR_IPK")
+    # do_rootfs removes the opkg status of images without package-management
+    with open(d.getVar("IMAGE_MANIFEST")) as f:
+        installed = omnect.build_facts.parse_manifest(f.read())
+    if not installed:
+        bb.fatal("build facts: no packages in %s" % d.getVar("IMAGE_MANIFEST"))
+    packages = {}
+    files = {}
+    for pkg, (arch, ver) in sorted(installed.items()):
+        with open(os.path.join(pkgdata_dir, "runtime-reverse", pkg)) as f:
+            pkgdata = omnect.build_facts.parse_pkgdata(f.read())
+        pn = pkgdata.get("PN")
+        ipk = os.path.join(deploy_ipk, arch, omnect.build_facts.ipk_filename(pkg, ver, arch))
+        if not os.path.exists(ipk):
+            bb.fatal("build facts: %s not found" % ipk)
+        packages.setdefault(pn, {})[pkg] = omnect.build_facts.ipk_sha256(ipk)
+        provides, depends = omnect.build_facts.per_file_deps(pkgdata)
+        file_provides, file_depends = files.setdefault(pn, ({}, {}))
+        file_provides.update({oe.package.file_reverse_translate(f): v for f, v in provides.items()})
+        file_depends.update({oe.package.file_reverse_translate(f): v for f, v in depends.items()})
+
+    linked_by = omnect.build_facts.linked_by(files)
+    built_into = omnect.build_facts.built_into(recipes)
+    # recipes whose deployed files the image uses, e.g. for the boot partition
+    deploys = omnect.build_facts.resolve_names(omnect.build_facts.deploy_dependencies(
+        d.getVarFlag(task, "depends") for task in d.getVar("__BBTASKS", False)), recipes)
+
+    out = {}
+    for pn, r in recipes.items():
+        r.pop("provides")
+        r.pop("depends")
+        r["installed_packages"] = packages.get(pn, {})
+        r["linked_by"] = linked_by.get(pn, {})
+        r["built_into"] = built_into[pn]
+        r["deploys"] = pn in deploys
+        out[pn] = r
+
+    facts = {
+        "format_version": omnect.build_facts.FORMAT_VERSION,
+        "machine": d.getVar("MACHINE"),
+        "distro_version": d.getVar("DISTRO_VERSION"),
+        "recipes": out,
+        "images": {
+            d.getVar("PN"): {
+                "image_features": omnect.build_facts.sorted_words(d.getVar("IMAGE_FEATURES")),
+                "unit_links": omnect.build_facts.unit_links(
+                    os.path.join(d.getVar("IMAGE_ROOTFS"), d.getVar("sysconfdir").lstrip("/"), "systemd", "system")),
+            },
+        },
+    }
+
+    own_path = d.getVar("DEPENDENCYTRACK_FACTS")
+    for image in (d.getVar("DEPENDENCYTRACK_FACTS_MERGE") or "").split():
+        localdata = bb.data.createCopy(d)
+        localdata.setVar("PN", image)
+        path = localdata.getVar("DEPENDENCYTRACK_FACTS")
+        if path == own_path:
+            bb.fatal("build facts: DEPENDENCYTRACK_FACTS does not depend on PN")
+        if not os.path.exists(path):
+            bb.fatal("build facts: %s not found, run do_image of %s again" % (path, image))
+        with open(path) as f:
+            other = json.load(f)
+        try:
+            omnect.build_facts.check_merge(facts, other, path)
+        except ValueError as e:
+            bb.fatal("build facts: %s" % e)
+        omnect.build_facts.merge_recipes(out, other["recipes"])
+        facts["images"].update(other["images"])
+
+    path = own_path
+    bb.utils.mkdirhier(os.path.dirname(path))
+    with open(path, "w") as f:
+        json.dump(facts, f, indent=2, sort_keys=True)
+}
+dependencytrack_write_facts[vardepsexclude] += "BB_TASKDEPDATA"
+
+# after IMAGE_PREPROCESS_COMMAND, which can still change the rootfs
+do_image[postfuncs] += "dependencytrack_write_facts"
+do_image[depends] += "${@' '.join('%s:do_image' % i for i in d.getVar('DEPENDENCYTRACK_FACTS_MERGE').split())}"
