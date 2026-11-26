@@ -19,8 +19,9 @@ SRC_URI += "\
     file://omnect-wifi-commissioning-start.sh \
 "
 
-# jq: the start script reads device_caps.json; wpa-supplicant: started at runtime.
-RDEPENDS:${PN} += "jq wpa-supplicant"
+# jq: the start script reads device_caps.json; omnect-base-files: ships it;
+# wpa-supplicant: started at runtime.
+RDEPENDS:${PN} += "jq omnect-base-files wpa-supplicant"
 
 do_install() {
     install -m 0644 -D ${UNPACKDIR}/omnect-wifi-commissioning.service ${D}${systemd_system_unitdir}/omnect-wifi-commissioning.service
