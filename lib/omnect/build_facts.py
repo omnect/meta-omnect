@@ -20,6 +20,13 @@ UIMAGE_MAGIC = 0x27051956
 UIMAGE_HEADER_SIZE = 64
 UIMAGE_TYPE_OFFSET = 30
 UIMAGE_TYPE_SCRIPT = 6
+FDT_MAGIC = 0xd00dfeed
+FDT_BEGIN_NODE = 1
+FDT_END_NODE = 2
+FDT_PROP = 3
+FDT_NOP = 4
+FDT_END = 9
+FDT_TOKEN_SIZE = 4
 
 CONFIGURE_ARGS_BY_CLASS = (
     ("autotools", "EXTRA_OECONF"),
@@ -373,14 +380,57 @@ def uboot_script(data):
     return data[offset:offset + sizes[0]].decode()
 
 
+def fdt_property(data, node, name):
+    """Return the value of property `name` of `node` (e.g. "/chosen") in a flattened device tree, or None."""
+    want = [p for p in node.split("/") if p]
+    try:
+        magic, _, off_struct, off_strings = struct.unpack_from(">IIII", data)
+        if magic != FDT_MAGIC:
+            raise ValueError("not a device tree blob")
+        offset = off_struct
+        path = []
+        while True:
+            (token,) = struct.unpack_from(">I", data, offset)
+            offset += FDT_TOKEN_SIZE
+            if token == FDT_BEGIN_NODE:
+                end = data.index(b"\0", offset)
+                path.append(data[offset:end].decode())
+                offset = _fdt_align(end + 1)
+            elif token == FDT_END_NODE:
+                path.pop()
+            elif token == FDT_PROP:
+                length, name_offset = struct.unpack_from(">II", data, offset)
+                offset += 2 * FDT_TOKEN_SIZE
+                prop = data[off_strings + name_offset:data.index(b"\0", off_strings + name_offset)].decode()
+                if path[1:] == want and prop == name:
+                    return data[offset:offset + length]
+                offset = _fdt_align(offset + length)
+            elif token == FDT_END:
+                return None
+            elif token != FDT_NOP:
+                raise ValueError("unknown device tree token %d" % token)
+    except (struct.error, IndexError, UnicodeDecodeError) as e:
+        raise ValueError("broken device tree blob: %s" % e)
+
+
+def _fdt_align(offset):
+    return (offset + FDT_TOKEN_SIZE - 1) & ~(FDT_TOKEN_SIZE - 1)
+
+
 def boot_args(path):
     """
-    Return the kernel arguments that a boot file adds: the `setenv bootargs`
-    lines of a U-Boot script, the `linux` lines of a GRUB config, else the
-    whole text.
+    Return the kernel arguments that a boot file adds: /chosen/bootargs of a
+    device tree blob, the `setenv bootargs` lines of a U-Boot script, the
+    `linux` lines of a GRUB config, else the whole text.
     """
     with open(path, "rb") as f:
         data = f.read()
+    if data[:4] == struct.pack(">I", FDT_MAGIC):
+        value = fdt_property(data, "/chosen", "bootargs") or b""
+        try:
+            return normalize_ws(value.rstrip(b"\0").decode())
+        except UnicodeDecodeError:
+            raise ValueError("/chosen/bootargs is not UTF-8 text")
     if data[:4] == struct.pack(">I", UIMAGE_MAGIC):
         return _lines_starting_with(uboot_script(data), ["setenv", "bootargs"], "U-Boot script")
     try:

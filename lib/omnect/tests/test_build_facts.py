@@ -333,6 +333,40 @@ class BootArgsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.boot_args(b"\xd0\x0d\xfe\xed\x00\x00\x10\x00")
 
+    @staticmethod
+    def fdt(nodes):
+        """Build a device tree blob from {"/node": {"prop": b"value"}}."""
+        def pad(b):
+            return b + b"\0" * (-len(b) % 4)
+        strings = b""
+        body = b""
+        for node, props in nodes.items():
+            names = [n for n in node.split("/") if n]
+            for name in [""] + names:
+                body += struct.pack(">I", build_facts.FDT_BEGIN_NODE) + pad(name.encode() + b"\0")
+            for prop, value in props.items():
+                body += struct.pack(">III", build_facts.FDT_PROP, len(value), len(strings)) + pad(value)
+                strings += prop.encode() + b"\0"
+            body += struct.pack(">I", build_facts.FDT_NOP)
+            body += struct.pack(">I", build_facts.FDT_END_NODE) * (len(names) + 1)
+        body += struct.pack(">I", build_facts.FDT_END)
+        header_size = 40
+        return struct.pack(">IIII", build_facts.FDT_MAGIC, header_size + len(body) + len(strings),
+                           header_size, header_size + len(body)) + bytes(header_size - 16) + body + strings
+
+    def test_device_tree(self):
+        dtb = self.fdt({"/soc": {"bootargs": b"wrong\0"},
+                        "/chosen": {"stdout-path": b"serial0\0", "bootargs": b"coherent_pool=1M  8250.nr_uarts=1\0"}})
+        self.assertEqual(self.boot_args(dtb), "coherent_pool=1M 8250.nr_uarts=1")
+
+    def test_device_tree_without_bootargs(self):
+        self.assertEqual(self.boot_args(self.fdt({"/chosen": {"stdout-path": b"serial0\0"}})), "")
+
+    def test_device_tree_truncated(self):
+        dtb = self.fdt({"/chosen": {"bootargs": b"quiet\0"}})
+        with self.assertRaises(ValueError):
+            self.boot_args(dtb[:50])
+
     def test_text(self):
         self.assertEqual(self.boot_args(b"  quiet loglevel=3\n"), "quiet loglevel=3")
 

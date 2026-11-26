@@ -86,6 +86,7 @@ does not apply to them or to the recipes built into them.
       "image_features": ["..."],
       "unit_links": {"default.target": "/usr/lib/systemd/system/multi-user.target", "...": "..."},
       "boot_args": {
+        "bcm2711-rpi-4-b.dtb": "coherent_pool=1M 8250.nr_uarts=1 ... cgroup_disable=memory ...",
         "boot.scr": "setenv bootargs \"root=/dev/${devtype}blk${devnum}p${omnect_os_bootpart} ${bootargs} ${omnect_extra_bootargs} quiet loglevel=3\"",
         "bootfiles/cmdline.txt": "console=tty0 dwc_otg.lpm_enable=0 ... bcm2835-wdt.nowayout=1",
         "omnect_extra_bootargs_omnect": "quiet loglevel=3 systemd.getty_auto=false ..."
@@ -151,18 +152,18 @@ the build system changes, for example after an update of the Yocto layers.
 | --- | --- |
 | `image_features` | `IMAGE_FEATURES` |
 | `unit_links` | every symlink in `/etc/systemd/system` after `IMAGE_PREPROCESS_COMMAND`, with its target: enabled units (`*.wants`, `*.requires`), `default.target` and masked units (`/dev/null`) |
-| `boot_args` | the kernel arguments the build sets, by deployed file: the `setenv bootargs` lines of a U-Boot script, the `linux` lines of a GRUB config (a file with a `menuentry`), else the whole text |
+| `boot_args` | the kernel arguments the build sets, by deployed file: `/chosen/bootargs` of a device tree blob (empty if not set), the `setenv bootargs` lines of a U-Boot script, the `linux` lines of a GRUB config (a file with a `menuentry`), else the whole text |
 
 The image names the files in `DEPENDENCYTRACK_BOOT_ARGS_FILES`, each as
 `<recipe>:<path below DEPLOY_DIR_IMAGE>`. The image task depends on
 `do_deploy` of each named recipe, so the recipe is marked with `deploys`.
-The build fails if a file is missing, if a U-Boot image is truncated, is
-no script or has no `setenv bootargs` line, if a GRUB config has no `linux`
-line, or if any other file is no UTF-8 text.
+The build fails if a file is missing, if a device tree blob is broken, if a
+U-Boot image is truncated, is no script or has no `setenv bootargs` line, if
+a GRUB config has no `linux` line, or if any other file is no UTF-8 text.
 
 `boot_args` keeps the parts as they are; the bootloader puts them together
 when the device boots. Arguments that the firmware adds, that come from a
-device tree of the kernel, or that are set on the device
+device tree overlay, or that are set on the device
 (`omnect_extra_bootargs_custom`) are not in the file.
 
 ## Comparing two builds
