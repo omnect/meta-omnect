@@ -1113,6 +1113,74 @@ index e7bcad3c..65e92251 100644
  endif ()
  add_subdirectory (download_handlers)
  add_subdirectory (extension_manager)
+diff --git a/src/extensions/content_downloaders/curl_downloader/CMakeLists.txt b/src/extensions/content_downloaders/curl_downloader/CMakeLists.txt
+index 39afadd2..b3aa8cd2 100644
+--- a/src/extensions/content_downloaders/curl_downloader/CMakeLists.txt
++++ b/src/extensions/content_downloaders/curl_downloader/CMakeLists.txt
+@@ -19,6 +19,8 @@ target_link_libraries (
+             aduc::logging
+             aduc::process_utils)
+ 
++target_link_aziotsharedutil (${target_name} PRIVATE)
++
+ target_link_libraries (${target_name} PRIVATE libaducpal)
+ 
+ install (TARGETS ${target_name} LIBRARY DESTINATION ${ADUC_EXTENSIONS_INSTALL_FOLDER})
+diff --git a/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.EXPORTS.cpp b/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.EXPORTS.cpp
+index 4f763efd..bc6d7f9d 100644
+--- a/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.EXPORTS.cpp
++++ b/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.EXPORTS.cpp
+@@ -12,9 +12,27 @@
+ #include <aduc/types/download.h> // for ADUC_DownloadProgressCallback
+ #include <aduc/types/update_content.h> // for ADUC_FileEntity
+ #include <aduc/logging.h> // ADUC_Logging_*, Log_*
++#include <c_logging/logger.h> // logger_init
++#include <cstdio> // puts
+ 
+ EXTERN_C_BEGIN
+ 
++/**
++ * @brief Initializes this module's copy of c-logging.
++ * @details The SDK is linked statically, so this module has its own c-logging, which aborts on its first log
++ * line until logger_init() is called. It stays initialized while the module is loaded.
++ * @return true on success.
++ */
++static bool InitSdkLogger()
++{
++    if (logger_init() != 0)
++    {
++        puts("curl-content-downloader: logger_init failed");
++        return false;
++    }
++    return true;
++}
++
+ /////////////////////////////////////////////////////////////////////////////
+ // BEGIN Shared Library Export Functions
+ //
+@@ -29,6 +47,11 @@ EXPORTED_METHOD ADUC_Result Download(
+     unsigned int timeoutInSeconds,
+     ADUC_DownloadProgressCallback downloadProgressCallback)
+ {
++    // The steps handler calls Download() through its own ExtensionManager, which never calls Initialize().
++    if (!InitSdkLogger())
++    {
++        return { ADUC_GeneralResult_Failure };
++    }
+     return Download_curl(entity, workflowId, workFolder, timeoutInSeconds, downloadProgressCallback);
+ }
+ 
+@@ -41,6 +64,10 @@ EXPORTED_METHOD ADUC_Result Download(
+ EXPORTED_METHOD ADUC_Result Initialize(const char* initializeData, ADUC_LOG_SEVERITY logLevel)
+ {
+     UNREFERENCED_PARAMETER(initializeData);
++    if (!InitSdkLogger())
++    {
++        return { ADUC_GeneralResult_Failure };
++    }
+     ADUC_Logging_Init(logLevel, "curl-content-downloader");
+     return { ADUC_GeneralResult_Success };
+ }
 diff --git a/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.cpp b/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.cpp
 index 541a32e2..6b09b511 100644
 --- a/src/extensions/content_downloaders/curl_downloader/curl_content_downloader.cpp
@@ -1230,10 +1298,10 @@ index 0e26e415..e7bcb257 100644
  }
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
 new file mode 100644
-index 00000000..3f9afeff
+index 00000000..e71d6914
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/CMakeLists.txt
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,43 @@
 +cmake_minimum_required (VERSION 3.5)
 +
 +set (target_name omnect_swupdate_consent_1)
@@ -1269,6 +1337,8 @@ index 00000000..3f9afeff
 +            aduc::string_utils
 +            Parson::parson
 +            )
++
++target_link_aziotsharedutil (${target_name} PRIVATE)
 +
 +target_compile_definitions (
 +    ${target_name}
@@ -1403,10 +1473,10 @@ index 00000000..8ea0cf2a
 +#endif // ADUC_SWUPDATECONSENT_HANDLER_HPP
 diff --git a/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
 new file mode 100644
-index 00000000..c85a13c9
+index 00000000..938d9f1f
 --- /dev/null
 +++ b/src/extensions/step_handlers/swupdate_consent_handler/src/swupdate_consent_handler.cpp
-@@ -0,0 +1,598 @@
+@@ -0,0 +1,608 @@
 +/**
 + * @file swupdate_consent_handler.cpp
 + * @brief Implementation of ContentHandler API for update content swupdate_consent.
@@ -1422,6 +1492,8 @@ index 00000000..c85a13c9
 +#include "aduc/swupdate_consent_handler.hpp"
 +#include "aduc/workflow_utils.h"
 +#include <azure_c_shared_utility/threadapi.h> // ThreadAPI_Sleep
++#include <c_logging/logger.h>
++#include <cstdio>
 +#include <parson.h>
 +
 +#define ADUC_SWUPDATE_CONSENT_CONF_FILE "/etc/omnect/consent/consent_conf.json"
@@ -1443,6 +1515,14 @@ index 00000000..c85a13c9
 + */
 +ContentHandler* CreateUpdateContentHandlerExtension(ADUC_LOG_SEVERITY logLevel)
 +{
++    // The SDK is linked statically, so this module has its own c-logging, which aborts on its first log line
++    // until logger_init() is called. It stays initialized while the module is loaded.
++    if (logger_init() != 0)
++    {
++        puts("swupdate_consent-handler: logger_init failed");
++        return nullptr;
++    }
++
 +    ADUC_Logging_Init(logLevel, "swupdate_consent-handler");
 +    Log_Info("Instantiating a SWUpdateConsent Update Content Handler");
 +    try
@@ -2005,6 +2085,19 @@ index 00000000..c85a13c9
 +    ADUC_Result result = { ADUC_Result_Restore_Success };
 +    return result;
 +}
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/CMakeLists.txt b/src/extensions/step_handlers/swupdate_handler_v2/CMakeLists.txt
+index 2e087e62..45a3c6f2 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/CMakeLists.txt
++++ b/src/extensions/step_handlers/swupdate_handler_v2/CMakeLists.txt
+@@ -58,6 +58,8 @@ target_link_libraries (
+             aduc::workflow_utils
+             Parson::parson)
+ 
++target_link_aziotsharedutil (${target_name} PRIVATE)
++
+ target_link_libraries (${target_name} PRIVATE libaducpal)
+ 
+ target_compile_definitions (
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_result_codes.h b/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_result_codes.h
 index 11e68b88..385e2afc 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/inc/aduc/swupdate_handler_result_codes.h
@@ -2035,6 +2128,34 @@ index 3c8b2157..26843f49 100644
  
  protected:
      //!< Protected constructor, must call CreateContentHandler factory method or from derived simulator class
+diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/handler_create.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/handler_create.cpp
+index 6792cf30..c9284c73 100644
+--- a/src/extensions/step_handlers/swupdate_handler_v2/src/handler_create.cpp
++++ b/src/extensions/step_handlers/swupdate_handler_v2/src/handler_create.cpp
+@@ -9,6 +9,8 @@
+ #include <aduc/c_utils.h>
+ #include <aduc/logging.h>
+ #include <aduc/swupdate_handler_v2.hpp>
++#include <c_logging/logger.h>
++#include <cstdio>
+ #include <exception>
+ 
+ // keep this last to avoid interfering with system headers
+@@ -29,6 +31,14 @@ EXTERN_C_BEGIN
+  */
+ EXPORTED_METHOD ContentHandler* CreateUpdateContentHandlerExtension(ADUC_LOG_SEVERITY logLevel)
+ {
++    // The SDK is linked statically, so this module has its own c-logging, which aborts on its first log line
++    // until logger_init() is called. It stays initialized while the module is loaded.
++    if (logger_init() != 0)
++    {
++        puts("swupdate-handler-v2: logger_init failed");
++        return nullptr;
++    }
++
+     ADUC_Logging_Init(logLevel, "swupdate-handler-v2");
+     Log_Info("Instantiating a Step Handler for 'microsoft/swupdate:2'");
+     try
 diff --git a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp b/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
 index 670f54aa..7b24359b 100644
 --- a/src/extensions/step_handlers/swupdate_handler_v2/src/swupdate_handler_v2.cpp
@@ -2196,6 +2317,34 @@ index 7d61c89f..0acbf784 100644
          {
              "name": "ADUC_ERC_SWUPDATE_HANDLER_CANCEL_FAILURE",
              "value": 1024,
+diff --git a/src/extensions/update_manifest_handlers/steps_handler/src/handler_create.cpp b/src/extensions/update_manifest_handlers/steps_handler/src/handler_create.cpp
+index 3ac23d1a..48ca4a25 100644
+--- a/src/extensions/update_manifest_handlers/steps_handler/src/handler_create.cpp
++++ b/src/extensions/update_manifest_handlers/steps_handler/src/handler_create.cpp
+@@ -9,6 +9,8 @@
+ #include <aduc/c_utils.h>
+ #include <aduc/logging.h>
+ #include <aduc/steps_handler.hpp>
++#include <c_logging/logger.h>
++#include <cstdio>
+ #include <exception>
+ 
+ EXTERN_C_BEGIN
+@@ -26,6 +28,14 @@ EXTERN_C_BEGIN
+  */
+ EXPORTED_METHOD ContentHandler* CreateUpdateContentHandlerExtension(ADUC_LOG_SEVERITY logLevel)
+ {
++    // The SDK is linked statically, so this module has its own c-logging, which aborts on its first log line
++    // until logger_init() is called. It stays initialized while the module is loaded.
++    if (logger_init() != 0)
++    {
++        puts("steps-handler: logger_init failed");
++        return nullptr;
++    }
++
+     ADUC_Logging_Init(logLevel, "steps-handler");
+     Log_Info("Instantiating an Update Manifest Handler for MSOE");
+     try
 diff --git a/src/inc/aduc/swupdate_handler_result_codes.h b/src/inc/aduc/swupdate_handler_result_codes.h
 index 11e68b88..385e2afc 100644
 --- a/src/inc/aduc/swupdate_handler_result_codes.h
