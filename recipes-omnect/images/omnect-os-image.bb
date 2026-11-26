@@ -30,8 +30,8 @@ DEPENDENCYTRACK_FACTS_MERGE = "omnect-os-initramfs"
 DEPENDENCYTRACK_BOOT_ARGS_FILES = "omnect-base-files:omnect_extra_bootargs_omnect"
 DEPENDENCYTRACK_BOOT_ARGS_FILES:append:omnect_uboot = " u-boot-default-script:boot.scr"
 # boot.scr takes /chosen/bootargs of the device tree; files below overlays/ are
-# overlay tables of the firmware, not device trees of a board
-DEPENDENCYTRACK_BOOT_ARGS_FILES:append:omnect_uboot = " ${@' '.join('virtual/kernel:' + os.path.basename(dt) for dt in d.getVar('KERNEL_DEVICETREE').split() if dt.endswith('.dtb') and not dt.startswith('overlays/'))}"
+# overlay tables of the firmware, which boot.scr does not read
+DEPENDENCYTRACK_BOOT_ARGS_FILES:append:omnect_uboot = " ${@' '.join('virtual/kernel:' + os.path.basename(dt) for dt in (d.getVar('KERNEL_DEVICETREE') or '').split() if dt.endswith('.dtb') and not dt.startswith('overlays/'))}"
 DEPENDENCYTRACK_BOOT_ARGS_FILES:append:rpi = " rpi-cmdline:${BOOTFILES_DIR_NAME}/cmdline.txt"
 DEPENDENCYTRACK_BOOT_ARGS_FILES:append:omnect_grub = " grub-efi:boot-menu.inc"
 

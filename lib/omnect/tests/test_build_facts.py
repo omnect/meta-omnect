@@ -331,7 +331,7 @@ class BootArgsTest(unittest.TestCase):
 
     def test_binary(self):
         with self.assertRaises(ValueError):
-            self.boot_args(b"\xd0\x0d\xfe\xed\x00\x00\x10\x00")
+            self.boot_args(b"\x7fELF\xff\xfe\x00\x00")
 
     @staticmethod
     def fdt(nodes):
@@ -351,8 +351,10 @@ class BootArgsTest(unittest.TestCase):
             body += struct.pack(">I", build_facts.FDT_END_NODE) * (len(names) + 1)
         body += struct.pack(">I", build_facts.FDT_END)
         header_size = 40
-        return struct.pack(">IIII", build_facts.FDT_MAGIC, header_size + len(body) + len(strings),
-                           header_size, header_size + len(body)) + bytes(header_size - 16) + body + strings
+        version = 17
+        return struct.pack(">IIIIIIIIII", build_facts.FDT_MAGIC, header_size + len(body) + len(strings),
+                           header_size, header_size + len(body), 0, version, version, 0,
+                           len(strings), len(body)) + body + strings
 
     def test_device_tree(self):
         dtb = self.fdt({"/soc": {"bootargs": b"wrong\0"},
@@ -361,6 +363,13 @@ class BootArgsTest(unittest.TestCase):
 
     def test_device_tree_without_bootargs(self):
         self.assertEqual(self.boot_args(self.fdt({"/chosen": {"stdout-path": b"serial0\0"}})), "")
+
+    def test_device_tree_value_too_long(self):
+        dtb = bytearray(self.fdt({"/chosen": {"bootargs": b"quiet\0"}}))
+        length_offset = dtb.index(b"quiet") - 8
+        struct.pack_into(">I", dtb, length_offset, 100)
+        with self.assertRaises(ValueError):
+            self.boot_args(bytes(dtb))
 
     def test_device_tree_truncated(self):
         dtb = self.fdt({"/chosen": {"bootargs": b"quiet\0"}})

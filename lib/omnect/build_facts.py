@@ -27,6 +27,7 @@ FDT_PROP = 3
 FDT_NOP = 4
 FDT_END = 9
 FDT_TOKEN_SIZE = 4
+FDT_SIZE_DT_STRUCT_OFFSET = 36
 
 CONFIGURE_ARGS_BY_CLASS = (
     ("autotools", "EXTRA_OECONF"),
@@ -384,9 +385,13 @@ def fdt_property(data, node, name):
     """Return the value of property `name` of `node` (e.g. "/chosen") in a flattened device tree, or None."""
     want = [p for p in node.split("/") if p]
     try:
-        magic, _, off_struct, off_strings = struct.unpack_from(">IIII", data)
+        magic, total_size, off_struct, off_strings = struct.unpack_from(">IIII", data)
         if magic != FDT_MAGIC:
             raise ValueError("not a device tree blob")
+        if len(data) < total_size:
+            raise ValueError("device tree blob is truncated")
+        (size_struct,) = struct.unpack_from(">I", data, FDT_SIZE_DT_STRUCT_OFFSET)
+        struct_end = off_struct + size_struct
         offset = off_struct
         path = []
         while True:
@@ -402,6 +407,8 @@ def fdt_property(data, node, name):
                 length, name_offset = struct.unpack_from(">II", data, offset)
                 offset += 2 * FDT_TOKEN_SIZE
                 prop = data[off_strings + name_offset:data.index(b"\0", off_strings + name_offset)].decode()
+                if offset + length > struct_end:
+                    raise ValueError("property %s is longer than the structure block" % prop)
                 if path[1:] == want and prop == name:
                     return data[offset:offset + length]
                 offset = _fdt_align(offset + length)

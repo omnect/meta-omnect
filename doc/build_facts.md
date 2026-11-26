@@ -2,7 +2,8 @@
 
 Each image build writes `build-facts.<image>.json` next to the SBOM
 (`bom.json`) in `${DEPLOY_DIR}/dependency-track/`, at the end of
-`do_image`. It records, per recipe, the inputs and
+`do_image`, unless the image sets `DEPENDENCYTRACK_FACTS_DEPLOY = "0"` (see
+below). It records, per recipe, the inputs and
 outputs a CVE assessment depends on: version, sources, patches, configuration,
 installed packages and which parts of the image use the recipe.
 

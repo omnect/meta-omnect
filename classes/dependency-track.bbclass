@@ -327,10 +327,6 @@ python dependencytrack_write_facts() {
     }
 
     images_dir = os.path.join(d.getVar("DEPENDENCYTRACK_FACTS_TMP"), "images")
-    bb.utils.mkdirhier(images_dir)
-    with open(os.path.join(images_dir, d.getVar("PN") + ".json"), "w") as f:
-        json.dump(facts, f, indent=2, sort_keys=True)
-
     for image in (d.getVar("DEPENDENCYTRACK_FACTS_MERGE") or "").split():
         path = os.path.join(images_dir, image + ".json")
         if not os.path.exists(path):
@@ -343,6 +339,11 @@ python dependencytrack_write_facts() {
             bb.fatal("build facts: %s" % e)
         omnect.build_facts.merge_recipes(out, other["recipes"])
         facts["images"].update(other["images"])
+
+    # after the merge, so an image that merges this one gets the merged facts too
+    bb.utils.mkdirhier(images_dir)
+    with open(os.path.join(images_dir, d.getVar("PN") + ".json"), "w") as f:
+        json.dump(facts, f, indent=2, sort_keys=True)
 
     path = d.getVar("DEPENDENCYTRACK_FACTS")
     if d.getVar("DEPENDENCYTRACK_FACTS_DEPLOY") != "1":
