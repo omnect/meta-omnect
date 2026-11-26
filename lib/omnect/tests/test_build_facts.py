@@ -305,6 +305,21 @@ class BootArgsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.boot_args(self.script_image(self.SCRIPT, image_type=2))
 
+    def test_several_lines(self):
+        script = 'setenv bootargs "a  b"\nboot\nsetenv bootargs "${bootargs} c"\n'
+        self.assertEqual(self.boot_args(self.script_image(script)),
+                         'setenv bootargs "a b"\nsetenv bootargs "${bootargs} c"')
+
+    def test_no_bootargs_line(self):
+        with self.assertRaises(ValueError):
+            self.boot_args(self.script_image("env set bootargs quiet\n"))
+
+    def test_truncated(self):
+        image = self.script_image(self.SCRIPT)
+        for data in (image[:-10], image[:build_facts.UIMAGE_HEADER_SIZE + 2], self.script_image("")):
+            with self.assertRaises(ValueError):
+                self.boot_args(data)
+
     def test_text(self):
         self.assertEqual(self.boot_args(b"  quiet loglevel=3\n"), "quiet loglevel=3")
 

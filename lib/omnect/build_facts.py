@@ -359,12 +359,17 @@ def uboot_script(data):
     # the header is followed by the sizes of the parts, ending with 0
     offset = UIMAGE_HEADER_SIZE
     sizes = []
-    while True:
-        (size,) = struct.unpack_from(">I", data, offset)
-        offset += 4
-        if not size:
-            break
-        sizes.append(size)
+    try:
+        while True:
+            (size,) = struct.unpack_from(">I", data, offset)
+            offset += 4
+            if not size:
+                break
+            sizes.append(size)
+    except struct.error:
+        raise ValueError("U-Boot script image is truncated")
+    if not sizes or len(data) < offset + sizes[0]:
+        raise ValueError("U-Boot script image is truncated")
     return data[offset:offset + sizes[0]].decode()
 
 
@@ -376,6 +381,9 @@ def boot_args(path):
     with open(path, "rb") as f:
         data = f.read()
     if data[:4] == struct.pack(">I", UIMAGE_MAGIC):
-        return "\n".join(normalize_ws(line) for line in uboot_script(data).splitlines()
-                         if line.split()[:2] == ["setenv", "bootargs"])
+        lines = [normalize_ws(line) for line in uboot_script(data).splitlines()
+                 if line.split()[:2] == ["setenv", "bootargs"]]
+        if not lines:
+            raise ValueError("U-Boot script has no line that starts with 'setenv bootargs'")
+        return "\n".join(lines)
     return normalize_ws(data.decode())
