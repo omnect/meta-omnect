@@ -52,9 +52,9 @@ these two values. For them the entry is a declaration that is kept consistent wi
 `find_json_path()` in `lib/omnect/device_caps.py` searches
 `files/device_caps/${MACHINE}.json` in every layer listed in `BBLAYERS` and takes
 the first match. The build configuration reads its capabilities from that file,
-and `recipes-core/base-files/base-files_%.bbappend` prepends its directory to
-`FILESEXTRAPATHS`, so the installed copy is the same file. A layer that provides
-the file for its machines needs nothing else.
+and `recipes-omnect/omnect-base-files/omnect-base-files.bb` prepends its
+directory to `FILESEXTRAPATHS`, so the installed copy is the same file. A layer
+that provides the file for its machines needs nothing else.
 
 If more than one layer has a file for the same machine, the one of the layer that
 comes first in `BBLAYERS` is used, for both.

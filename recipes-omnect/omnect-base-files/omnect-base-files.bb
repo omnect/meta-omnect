@@ -9,6 +9,11 @@ LIC_FILES_CHKSUM = "\
     file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302 \
 "
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+# Same file as the build configuration reads; prepended last, so it is searched first.
+FILESEXTRAPATHS:prepend := "${@os.path.dirname(omnect.device_caps.find_json_path(d))}:"
+
 SRC_URI = "\
     ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', 'file://etc/profile.d/tpm2tools.sh', '', d)} \
     file://etc/bashrc \
@@ -18,6 +23,7 @@ SRC_URI = "\
     file://usr/bin/omnect_extra_bootargs.sh \
     file://usr/bin/omnect_get_deviceid.sh \
     file://usr/bin/omnect_get_dps_tpm_enrollment.sh \
+    file://${MACHINE}.json \
 "
 
 RDEPENDS:${PN} += "\
@@ -30,6 +36,7 @@ FILES:${PN} = "\
     ${exec_prefix}/local \
     ${libdir}/tmpfiles.d/omnect-base-files.conf \
     /etc/bashrc \
+    ${sysconfdir}/omnect/device_caps.json \
     /etc/profile.d/omnect_profile.sh \
     /etc/profile.d/omnect_prompt.sh \
     /etc/sudoers.d/001_omnect \
@@ -55,6 +62,7 @@ do_install() {
     install -m 0644 -D ${UNPACKDIR}/etc/sudoers.d/001_omnect ${D}/etc/sudoers.d/001_omnect
     install -m 0644 -D ${UNPACKDIR}/etc/profile.d/omnect_profile.sh ${D}/etc/profile.d/omnect_profile.sh
     install -m 0644 -D ${UNPACKDIR}/etc/profile.d/omnect_prompt.sh ${D}/etc/profile.d/omnect_prompt.sh
+    install -m 0644 -D ${UNPACKDIR}/${MACHINE}.json ${D}${sysconfdir}/omnect/device_caps.json
 
     if ${@bb.utils.contains('MACHINE_FEATURES', 'tpm2', 'true', 'false', d)}; then
         install -m 0644 -D ${UNPACKDIR}/etc/profile.d/tpm2tools.sh ${D}/etc/profile.d/tpm2tools.sh

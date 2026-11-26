@@ -14,7 +14,8 @@ def find_json_path(d):
     """
     Return the path of files/device_caps/${MACHINE}.json in the first layer of
     BBLAYERS that has it; call bb.fatal() if there is none. The build
-    configuration and the copy that base-files installs both use this path.
+    configuration and the copy that omnect-base-files installs both use this
+    path.
     """
     machine = d.getVar('MACHINE')
     if not machine:
