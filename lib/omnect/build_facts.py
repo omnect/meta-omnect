@@ -33,10 +33,13 @@ CONFIGURE_ARGS_BY_CLASS = (
 # control file is left out, it holds the version
 CONTROL_SCRIPTS = ("conffiles", "postinst", "postrm", "preinst", "prerm")
 
-# tasks that do not change what the recipe puts into the image
+# tasks that do not change what the recipe puts into the image; config and
+# clean tasks are named one by one, because build tasks such as
+# do_write_config end in config too
 _TASKS_NOT_HASHED = re.compile(
-    r"^do_(build|checkuri|listtasks|printdiff|.*clean.*|.*devshell|.*config|.*spdx.*|cve_check"
-    r"|.*qa|populate_lic|rm_work.*|dependencytrack_.*|.*_setscene)$")
+    r"^do_(build|checkuri|listtasks|printdiff|clean|cleanall|cleansstate|cleanccache|clean_discovery"
+    r"|buildclean|.*devshell|menuconfig|diffconfig|savedefconfig|showconfig|ccmake_diffconfig"
+    r"|.*spdx.*|.*cve_check.*|.*qa|populate_lic|rm_work.*|dependencytrack_.*|.*_setscene)$")
 
 
 def normalize_ws(value):

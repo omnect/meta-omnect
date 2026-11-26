@@ -312,11 +312,15 @@ class BootArgsTest(unittest.TestCase):
 class TaskHashesTest(unittest.TestCase):
     def test_task_hashes(self):
         basehashes = {t: t + "-hash" for t in (
-            "do_build", "do_cleansstate", "do_compile", "do_configure", "do_create_spdx", "do_deploy", "do_dependencytrack_collect",
-            "do_devshell", "do_kernel_configme", "do_kernel_metadata", "do_menuconfig", "do_package",
-            "do_package_qa", "do_package_setscene", "do_populate_lic")}
+            "do_build", "do_buildclean", "do_ccmake_diffconfig", "do_clean", "do_clean_discovery", "do_cleanall",
+            "do_cleanccache", "do_cleansstate", "do_compile", "do_configure", "do_create_extlinux_config",
+            "do_create_spdx", "do_cve_check", "do_deploy", "do_dependencytrack_collect", "do_devshell",
+            "do_diffconfig", "do_kernel_configme", "do_kernel_metadata", "do_menuconfig", "do_package",
+            "do_package_qa", "do_package_setscene", "do_populate_lic", "do_savedefconfig",
+            "do_sbom_cve_check_recipe", "do_showconfig", "do_write_config")}
         self.assertEqual(list(build_facts.task_hashes(basehashes)),
-                         ["do_compile", "do_configure", "do_deploy", "do_kernel_configme", "do_kernel_metadata", "do_package"])
+                         ["do_compile", "do_configure", "do_create_extlinux_config", "do_deploy", "do_kernel_configme",
+                          "do_kernel_metadata", "do_package", "do_write_config"])
 
 
 if __name__ == "__main__":
