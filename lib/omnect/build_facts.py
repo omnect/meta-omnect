@@ -376,14 +376,21 @@ def uboot_script(data):
 def boot_args(path):
     """
     Return the kernel arguments that a boot file adds: the `setenv bootargs`
-    lines of a U-Boot script, else the whole text.
+    lines of a U-Boot script, the `linux` lines of a GRUB config, else the
+    whole text.
     """
     with open(path, "rb") as f:
         data = f.read()
     if data[:4] == struct.pack(">I", UIMAGE_MAGIC):
-        lines = [normalize_ws(line) for line in uboot_script(data).splitlines()
-                 if line.split()[:2] == ["setenv", "bootargs"]]
-        if not lines:
-            raise ValueError("U-Boot script has no line that starts with 'setenv bootargs'")
-        return "\n".join(lines)
-    return normalize_ws(data.decode())
+        return _lines_starting_with(uboot_script(data), ["setenv", "bootargs"], "U-Boot script")
+    text = data.decode()
+    if any(line.split()[:1] == ["menuentry"] for line in text.splitlines()):
+        return _lines_starting_with(text, ["linux"], "GRUB config")
+    return normalize_ws(text)
+
+
+def _lines_starting_with(text, words, kind):
+    lines = [normalize_ws(line) for line in text.splitlines() if line.split()[:len(words)] == words]
+    if not lines:
+        raise ValueError("%s has no line that starts with '%s'" % (kind, " ".join(words)))
+    return "\n".join(lines)

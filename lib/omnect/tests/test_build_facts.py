@@ -320,6 +320,15 @@ class BootArgsTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.boot_args(data)
 
+    def test_grub_config(self):
+        config = (b"menuentry 'os' {\n    set root=(hd0,gpt2)\n"
+                  b"    linux /boot/bzImage rootpart=2  quiet\n    initrd /boot/initramfs.cpio.gz\n}\n")
+        self.assertEqual(self.boot_args(config), "linux /boot/bzImage rootpart=2 quiet")
+
+    def test_grub_config_without_linux(self):
+        with self.assertRaises(ValueError):
+            self.boot_args(b"menuentry 'os' {\n    chainloader /efi/boot/bootx64.efi\n}\n")
+
     def test_text(self):
         self.assertEqual(self.boot_args(b"  quiet loglevel=3\n"), "quiet loglevel=3")
 

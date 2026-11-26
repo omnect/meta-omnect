@@ -151,11 +151,12 @@ the build system changes, for example after an update of the Yocto layers.
 | --- | --- |
 | `image_features` | `IMAGE_FEATURES` |
 | `unit_links` | every symlink in `/etc/systemd/system` after `IMAGE_PREPROCESS_COMMAND`, with its target: enabled units (`*.wants`, `*.requires`), `default.target` and masked units (`/dev/null`) |
-| `boot_args` | the kernel arguments the build sets, by deployed file: the `setenv bootargs` lines of a U-Boot script, else the whole text, such as a GRUB config |
+| `boot_args` | the kernel arguments the build sets, by deployed file: the `setenv bootargs` lines of a U-Boot script, the `linux` lines of a GRUB config (a file with a `menuentry`), else the whole text |
 
 The image names the files in `DEPENDENCYTRACK_BOOT_ARGS_FILES`, each as
 `<recipe>:<path below DEPLOY_DIR_IMAGE>`. The build fails if a file is
-missing, or if a U-Boot script has no `setenv bootargs` line.
+missing, if a U-Boot script has no `setenv bootargs` line, or if a GRUB
+config has no `linux` line.
 
 `boot_args` keeps the parts as they are; the bootloader puts them together
 when the device boots. Arguments that the firmware adds, that come from a
