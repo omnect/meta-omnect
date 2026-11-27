@@ -100,6 +100,11 @@ The values are shortened examples. `src_files`, `remote_files` and
 `KERNEL_FEATURES` keep the order of the recipe, because patches and config
 fragments are applied in that order. All other lists are sorted.
 
+`format_version` changes when a field is removed or changes its meaning. A
+new field does not change it: a file without the field was written before
+the field was added, which is not the same as an empty value (for example
+`boot_args` of an image without boot files is `{}`).
+
 ### Recipe fields
 
 | Field | Content |
