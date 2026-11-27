@@ -11,6 +11,9 @@ do_rootfs[depends] += "${do_rootfs_extra_depends}"
 
 inherit omnect_initramfs
 
+# omnect-os-image merges these facts into its own file
+DEPENDENCYTRACK_FACTS_DEPLOY = "0"
+
 IMAGE_NAME = "${OMNECT_INITRAMFS_IMAGE_NAME}"
 
 # This image is a cpio unpacked into RAM, not a read-write filesystem, so the default

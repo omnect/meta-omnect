@@ -2,7 +2,8 @@
 
 Each image build writes `build-facts.<image>.json` next to the SBOM
 (`bom.json`) in `${DEPLOY_DIR}/dependency-track/`, at the end of
-`do_image`. It records, per recipe, the inputs and
+`do_image`, unless the image sets `DEPENDENCYTRACK_FACTS_DEPLOY = "0"` (see
+below). It records, per recipe, the inputs and
 outputs a CVE assessment depends on: version, sources, patches, configuration,
 installed packages and which parts of the image use the recipe.
 
@@ -24,11 +25,10 @@ installed packages and no consumers. Image recipes have no entry.
 An image can add the facts of other images that ship with it, such as its
 initramfs, by naming them in `DEPENDENCYTRACK_FACTS_MERGE`. The file then has
 the recipes of all these images, and the packages, users and consumers of a
-recipe are joined, and `images` has an entry per image. The other images
-still write their own file. The build fails if a merged file has another
-`format_version`, `machine` or `distro_version`. The path of a merged file is
-taken from the global `DEPENDENCYTRACK_FACTS`; a setting in the recipe of the
-merged image is not seen.
+recipe are joined, and `images` has an entry per image. An image whose facts
+are only used in such a merge sets `DEPENDENCYTRACK_FACTS_DEPLOY = "0"`; it
+then writes no file of its own. The build fails if a merged image has another
+`format_version`, `machine` or `distro_version`.
 
 Some recipes put files into the boot partition with `do_deploy` (bootloader,
 kernel, firmware). They are marked with `deploys`, and the first check below
@@ -84,7 +84,13 @@ does not apply to them or to the recipes built into them.
   "images": {
     "omnect-os-image": {
       "image_features": ["..."],
-      "unit_links": {"default.target": "/usr/lib/systemd/system/multi-user.target", "...": "..."}
+      "unit_links": {"default.target": "/usr/lib/systemd/system/multi-user.target", "...": "..."},
+      "boot_args": {
+        "bcm2711-rpi-4-b.dtb": "coherent_pool=1M 8250.nr_uarts=1 ... cgroup_disable=memory ...",
+        "boot.scr": "setenv bootargs \"root=/dev/${devtype}blk${devnum}p${omnect_os_bootpart} ${bootargs} ${omnect_extra_bootargs} quiet loglevel=3\"",
+        "bootfiles/cmdline.txt": "console=tty0 dwc_otg.lpm_enable=0 ... bcm2835-wdt.nowayout=1",
+        "omnect_extra_bootargs_omnect": "quiet loglevel=3 systemd.getty_auto=false ..."
+      }
     }
   }
 }
@@ -93,6 +99,11 @@ does not apply to them or to the recipes built into them.
 The values are shortened examples. `src_files`, `remote_files` and
 `KERNEL_FEATURES` keep the order of the recipe, because patches and config
 fragments are applied in that order. All other lists are sorted.
+
+`format_version` changes when a field is removed or changes its meaning. A
+new field does not change it: a file without the field was written before
+the field was added, which is not the same as an empty value (for example
+`boot_args` of an image without boot files is `{}`).
 
 ### Recipe fields
 
@@ -146,6 +157,20 @@ the build system changes, for example after an update of the Yocto layers.
 | --- | --- |
 | `image_features` | `IMAGE_FEATURES` |
 | `unit_links` | every symlink in `/etc/systemd/system` after `IMAGE_PREPROCESS_COMMAND`, with its target: enabled units (`*.wants`, `*.requires`), `default.target` and masked units (`/dev/null`) |
+| `boot_args` | the kernel arguments the build sets, by deployed file: `/chosen/bootargs` of a device tree blob (empty if not set), the `setenv bootargs` lines of a U-Boot script, the `linux` lines of a GRUB config (a file with a `menuentry`), else the whole text |
+
+The image names the files in `DEPENDENCYTRACK_BOOT_ARGS_FILES`, each as
+`<recipe>:<path below DEPLOY_DIR_IMAGE>`. The image task depends on
+`do_deploy` of each named recipe, so a named recipe that has an entry is
+marked with `deploys`.
+The build fails if a file is missing, if a device tree blob is broken, if a
+U-Boot image is truncated, is no script or has no `setenv bootargs` line, if
+a GRUB config has no `linux` line, or if any other file is no UTF-8 text.
+
+`boot_args` keeps the parts as they are; the bootloader puts them together
+when the device boots. Arguments that the firmware adds, that come from a
+device tree overlay, or that are set on the device
+(`omnect_extra_bootargs_custom`) are not in the file.
 
 ## Comparing two builds
 
@@ -181,6 +206,15 @@ An SBOM component can belong to several recipes: `gcc` is in
 `cve_products` of libgcc and gcc-runtime, the SBOM lists it once. The
 assessment of a component applies only if every recipe in either file with the
 component in `cve_products` has the same facts.
+
+A Rust recipe that inherits `cargo_cyclonedx` deploys its own SBOM
+(`<recipe>.cdx.json`) with the crates it is built from. Such a crate has no
+`cve_products` entry. It belongs to every recipe with
+`crate://crates.io/<name>/<version>` in `remote_files`, or, for a crate from
+git, with `<name>` in `srcrev`. The assessment of the crate applies only if
+each of these recipes has the same facts. A change of another crate or of the
+code of the recipe changes these facts, so all its crates then need a new
+assessment.
 
 The image fields are compared only when an assessment depends on them, per
 image.

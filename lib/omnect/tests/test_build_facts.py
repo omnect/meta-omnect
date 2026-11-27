@@ -4,6 +4,7 @@ import io
 import lzma
 import os
 import shutil
+import struct
 import subprocess
 import tarfile
 import tempfile
@@ -275,6 +276,108 @@ class UnitsTest(unittest.TestCase):
 
     def test_missing_dir(self):
         self.assertEqual(build_facts.unit_links("/nonexistent"), {})
+
+
+class BootArgsTest(unittest.TestCase):
+    SCRIPT = ('fdt get value bootargs /chosen bootargs\n'
+              'setenv bootargs "root=/dev/${devtype}blk${devnum}p2 ${bootargs}  quiet"\n'
+              'booti ${kernel_addr_r}\n')
+
+    @staticmethod
+    def script_image(text, image_type=build_facts.UIMAGE_TYPE_SCRIPT):
+        header = bytearray(build_facts.UIMAGE_HEADER_SIZE)
+        struct.pack_into(">I", header, 0, build_facts.UIMAGE_MAGIC)
+        header[build_facts.UIMAGE_TYPE_OFFSET] = image_type
+        data = text.encode()
+        return bytes(header) + struct.pack(">II", len(data), 0) + data
+
+    def boot_args(self, data):
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(data)
+            f.flush()
+            return build_facts.boot_args(f.name)
+
+    def test_uboot_script(self):
+        self.assertEqual(self.boot_args(self.script_image(self.SCRIPT)),
+                         'setenv bootargs "root=/dev/${devtype}blk${devnum}p2 ${bootargs} quiet"')
+
+    def test_not_a_script(self):
+        with self.assertRaises(ValueError):
+            self.boot_args(self.script_image(self.SCRIPT, image_type=2))
+
+    def test_several_lines(self):
+        script = 'setenv bootargs "a  b"\nboot\nsetenv bootargs "${bootargs} c"\n'
+        self.assertEqual(self.boot_args(self.script_image(script)),
+                         'setenv bootargs "a b"\nsetenv bootargs "${bootargs} c"')
+
+    def test_no_bootargs_line(self):
+        with self.assertRaises(ValueError):
+            self.boot_args(self.script_image("env set bootargs quiet\n"))
+
+    def test_truncated(self):
+        image = self.script_image(self.SCRIPT)
+        for data in (image[:-10], image[:build_facts.UIMAGE_HEADER_SIZE + 2], self.script_image("")):
+            with self.assertRaises(ValueError):
+                self.boot_args(data)
+
+    def test_grub_config(self):
+        config = (b"menuentry 'os' {\n    set root=(hd0,gpt2)\n"
+                  b"    linux /boot/bzImage rootpart=2  quiet\n    initrd /boot/initramfs.cpio.gz\n}\n")
+        self.assertEqual(self.boot_args(config), "linux /boot/bzImage rootpart=2 quiet")
+
+    def test_grub_config_without_linux(self):
+        with self.assertRaises(ValueError):
+            self.boot_args(b"menuentry 'os' {\n    chainloader /efi/boot/bootx64.efi\n}\n")
+
+    def test_binary(self):
+        with self.assertRaises(ValueError):
+            self.boot_args(b"\x7fELF\xff\xfe\x00\x00")
+
+    @staticmethod
+    def fdt(nodes):
+        """Build a device tree blob from {"/node": {"prop": b"value"}}."""
+        def pad(b):
+            return b + b"\0" * (-len(b) % 4)
+        strings = b""
+        body = b""
+        for node, props in nodes.items():
+            names = [n for n in node.split("/") if n]
+            for name in [""] + names:
+                body += struct.pack(">I", build_facts.FDT_BEGIN_NODE) + pad(name.encode() + b"\0")
+            for prop, value in props.items():
+                body += struct.pack(">III", build_facts.FDT_PROP, len(value), len(strings)) + pad(value)
+                strings += prop.encode() + b"\0"
+            body += struct.pack(">I", build_facts.FDT_NOP)
+            body += struct.pack(">I", build_facts.FDT_END_NODE) * (len(names) + 1)
+        body += struct.pack(">I", build_facts.FDT_END)
+        header_size = 40
+        version = 17
+        return struct.pack(">IIIIIIIIII", build_facts.FDT_MAGIC, header_size + len(body) + len(strings),
+                           header_size, header_size + len(body), 0, version, version, 0,
+                           len(strings), len(body)) + body + strings
+
+    def test_device_tree(self):
+        dtb = self.fdt({"/soc": {"bootargs": b"wrong\0"},
+                        "/chosen": {"stdout-path": b"serial0\0", "bootargs": b"coherent_pool=1M  8250.nr_uarts=1\0"}})
+        self.assertEqual(self.boot_args(dtb), "coherent_pool=1M 8250.nr_uarts=1")
+
+    def test_device_tree_without_bootargs(self):
+        self.assertEqual(self.boot_args(self.fdt({"/chosen": {"stdout-path": b"serial0\0"}})), "")
+
+    def test_device_tree_value_too_long(self):
+        dtb = bytearray(self.fdt({"/chosen": {"bootargs": b"quiet\0"}}))
+        length_offset = dtb.index(b"quiet") - 8
+        struct.pack_into(">I", dtb, length_offset, 100)
+        with self.assertRaises(ValueError):
+            self.boot_args(bytes(dtb))
+
+    def test_device_tree_truncated(self):
+        dtb = self.fdt({"/chosen": {"bootargs": b"quiet\0"}})
+        with self.assertRaises(ValueError):
+            self.boot_args(dtb[:50])
+
+    def test_text(self):
+        self.assertEqual(self.boot_args(b"  quiet loglevel=3\n"), "quiet loglevel=3")
 
 
 class TaskHashesTest(unittest.TestCase):

@@ -43,6 +43,8 @@ DEPENDENCYTRACK_LOCK ??= "${DEPENDENCYTRACK_TMP}/bom.lock"
 DEPENDENCYTRACK_FACTS_TMP ??= "${DEPENDENCYTRACK_TMP}/build-facts"
 DEPENDENCYTRACK_FACTS ??= "${DEPENDENCYTRACK_DIR}/build-facts.${PN}.json"
 DEPENDENCYTRACK_FACTS_MERGE ??= ""
+DEPENDENCYTRACK_FACTS_DEPLOY ??= "1"
+DEPENDENCYTRACK_BOOT_ARGS_FILES ??= ""
 
 python do_dependencytrack_init() {
     import uuid
@@ -296,6 +298,19 @@ python dependencytrack_write_facts() {
         r["deploys"] = pn in deploys
         out[pn] = r
 
+    boot_args = {}
+    for entry in d.getVar("DEPENDENCYTRACK_BOOT_ARGS_FILES").split():
+        recipe, _, name = entry.partition(":")
+        if not recipe or not name:
+            bb.fatal("build facts: DEPENDENCYTRACK_BOOT_ARGS_FILES: '%s' is not <recipe>:<path>" % entry)
+        path = os.path.join(d.getVar("DEPLOY_DIR_IMAGE"), name)
+        if not os.path.exists(path):
+            bb.fatal("build facts: %s not found" % path)
+        try:
+            boot_args[name] = omnect.build_facts.boot_args(path)
+        except ValueError as e:
+            bb.fatal("build facts: %s: %s" % (path, e))
+
     facts = {
         "format_version": omnect.build_facts.FORMAT_VERSION,
         "machine": d.getVar("MACHINE"),
@@ -306,17 +321,14 @@ python dependencytrack_write_facts() {
                 "image_features": omnect.build_facts.sorted_words(d.getVar("IMAGE_FEATURES")),
                 "unit_links": omnect.build_facts.unit_links(
                     os.path.join(d.getVar("IMAGE_ROOTFS"), d.getVar("sysconfdir").lstrip("/"), "systemd", "system")),
+                "boot_args": boot_args,
             },
         },
     }
 
-    own_path = d.getVar("DEPENDENCYTRACK_FACTS")
+    images_dir = os.path.join(d.getVar("DEPENDENCYTRACK_FACTS_TMP"), "images")
     for image in (d.getVar("DEPENDENCYTRACK_FACTS_MERGE") or "").split():
-        localdata = bb.data.createCopy(d)
-        localdata.setVar("PN", image)
-        path = localdata.getVar("DEPENDENCYTRACK_FACTS")
-        if path == own_path:
-            bb.fatal("build facts: DEPENDENCYTRACK_FACTS does not depend on PN")
+        path = os.path.join(images_dir, image + ".json")
         if not os.path.exists(path):
             bb.fatal("build facts: %s not found, run do_image of %s again" % (path, image))
         with open(path) as f:
@@ -328,7 +340,16 @@ python dependencytrack_write_facts() {
         omnect.build_facts.merge_recipes(out, other["recipes"])
         facts["images"].update(other["images"])
 
-    path = own_path
+    # after the merge, so an image that merges this one gets the merged facts too
+    bb.utils.mkdirhier(images_dir)
+    with open(os.path.join(images_dir, d.getVar("PN") + ".json"), "w") as f:
+        json.dump(facts, f, indent=2, sort_keys=True)
+
+    path = d.getVar("DEPENDENCYTRACK_FACTS")
+    if d.getVar("DEPENDENCYTRACK_FACTS_DEPLOY") != "1":
+        # the facts are in the file of the image that merges them
+        bb.utils.remove(path)
+        return
     bb.utils.mkdirhier(os.path.dirname(path))
     with open(path, "w") as f:
         json.dump(facts, f, indent=2, sort_keys=True)
@@ -338,3 +359,4 @@ dependencytrack_write_facts[vardepsexclude] += "BB_TASKDEPDATA"
 # after IMAGE_PREPROCESS_COMMAND, which can still change the rootfs
 do_image[postfuncs] += "dependencytrack_write_facts"
 do_image[depends] += "${@' '.join('%s:do_image' % i for i in d.getVar('DEPENDENCYTRACK_FACTS_MERGE').split())}"
+do_image[depends] += "${@' '.join('%s:do_deploy' % e.split(':')[0] for e in d.getVar('DEPENDENCYTRACK_BOOT_ARGS_FILES').split())}"
